@@ -28,8 +28,10 @@ namespace RevBayesCore {
         MixtureAllocationProposal*          clone(void) const;                                                                  //!< Clone object
         double                              doProposal(void);                                                                   //!< Perform proposal
         const std::string&                  getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
+        double                              getProposalTuningParameter(void) const;
         void                                prepareProposal(void);                                                              //!< Prepare the proposal
-        void                                printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
+        void                                printParameterSummary(std::ostream &o, bool name_only) const;                                       //!< Print the parameter summary
+        void                                setProposalTuningParameter(double tp);
         void                                tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                                undoProposal(void);                                                                 //!< Reject the proposal
         
@@ -54,6 +56,7 @@ namespace RevBayesCore {
 #include "MixtureDistribution.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "ReversibleJumpMixtureConstantDistribution.h"
 #include "TypedDagNode.h"
@@ -116,6 +119,14 @@ const std::string& RevBayesCore::MixtureAllocationProposal<mixtureType>::getProp
     static std::string name = "Mixture-Allocation";
     
     return name;
+}
+
+
+template <class mixtureType>
+double RevBayesCore::MixtureAllocationProposal<mixtureType>::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -201,7 +212,7 @@ void RevBayesCore::MixtureAllocationProposal<mixtureType>::prepareProposal( void
  * \param[in]     o     The stream to which we print the summary.
  */
 template <class mixtureType>
-void RevBayesCore::MixtureAllocationProposal<mixtureType>::printParameterSummary(std::ostream &o) const
+void RevBayesCore::MixtureAllocationProposal<mixtureType>::printParameterSummary(std::ostream &o, bool name_only) const
 {
     // nothing to print
     
@@ -237,6 +248,13 @@ void RevBayesCore::MixtureAllocationProposal<mixtureType>::swapNodeInternal(DagN
     
     variable = static_cast<StochasticNode<mixtureType>* >(newN) ;
     
+}
+
+
+template <class mixtureType>
+void RevBayesCore::MixtureAllocationProposal<mixtureType>::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

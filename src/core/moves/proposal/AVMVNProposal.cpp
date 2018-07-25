@@ -136,6 +136,13 @@ const std::string& AVMVNProposal::getProposalName( void ) const
     return name;
 }
 
+
+double AVMVNProposal::getProposalTuningParameter( void ) const
+{
+    return sigma;
+}
+
+
 /**
  * Obtains the values of all variables in the AVMVN proposal.
  */
@@ -390,10 +397,14 @@ void AVMVNProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void AVMVNProposal::printParameterSummary(std::ostream &o) const
+void AVMVNProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "sigma = " << sigma;
+    o << "sigma = ";
+    if (name_only == false)
+    {
+        o << sigma;
+    }
     
 }
 
@@ -514,6 +525,12 @@ void AVMVNProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         }
     }
 
+}
+
+
+void AVMVNProposal::setProposalTuningParameter(double tp)
+{
+    sigma = tp;
 }
 
 

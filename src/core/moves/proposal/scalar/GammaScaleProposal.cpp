@@ -61,6 +61,12 @@ const std::string& GammaScaleProposal::getProposalName( void ) const
 }
 
 
+double GammaScaleProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -119,10 +125,14 @@ void GammaScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void GammaScaleProposal::printParameterSummary(std::ostream &o) const
+void GammaScaleProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
@@ -153,6 +163,12 @@ void GammaScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast<StochasticNode<double>* >(newN) ;
     
+}
+
+
+void GammaScaleProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

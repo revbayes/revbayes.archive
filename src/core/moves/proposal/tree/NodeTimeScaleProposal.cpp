@@ -2,6 +2,7 @@
 #include "NodeTimeScaleProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TreeUtilities.h"
 #include "TypedDagNode.h"
@@ -59,6 +60,13 @@ const std::string& NodeTimeScaleProposal::getProposalName( void ) const
     static std::string name = "NodeTimeScale";
     
     return name;
+}
+
+
+double NodeTimeScaleProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -147,7 +155,7 @@ void NodeTimeScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void NodeTimeScaleProposal::printParameterSummary(std::ostream &o) const
+void NodeTimeScaleProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
 }
@@ -180,6 +188,12 @@ void NodeTimeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
+}
+
+
+void NodeTimeScaleProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

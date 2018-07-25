@@ -62,6 +62,12 @@ const std::string& VectorFixedSingleElementSlideProposal::getProposalName( void 
 }
 
 
+double VectorFixedSingleElementSlideProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -113,10 +119,14 @@ void VectorFixedSingleElementSlideProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void VectorFixedSingleElementSlideProposal::printParameterSummary(std::ostream &o) const
+void VectorFixedSingleElementSlideProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
@@ -148,6 +158,12 @@ void VectorFixedSingleElementSlideProposal::swapNodeInternal(DagNode *oldN, DagN
     
     variable = static_cast<StochasticNode< RbVector<double> >* >(newN) ;
     
+}
+
+
+void VectorFixedSingleElementSlideProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

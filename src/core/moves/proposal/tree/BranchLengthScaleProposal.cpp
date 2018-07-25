@@ -61,6 +61,12 @@ const std::string& BranchLengthScaleProposal::getProposalName( void ) const
 }
 
 
+double BranchLengthScaleProposal::getProposalTuningParameter( void ) const
+{
+    return delta;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -125,10 +131,14 @@ void BranchLengthScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void BranchLengthScaleProposal::printParameterSummary(std::ostream &o) const
+void BranchLengthScaleProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "delta = " << delta;
+    o << "delta = ";
+    if (name_only == false)
+    {
+        o << delta;
+    }
     
 }
 
@@ -167,6 +177,12 @@ void BranchLengthScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         tree = static_cast<StochasticNode<Tree>* >(newN);
     }
     
+}
+
+
+void BranchLengthScaleProposal::setProposalTuningParameter(double tp)
+{
+    delta = tp;
 }
 
 

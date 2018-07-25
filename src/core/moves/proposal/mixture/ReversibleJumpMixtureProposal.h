@@ -32,8 +32,10 @@ namespace RevBayesCore {
         ReversibleJumpMixtureProposal*      clone(void) const;                                                                  //!< Clone object
         double                              doProposal(void);                                                                   //!< Perform proposal
         const std::string&                  getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
+        double                              getProposalTuningParameter(void) const;
         void                                prepareProposal(void);                                                              //!< Prepare the proposal
-        void                                printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
+        void                                printParameterSummary(std::ostream &o, bool name_only) const;                                       //!< Print the parameter summary
+        void                                setProposalTuningParameter(double tp);
         void                                tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                                undoProposal(void);                                                                 //!< Reject the proposal
         
@@ -56,6 +58,7 @@ namespace RevBayesCore {
 
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "ReversibleJumpMixtureConstantDistribution.h"
 #include "TypedDagNode.h"
@@ -185,6 +188,14 @@ const std::string& RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::get
 }
 
 
+template <class mixtureType>
+double RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -253,7 +264,7 @@ void RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::prepareProposal( 
  * \param[in]     o     The stream to which we print the summary.
  */
 template <class mixtureType>
-void RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::printParameterSummary(std::ostream &o) const
+void RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::printParameterSummary(std::ostream &o, bool name_only) const
 {
     // nothing to print
     
@@ -292,6 +303,13 @@ void RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::swapNodeInternal(
     
     variable = static_cast<StochasticNode<mixtureType>* >(newN) ;
     
+}
+
+
+template <class mixtureType>
+void RevBayesCore::ReversibleJumpMixtureProposal<mixtureType>::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

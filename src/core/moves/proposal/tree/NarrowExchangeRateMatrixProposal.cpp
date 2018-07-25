@@ -2,6 +2,7 @@
 #include "NarrowExchangeRateMatrixProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TypedDagNode.h"
 
@@ -64,6 +65,14 @@ const std::string& NarrowExchangeRateMatrixProposal::getProposalName( void ) con
     
     return name;
 }
+
+
+double NarrowExchangeRateMatrixProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
+}
+
 
 
 /**
@@ -250,7 +259,7 @@ void NarrowExchangeRateMatrixProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void NarrowExchangeRateMatrixProposal::printParameterSummary(std::ostream &o) const
+void NarrowExchangeRateMatrixProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     // no parameters
@@ -338,6 +347,12 @@ void NarrowExchangeRateMatrixProposal::swapNodeInternal(DagNode *oldN, DagNode *
     }
     
     
+}
+
+
+void NarrowExchangeRateMatrixProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

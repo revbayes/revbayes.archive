@@ -1,6 +1,7 @@
 #include "NarrowExchangeProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TypedDagNode.h"
 
@@ -56,6 +57,13 @@ const std::string& NarrowExchangeProposal::getProposalName( void ) const
     static std::string name = "NarrowExchange";
     
     return name;
+}
+
+
+double NarrowExchangeProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -150,7 +158,7 @@ void NarrowExchangeProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void NarrowExchangeProposal::printParameterSummary(std::ostream &o) const
+void NarrowExchangeProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     // no parameters
@@ -199,6 +207,12 @@ void NarrowExchangeProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
+}
+
+
+void NarrowExchangeProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

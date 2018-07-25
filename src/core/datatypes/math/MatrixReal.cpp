@@ -173,6 +173,28 @@ void MatrixReal::executeMethod(const std::string &n, const std::vector<const Dag
         int index = (int)static_cast<const TypedDagNode<long> *>( args[0] )->getValue()-1;
         rv = elements[index];
     }
+    else if ( n == "upperTriangle" )
+    {
+        rv = this->getUpperTriangle();
+    }
+    else if ( n == "diagonal" )
+    {
+        rv = this->getDiagonal();
+    }
+    else
+    {
+        throw RbException("A matrix object does not have a member method called '" + n + "'.");
+    }
+    
+}
+
+void MatrixReal::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, MatrixReal &rv) const
+{
+    
+    if ( n == "precision" )
+    {
+        rv = this->computeInverse();
+    }
     else
     {
         throw RbException("A matrix object does not have a member method called '" + n + "'.");
@@ -205,8 +227,8 @@ RbVector<double> MatrixReal::getColumn( size_t columnIndex ) const
 RbVector<double> MatrixReal::getDiagonal( void ) const
 {
     
-    if ( isDiagonal() == false ) {
-        throw RbException("MatrixReal: Can only get the diagonal elements of a diagonal matrix.");
+    if ( isSquareMatrix() == false ) {
+        throw RbException("MatrixReal: Can only get the diagonal elements of a square matrix.");
     }
     
     RbVector<double> diagonal_elements(n_rows, 0.0);

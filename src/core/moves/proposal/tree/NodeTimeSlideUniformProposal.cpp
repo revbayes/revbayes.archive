@@ -2,6 +2,7 @@
 #include "NodeTimeSlideUniformProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TreeUtilities.h"
 #include "TypedDagNode.h"
@@ -58,6 +59,13 @@ const std::string& NodeTimeSlideUniformProposal::getProposalName( void ) const
     static std::string name = "NodeTimeSlideUniform";
     
     return name;
+}
+
+
+double NodeTimeSlideUniformProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -137,7 +145,7 @@ void NodeTimeSlideUniformProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void NodeTimeSlideUniformProposal::printParameterSummary(std::ostream &o) const
+void NodeTimeSlideUniformProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
 }
@@ -170,6 +178,12 @@ void NodeTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNode *newN
     
     variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
+}
+
+
+void NodeTimeSlideUniformProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

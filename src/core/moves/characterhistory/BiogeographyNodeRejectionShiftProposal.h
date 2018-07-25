@@ -56,13 +56,15 @@ namespace RevBayesCore {
         void                                                        cleanProposal(void);
         double                                                      doProposal(void);                                               //!< Perform proposal
         const std::string&                                          getProposalName(void) const;                                    //!< Get the name of the proposal for summary printing
-        void                                                        printParameterSummary(std::ostream &o) const;                   //!< Print the parameter summary
+        double                                                      getProposalTuningParameter(void) const;
+        void                                                        printParameterSummary(std::ostream &o, bool name_only) const;                   //!< Print the parameter summary
         void                                                        prepareProposal(void);                                          //!< Prepare the proposal
         void                                                        chooseCharactersToSample(const std::vector<CharacterEvent*>& h);
         void                                                        setSampledCharacters(const std::set<size_t>& s);
         double                                                      sampleNodeCharacters(void);                                     //!< Sample the characters at the node
         double                                                      sampleCladogenesisCharacters(void);
         double                                                      sampleRootCharacters(void);                                     //!< Sample the characters at the root
+        void                                                        setProposalTuningParameter(double tp);
         void                                                        setRateGenerator(const TypedDagNode<RateGenerator> *d);         //!< Set the rate generator.
         void                                                        setRateGenerator(const TypedDagNode<RateGeneratorSequence> *d); //!< Set the rate generator.
         void                                                        tune(double r);                                                 //!< Tune the proposal to achieve a better acceptance/rejection ratio
@@ -636,6 +638,13 @@ const std::string& RevBayesCore::BiogeographicNodeRejectionShiftProposal<charTyp
 }
 
 
+template<class charType>
+double RevBayesCore::BiogeographicNodeRejectionShiftProposal<charType>::getProposalTuningParameter( void ) const
+{
+    return p_flip;
+}
+
+
 /**
  *
  */
@@ -760,7 +769,7 @@ void RevBayesCore::BiogeographicNodeRejectionShiftProposal<charType>::preparePro
  * \param[in]     o     The stream to which we print the summary.
  */
 template<class charType>
-void RevBayesCore::BiogeographicNodeRejectionShiftProposal<charType>::printParameterSummary(std::ostream &o) const
+void RevBayesCore::BiogeographicNodeRejectionShiftProposal<charType>::printParameterSummary(std::ostream &o, bool name_only) const
 {
     //    o << "lambda = " << lambda;
 }
@@ -1224,6 +1233,13 @@ void RevBayesCore::BiogeographicNodeRejectionShiftProposal<charType>::swapNodeIn
     nodeProposal->swapNode(oldN, newN);
     leftProposal->swapNode(oldN, newN);
     rightProposal->swapNode(oldN, newN);
+}
+
+
+template<class charType>
+void RevBayesCore::BiogeographicNodeRejectionShiftProposal<charType>::setProposalTuningParameter(double tp)
+{
+    p_flip = tp;
 }
 
 

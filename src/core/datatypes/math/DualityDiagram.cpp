@@ -50,7 +50,7 @@ DualityDiagram::DualityDiagram(
                                const std::vector<double>& rowWeights,
                                const std::vector<double>& colWeights,
                                unsigned int nbAxes,
-                               double tol) throw (RbException) :
+                               double tol) :
 rowWeights_(rowWeights),
 colWeights_(colWeights),
 nbAxes_(nbAxes),
@@ -69,7 +69,7 @@ void DualityDiagram::check_(
                             const MatrixReal& matrix,
                             const std::vector<double>& rowWeights,
                             const std::vector<double>& colWeights,
-                            unsigned int nbAxes) throw (RbException)
+                            unsigned int nbAxes)
 {
     size_t rowNb = matrix.getNumberOfRows();
     size_t colNb = matrix.getNumberOfColumns();
@@ -100,7 +100,7 @@ void DualityDiagram::setData(
                              const std::vector<double>& rowWeights,
                              const std::vector<double>& colWeights,
                              unsigned int nbAxes,
-                             double tol) throw (RbException)
+                             double tol)
 {
     check_(matrix, rowWeights, colWeights, nbAxes);
     rowWeights_ = rowWeights;

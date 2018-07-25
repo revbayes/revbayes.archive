@@ -57,6 +57,7 @@
 #include "Move_SliceSampling.h"
 #include "Move_Scale.h"
 #include "Move_GammaScale.h"
+#include "Move_RandomDive.h"
 #include "Move_ScaleBactrian.h"
 #include "Move_ScaleBactrianCauchy.h"
 #include "Move_Slide.h"
@@ -214,6 +215,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Moves on real values */
         addTypeWithConstructor( new Move_Scale() );
         addTypeWithConstructor( new Move_GammaScale() );
+        addTypeWithConstructor( new Move_RandomDive() );
         addTypeWithConstructor( new Move_ScaleBactrian() );
         addTypeWithConstructor( new Move_ScaleBactrianCauchy() );
         addTypeWithConstructor( new Move_Slide() );
