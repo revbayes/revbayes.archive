@@ -32,7 +32,7 @@ namespace RevBayesCore {
     class EigenSystem;
     class CholeskyDecomposition;
     
-    class MatrixReal : public Cloneable, public MemberObject<RbVector<double> > {
+    class MatrixReal : public Cloneable, public MemberObject<RbVector<double> >, public MemberObject<MatrixReal> {
         
     public:
         MatrixReal(void);                       //!< Default constructor required by revlanguage use of this class
@@ -78,6 +78,7 @@ namespace RevBayesCore {
         MatrixReal*                             clone(void) const;
         MatrixReal                              computeInverse(void) const;
         void                                    executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;       //!< Map the member methods to internal function calls
+        void                                    executeMethod(const std::string &n, const std::vector<const DagNode*> &args, MatrixReal &rv) const;       //!< Map the member methods to internal function calls
         RbVector<double>                        getColumn(size_t i) const;                                                                               //!< Get the i-th column
         RbVector<double>                        getDiagonal(void) const;
         size_t                                  getDim() const;
