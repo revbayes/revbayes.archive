@@ -138,19 +138,24 @@ void InverseWishartDistribution::redrawValue(void)
 
     if ( sigma0 != NULL )
     {
-        setValue( RbStatistics::InverseWishart::rv(sigma0->getValue(),df->getValue(), *rng).clone() );
+        *value = RbStatistics::InverseWishart::rv(sigma0->getValue(),df->getValue(), *rng);
+//        setValue( RbStatistics::InverseWishart::rv(sigma0->getValue(),df->getValue(), *rng).clone() );
     }
     else if ( kappaVector != NULL )
     {
-        setValue( RbStatistics::InverseWishart::rv(kappaVector->getValue(),df->getValue(), *rng).clone() );
+        *value = RbStatistics::InverseWishart::rv(kappaVector->getValue(),df->getValue(), *rng);
+//        setValue( RbStatistics::InverseWishart::rv(kappaVector->getValue(),df->getValue(), *rng).clone() );
     }
     else if ( kappa != NULL )
     {
-        setValue( RbStatistics::InverseWishart::rv(kappa->getValue(),getValue().getDim(),df->getValue(), *rng).clone() );
+        *value = RbStatistics::InverseWishart::rv(kappa->getValue(),getValue().getDim(),df->getValue(), *rng);
+//        setValue( RbStatistics::InverseWishart::rv(kappa->getValue(),getValue().getDim(),df->getValue(), *rng).clone() );
     }
     else
     {
         throw RbException("error in inverse wishart: no parameter\n");
     }
+    
+    value->setCholesky(true);
 
 }

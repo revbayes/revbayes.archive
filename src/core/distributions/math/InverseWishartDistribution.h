@@ -55,8 +55,8 @@ namespace RevBayesCore {
         const TypedDagNode<MatrixReal>*                     sigma0;
         const TypedDagNode<RbVector<double> >*              kappaVector;
         const TypedDagNode<double>*                         kappa;
-        const TypedDagNode<long>*                            df;
-        const TypedDagNode<long>*                            dim;
+        const TypedDagNode<long>*                           df;
+        const TypedDagNode<long>*                           dim;
                 
     };
     

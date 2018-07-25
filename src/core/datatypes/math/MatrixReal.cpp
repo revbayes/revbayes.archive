@@ -494,13 +494,24 @@ bool MatrixReal::isPositive( void )  const
 
     update();
 
-    const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
-
     bool pos = true;
-    for (size_t i=0; i<n_rows; i++)
+
+    if ( use_cholesky_decomp == false )
     {
-        pos &= (eigenval[i] > 0);
+
+        const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
+        
+        for (size_t i=0; i<n_rows; i++)
+        {
+            pos &= (eigenval[i] > 0);
+        }
+
     }
+    else
+    {
+        pos = cholesky_decomp->checkPositiveSemidefinite();
+    }
+    
 
     return pos;
 }

@@ -73,6 +73,7 @@ void ConjugateInverseWishartMove::performGibbsMove( void )
     size_t dim = sigma->getValue().getDim();
     
     MatrixReal A = MatrixReal(dim);
+    A.setCholesky(true);
 
     size_t num_children = 0;
     
@@ -119,6 +120,7 @@ void ConjugateInverseWishartMove::performGibbsMove( void )
 
     sigma->touch();
     sigma->keep();
+    
 }
 
 
