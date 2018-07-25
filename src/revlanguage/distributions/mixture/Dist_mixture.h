@@ -34,6 +34,7 @@ namespace RevLanguage {
         static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::string                                     getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
+        virtual MethodTable                             getDistributionMethods( void ) const;
         const TypeSpec&                                 getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
         const MemberRules&                              getParameterRules(void) const;                                                          //!< Get member rules (const)
 
@@ -138,6 +139,19 @@ std::string RevLanguage::Dist_mixture<valType>::getDistributionFunctionName( voi
     std::string d_name = "Mixture";
     
     return d_name;
+}
+
+template <typename valType>
+RevLanguage::MethodTable RevLanguage::Dist_mixture<valType>::getDistributionMethods( void ) const
+{
+
+    MethodTable methods = TypedDistribution<valType>::getDistributionMethods();
+    
+    // member functions
+    ArgumentRules* get_allocation_index_arg_rules = new ArgumentRules();
+    methods.addFunction( new DistributionMemberFunction<Dist_mixture, Natural >( "getAllocationIndex", this->variable, get_allocation_index_arg_rules, true ) );
+
+    return methods;
 }
 
 
