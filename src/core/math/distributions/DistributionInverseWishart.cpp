@@ -8,6 +8,9 @@
 
 #include "DistributionInverseWishart.h"
 #include "DistributionMultivariateNormal.h"
+#include "DistributionNormal.h"
+#include "DistributionChisq.h"
+#include "CholeskyDecomposition.h"
 #include "RbException.h"
 #include "RbConstants.h"
 #include "RbMathFunctions.h"
@@ -92,26 +95,64 @@ double RbStatistics::InverseWishart::lnPdf(const MatrixReal &sigma0, size_t df, 
 MatrixReal RbStatistics::InverseWishart::rv(const MatrixReal &sigma0, size_t df, RandomNumberGenerator& rng)
 {
     
-    size_t dim = sigma0.getDim();
-        
-    MatrixReal z = MatrixReal(dim);
-    std::vector<double> mean = std::vector<double>(dim, 0.0);
+    size_t p = sigma0.getDim();
     
-    for (size_t k=0; k<df; k++)
+    // get the covariance matrix from the precision matrix
+    MatrixReal covariance_matrix = sigma0.computeInverse();
+    covariance_matrix.setCholesky(true);
+    
+    // get the choleksy factor from the covariance matrix
+    MatrixReal lower_cholesky_factor = covariance_matrix.getCholeskyDecomposition().getLowerCholeskyFactor();
+
+    // create the return variable
+    MatrixReal z = MatrixReal(p);
+    
+    // generate chi-square random variables on the diagonals
+    double k = (double)df;
+    for(size_t i = 0; i < p; ++i)
     {
-        std::vector<double> tmp = RbStatistics::MultivariateNormal::rvPrecision(mean, sigma0, rng);
-        for (size_t i=0; i<dim; i++)
+        z[i][i] = std::sqrt(RbStatistics::ChiSquare::rv(k--, rng));
+    }
+    
+    // generate standard normals in the lower triangle
+    for(size_t j = 1; j < p; ++j)
+    {
+        for(size_t i = 0; i < j; ++i)
         {
-            for (size_t j=0; j<dim; j++)
-            {
-                z[i][j] += tmp[i] * tmp[j];
-            }
+            z[j][i] = RbStatistics::Normal::rv(rng);
         }
     }
+    
+    // transform the variables into wishart random variables
+    MatrixReal X   = (lower_cholesky_factor * z);
+    MatrixReal res = X.getTranspose() * X;
+    
+    // return the inverse wishart random variables
+           res.setCholesky(true);
+    return res.computeInverse();
+    
+//    size_t dim = sigma0.getDim();
+//        
+//    MatrixReal z = MatrixReal(dim);
+//    std::vector<double> mean = std::vector<double>(dim, 0.0);
+//    
+//    for (size_t k=0; k<df; k++)
+//    {
+//        std::vector<double> tmp = RbStatistics::MultivariateNormal::rvPrecision(mean, sigma0, rng);
+//        for (size_t i=0; i<dim; i++)
+//        {
+//            for (size_t j=0; j<dim; j++)
+//            {
+//                z[i][j] += tmp[i] * tmp[j];
+//            }
+//        }
+//    }
+//
+//    z.setCholesky(true);
+//    return z.computeInverse();
 
-    z.setCholesky(true);
-    return z.computeInverse();
-//    return z;
+////    return z;
+    
 }
 
 /*!
