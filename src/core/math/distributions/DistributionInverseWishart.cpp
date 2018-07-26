@@ -98,11 +98,13 @@ MatrixReal RbStatistics::InverseWishart::rv(const MatrixReal &sigma0, size_t df,
     size_t p = sigma0.getDim();
     
     // get the covariance matrix from the precision matrix
+    sigma0.setCholesky(true);
     MatrixReal covariance_matrix = sigma0.computeInverse();
     covariance_matrix.setCholesky(true);
     
     // get the choleksy factor from the covariance matrix
     MatrixReal lower_cholesky_factor = covariance_matrix.getCholeskyDecomposition().getLowerCholeskyFactor();
+    MatrixReal upper_choleksy_factor = lower_cholesky_factor.getTranspose();
 
     // create the return variable
     MatrixReal z = MatrixReal(p);
@@ -119,12 +121,12 @@ MatrixReal RbStatistics::InverseWishart::rv(const MatrixReal &sigma0, size_t df,
     {
         for(size_t i = 0; i < j; ++i)
         {
-            z[j][i] = RbStatistics::Normal::rv(rng);
+            z[i][j] = RbStatistics::Normal::rv(rng);
         }
     }
     
     // transform the variables into wishart random variables
-    MatrixReal X   = (lower_cholesky_factor * z);
+    MatrixReal X   = (z * upper_choleksy_factor);
     MatrixReal res = X.getTranspose() * X;
     
     // return the inverse wishart random variables
