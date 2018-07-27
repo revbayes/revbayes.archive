@@ -245,6 +245,8 @@
 #include "Func_sum.h"
 #include "Func_sumPositive.h"
 #include "Func_sumInteger.h"
+#include "Func_sumMatrixReal.h"
+#include "Func_sumMatrixRealSymmetric.h"
 #include "Func_sumNatural.h"
 #include "Func_standardDeviation.h"
 #include "Func_sqrt.h"
@@ -467,6 +469,8 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_sum()  );
         addFunction( new Func_sumPositive()  );
         addFunction( new Func_sumInteger()  );
+        addFunction( new Func_sumMatrixReal()  );
+        addFunction( new Func_sumMatrixRealSymmetric()  );
         addFunction( new Func_sumNatural()  );
 
         // standard deviation function
