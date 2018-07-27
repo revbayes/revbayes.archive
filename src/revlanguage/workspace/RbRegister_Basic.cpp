@@ -377,6 +377,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func__add< ModelVector<Integer>   , ModelVector<Integer>   , ModelVector<Integer>      >(  )   );
         addFunction( new Func__add< ModelVector<RealPos>   , ModelVector<RealPos>   , ModelVector<RealPos>      >(  )   );
         addFunction( new Func__add< ModelVector<Real>      , ModelVector<Real>      , ModelVector<Real>         >(  )   );
+        addFunction( new Func__add< MatrixRealSymmetric    , MatrixRealSymmetric    , MatrixRealSymmetric       >(  )   );
         addFunction( new Func__scalarVectorAdd<Natural     , ModelVector<Natural>   , ModelVector<Natural>      >(  )   );
         addFunction( new Func__scalarVectorAdd<Integer     , ModelVector<Integer>   , ModelVector<Integer>      >(  )   );
         addFunction( new Func__scalarVectorAdd<Real        , ModelVector<Real>      , ModelVector<Real>         >(  )   );

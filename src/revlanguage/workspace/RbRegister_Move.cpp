@@ -40,6 +40,8 @@
 /* These types are needed as template types for the moves */
 #include "RlBranchLengthTree.h"
 #include "RlRateGenerator.h"
+#include "RlMatrixReal.h"
+#include "RlMatrixRealSymmetric.h"
 
 
 #include "Probability.h"
@@ -317,6 +319,8 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_MixtureAllocation<Simplex>( ) );
         addTypeWithConstructor( new Move_MixtureAllocation<RateGenerator>( ) );
         addTypeWithConstructor( new Move_MixtureAllocation<Tree>( ) );
+        addTypeWithConstructor( new Move_MixtureAllocation<MatrixReal>( ) );
+        addTypeWithConstructor( new Move_MixtureAllocation<MatrixRealSymmetric>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Real>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<RealPos>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Natural>( ) );
@@ -324,6 +328,8 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Probability>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Simplex>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<RateGenerator>( ) );
+        addTypeWithConstructor( new Move_GibbsMixtureAllocation<MatrixReal>( ) );
+        addTypeWithConstructor( new Move_GibbsMixtureAllocation<MatrixRealSymmetric>( ) );
         addTypeWithConstructor( new Move_UPPAllocation<RealPos>() );
 
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Real>( )                  );
