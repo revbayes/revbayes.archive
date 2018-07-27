@@ -51,6 +51,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                               filetype;
         RevPtr<const RevVariable>                               directory;
         RevPtr<const RevVariable>                               trace;
+        RevPtr<const RevVariable>                               ancestral_state_trace;
         
     };
     
