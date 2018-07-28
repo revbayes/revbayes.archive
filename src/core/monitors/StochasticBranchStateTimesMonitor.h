@@ -1,13 +1,13 @@
 //
-//  CharacterHistoryTimeInStatesMonitor.h
+//  StochasticBranchStateTimesMonitor.h
 //  RevBayes_development_branch
 //
 //  Created by will freyman on 4/25/18.
 //  Copyright (c) 2018 will freyman. All rights reserved.
 //
 
-#ifndef RevBayes_development_branch_CharacterHistoryTimeInStatesMonitor_h
-#define RevBayes_development_branch_CharacterHistoryTimeInStatesMonitor_h
+#ifndef RevBayes_development_branch_StochasticBranchStateTimesMonitor_h
+#define RevBayes_development_branch_StochasticBranchStateTimesMonitor_h
 
 #include "StateDependentSpeciationExtinctionProcess.h"
 #include "AbstractFileMonitor.h"
@@ -25,16 +25,16 @@ namespace RevBayesCore {
     /**
      * Monitor to print out the time spent in each state during an SSE stochastically mapped character history.
      */
-    class CharacterHistoryTimeInStatesMonitor : public AbstractFileMonitor {
+    class StochasticBranchStateTimesMonitor : public AbstractFileMonitor {
         
     public:
         
         // Constructors and Destructors
-        CharacterHistoryTimeInStatesMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, const std::string &del);
-        CharacterHistoryTimeInStatesMonitor(const CharacterHistoryTimeInStatesMonitor &m);
-        virtual ~CharacterHistoryTimeInStatesMonitor(void);
+        StochasticBranchStateTimesMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, const std::string &del);
+        StochasticBranchStateTimesMonitor(const StochasticBranchStateTimesMonitor &m);
+        virtual ~StochasticBranchStateTimesMonitor(void);
         
-        CharacterHistoryTimeInStatesMonitor*                clone(void) const;                                                  //!< Clone the object
+        StochasticBranchStateTimesMonitor*                  clone(void) const;                                                  //!< Clone the object
         
         // Monitor functions
         void                                                monitorVariables(unsigned long gen);                                 //!< Monitor at generation gen
