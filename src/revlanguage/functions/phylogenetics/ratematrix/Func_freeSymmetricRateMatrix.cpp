@@ -58,7 +58,7 @@ const ArgumentRules& Func_freeSymmetricRateMatrix::getArgumentRules( void ) cons
     if ( !rules_set )
     {
         argumentRules.push_back( new ArgumentRule( "transition_rates",   ModelVector<RealPos>::getClassTypeSpec(),   "The transition rates between states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "rescaled",          RlBoolean::getClassTypeSpec(),              "Should the matrix be normalized?", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "rescaled",          RlBoolean::getClassTypeSpec(),              "Should the matrix be normalized?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
         std::vector<std::string> optionsMethod;
         optionsMethod.push_back( "scalingAndSquaring" );

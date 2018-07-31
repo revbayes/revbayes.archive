@@ -6,13 +6,14 @@
 #include "Cloneable.h"
 #include "MatrixReal.h"
 #include "Printable.h"
+#include "Simplex.h"
 #include <vector>
 
 namespace RevBayesCore {
 
     class TransitionProbabilityMatrix;
     
-    class RateGenerator : public Cloneable, public Assignable, public Printable, public Serializable, public MemberObject<RbVector<RbVector<double> > >, public MemberObject<RbVector<double> > {
+    class RateGenerator : public Cloneable, public Assignable, public Printable, public Serializable, public MemberObject<RbVector<RbVector<double> > >, public MemberObject<RbVector<double> >, public MemberObject<Simplex> {
         
     public:
         virtual                             ~RateGenerator(void);
@@ -28,6 +29,7 @@ namespace RevBayesCore {
         virtual RateGenerator*              clone(void) const = 0;
         virtual void                        executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<RbVector<double> >& rv) const;      //!< Map the member methods to internal function calls
         virtual void                        executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;                 //!< Map the member methods to internal function calls
+        virtual void                        executeMethod(const std::string &n, const std::vector<const DagNode*> &args, Simplex &rv) const;                          //!< Map the member methods to internal function calls
         virtual double                      getRate(size_t from, size_t to, double age, double rate) const = 0;                                                       //!< Calculate the rate from state i to state j over the given time interval scaled by a rate
         virtual void                        initFromString( const std::string &s ) { throw RbException("Sebastians (29/6/2016): Missing derived implementations!!!"); }                                                 //!< Serialize (resurrect) the object from a string value
         virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, double age=0.0, double rate=1.0) const;
