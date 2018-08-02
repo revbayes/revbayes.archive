@@ -240,13 +240,19 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen, size_t bg, size_t 
     // reset the sampler
     sampler->reset();
     
+    if (bg == 0) {
+        bg = size_t( ceil( 0.25*gen ) );
+        gen -= bg;
+    }
 //    size_t burnin = size_t( ceil( 0.25*gen ) );
     
-    size_t printInterval = size_t( round( fmax(1,(gen+bg)/40.0) ) );
+    gen += bg;
+    
+    size_t printInterval = size_t( round( fmax(1,(gen)/40.0) ) );
     size_t digits = size_t( ceil( log10( powers.size() ) ) );
     
     // print output for users
-    if ( process_active ==true )
+    if ( process_active == true )
     {
         std::cout << "Step ";
         for (size_t d = size_t( ceil( log10( idx+1.1 ) ) ); d < digits; d++ )
@@ -266,8 +272,8 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen, size_t bg, size_t 
     
     
     // run a burnin
-    sampler->tune();
-    for (size_t k=1; k<=bg; k++)
+    size_t k = 1;
+    for (; k<=bg; k++)
     {
         if ( process_active == true )
         {
@@ -276,22 +282,12 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen, size_t bg, size_t 
                 std::cout << "-";
                 std::cout.flush();
             }
-            //            size_t progress = 68 * (double) k / (double) generations;
-            //            if ( progress > numStars )
-            //            {
-            //                for ( ;  numStars < progress; ++numStars )
-            //                {
-            //                    std::cout << "*";
-            //                }
-            //
-            //                std::cout.flush();
-            //            }
         }
         
         sampler->nextCycle(false);
         
         // check for autotuning
-        if ( k % ti == 0 && k != bg )
+        if ( ti > 0 && k % ti == 0)
         {
             sampler->tune();
         }
@@ -301,10 +297,10 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen, size_t bg, size_t 
     // Monitor
     sampler->startMonitors(gen, false);
     sampler->writeMonitorHeaders();
-    sampler->monitor(0);
+//    sampler->monitor(0);
     
     double p = powers[idx];
-    for (size_t k=1; k<=gen; ++k)
+    for (; k<=gen; ++k)
     {
         
         if ( process_active == true )
@@ -322,7 +318,6 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen, size_t bg, size_t 
         sampler->monitor(k);
         
         // sample the likelihood
-//        if ( k > burnin && k % sampleFreq == 0 )
         if ( k % sampleFreq == 0 )
         {
             // compute the joint likelihood

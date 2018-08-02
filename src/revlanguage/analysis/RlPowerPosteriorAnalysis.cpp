@@ -28,8 +28,8 @@ PowerPosteriorAnalysis::PowerPosteriorAnalysis() : WorkspaceToCoreWrapperObject<
 
     ArgumentRules* runArgRules = new ArgumentRules();
     runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    runArgRules->push_back( new ArgumentRule("burnin",         Natural::getClassTypeSpec(), "The number of burnin generations to run for each stone.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    runArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), "The frequency when the moves are tuned (usually between 50 and 1000) during the burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    runArgRules->push_back( new ArgumentRule("burninGenerations", Natural::getClassTypeSpec(), "The number of burnin generations to run for each stone (before sampling starts). If not specified, the default would be 25% of the run generations.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    runArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), "The frequency when the moves are tuned during the burnin. If not specified, the moves would not be tuned for each stone specifically.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
     methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
 
     ArgumentRules* burninArgRules = new ArgumentRules();
@@ -113,10 +113,20 @@ RevPtr<RevVariable> PowerPosteriorAnalysis::executeMethod(std::string const &nam
 
         // get the member with give index
         int gen  = (int)static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
-        int burn = (int)static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
-        int ti   = (int)static_cast<const Natural &>( args[2].getVariable()->getRevObject() ).getValue();
         
-        value->runAll( size_t(gen), size_t(burn), size_t(ti) );
+        int bg = 0;
+        if (args[1].getVariable()->getRevObject() != RevNullObject::getInstance())
+        {
+            bg = (int)static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
+        }
+        
+        int ti = 0;
+        if (args[2].getVariable()->getRevObject() != RevNullObject::getInstance())
+        {
+            ti = (int)static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
+        }
+        
+        value->runAll( size_t(gen), size_t(bg), size_t(ti) );
 
         return NULL;
     }
