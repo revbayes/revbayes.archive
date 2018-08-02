@@ -57,6 +57,17 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
     
     size_t n_samples = traces[0].size();
     size_t n_traces = traces.size();
+        
+    // build a map for the ancestral state trace labels -> tip indices
+    std::map<std::string, size_t> ancestral_state_traces_lookup;
+    if (condition_on_tips == true)
+    {
+        for (size_t z = 0; z < ancestral_state_traces.size(); z++)
+        {
+            ancestral_state_traces_lookup[ ancestral_state_traces[z].getParameterName() ] = z;
+        }
+    }
+
     
     std::vector<DagNode*> nodes = model.getDagNodes();
     
@@ -93,16 +104,6 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
         
         }
         
-        // build a map for the ancestral state trace labels -> tip indices
-        std::map<std::string, size_t> ancestral_state_traces_lookup;
-        if (condition_on_tips == true)
-        {
-            for (size_t z = 0; z < ancestral_state_traces.size(); z++)
-            {
-                ancestral_state_traces_lookup[ ancestral_state_traces[z].getParameterName() ] = z;
-            }
-        }
-
         // next we need to simulate the data and store it
         // iterate over all DAG nodes (variables)
         for ( std::vector<DagNode*>::iterator it = nodes.begin(); it!=nodes.end(); ++it )
@@ -151,11 +152,9 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
                     // finally set the tip data to the sampled values
                     static_cast<TreeDiscreteCharacterData*>( &sse->getValue() )->setCharacterData(tip_data);
                 }
-                else
-                {
-                    // redraw new values
-                    the_node->redraw();
-                }
+                
+                // redraw new values
+                the_node->redraw();
 
                 // we need to store the new simulated data
                 the_node->writeToFile(sim_directory_name);

@@ -2008,6 +2008,19 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
     // simulate moving backwards in time
     while (true) {
 
+        // scale extinction as a function of time so simulations can't go back in time forever....
+        if (true)
+        {
+            for (size_t i = 0; i < num_states; ++i)
+            {
+                extinction_rates[i] -= t/10; // TODO make this a user option
+                if (extinction_rates[i] < 0)
+                {
+                    extinction_rates[i] = 0.0;
+                }
+            }
+        }
+
         // calculate c and g from Hua and Bromham 2016
         for (size_t i = 0; i < num_states; ++i)
         {

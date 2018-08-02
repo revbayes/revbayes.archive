@@ -113,6 +113,15 @@ RateMatrix_Blosum62::RateMatrix_Blosum62( void ) : RateMatrix_Empirical( 20 )
 	stationary_freqs[19] = 0.073;
 
     
+    // multiply stationary frequencies into exchangeability matrix
+    for (size_t i = 0; i < 20; i++)
+    {
+        for (size_t j = 0; j < 20; j++)
+        {
+            m[i][j] *= stationary_freqs[j];
+        }
+    }
+    
     // set the diagonal values
     setDiagonal();
     
