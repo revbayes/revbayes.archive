@@ -49,7 +49,7 @@ namespace RevLanguage {
         
         
     private:
- //       RevPtr<const RevVariable>                       omega;
+        RevPtr<const RevVariable>                       omega;
         RevPtr<const RevVariable>                       kappa;
         RevPtr<const RevVariable>                       df;
         RevPtr<const RevVariable>                       dim;

@@ -529,6 +529,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< ModelVector<Natural>       >( new Dist_reversibleJumpMixtureConstant<ModelVector<Natural> >() );
         AddDistribution< TimeTree                   >( new Dist_reversibleJumpMixtureConstant<TimeTree>() );
         AddDistribution< BranchLengthTree           >( new Dist_reversibleJumpMixtureConstant<BranchLengthTree>() );
+        AddDistribution< MatrixRealSymmetric        >( new Dist_reversibleJumpMixtureConstant<MatrixRealSymmetric>() );
 
 
         /* Now we have added all primitive and complex data types and can start type checking */

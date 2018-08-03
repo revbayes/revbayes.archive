@@ -59,7 +59,7 @@ double RbStatistics::InverseWishart::lnPdf(const MatrixReal &sigma0, size_t df, 
     }
     
     double ret = 0;
-    ret += 0.5 * df * sigma0.getLogDet();
+    ret += 0.5 * df * sigma0.getLogDet();	
     ret -= 0.5 * (df + sigma0.getDim() + 1) * z.getLogDet();
     
     double trace = 0;
@@ -76,11 +76,19 @@ double RbStatistics::InverseWishart::lnPdf(const MatrixReal &sigma0, size_t df, 
     
     ret -= 0.5 * trace;
     
+    // MRM: including the denominator
+    size_t p = sigma0.getDim();
+    double d = (double)df;
+    for (size_t i = 0; i < p; ++i)
+    {
+        ret -= RbMath::lnGamma( d / 2.0 );
+        d--;
+    }
+    ret -= 0.5 * df * p * std::log(2) + 0.25 * p * (p - 1) * std::log(RbConstants::PI);
+    
     return ret;
 
 }
-
-
 
 /*!
  * This function generates a InverseWishart-distributed random variable.

@@ -55,7 +55,7 @@ const std::string& Dist_LKJPartial::getClassType(void)
 const TypeSpec& Dist_LKJPartial::getClassTypeSpec(void)
 {
     
-    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<MatrixRealSymmetric>::getClassTypeSpec() ) );
     
 	return rev_type_spec;
 }

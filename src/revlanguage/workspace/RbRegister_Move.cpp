@@ -340,6 +340,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Simplex>( )               );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<ModelVector<Natural> >( ) );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Tree>( )                  );
+        addTypeWithConstructor( new Move_ReversibleJumpSwitch<MatrixRealSymmetric>( )   );
 
 
         addTypeWithConstructor( new Move_BirthDeathEventContinuous()                    );

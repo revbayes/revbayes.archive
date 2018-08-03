@@ -33,40 +33,44 @@ RevBayesCore::WishartDistribution* Dist_wishart::createDistribution( void ) cons
     // get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* om = NULL;
     RevBayesCore::TypedDagNode<double>* ka = NULL;
-    /*
-    if (omega != NULL)  {
+    RevBayesCore::TypedDagNode<long>* deg = NULL;
+    RevBayesCore::TypedDagNode<long>* dm = NULL;
+
+    if ( omega->getRevObject() != RevNullObject::getInstance() )
+    {
         om = static_cast<const MatrixRealSymmetric &>( omega->getRevObject() ).getDagNode();
     }
-     */
-    if (kappa != NULL)
+    
+    if ( kappa->getRevObject() != RevNullObject::getInstance() )
     {
         ka = static_cast<const RealPos&>( kappa->getRevObject() ).getDagNode();
     }
     
-    RevBayesCore::TypedDagNode<long>* deg = static_cast<const Natural &>( df->getRevObject()).getDagNode();
+    if ( df->getRevObject() != RevNullObject::getInstance() )
+    {
+        deg = static_cast<const Natural &>( df->getRevObject()).getDagNode();
+    }
 
-    RevBayesCore::TypedDagNode<long>* dm = NULL;
-//    int dm = -1;
-    if (dim != NULL)
+    if ( dim->getRevObject() != RevNullObject::getInstance() )
     {
         dm = static_cast<const Natural &>( dim->getRevObject()).getDagNode();
-//        dm = static_cast<const Natural &>( dim->getValue()).getValue();
     }
+    
     RevBayesCore::WishartDistribution* w    =  NULL;
     
-    if ( om != NULL )
+    if ( om != NULL && om->getValue().getDim() != 0 )
     {
-            w = new RevBayesCore::WishartDistribution( om, deg );
+        // parameter is sigma
+        w = new RevBayesCore::WishartDistribution( om, deg );
     }
     else
     {
-        if (dm == NULL || ka == NULL)
-        {
-            throw RbException("error in Dist_wishart: should specify arguments");
-        }
+        // parameter is kappa * Id
         w = new RevBayesCore::WishartDistribution( dm, ka, deg );
     }
+    
     return w;
+    
 }
 
 
@@ -116,10 +120,10 @@ const MemberRules& Dist_wishart::getParameterRules(void) const
     if ( !rules_set )
     {
         
-//        distExpMemberRules.push_back( new ArgumentRule( "omega", true, MatrixRealSymmetric::getClassTypeSpec() ) );
-        dist_member_rules.push_back( new ArgumentRule( "df"   , Natural::getClassTypeSpec(), "The degrees of dreedom.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        dist_member_rules.push_back( new ArgumentRule( "kappa", RealPos::getClassTypeSpec(), "The scaling parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        dist_member_rules.push_back( new ArgumentRule( "dim"  , Natural::getClassTypeSpec(), "The dimension of the distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "omega", MatrixRealSymmetric::getClassTypeSpec() , "The scale matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL  ) );
+        dist_member_rules.push_back( new ArgumentRule( "df"   , Natural::getClassTypeSpec(), "The degrees of dreedom.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "kappa", RealPos::getClassTypeSpec(), "The scaling parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "dim"  , Natural::getClassTypeSpec(), "The dimension of the distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         rules_set = true;
     }
@@ -164,7 +168,7 @@ void Dist_wishart::setConstParameter(const std::string& name, const RevPtr<const
     
     if ( name == "omega" )
     {
-//        omega = var;
+        omega = var;
     }
     else if ( name == "kappa" )
     {

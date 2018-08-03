@@ -63,9 +63,9 @@ void WishartDistribution::swapParameterInternal(const DagNode *oldP, const DagNo
     
     if (oldP == omega0)
     {
-        std::cerr << "omega0??\n";
-        exit(1);
-//        omega0 = static_cast<const TypedDagNode<MatrixReal>* >( newP );
+//        std::cerr << "omega0??\n";
+//        exit(1);
+        omega0 = static_cast<const TypedDagNode<MatrixReal>* >( newP );
     }
     if (oldP == kappa)
     {

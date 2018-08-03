@@ -129,6 +129,7 @@ double InverseWishartDistribution::computeLnProbability(void)
     }
     
     return ret;
+    
 }
 
 void InverseWishartDistribution::redrawValue(void)
@@ -139,17 +140,14 @@ void InverseWishartDistribution::redrawValue(void)
     if ( sigma0 != NULL )
     {
         *value = RbStatistics::InverseWishart::rv(sigma0->getValue(),df->getValue(), *rng);
-//        setValue( RbStatistics::InverseWishart::rv(sigma0->getValue(),df->getValue(), *rng).clone() );
     }
     else if ( kappaVector != NULL )
     {
         *value = RbStatistics::InverseWishart::rv(kappaVector->getValue(),df->getValue(), *rng);
-//        setValue( RbStatistics::InverseWishart::rv(kappaVector->getValue(),df->getValue(), *rng).clone() );
     }
     else if ( kappa != NULL )
     {
         *value = RbStatistics::InverseWishart::rv(kappa->getValue(),getValue().getDim(),df->getValue(), *rng);
-//        setValue( RbStatistics::InverseWishart::rv(kappa->getValue(),getValue().getDim(),df->getValue(), *rng).clone() );
     }
     else
     {

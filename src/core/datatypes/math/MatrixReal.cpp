@@ -134,8 +134,8 @@ MatrixReal MatrixReal::computeInverse( void ) const
     // update the eigensystem/cholesky decomposition if necessary
     update();
     
-    MatrixReal inverse(n_rows, n_rows, 0.0);
-    
+    MatrixReal inverse;
+
     if ( use_cholesky_decomp )
     {
         inverse = cholesky_decomp->getInverse();
