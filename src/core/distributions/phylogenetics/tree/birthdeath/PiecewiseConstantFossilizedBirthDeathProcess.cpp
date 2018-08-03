@@ -107,7 +107,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
         // replace intermediate q terms
         for (size_t j = y_ai; j < oi; j++)
         {
-            x -= q_i[j] - q_tilde_i[j];
+            x += q_tilde_i[j] - q_i[j];
         }
 
         if( presence_absence )
@@ -165,8 +165,8 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
             // replace observed extinction time with unobserved extinction time
             if( d_i[i] > 0.0 )
             {
-                lnProb -= death[di];
-                lnProb += log( fossil[di] ) + log( p(d_i[i], di) );
+                lnProb -= log( death[di] );
+                lnProb += log( p(di, d_i[i]) );
             }
         }
     }
@@ -460,6 +460,21 @@ void PiecewiseConstantFossilizedBirthDeathProcess::simulateClade(std::vector<Top
 
 }
 
+std::vector<double> PiecewiseConstantFossilizedBirthDeathProcess::simulateDivergenceTimes(size_t n, double origin, double present, double min) const
+{
+
+    std::vector<double> times(n, 0.0);
+
+    for (size_t i = 0; i < n; ++i)
+    {
+        times[i] = simulateDivergenceTime(origin, min);
+    }
+
+    // finally sort the times
+    std::sort(times.begin(), times.end());
+
+    return times;
+}
 
 /**
  * Simulate new speciation times.

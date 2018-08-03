@@ -65,6 +65,7 @@ namespace RevBayesCore {
         double                                          lnProbTreeShape(void) const;
 
         double                                          simulateDivergenceTime(double origin, double present) const;    //!< Simulate a speciation event.
+        std::vector<double>                             simulateDivergenceTimes(size_t n, double origin, double present, double min) const;                 //!< Simulate n speciation events.
 
         // Parameter management functions
         void                                            swapParameterInternal(const DagNode *oldP, const DagNode *newP);                //!< Swap a parameter
