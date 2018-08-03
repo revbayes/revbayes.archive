@@ -49,6 +49,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                       storeInternalNodes;
         RevPtr<const RevVariable>                       gapMatchClamped;
         RevPtr<const RevVariable>                       coding;
+        RevPtr<const RevVariable>                       complete;
 
     };
 

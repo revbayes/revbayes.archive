@@ -2,6 +2,7 @@
 
 #include "RlDistributionMemberFunction.h"
 #include "PhyloCTMCSiteHomogeneous.h"
+#include "PhyloCTMCSiteHomogeneousCladoComplete.h"
 #include "PhyloCTMCSiteHomogeneousNucleotide.h"
 #include "PhyloCTMCSiteHomogeneousBinary.h"
 #include "OptionRule.h"
@@ -54,6 +55,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     const std::string& code = static_cast<const RlString &>( coding->getRevObject() ).getValue();
     bool internal = static_cast<const RlBoolean &>( storeInternalNodes->getRevObject() ).getValue();
     bool gapmatch = static_cast<const RlBoolean &>( gapMatchClamped->getRevObject() ).getValue();
+    bool clado_complete = static_cast<const RlBoolean &>( complete->getRevObject() ).getValue();
 
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* site_ratesNode = NULL;
     if ( site_rates != NULL && site_rates->getRevObject() != RevNullObject::getInstance() )
@@ -529,7 +531,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         }
 
         RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState> *dist;
-        if (cd == RevBayesCore::AscertainmentBias::ALL)
+        if( clado_complete )
+        {
+            dist = new RevBayesCore::PhyloCTMCSiteHomogeneousCladoComplete<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, internal, gapmatch);
+        }
+        else if(cd == RevBayesCore::AscertainmentBias::ALL)
         {
             dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, internal, gapmatch);
         }
@@ -958,6 +964,8 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
         
         dist_member_rules.push_back( new ArgumentRule( "gapMatchClamped", RlBoolean::getClassTypeSpec(), "Should we set the simulated character to be gap or missing if the corresponding character in the clamped matrix is gap or missing?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
 
+        dist_member_rules.push_back( new ArgumentRule( "complete", RlBoolean::getClassTypeSpec(), "Simulate complete cladogenic substitutions?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+
         rules_set = true;
     }
 
@@ -1114,6 +1122,10 @@ void Dist_phyloCTMC::setConstParameter(const std::string& name, const RevPtr<con
     else if ( name == "coding" )
     {
         coding = var;
+    }
+    else if ( name == "complete" )
+    {
+        complete = var;
     }
     else
     {
