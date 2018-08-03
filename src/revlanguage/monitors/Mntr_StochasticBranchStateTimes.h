@@ -1,15 +1,15 @@
 //
-//  Mntr_CharacterHistoryTimeInStates.h
+//  Mntr_StochasticBranchStateTimes.h
 //  RevBayes_development_branch
 //
 //  Created by will freyman on 4/25/18.
 //  Copyright (c) 2018 will freyman. All rights reserved.
 //
 
-#ifndef __RevBayes_development_branch__Mntr_CharacterHistoryTimeInStates__
-#define __RevBayes_development_branch__Mntr_CharacterHistoryTimeInStates__
+#ifndef __RevBayes_development_branch__Mntr_StochasticBranchStateTimes__
+#define __RevBayes_development_branch__Mntr_StochasticBranchStateTimes__
 
-#include "CharacterHistoryTimeInStatesMonitor.h"
+#include "StochasticBranchStateTimesMonitor.h"
 #include "RlMonitor.h"
 
 #include <ostream>
@@ -18,14 +18,14 @@
 
 namespace RevLanguage {
     
-    class Mntr_CharacterHistoryTimeInStates : public Monitor {
+    class Mntr_StochasticBranchStateTimes : public Monitor {
         
     public:
         
-        Mntr_CharacterHistoryTimeInStates(void);                                                                                            //!< Default constructor
+        Mntr_StochasticBranchStateTimes(void);                                                                                            //!< Default constructor
         
         // Basic utility functions
-        virtual Mntr_CharacterHistoryTimeInStates*      clone(void) const;                                                                      //!< Clone object
+        virtual Mntr_StochasticBranchStateTimes*        clone(void) const;                                                                      //!< Clone object
         void                                            constructInternalObject(void);                                                          //!< We construct the a new internal monitor.
         static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec

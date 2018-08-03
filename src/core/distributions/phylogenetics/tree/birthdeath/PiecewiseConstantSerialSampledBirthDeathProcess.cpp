@@ -445,7 +445,10 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
     else
     {
         // add the extant tip age term
-        lnProbTimes += num_extant_taxa * log( homogeneous_rho->getValue() );
+        if (num_extant_taxa > 0)
+        {
+            lnProbTimes += num_extant_taxa * log( homogeneous_rho->getValue() );
+        }
     }
 
     // add the sampled ancestor age terms
