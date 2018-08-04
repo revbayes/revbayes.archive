@@ -197,8 +197,10 @@ TraceTree* Func_readAncestralStateTreeTrace::readBranchLengthTrees(const std::ve
         bool hasHeaderBeenRead = false;
         const std::string &fn = *p;
         
+        RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(fn);
+        
         /* Open file */
-        std::ifstream inFile( fn.c_str() );
+        std::ifstream inFile( fm.getFullFileName().c_str() );
         
         if ( !inFile )
             throw RbException( "Could not open file \"" + fn + "\"" );
@@ -292,8 +294,10 @@ TraceTree* Func_readAncestralStateTreeTrace::readTimeTrees(const std::vector<std
         bool hasHeaderBeenRead = false;
         const std::string &fn = *p;
         
+        RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(fn);
+        
         /* Open file */
-        std::ifstream inFile( fn.c_str() );
+        std::ifstream inFile( fm.getFullFileName().c_str() );
         
         if ( !inFile )
             throw RbException( "Could not open file \"" + fn + "\"" );
