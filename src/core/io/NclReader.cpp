@@ -1938,9 +1938,10 @@ Tree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree& nTree, 
     // set the sampled ancestor flag
     for (size_t i = 0; i < tau->getNumberOfNodes(); ++i)
     {
-        if ( tau->getNode( i ).getBranchLength() == 0.0 )
+        TopologyNode& node = tau->getNode( i );
+        if ( node.isTip() && node.getBranchLength() == 0.0 )
         {
-            tau->getNode( i ).setSampledAncestor(true);
+            node.setSampledAncestor(true);
         }
     }
 

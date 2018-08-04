@@ -74,9 +74,10 @@ Tree* NewickConverter::convertFromNewick(std::string const &n, bool reindex)
     // set the sampled ancestor flag
     for (size_t i = 0; i < t->getNumberOfNodes(); ++i)
     {
-        if ( t->getNode( i ).getBranchLength() == 0.0 )
+        TopologyNode& node = t->getNode( i );
+        if ( node.isTip() && node.getBranchLength() == 0.0 )
         {
-            t->getNode( i ).setSampledAncestor(true);
+            node.setSampledAncestor(true);
         }
     }
 
