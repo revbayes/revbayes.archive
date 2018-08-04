@@ -60,7 +60,7 @@ namespace RevBayesCore {
      * This gives the more convenient access via
      * partialLikelihoods[active*activeLikelihoodOffset + node_index*nodeOffset + siteRateIndex*mixtureOffset + siteIndex*siteOffset + charIndex]
      *
-     * Our implementation of the partial likelihoods mean that we can store the partial likelihood of a node, but not for site rates.
+     * Our implementation of the partial likelihoods means that we can store the partial likelihood of a node, but not for site rates.
      * We also use twice as much memory because we store the partial likelihood along each branch and not only for each internal node.
      * This gives us a speed improvement during MCMC proposal in the order of a factor 2.
      *
