@@ -21,7 +21,7 @@
 #include "RbException.h"
 #include "RbMathMatrix.h"
 #include "TransitionProbabilityMatrix.h"
-
+#include "RbVectorUtilities.h"
 
 using namespace RevBayesCore;
 
@@ -134,6 +134,8 @@ RateMatrix_Wag::RateMatrix_Wag( void ) : RateMatrix_Empirical( 20 ){
     stationary_freqs[17] = 0.0143859;
     stationary_freqs[18] = 0.0352742;
     stationary_freqs[19] = 0.0708956;
+
+    VectorUtilities::normalize(stationary_freqs);
 
     // multiply stationary frequencies into exchangeability matrix
     for (size_t i = 0; i < 20; i++)
