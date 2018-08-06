@@ -173,6 +173,8 @@ void RbFileManager::createDirectoryForFile( void )
     {
         directoryName += *it;
         
+        std::cerr << "Dir:\t\t" << directoryName << std::endl;
+        
         if ( isDirectoryPresent( directoryName ) == false )
         {
             bool success = makeDirectory( directoryName );
@@ -180,6 +182,10 @@ void RbFileManager::createDirectoryForFile( void )
             {
                 std::cerr << "Failed to build directory with name \"" << directoryName << "\"." << std::endl;
             }
+        }
+        else
+        {
+            std::cerr << "Existed:\t\t" << directoryName << std::endl;
         }
         
         directoryName += path_separator;
@@ -594,6 +600,7 @@ bool RbFileManager::makeDirectory(const std::string &dn)
     
 #	ifdef RB_WIN
     
+    std::cerr << "Creating directory:\t\t" << dn << std::endl;
     CreateDirectory(dn.c_str(), NULL);
     
     return true;
