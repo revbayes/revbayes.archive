@@ -168,6 +168,9 @@ void RbFileManager::createDirectoryForFile( void )
     std::vector<std::string> pathComponents;
     StringUtilities::stringSplit(file_path, path_separator, pathComponents);
     
+    std::cout << "Dir-Path:\t\t" << dir_path << std::endl;
+    std::cout << "File-Path:\t\t" << file_path << std::endl;
+    
     std::string directoryName = "";
     for ( std::vector<std::string>::const_iterator it=pathComponents.begin(); it != pathComponents.end(); ++it)
     {
