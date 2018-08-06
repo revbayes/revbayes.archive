@@ -206,6 +206,10 @@ void RbFileManager::createDirectoryForFile( void )
             {
                 std::cerr << "Failed to build directory with name \"" << directoryName << "\"." << std::endl;
             }
+            else
+            {
+                std::cerr << "Created:\t\t" << directoryName << std::endl;
+            }
         }
         else
         {
