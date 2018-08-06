@@ -59,6 +59,11 @@ RbFileManager::RbFileManager( void ) :
     
     full_file_name += file_name;
     
+    
+#    ifdef RB_WIN
+    StringUtilities::replaceSubstring(full_file_name,"/","\\");
+#   endif
+    
 }
 
 
@@ -100,6 +105,9 @@ RbFileManager::RbFileManager(const std::string &fn) :
     
     full_file_name += file_name;
     
+#    ifdef RB_WIN
+    StringUtilities::replaceSubstring(full_file_name,"/","\\");
+#   endif
     
 }
 
@@ -144,6 +152,11 @@ RbFileManager::RbFileManager(const std::string &pn, const std::string &fn) :
     }
     
     full_file_name += file_name;
+    
+#    ifdef RB_WIN
+    StringUtilities::replaceSubstring(full_file_name,"/","\\");
+#   endif
+    
 }
 
 
@@ -176,15 +189,10 @@ void RbFileManager::createDirectoryForFile( void )
     std::vector<std::string> pathComponents;
     StringUtilities::stringSplit(file_path, path_separator, pathComponents);
     
-    std::cout << "Dir-Path:\t\t" << dir_path << std::endl;
-    std::cout << "File-Path:\t\t" << file_path << std::endl;
-    
     std::string directoryName = "";
     for ( std::vector<std::string>::const_iterator it=pathComponents.begin(); it != pathComponents.end(); ++it)
     {
         directoryName += *it;
-        
-        std::cerr << "Dir:\t\t" << directoryName << std::endl;
         
         if ( isDirectoryPresent( directoryName ) == false )
         {
@@ -193,10 +201,6 @@ void RbFileManager::createDirectoryForFile( void )
             {
                 std::cerr << "Failed to build directory with name \"" << directoryName << "\"." << std::endl;
             }
-        }
-        else
-        {
-            std::cerr << "Existed:\t\t" << directoryName << std::endl;
         }
         
         directoryName += path_separator;
