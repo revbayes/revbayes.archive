@@ -189,15 +189,10 @@ void RbFileManager::createDirectoryForFile( void )
     std::vector<std::string> pathComponents;
     StringUtilities::stringSplit(dir_path, path_separator, pathComponents);
     
-    std::cout << "Dir-Path:\t\t" << dir_path << std::endl;
-    std::cout << "File-Path:\t\t" << file_path << std::endl;
-    
     std::string directoryName = "";
     for ( std::vector<std::string>::const_iterator it=pathComponents.begin(); it != pathComponents.end(); ++it)
     {
         directoryName += *it;
-        
-        std::cerr << "Dir:\t\t" << directoryName << std::endl;
         
         if ( isDirectoryPresent( directoryName ) == false )
         {
@@ -206,14 +201,6 @@ void RbFileManager::createDirectoryForFile( void )
             {
                 std::cerr << "Failed to build directory with name \"" << directoryName << "\"." << std::endl;
             }
-            else
-            {
-                std::cerr << "Created:\t\t" << directoryName << std::endl;
-            }
-        }
-        else
-        {
-            std::cerr << "Existed:\t\t" << directoryName << std::endl;
         }
         
         directoryName += path_separator;
@@ -416,9 +403,7 @@ std::string RbFileManager::getStringByDeletingLastPathComponent(const std::strin
     
     std::string tempS = s;
     size_t location = tempS.find_last_of( path_separator );
-    std::cout << "Path-separator:\t\t" << path_separator << std::endl;
-    std::cout << "Filename:\t\t" << s << std::endl;
-    std::cout << "Location:\t\t" << location << std::endl;
+    
     if ( location == std::string::npos )
     {
         /* There is no path in this string. We
@@ -631,7 +616,6 @@ bool RbFileManager::makeDirectory(const std::string &dn)
     
 #	ifdef RB_WIN
     
-    std::cerr << "Creating directory:\t\t" << dn << std::endl;
     CreateDirectory(dn.c_str(), NULL);
     
     return true;
