@@ -88,6 +88,10 @@ RbFileManager::RbFileManager(const std::string &fn) :
     //    parsePathFileNames( expandUserDir( fn ) );
     parsePathFileNames( fn );
     
+#    ifdef RB_WIN
+    StringUtilities::replaceSubstring(file_path,"/","\\");
+#   endif
+    
     full_file_name = file_path;
     if ( full_file_name != "")
     {
@@ -128,6 +132,10 @@ RbFileManager::RbFileManager(const std::string &pn, const std::string &fn) :
     // set the path and file for the string
     std::string tmp = pn + path_separator + fn;
     parsePathFileNames( tmp );
+
+#    ifdef RB_WIN
+    StringUtilities::replaceSubstring(file_path,"/","\\");
+#   endif
     
     full_file_name = file_path;
     if ( full_file_name != "")
