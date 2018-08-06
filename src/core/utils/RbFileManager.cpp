@@ -388,6 +388,9 @@ std::string RbFileManager::getStringByDeletingLastPathComponent(const std::strin
     
     std::string tempS = s;
     size_t location = tempS.find_last_of( path_separator );
+    std::cout << "Path-separator:\t\t" << path_separator << std::endl;
+    std::cout << "Filename:\t\t" << s << std::endl;
+    std::cout << "Location:\t\t" << location << std::endl;
     if ( location == std::string::npos )
     {
         /* There is no path in this string. We
