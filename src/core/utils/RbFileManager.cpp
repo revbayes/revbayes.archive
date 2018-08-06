@@ -187,12 +187,17 @@ void RbFileManager::createDirectoryForFile( void )
     std::string dir_path = getStringByDeletingLastPathComponent( full_file_name );
     
     std::vector<std::string> pathComponents;
-    StringUtilities::stringSplit(file_path, path_separator, pathComponents);
+    StringUtilities::stringSplit(dir_path, path_separator, pathComponents);
+    
+    std::cout << "Dir-Path:\t\t" << dir_path << std::endl;
+    std::cout << "File-Path:\t\t" << file_path << std::endl;
     
     std::string directoryName = "";
     for ( std::vector<std::string>::const_iterator it=pathComponents.begin(); it != pathComponents.end(); ++it)
     {
         directoryName += *it;
+        
+        std::cerr << "Dir:\t\t" << directoryName << std::endl;
         
         if ( isDirectoryPresent( directoryName ) == false )
         {
@@ -201,6 +206,10 @@ void RbFileManager::createDirectoryForFile( void )
             {
                 std::cerr << "Failed to build directory with name \"" << directoryName << "\"." << std::endl;
             }
+        }
+        else
+        {
+            std::cerr << "Existed:\t\t" << directoryName << std::endl;
         }
         
         directoryName += path_separator;
