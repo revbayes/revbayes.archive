@@ -45,40 +45,33 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     taxon_types.push_back( Taxon::getClassTypeSpec() );
     taxon_types.push_back( ModelVector<RlString>::getClassTypeSpec() );
     taxon_types.push_back( ModelVector<Taxon>::getClassTypeSpec() );
-    addTaxonArgRules->push_back(            new ArgumentRule("taxon" , taxon_types, "The name(s) of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    std::vector<TypeSpec> exclude_taxa_types;
-    exclude_taxa_types.push_back( RlString::getClassTypeSpec() );
-    exclude_taxa_types.push_back( Taxon::getClassTypeSpec() );
-    excludeTaxaArgRules->push_back(         new ArgumentRule("taxon" , exclude_taxa_types, "The name(s) of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    std::vector<TypeSpec> exclude_taxa_types_2;
-    exclude_taxa_types_2.push_back( ModelVector<RlString>::getClassTypeSpec() );
-    exclude_taxa_types_2.push_back( ModelVector<Taxon>::getClassTypeSpec() );
-    excludeTaxaArgRules2->push_back(        new ArgumentRule("taxa" , exclude_taxa_types_2, "The name(s) of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    includeTaxaArgRules->push_back(         new ArgumentRule("name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    includeTaxaArgRules2->push_back(        new ArgumentRule("names" , ModelVector<RlString>::getClassTypeSpec(), "The names of the taxa.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    isSequenceMissingArgRules->push_back(   new ArgumentRule("name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    percentageMissingArgRules->push_back(   new ArgumentRule("name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    removeTaxaArgRules->push_back(          new ArgumentRule("name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    removeTaxaArgRules2->push_back(         new ArgumentRule("names" , ModelVector<RlString>::getClassTypeSpec(), "The names of the taxa.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+
+    std::vector<TypeSpec> taxon_types_single;
+    taxon_types_single.push_back( RlString::getClassTypeSpec() );
+    taxon_types_single.push_back( Taxon::getClassTypeSpec() );
+
+    addTaxonArgRules->push_back(            new ArgumentRule("taxa" , taxon_types, "The taxa to add.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    excludeTaxaArgRules->push_back(         new ArgumentRule("taxa" , taxon_types, "The taxa to exclude.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    includeTaxaArgRules->push_back(         new ArgumentRule("taxa" , taxon_types, "The taxa to include.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    isSequenceMissingArgRules->push_back(   new ArgumentRule("name" , taxon_types_single, "The taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    percentageMissingArgRules->push_back(   new ArgumentRule("name" , taxon_types_single, "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    removeTaxaArgRules->push_back(          new ArgumentRule("name" , taxon_types, "The taxa to remove.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     setTaxonNameArgRules->push_back(        new ArgumentRule("current"    , RlString::getClassTypeSpec(), "The old name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     setTaxonNameArgRules->push_back(        new ArgumentRule("new"        , RlString::getClassTypeSpec(), "The new name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     setTaxonObjectArgRules->push_back(      new ArgumentRule("current"    , RlString::getClassTypeSpec(), "The old name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    setTaxonObjectArgRules->push_back(      new ArgumentRule("new"        , Taxon::getClassTypeSpec(), "The new name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    taxonIndexArgRules->push_back(          new ArgumentRule("name"       , RlString::getClassTypeSpec(), "he name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    setTaxonObjectArgRules->push_back(      new ArgumentRule("new"        , Taxon::getClassTypeSpec(), "The new taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    taxonIndexArgRules->push_back(          new ArgumentRule("name"       , taxon_types_single, "The taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 
     methods.addFunction( new MemberProcedure( "addMissingTaxa",  RlUtils::Void, addTaxonArgRules ) );
     methods.addFunction( new MemberProcedure( "excludeTaxa",  RlUtils::Void, excludeTaxaArgRules ) );
-    methods.addFunction( new MemberProcedure( "excludeTaxa", RlUtils::Void, excludeTaxaArgRules2 ) );
     methods.addFunction( new MemberProcedure( "filename", RlString::getClassTypeSpec(), filenameArgRules ) );
     methods.addFunction( new MemberProcedure( "includeTaxa", RlUtils::Void, includeTaxaArgRules ) );
-    methods.addFunction( new MemberProcedure( "includeTaxa", RlUtils::Void, includeTaxaArgRules2 ) );
     methods.addFunction( new MemberProcedure( "isSequenceMissing", RlBoolean::getClassTypeSpec(), isSequenceMissingArgRules ) );
     methods.addFunction( new MemberProcedure( "names", ModelVector<RlString>::getClassTypeSpec(), namesArgRules ) );
     methods.addFunction( new MemberProcedure( "ntaxa", Natural::getClassTypeSpec(), ntaxaArgRules ) );
     methods.addFunction( new MemberProcedure( "percentageMissing", Probability::getClassTypeSpec(), percentageMissingArgRules ) );
     methods.addFunction( new MemberProcedure( "show", RlUtils::Void, showdataArgRules ) );
     methods.addFunction( new MemberProcedure( "removeTaxa", RlUtils::Void, removeTaxaArgRules ) );
-    methods.addFunction( new MemberProcedure( "removeTaxa", RlUtils::Void, removeTaxaArgRules2 ) );
     methods.addFunction( new MemberProcedure( "setTaxonName", RlUtils::Void, setTaxonNameArgRules ) );
     methods.addFunction( new MemberProcedure( "setTaxonObject", RlUtils::Void, setTaxonObjectArgRules ) );
     methods.addFunction( new MemberProcedure( "taxa", ModelVector<Taxon>::getClassTypeSpec(), taxaArgRules ) );
@@ -154,6 +147,19 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
                 v.deleteTaxon( x[i] );
             }
         }
+        else if ( argument.isType( Taxon::getClassTypeSpec() ) )
+        {
+            const std::string &n = static_cast<const Taxon&>( argument ).getValue().getName();
+            charDataObject->deleteTaxon( n );
+        }
+        else if ( argument.isType( ModelVector<Taxon>::getClassTypeSpec() ) )
+        {
+            const ModelVector<Taxon>& n = static_cast<const ModelVector<Taxon>&>( argument );
+            for ( size_t i=0; i<n.size(); ++i )
+            {
+                charDataObject->deleteTaxon( n[i].getName() );
+            }
+        }
         return NULL;
     }
     else if (name == "excludeTaxa" )
@@ -212,6 +218,20 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
                 v.includeTaxon( x[i] );
             }
         }
+        else if ( argument.isType( Taxon::getClassTypeSpec() ) )
+        {
+            const std::string &n = static_cast<const Taxon&>( argument ).getValue().getSpeciesName();
+            charDataObject->includeTaxon( n );
+        }
+        else if ( argument.isType( ModelVector<Taxon>::getClassTypeSpec() ) )
+        {
+            const ModelVector<Taxon>& x = static_cast<const ModelVector<Taxon>&>( argument );
+            RevBayesCore::AbstractCharacterData &v = *charDataObject;
+            for ( size_t i=0; i<x.size(); i++ )
+            {
+                v.includeTaxon( x[i].getSpeciesName() );
+            }
+        }
         return NULL;
     }
     else if (name == "filename")
@@ -227,8 +247,18 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
         found = true;
         
         const RevObject& argument = args[0].getVariable()->getRevObject();
-        const std::string &n = static_cast<const RlString&>( argument ).getValue();
         
+        std::string n = "";
+
+        if ( argument.isType( RlString::getClassTypeSpec() ) )
+        {
+            n = static_cast<const RlString&>( argument ).getValue();
+        }
+        else if ( argument.isType( Taxon::getClassTypeSpec() ) )
+        {
+            n = static_cast<const Taxon&>( argument ).getValue().getSpeciesName();
+        }
+
         bool tf = charDataObject->isSequenceMissing( n );
 
         return new RevVariable( new RlBoolean(tf) );
@@ -258,8 +288,18 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
         found = true;
         
         const RevObject& argument = args[0].getVariable()->getRevObject();
-        const std::string &n = static_cast<const RlString&>( argument ).getValue();
         
+        std::string n = "";
+
+        if ( argument.isType( RlString::getClassTypeSpec() ) )
+        {
+            n = static_cast<const RlString&>( argument ).getValue();
+        }
+        else if ( argument.isType( Taxon::getClassTypeSpec() ) )
+        {
+            n = static_cast<const Taxon&>( argument ).getValue().getSpeciesName();
+        }
+
         double p = charDataObject->getPercentageMissing( n );
         
         return new RevVariable( new Probability(p) );
