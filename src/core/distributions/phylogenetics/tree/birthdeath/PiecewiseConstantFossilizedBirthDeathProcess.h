@@ -85,10 +85,10 @@ namespace RevBayesCore {
         // helper functions
         double                                          getMaxTaxonAge( const TopologyNode& ) const;
 
-        mutable std::vector<bool>                       I;
+        mutable std::vector<size_t>                     I;
         bool                                            extended;
 
-        mutable std::vector<bool>                       bifurcation;
+        //mutable std::vector<bool>                       bifurcation;
 
         mutable std::vector<double>                     anagenetic;
         mutable std::vector<double>                     symmetric;

@@ -100,7 +100,9 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
         }
     }
 
-    //bifurcation   = std::vector<bool>(fbd_taxa.size() - 1, false);
+    //bifurcation   = std::vector<bool>(taxa.size() - 1, false);
+
+    I             = std::vector<bool>(taxa.size(), false);
 
     anagenetic    = std::vector<double>(num_intervals, 0.0);
     symmetric     = std::vector<double>(num_intervals, 0.0);
@@ -143,55 +145,58 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
     double lnProb = computeLnProbabilityRanges();
 
     // integrate speciation times for descendants of sampled ancestors
-    for(size_t j = 0; j < I.size(); j++)
+    for(size_t i = 0; i < taxa.size(); i++)
     {
-        size_t i = I[j];
-
-        double y_a = b_i[i];
-        double o   = taxa[i].getAgeRange().getMax();
-
-        size_t y_ai = l(y_a);
-
-        size_t oi = presence_absence ? oldest_intervals[i] : l(o);
-
-        // offset speciation density
-        lnProb -= log( birth[y_ai] );
-
-        // evaluate antiderivative at oi
-
-        // replace q with q~ at the birth time
-        double x = q(y_ai, y_a, true) - q(y_ai, y_a);
-
-        // replace intermediate q terms
-        for (size_t j = y_ai; j < oi; j++)
+        if ( I[i] == true )
         {
-            x += q_tilde_i[j] - q_i[j];
+            double y_a = b_i[i];
+            double o   = taxa[i].getAgeRange().getMax();
+
+            size_t y_ai = l(y_a);
+
+            size_t oi = presence_absence ? oldest_intervals[i] : l(o);
+
+            // offset speciation density
+            lnProb -= log( birth[y_ai] );
+
+            // evaluate antiderivative at oi
+
+            // replace q with q~ at the birth time
+            double x = q(y_ai, y_a, true) - q(y_ai, y_a);
+
+            // replace intermediate q terms
+            for (size_t j = y_ai; j < oi; j++)
+            {
+                x += q_tilde_i[j] - q_i[j];
+            }
+
+            if( presence_absence )
+            {
+                double a = std::max(d_i[i], times[oi]);
+                double Ls_plus_a = oi > 0 ? std::min(y_a, times[oi-1]) : y_a;
+                double Ls = Ls_plus_a - a;
+
+                // replace H_i
+                x += log(1.0 - exp(-Ls*fossil[oi]) ) - H[i];
+            }
+            else
+            {
+                // replace q terms at oi
+                x += q(oi, o) - q(oi, o, true);
+            }
+
+            // compute definite integral
+            lnProb += log(-expm1(x));
+
+            if( extended == false )
+            {
+                lnProb -= log( p(y_ai, y_a) );
+            }
         }
 
-        if( presence_absence )
-        {
-            double a = std::max(d_i[i], times[oi]);
-            double Ls_plus_a = oi > 0 ? std::min(y_a, times[oi-1]) : y_a;
-            double Ls = Ls_plus_a - a;
-
-            // replace H_i
-            x += log(1.0 - exp(-Ls*fossil[oi]) ) - H[i];
-        }
-        else
-        {
-            // replace q terms at oi
-            x += q(oi, o) - q(oi, o, true);
-        }
-
-        // compute definite integral
-        lnProb += log(-expm1(x));
-    }
-
-    // if this is a sampled tree
-    // replace extinction events with sampling events
-    if( extended == false )
-    {
-        for(size_t i = 0; i < taxa.size(); i++)
+        // if this is a sampled tree
+        // replace extinction events with sampling events
+        if( extended == false )
         {
             size_t di = l(d_i[i]);
 
@@ -229,21 +234,22 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
         }
     }
 
-    for ( size_t i = 0; i < bifurcation.size(); i++)
-    {
-        const TopologyNode& node = this->value->getInteriorNode(i);
 
-        double s = symmetric[l(node.getAge())];
-
-        if ( bifurcation[i] )
-        {
-            lnProb += log( s );
-        }
-        else
-        {
-            lnProb += log( 1.0 - s );
-        }
-    }
+//    for ( size_t i = 0; i < bifurcation.size(); i++)
+//    {
+//        const TopologyNode& node = this->value->getInteriorNode(i);
+//
+//        double s = symmetric[l(node.getAge())];
+//
+//        if ( bifurcation[i] )
+//        {
+//            lnProb += log( s );
+//        }
+//        else
+//        {
+//            lnProb += log( 1.0 - s );
+//        }
+//    }
 
     // condition on survival
     if ( condition == "survival" )
@@ -736,7 +742,7 @@ size_t PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( const 
         {
             b_i[i] = node.getAge(); // y_{a(i)}
 
-            if( sa ) I.push_back(i);
+            I[i] = sa;
         }
         // child is the ancestral species
         else
@@ -787,8 +793,6 @@ void PiecewiseConstantFossilizedBirthDeathProcess::updateIntervals() const
  */
 void PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( void ) const
 {
-    I.clear();
-
     updateStartEndTimes(getValue().getRoot());
 }
 
