@@ -39,6 +39,8 @@ namespace RevBayesCore {
                                                       const DagNode *psi,
                                                       const DagNode *counts,
                                                       const TypedDagNode<double>* rho,
+                                                      const DagNode *lambda_a,
+                                                      const DagNode *beta,
                                                       const TypedDagNode<RbVector<double> > *times,
                                                       const std::string &condition,
                                                       const std::vector<Taxon> &taxa,
@@ -48,6 +50,9 @@ namespace RevBayesCore {
         
         // public member functions
         PiecewiseConstantFossilizedBirthDeathProcess*   clone(void) const;                                         //!< Create an independent clone
+
+        double                                          getAnageneticSpeciationRate( size_t index ) const;
+        double                                          getSymmetricSpeciationProbability( size_t index ) const;
 
         void                                            simulateClade(std::vector<TopologyNode *> &n, double age, double present);
 
@@ -64,11 +69,16 @@ namespace RevBayesCore {
         double                                          lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
         double                                          lnProbTreeShape(void) const;
 
+        double                                          q(size_t i, double t, bool tilde = false) const;
+        //double                                          integrateQ(size_t i, double t) const;
+
         double                                          simulateDivergenceTime(double origin, double present) const;    //!< Simulate a speciation event.
         std::vector<double>                             simulateDivergenceTimes(size_t n, double origin, double present, double min) const;                 //!< Simulate n speciation events.
 
         // Parameter management functions
         void                                            swapParameterInternal(const DagNode *oldP, const DagNode *newP);                //!< Swap a parameter
+
+        virtual void                                    updateIntervals() const;
 
     private:
         
@@ -77,6 +87,17 @@ namespace RevBayesCore {
 
         mutable std::vector<bool>                       I;
         bool                                            extended;
+
+        mutable std::vector<bool>                       bifurcation;
+
+        mutable std::vector<double>                     anagenetic;
+        mutable std::vector<double>                     symmetric;
+
+        const TypedDagNode<double >*                    homogeneous_lambda_a;                                    //!< The homogeneous anagenetic speciation rates.
+        const TypedDagNode<RbVector<double> >*          heterogeneous_lambda_a;                                  //!< The heterogeneous anagenetic speciation rates.
+        const TypedDagNode<double >*                    homogeneous_beta;                                        //!< The homogeneous symmetric speciation prob.
+        const TypedDagNode<RbVector<double> >*          heterogeneous_beta;                                      //!< The heterogeneous symmetric speciation probs.
+
     };
 }
 

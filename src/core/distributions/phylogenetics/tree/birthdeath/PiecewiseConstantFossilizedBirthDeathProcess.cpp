@@ -32,6 +32,8 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
                                                                                            const DagNode *inpsi,
                                                                                            const DagNode *incounts,
                                                                                            const TypedDagNode<double> *inrho,
+                                                                                           const DagNode *inlambda_a,
+                                                                                           const DagNode *inbeta,
                                                                                            const TypedDagNode< RbVector<double> > *intimes,
                                                                                            const std::string &incondition,
                                                                                            const std::vector<Taxon> &intaxa,
@@ -46,6 +48,62 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
     {
         addParameter(*it);
     }
+
+    homogeneous_lambda_a             = NULL;
+    homogeneous_beta                 = NULL;
+    heterogeneous_lambda_a           = NULL;
+    heterogeneous_beta               = NULL;
+
+    RbException no_timeline_err = RbException("No time intervals provided for piecewise constant fossilized birth death process");
+
+    heterogeneous_lambda_a = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inlambda_a);
+    homogeneous_lambda_a = dynamic_cast<const TypedDagNode<double >*>(inlambda_a);
+
+    addParameter( homogeneous_lambda_a );
+    addParameter( heterogeneous_lambda_a );
+
+    if ( heterogeneous_lambda_a == NULL && homogeneous_lambda_a == NULL)
+    {
+        throw(RbException("Anagenetic speciation rate must be of type RealPos or RealPos[]"));
+    }
+    else if( heterogeneous_lambda_a != NULL )
+    {
+        if( timeline == NULL ) throw(no_timeline_err);
+
+        if (heterogeneous_lambda_a->getValue().size() != timeline->getValue().size() + 1)
+        {
+            std::stringstream ss;
+            ss << "Number of anagenetic speciation rates (" << heterogeneous_lambda_a->getValue().size() << ") does not match number of time intervals (" << timeline->getValue().size() + 1 << ")";
+            throw(RbException(ss.str()));
+        }
+    }
+
+    heterogeneous_beta = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inbeta);
+    homogeneous_beta = dynamic_cast<const TypedDagNode<double >*>(inbeta);
+
+    addParameter( homogeneous_beta );
+    addParameter( heterogeneous_beta );
+
+    if ( heterogeneous_beta == NULL && homogeneous_beta == NULL)
+    {
+        throw(RbException("Symmetric speciation probability must be of type Probability or Probability[]"));
+    }
+    else if( heterogeneous_beta != NULL )
+    {
+        if( timeline == NULL ) throw(no_timeline_err);
+
+        if (heterogeneous_beta->getValue().size() != timeline->getValue().size() + 1)
+        {
+            std::stringstream ss;
+            ss << "Number of symmetric speciation probabilities (" << heterogeneous_beta->getValue().size() << ") does not match number of time intervals (" << timeline->getValue().size() + 1 << ")";
+            throw(RbException(ss.str()));
+        }
+    }
+
+    //bifurcation   = std::vector<bool>(fbd_taxa.size() - 1, false);
+
+    anagenetic    = std::vector<double>(num_intervals, 0.0);
+    symmetric     = std::vector<double>(num_intervals, 0.0);
 
     redrawValue();
 }
@@ -171,6 +229,22 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
         }
     }
 
+    for ( size_t i = 0; i < bifurcation.size(); i++)
+    {
+        const TopologyNode& node = this->value->getInteriorNode(i);
+
+        double s = symmetric[l(node.getAge())];
+
+        if ( bifurcation[i] )
+        {
+            lnProb += log( s );
+        }
+        else
+        {
+            lnProb += log( 1.0 - s );
+        }
+    }
+
     // condition on survival
     if ( condition == "survival" )
     {
@@ -202,6 +276,45 @@ double PiecewiseConstantFossilizedBirthDeathProcess::getMaxTaxonAge( const Topol
     }
 }
 
+double PiecewiseConstantFossilizedBirthDeathProcess::getAnageneticSpeciationRate( size_t index ) const
+{
+
+    // remove the old parameter first
+    if ( homogeneous_lambda_a != NULL )
+    {
+        return homogeneous_lambda_a->getValue();
+    }
+    else
+    {
+        size_t num = heterogeneous_lambda_a->getValue().size();
+
+        if (index >= num)
+        {
+            throw(RbException("Anagenetic speciation rate index out of bounds"));
+        }
+        return ascending ? heterogeneous_lambda_a->getValue()[num - 1 - index] : heterogeneous_lambda_a->getValue()[index];
+    }
+}
+
+double PiecewiseConstantFossilizedBirthDeathProcess::getSymmetricSpeciationProbability( size_t index ) const
+{
+
+    // remove the old parameter first
+    if ( homogeneous_beta != NULL )
+    {
+        return homogeneous_beta->getValue();
+    }
+    else
+    {
+        size_t num = heterogeneous_beta->getValue().size();
+
+        if (index >= num)
+        {
+            throw(RbException("Symmetric speciation probability index out of bounds"));
+        }
+        return ascending ? heterogeneous_beta->getValue()[num - 1 - index] : heterogeneous_beta->getValue()[index];
+    }
+}
 
 double PiecewiseConstantFossilizedBirthDeathProcess::lnProbTreeShape(void) const
 {
@@ -236,6 +349,45 @@ double PiecewiseConstantFossilizedBirthDeathProcess::pSurvival(double start, dou
     return 1.0 - p0;
 }
 
+/**
+ * q_i(t)
+ */
+double PiecewiseConstantFossilizedBirthDeathProcess::q( size_t i, double t, bool tilde ) const
+{
+
+    if ( t == 0.0 ) return 0.0;
+
+    // get the parameters
+    double b = birth[i];
+    double d = death[i];
+    double f = fossil[i];
+    double r = (i == num_intervals - 1 ? homogeneous_rho->getValue() : 0.0);
+    double ti = times[i];
+
+    double diff = b - d - f;
+    double dt   = t - ti;
+
+    double A = sqrt( diff*diff + 4.0*b*f);
+    double B = ( (1.0 - 2.0*(1.0-r)*p_i[i] )*b + d + f ) / A;
+
+    double ln_e = -A*dt;
+
+    double tmp = (1.0 + B) + exp(ln_e)*(1.0 - B);
+
+    double q = log(4.0) + ln_e - 2.0*log(tmp);
+
+    if (tilde)
+    {
+        q = 0.5 * (q - (b+d+f)*dt);
+
+        double a = anagenetic[i];
+        double s = symmetric[i];
+
+        q = - a - s * (b + d + f) * dt + (1.0 - s) * q;
+    }
+
+    return q;
+}
 
 /**
  *
@@ -566,6 +718,30 @@ size_t PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( const 
     return species;
 }
 
+/**
+ *
+ *
+ */
+void PiecewiseConstantFossilizedBirthDeathProcess::updateIntervals() const
+{
+    AbstractPiecewiseConstantFossilizedRangeProcess::updateIntervals();
+
+    for (int i = (int)num_intervals - 1; i >= 0; i--)
+    {
+        double a = getAnageneticSpeciationRate(i);
+        double s = getSymmetricSpeciationProbability(i);
+
+        anagenetic[i] = a;
+        symmetric[i] = s;
+
+        if (i > 0)
+        {
+            double dt = getIntervalTime(i-1) - times[i];
+
+            q_tilde_i[i-1] = - a - s * (birth[i] + death[i] + fossil[i]) * dt + (1.0 - s) * q_tilde_i[i-1];
+        }
+    }
+}
 
 /**
  * Compute the log-transformed probability of the current value under the current parameter values.
@@ -589,4 +765,21 @@ void PiecewiseConstantFossilizedBirthDeathProcess::swapParameterInternal(const D
 {
     AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
     AbstractPiecewiseConstantFossilizedRangeProcess::swapParameterInternal(oldP, newP);
+
+    if (oldP == heterogeneous_lambda_a)
+    {
+        heterogeneous_lambda_a = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+    }
+    else if (oldP == heterogeneous_beta)
+    {
+        heterogeneous_beta = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+    }
+    else if (oldP == homogeneous_lambda_a)
+    {
+        homogeneous_lambda_a = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == homogeneous_beta)
+    {
+        homogeneous_beta = static_cast<const TypedDagNode<double>* >( newP );
+    }
 }
