@@ -390,6 +390,44 @@ double PiecewiseConstantFossilizedBirthDeathProcess::q( size_t i, double t, bool
 }
 
 /**
+ * \ln\int exp(psi t) q_tilde(t)/q(t) dt
+ */
+double PiecewiseConstantFossilizedBirthDeathProcess::integrateQ( size_t i, double t ) const
+{
+    double s = symmetric[i];
+
+    if ( s > 0.0 )
+    {
+        throw(RbException("Presence/absence sampling not implemented for beta > 0.0"));
+    }
+
+    // get the parameters
+    double b = birth[i];
+    double d = death[i];
+    double f = fossil[i];
+    double a = anagenetic[i];
+    double r = (i == num_intervals - 1 ? homogeneous_rho->getValue() : 0.0);
+    double ti = times[i];
+
+    double diff = b - d - f;
+    double bp   = b*f;
+    double dt   = t - ti;
+
+    double A = sqrt( diff*diff + 4.0*bp);
+    double B = ( (1.0 - 2.0*(1.0-r)*p_i[i] )*b + d + f ) / A;
+
+    double e = exp(-A*dt);
+
+    double diff2 = b + d - f + 2.0*a;
+    double tmp = (1+B)/(A-diff2) - e*(1-B)/(A+diff2);
+    double intQ = exp(-(diff2-A)*dt/2) * tmp;
+
+    intQ *= exp(-a*dt);
+
+    return intQ;
+}
+
+/**
  *
  */
 void PiecewiseConstantFossilizedBirthDeathProcess::simulateClade(std::vector<TopologyNode *> &n, double age, double present)
