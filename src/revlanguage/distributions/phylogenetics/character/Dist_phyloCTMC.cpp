@@ -884,8 +884,13 @@ MethodTable Dist_phyloCTMC::getDistributionMethods( void ) const
     ArgumentRules* siteLikelihoodsArgRules = new ArgumentRules();
     methods.addFunction( new DistributionMemberFunction<Dist_phyloCTMC, ModelVector<Real> >( "siteLikelihoods", variable, siteLikelihoodsArgRules, true ) );
     
+    // f(Xh,rk|theta); returning a matrixreal where each row corresponds a site and each column corresponds an array (length = (num_site_rates + pInv != 0)) of rate categories [site_rate_index + pInv != 0] with the first element under inv if pInv > 0
     ArgumentRules* siteRateLikelihoodsArgRules = new ArgumentRules();
     methods.addFunction( new DistributionMemberFunction<Dist_phyloCTMC, MatrixReal >( "siteRateLikelihoods", variable, siteRateLikelihoodsArgRules, true ) );
+    
+    // f(Xh,mk|theta); returning a matrixreal where each row corresponds a site and each column corresponds an array (length = ((num_site_rates + pInv != 0) * num_site_matrices)) of mixture categories [(site_rate_index + pInv != 0) * num_site_matrices + site_matrix_index] with the first num_site_matrices elements under inv if pInv > 0
+    ArgumentRules* siteMixtureLikelihoodsArgRules = new ArgumentRules();
+    methods.addFunction( new DistributionMemberFunction<Dist_phyloCTMC, MatrixReal >( "siteMixtureLikelihoods", variable, siteMixtureLikelihoodsArgRules, true ) );
     
     ArgumentRules* siteRatesArgRules = new ArgumentRules();
     
