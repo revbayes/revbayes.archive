@@ -36,9 +36,7 @@ RevPtr<RevVariable> Func_setwd::execute( void )
 {
     
     const std::string &wd = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
-    
-    std::cerr << "Received directory:\t\t" << wd << std::endl;
-    
+        
     RbSettings& s = RbSettings::userSettings();
     s.setWorkingDirectory( wd );
     

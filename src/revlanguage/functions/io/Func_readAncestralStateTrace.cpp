@@ -159,6 +159,7 @@ const TypeSpec& Func_readAncestralStateTrace::getReturnType( void ) const
 std::vector<RevBayesCore::AncestralStateTrace> Func_readAncestralStateTrace::readAncestralStates(const std::string &fileName, const std::string &delimitter)
 {
     
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(fileName);
     
     std::vector<RevBayesCore::AncestralStateTrace> data;
 	
@@ -166,7 +167,7 @@ std::vector<RevBayesCore::AncestralStateTrace> Func_readAncestralStateTrace::rea
 
 	
 	/* Open file */
-	std::ifstream inFile( fileName.c_str() );
+	std::ifstream inFile( fm.getFullFileName().c_str() );
 	
 	if ( !inFile )
 		throw RbException( "Could not open file \"" + fileName + "\"" );

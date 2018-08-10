@@ -63,13 +63,13 @@ RevPtr<RevVariable> Func_write::execute( void )
             {
                 
                 // open the stream to the file
-                out_stream.open(fn.c_str(), std::fstream::out | std::fstream::app);
+                out_stream.open(fm.getFullFileName().c_str(), std::fstream::out | std::fstream::app);
             }
             else
             {
                 
                 // open the stream to the file
-                out_stream.open(fn.c_str(), std::fstream::out);
+                out_stream.open(fm.getFullFileName().c_str(), std::fstream::out);
             }
             
             // print the arguments

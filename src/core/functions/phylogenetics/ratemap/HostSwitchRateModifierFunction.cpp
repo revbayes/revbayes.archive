@@ -17,7 +17,7 @@ using namespace RevBayesCore;
 
 HostSwitchRateModifierFunction::HostSwitchRateModifierFunction(const TypedDagNode<Tree>* t,
                                                                const TypedDagNode<RbVector<double> >* s) :
-TypedFunction<CharacterHistoryRateModifier>( new HostSwitchRateModifier(0, t->getValue().getNumberOfTips() ) ),
+TypedFunction<CharacterHistoryRateModifier>( new HostSwitchRateModifier(3, t->getValue().getNumberOfTips() ) ),
 tau(t),
 scale(s)
 {

@@ -59,6 +59,11 @@ RbFileManager::RbFileManager( void ) :
     
     full_file_name += file_name;
     
+    
+#    ifdef RB_WIN
+    StringUtilities::replaceSubstring(full_file_name,"/","\\");
+#   endif
+    
 }
 
 
@@ -88,6 +93,10 @@ RbFileManager::RbFileManager(const std::string &fn) :
     //    parsePathFileNames( expandUserDir( fn ) );
     parsePathFileNames( fn );
     
+#    ifdef RB_WIN
+    StringUtilities::replaceSubstring(file_path,"/","\\");
+#   endif
+    
     full_file_name = file_path;
     if ( full_file_name != "")
     {
@@ -96,6 +105,9 @@ RbFileManager::RbFileManager(const std::string &fn) :
     
     full_file_name += file_name;
     
+#    ifdef RB_WIN
+    StringUtilities::replaceSubstring(full_file_name,"/","\\");
+#   endif
     
 }
 
@@ -128,6 +140,10 @@ RbFileManager::RbFileManager(const std::string &pn, const std::string &fn) :
     // set the path and file for the string
     std::string tmp = pn + path_separator + fn;
     parsePathFileNames( tmp );
+
+#    ifdef RB_WIN
+    StringUtilities::replaceSubstring(file_path,"/","\\");
+#   endif
     
     full_file_name = file_path;
     if ( full_file_name != "")
@@ -136,6 +152,11 @@ RbFileManager::RbFileManager(const std::string &pn, const std::string &fn) :
     }
     
     full_file_name += file_name;
+    
+#    ifdef RB_WIN
+    StringUtilities::replaceSubstring(full_file_name,"/","\\");
+#   endif
+    
 }
 
 
@@ -166,7 +187,7 @@ void RbFileManager::createDirectoryForFile( void )
     std::string dir_path = getStringByDeletingLastPathComponent( full_file_name );
     
     std::vector<std::string> pathComponents;
-    StringUtilities::stringSplit(file_path, path_separator, pathComponents);
+    StringUtilities::stringSplit(dir_path, path_separator, pathComponents);
     
     std::string directoryName = "";
     for ( std::vector<std::string>::const_iterator it=pathComponents.begin(); it != pathComponents.end(); ++it)
@@ -382,6 +403,7 @@ std::string RbFileManager::getStringByDeletingLastPathComponent(const std::strin
     
     std::string tempS = s;
     size_t location = tempS.find_last_of( path_separator );
+    
     if ( location == std::string::npos )
     {
         /* There is no path in this string. We

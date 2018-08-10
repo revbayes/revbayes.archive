@@ -166,8 +166,11 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     }
     
     // add the log probability for sampling the extant taxa
-    lnProbTimes += num_extant_taxa * log( 4.0 * sampling_prob );
-
+    if (num_extant_taxa > 0)
+    {
+        lnProbTimes += num_extant_taxa * log( 4.0 * sampling_prob );
+    }
+    
     // add the log probability of the initial sequences
     lnProbTimes += -lnQ(process_time, c1, c2) * num_initial_lineages;
 
