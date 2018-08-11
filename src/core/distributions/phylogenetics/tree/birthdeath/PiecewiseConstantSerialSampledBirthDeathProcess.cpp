@@ -926,6 +926,21 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::simulateDivergenceTime(d
     return present + t;
 }
 
+std::vector<double> PiecewiseConstantSerialSampledBirthDeathProcess::simulateDivergenceTimes(size_t n, double origin, double present, double min) const
+{
+
+    std::vector<double> times(n, 0.0);
+
+    for (size_t i = 0; i < n; ++i)
+    {
+        times[i] = simulateDivergenceTime(origin, min);
+    }
+
+    // finally sort the times
+    std::sort(times.begin(), times.end());
+
+    return times;
+}
 
 /**
  * Compute the diversity of the tree at time t.

@@ -69,6 +69,7 @@ namespace RevBayesCore {
         void                                            prepareProbComputation(void) const;
         double                                          q(size_t i, double t) const;
         double                                          simulateDivergenceTime(double origin, double present) const;    //!< Simulate a speciation event.
+        virtual std::vector<double>                     simulateDivergenceTimes(size_t n, double origin, double present, double min) const;                 //!< Simulate n speciation events.
         int                                             survivors(double t) const;                                 //!< Number of species alive at time t.
         
         // members
