@@ -24,7 +24,7 @@ namespace RevBayesCore {
 
     protected:
 
-        virtual void                                        updateTransitionProbabilities(size_t node_idx, double brlen);
+        virtual void                                        updateTransitionProbabilities(size_t node_idx);
 
     private:
 
@@ -70,7 +70,7 @@ RevBayesCore::PhyloCTMCSiteHomogeneousCladoComplete<charType>* RevBayesCore::Phy
 
 
 template<class charType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousCladoComplete<charType>::updateTransitionProbabilities(size_t node_idx, double brlen)
+void RevBayesCore::PhyloCTMCSiteHomogeneousCladoComplete<charType>::updateTransitionProbabilities(size_t node_idx)
 {
     const TopologyNode* node = this->tau->getValue().getNodes()[node_idx];
 
@@ -214,7 +214,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousCladoComplete<charType>::simulate( co
             substituted = true;
 
             // update the transition probability matrix
-            updateTransitionProbabilities( child.getIndex(), child.getBranchLength() );
+            updateTransitionProbabilities( child.getIndex() );
 
             std::vector<double> weights;
             double total = 0.0;

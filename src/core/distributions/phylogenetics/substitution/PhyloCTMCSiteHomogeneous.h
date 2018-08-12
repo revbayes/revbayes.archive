@@ -214,7 +214,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikeli
 {
 
     // compute the transition probability matrix
-    this->updateTransitionProbabilities( node_index, node.getBranchLength() );
+    this->updateTransitionProbabilities( node_index );
 
     // get the pointers to the partial likelihoods for this node and the two descendant subtrees
     const double*   p_left  = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
@@ -275,7 +275,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikeli
 {
 
     // compute the transition probability matrix
-    this->updateTransitionProbabilities( node_index, node.getBranchLength() );
+    this->updateTransitionProbabilities( node_index );
 
     // get the pointers to the partial likelihoods for this node and the two descendant subtrees
     const double*   p_left      = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
@@ -349,7 +349,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(cons
     size_t char_data_node_index = this->value->indexOfTaxonWithName(node.getName());
     
     // compute the transition probabilities
-    this->updateTransitionProbabilities( node_index, node.getBranchLength() );
+    this->updateTransitionProbabilities( node_index );
 
     double*   p_mixture      = p_node;
 

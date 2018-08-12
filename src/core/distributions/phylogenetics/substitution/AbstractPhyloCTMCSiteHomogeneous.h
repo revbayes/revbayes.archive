@@ -121,7 +121,7 @@ namespace RevBayesCore {
         virtual void                                                        resizeLikelihoodVectors(void);
         virtual void                                                        setActivePIDSpecialized(size_t i, size_t n);                                                          //!< Set the number of processes for this distribution.
         
-        virtual void                                                        updateTransitionProbabilities(size_t node_idx, double brlen);
+        virtual void                                                        updateTransitionProbabilities(size_t node_idx);
         virtual std::vector<double>                                         getRootFrequencies( size_t mixture = 0 ) const;
         virtual void                                                        getRootFrequencies( std::vector<std::vector<double> >& ) const;
         virtual std::vector<double>                                         getMixtureProbs( void ) const;
@@ -887,7 +887,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeMarginalNo
 {
     
     // compute the transition probability matrix
-    this->updateTransitionProbabilities( node_index, this->tau->getValue().getNode(node_index).getBranchLength() );
+    this->updateTransitionProbabilities( node_index );
     
     // get the pointers to the partial likelihoods and the marginal likelihoods
     const double*   p_node                  = this->partialLikelihoods + this->activeLikelihood[node_index]*this->activeLikelihoodOffset + node_index*this->nodeOffset;
@@ -1668,7 +1668,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawJo
     //    size_t parentIndex = node.getParent().getIndex();
     
     // get transition probabilities
-    this->updateTransitionProbabilities( node_index, node.getBranchLength() );
+    this->updateTransitionProbabilities( node_index );
     
     // get the pointers to the partial likelihoods and the marginal likelihoods
     //    double*         p_node  = this->partialLikelihoods + this->activeLikelihood[node_index]*this->activeLikelihoodOffset + node_index*this->nodeOffset;
@@ -1766,7 +1766,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::tipDrawJointCondi
     size_t node_index = node.getIndex();
     
     // get transition probabilities
-    this->updateTransitionProbabilities( node_index, node.getBranchLength() );
+    this->updateTransitionProbabilities( node_index );
     
     const AbstractHomologousDiscreteCharacterData& d = this->getValue();
     const HomologousDiscreteCharacterData<charType>& dd = static_cast<const HomologousDiscreteCharacterData<charType>& >( d );
@@ -2650,7 +2650,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::simulate( const T
         const TopologyNode &child = *(*it);
         
         // update the transition probability matrix
-        updateTransitionProbabilities( child.getIndex(), child.getBranchLength() );
+        updateTransitionProbabilities( child.getIndex() );
         
         DiscreteTaxonData< charType > &taxon = taxa[ child.getIndex() ];
         for ( size_t i = 0; i < num_sites; ++i )
@@ -3646,7 +3646,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateMarginalNod
 
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(size_t node_idx, double brlen)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(size_t node_idx)
 {
     const TopologyNode* node = tau->getValue().getNodes()[node_idx];
     
