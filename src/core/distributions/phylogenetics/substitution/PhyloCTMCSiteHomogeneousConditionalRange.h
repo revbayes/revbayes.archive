@@ -203,7 +203,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditionalRange<charType>::updateTra
                 {
                     for(size_t to = 0; to < rm->getNumberOfStates(); to++)
                     {
-                        this->transition_prob_matrices[j*this->num_matrices + matrix][from][to] *= exp( - rm->getRate(to, to, end_age, rate * r) * range_len );
+                        this->transition_prob_matrices[j*this->num_matrices + matrix][from][to] *= exp( rm->getRate(to, to, end_age, rate * r) * range_len );
                     }
                 }
             }
@@ -234,7 +234,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditionalRange<charType>::updateTra
             {
                 for(size_t to = 0; to < rm->getNumberOfStates(); to++)
                 {
-                    this->transition_prob_matrices[j][from][to] *= exp( - rm->getRate(to, to, end_age, rate * r) * range_len );
+                    this->transition_prob_matrices[j][from][to] *= exp( rm->getRate(to, to, end_age, rate * r) * range_len );
                 }
             }
         }
