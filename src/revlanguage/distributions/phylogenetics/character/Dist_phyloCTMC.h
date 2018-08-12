@@ -50,6 +50,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                       gapMatchClamped;
         RevPtr<const RevVariable>                       coding;
         RevPtr<const RevVariable>                       complete;
+        RevPtr<const RevVariable>                       morphospecies;
 
     };
 

@@ -2,9 +2,10 @@
 
 #include "RlDistributionMemberFunction.h"
 #include "PhyloCTMCSiteHomogeneous.h"
-#include "PhyloCTMCSiteHomogeneousCladoComplete.h"
-#include "PhyloCTMCSiteHomogeneousNucleotide.h"
 #include "PhyloCTMCSiteHomogeneousBinary.h"
+#include "PhyloCTMCSiteHomogeneousCladoComplete.h"
+#include "PhyloCTMCSiteHomogeneousConditionalRange.h"
+#include "PhyloCTMCSiteHomogeneousNucleotide.h"
 #include "OptionRule.h"
 #include "Probability.h"
 #include "RevNullObject.h"
@@ -56,6 +57,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     bool internal = static_cast<const RlBoolean &>( storeInternalNodes->getRevObject() ).getValue();
     bool gapmatch = static_cast<const RlBoolean &>( gapMatchClamped->getRevObject() ).getValue();
     bool clado_complete = static_cast<const RlBoolean &>( complete->getRevObject() ).getValue();
+    bool morphospeciation = static_cast<const RlBoolean &>( morphospecies->getRevObject() ).getValue();
 
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* site_ratesNode = NULL;
     if ( site_rates != NULL && site_rates->getRevObject() != RevNullObject::getInstance() )
@@ -539,6 +541,10 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, internal, gapmatch);
         }
+        else if( morphospeciation )
+        {
+            dist = new RevBayesCore::PhyloCTMCSiteHomogeneousConditionalRange<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, RevBayesCore::AscertainmentBias::Coding(cd), internal, gapmatch);
+        }
         else
         {
             dist = new RevBayesCore::PhyloCTMCSiteHomogeneousConditional<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, RevBayesCore::AscertainmentBias::Coding(cd), internal, gapmatch);
@@ -966,6 +972,8 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
 
         dist_member_rules.push_back( new ArgumentRule( "complete", RlBoolean::getClassTypeSpec(), "Simulate complete cladogenic substitutions?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
 
+        dist_member_rules.push_back( new ArgumentRule( "morphospecies", RlBoolean::getClassTypeSpec(), "Use morphospeciation model?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+
         rules_set = true;
     }
 
@@ -1126,6 +1134,10 @@ void Dist_phyloCTMC::setConstParameter(const std::string& name, const RevPtr<con
     else if ( name == "complete" )
     {
         complete = var;
+    }
+    else if ( name == "morphospecies" )
+    {
+        morphospecies = var;
     }
     else
     {
