@@ -537,13 +537,13 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist = new RevBayesCore::PhyloCTMCSiteHomogeneousCladoComplete<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, internal, gapmatch);
         }
-        else if(cd == RevBayesCore::AscertainmentBias::ALL)
-        {
-            dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, internal, gapmatch);
-        }
         else if( morphospeciation )
         {
             dist = new RevBayesCore::PhyloCTMCSiteHomogeneousConditionalRange<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, RevBayesCore::AscertainmentBias::Coding(cd), internal, gapmatch);
+        }
+        else if(cd == RevBayesCore::AscertainmentBias::ALL)
+        {
+            dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, internal, gapmatch);
         }
         else
         {
