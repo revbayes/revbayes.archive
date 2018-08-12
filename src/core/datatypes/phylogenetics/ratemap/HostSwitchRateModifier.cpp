@@ -58,7 +58,11 @@ double HostSwitchRateModifier::computeRateMultiplier(std::vector<CharacterEvent*
     // loss event (independent of other hosts)
     if (from_state > to_state)
     {
-        if (sites_with_states[1].size() == 1 && sites_with_states[2].size() == 0)
+        
+        // repertoire must contain at least a single 2 (actual host)
+        // if the current repertoire contains one 2,
+        // and if our event causes the loss of state 2
+        if (sites_with_states[2].size() == 1 && from_state==2)
         {
             // cannot enter the null range (conditions on survival)
             r = 0.0;
