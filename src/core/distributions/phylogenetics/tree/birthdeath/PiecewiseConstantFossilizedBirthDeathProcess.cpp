@@ -324,7 +324,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::getSymmetricSpeciationProba
 
 double PiecewiseConstantFossilizedBirthDeathProcess::lnProbTreeShape(void) const
 {
-    // the fossilized birth death divergence times density is derived for an unlabeled oriented tree
+    // the fossilized birth death range divergence times density is derived for an unlabeled oriented tree
     // so we convert to a labeled oriented tree probability by multiplying by 1 / n!
     // where n is the number of extant tips
 
