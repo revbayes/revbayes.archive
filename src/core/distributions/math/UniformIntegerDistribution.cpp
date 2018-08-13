@@ -51,7 +51,7 @@ void UniformIntegerDistribution::redrawValue( void )
     RandomNumberGenerator *rng = GLOBAL_RNG;
     double u = rng->uniform01();
     double diff = max->getValue() - min->getValue();
-    double tmp = u * diff;
+    double tmp = u * (diff + 1);
     *value = int( floor( tmp ) ) + min->getValue();
     
 }
