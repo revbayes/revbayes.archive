@@ -1655,7 +1655,8 @@ double StateDependentSpeciationExtinctionProcess::pSurvival(double start, double
 void StateDependentSpeciationExtinctionProcess::redrawValue( void )
 {
     size_t attempts = 0;    
-    while (attempts < 100000)
+    //while (attempts < 100000)
+    while (attempts < 10000)
     {
         bool success = false;
 
@@ -2057,6 +2058,7 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
         std::vector<double> prob_transition_sum = std::vector<double>(num_states, 0);
         std::vector<double> prob_state = std::vector<double>(num_states, 0);
         double prob_sum = 0.0;
+        size_t tries = 0;
         while (true) 
         {
         
@@ -2133,8 +2135,14 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
             prob_transition_sum = std::vector<double>(num_states, 0);
             prob_state = std::vector<double>(num_states, 0);
             prob_sum = 0.0;
-
+       
+            tries++;
+            if (tries == 100)
+            {
+                return false;
+            }
         }
+
         t = t + dt;
 
         // stop and retry if lineages didn't coalesce in time
