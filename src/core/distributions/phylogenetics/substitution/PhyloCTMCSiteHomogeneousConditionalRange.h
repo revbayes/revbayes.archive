@@ -16,15 +16,11 @@ namespace RevBayesCore {
         // public member functions
         PhyloCTMCSiteHomogeneousConditionalRange*           clone(void) const;                                                                        //!< Create an independent clone
 
+        double                                              computeLnProbability(void);
+
     protected:
 
-        virtual void                                        computeRootLikelihood(size_t root, size_t l, size_t r);
-        virtual void                                        computeRootLikelihood(size_t root, size_t l, size_t r, size_t m);
-        virtual void                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
-        virtual void                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m);
-        virtual void                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx);
-
-        Taxon                                               getAncestralTaxon(size_t node_idx);
+        Taxon                                               updateNodeSpecies(const TopologyNode& node);
 
         virtual void                                        updateTransitionProbabilities(size_t node_idx);
 
@@ -66,71 +62,39 @@ PhyloCTMCSiteHomogeneousConditional< charType>( n ), node_taxa( n.node_taxa )
 }
 
 template<class charType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousConditionalRange<charType>::computeRootLikelihood( size_t root, size_t left, size_t right)
+double RevBayesCore::PhyloCTMCSiteHomogeneousConditionalRange<charType>::computeLnProbability()
 {
-    node_taxa[root] = getAncestralTaxon(root);
+    updateNodeSpecies(this->tau->getValue().getRoot());
 
-    PhyloCTMCSiteHomogeneousConditional<charType>::computeRootLikelihood(root, left, right);
+    return PhyloCTMCSiteHomogeneousConditional<charType>::computeLnProbability();
 }
 
 template<class charType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousConditionalRange<charType>::computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle)
+RevBayesCore::Taxon RevBayesCore::PhyloCTMCSiteHomogeneousConditionalRange<charType>::updateNodeSpecies(const TopologyNode& node)
 {
-    node_taxa[root] = getAncestralTaxon(root);
-
-    PhyloCTMCSiteHomogeneousConditional<charType>::computeRootLikelihood(root, left, right, middle);
-}
-
-template<class charType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousConditionalRange<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t node_index, size_t left, size_t right)
-{
-    node_taxa[node_index] = getAncestralTaxon(node_index);
-
-    PhyloCTMCSiteHomogeneousConditional<charType>::computeInternalNodeLikelihood(node, node_index, left, right);
-}
-
-template<class charType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousConditionalRange<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t node_index, size_t left, size_t right, size_t middle)
-{
-    node_taxa[node_index] = getAncestralTaxon(node_index);
-
-    PhyloCTMCSiteHomogeneousConditional<charType>::computeInternalNodeLikelihood(node, node_index, left, right, middle);
-}
-
-template<class charType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousConditionalRange<charType>::computeTipLikelihood(const TopologyNode &node, size_t node_index)
-{
-    node_taxa[node_index] = getAncestralTaxon(node_index);
-
-    PhyloCTMCSiteHomogeneousConditional<charType>::computeTipLikelihood(node, node_index);
-}
-
-template<class charType>
-RevBayesCore::Taxon RevBayesCore::PhyloCTMCSiteHomogeneousConditionalRange<charType>::getAncestralTaxon(size_t node_index)
-{
-    const TopologyNode &node = this->tau->getValue().getNode(node_index);
-
     if ( node.isTip() )
     {
-        return node.getTaxon();
+        node_taxa[node.getIndex()] = node.getTaxon();
     }
 
-    bool sa = node.isSampledAncestor(true);
-
     std::vector<TopologyNode* > children = node.getChildren();
+
+    bool sa = node.isSampledAncestor(true);
 
     for(size_t c = 0; c < children.size(); c++)
     {
         const TopologyNode& child = *children[c];
 
-        if( ( sa == false && c == 0 ) || ( sa && child.isSampledAncestor() ) )
+        Taxon species = updateNodeSpecies(child);
+
+        // is the child the same species?
+        if( ( sa == false && c == 0 ) || ( sa == true && child.isSampledAncestor() == true ) )
         {
-            // propagate species index
-            return node_taxa[child.getIndex()];
+            node_taxa[node.getIndex()] = species;
         }
     }
 
-    throw(RbException("Could not identify ancestral taxa in morphospeciation model"));
+    return node_taxa[node.getIndex()];
 }
 
 template<class charType>
@@ -149,9 +113,9 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditionalRange<charType>::updateTra
         throw(RbException("Morphospeciation model not implemented for branch length trees"));
     }
 
-    double end_age = node_taxa[node_idx].getAgeRange().getMax();
+    double end_age = std::max(node.getAge(), node_taxa[node_idx].getAgeRange().getMax());
 
-    if( start_age <= end_age )
+    if( end_age >= start_age )
     {
         end_age = start_age;
     }
@@ -234,6 +198,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditionalRange<charType>::updateTra
             {
                 for(size_t to = 0; to < rm->getNumberOfStates(); to++)
                 {
+                    double a = exp( rm->getRate(to, to, end_age, rate * r) * range_len );
+                    double b = this->transition_prob_matrices[j][from][to];
                     this->transition_prob_matrices[j][from][to] *= exp( rm->getRate(to, to, end_age, rate * r) * range_len );
                 }
             }
