@@ -71,9 +71,11 @@ RevPtr<RevVariable> Func_readTrace::execute( void )
     for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++)
     {
         bool hasHeaderBeenRead = false;
-            
+        
+        RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager( fn.getValue() );
+        
         /* Open file */
-        std::ifstream inFile( fn.getValue().c_str() );
+        std::ifstream inFile( fm.getFullFileName().c_str() );
         
         if ( !inFile )
             throw RbException( "Could not open file \"" + fn.getValue() + "\"" );

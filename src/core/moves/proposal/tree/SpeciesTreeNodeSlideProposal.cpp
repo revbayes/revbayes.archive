@@ -106,6 +106,12 @@ const std::string& SpeciesTreeNodeSlideProposal::getProposalName( void ) const
 }
 
 
+double SpeciesTreeNodeSlideProposal::getProposalTuningParameter( void ) const
+{
+    return delta;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -320,10 +326,14 @@ void SpeciesTreeNodeSlideProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SpeciesTreeNodeSlideProposal::printParameterSummary(std::ostream &o) const
+void SpeciesTreeNodeSlideProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "delta = " << delta;
+    o << "delta = ";
+    if (name_only == false)
+    {
+        o << delta;
+    }
     
 }
 
@@ -404,6 +414,12 @@ void SpeciesTreeNodeSlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN
         
     }
     
+}
+
+
+void SpeciesTreeNodeSlideProposal::setProposalTuningParameter(double tp)
+{
+    delta = tp;
 }
 
 

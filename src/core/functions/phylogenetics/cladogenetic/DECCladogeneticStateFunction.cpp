@@ -645,6 +645,8 @@ double DECCladogeneticStateFunction::computeDataAugmentedCladogeneticLnProbabili
         }
         
     }
+    
+    
     if (n_nlr_on > 1) {
         
         throw RbException("unknown cladogenetic state");
@@ -653,23 +655,23 @@ double DECCladogeneticStateFunction::computeDataAugmentedCladogeneticLnProbabili
     
     std::string clado_type = "";
     if (n_n_on == 0) {
-        clado_type = "null_copy";
+        clado_type = "n";
     }
     else if (n_nlr_on == 1 && n_nlr_off == (numCharacters-1))
     {
-        clado_type = "sympatry_copy";
+        clado_type = "s";
     }
     else if (n_n_on == n_lr_mismatch)
     {
-        clado_type = "allopatry";
+        clado_type = "a";
     }
     else if (n_jump_mismatch == 1)
     {
-        clado_type = "jump_dispersal";
+        clado_type = "j";
     }
     else if (n_nlr_on == 1 && n_lr_mismatch==(n_n_on-n_nlr_on))
     {
-        clado_type = "sympatry_subset";
+        clado_type = "s";
     }
     else
     {
@@ -689,26 +691,30 @@ double DECCladogeneticStateFunction::computeDataAugmentedCladogeneticLnProbabili
     
     
     // the proposal prob
-    if ( clado_type == "null_range" )
+    if ( clado_type == "n" )
     {
         p = 1.0;
     }
-    else if ( clado_type == "sympatry_copy")
+//    else if ( clado_type == "s")
+//    {
+//        p = 1.0; // probs["s"];
+//    }
+    else if ( clado_type == "s" && n_n_on == 1)
     {
-        p = 1.0; // probs["s"];
+        p = 1.0;
     }
-    else if ( clado_type == "allopatry" )
+    else if ( clado_type == "s" && n_n_on > 1)
+    {
+        // Any single ancestral bit may be set across the two daughter ranges
+        p = probs["s"] * (1.0 / (2 * n_n_on));
+    }
+    else if ( clado_type == "a" )
     {
         // Any combination of bits for one range (with the sister having its complement)
         // excluding the all-zero range and the all-one range (hence, -2)
         p = probs["a"] * (1.0 / (pow(2, n_n_on) - 2));
     }
-    else if ( clado_type == "sympatry_subset" )
-    {
-        // Any single ancestral bit may be set across the two daughter ranges
-        p = probs["s"] * (1.0 / (2 * n_n_on));
-    }
-    else if ( clado_type == "jump_dispersal" )
+    else if ( clado_type == "j" )
     {
         // Any single non-ancestral bit may be set across the two daughter ranges
         p = probs["j"] * (1.0 / (2 * (numCharacters - n_n_on)));
@@ -779,7 +785,7 @@ std::string DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState
     
     // sample cladogenetic state
     if (node_child_on.size() == 0) {
-        clado_state = "null_copy";
+        clado_state = "n";
 
         ; // do nothing
     }
@@ -787,7 +793,7 @@ std::string DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState
         size_t s = node_child_on[0];
         static_cast<CharacterEventDiscrete*>( leftParentState[s] )->setState(1);
         static_cast<CharacterEventDiscrete*>( rightParentState[s] )->setState(1);
-        clado_state = "sympatry_copy";
+        clado_state = "s";
     }
     else
     {
@@ -819,7 +825,7 @@ std::string DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState
                 }
             }
             
-            clado_state = "sympatry_subset";
+            clado_state = "s";
             
         }
         else if (event_type == "a")
@@ -846,7 +852,7 @@ std::string DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState
                     static_cast<CharacterEventDiscrete*>( rightParentState[ j ] )->setState(1);
                 }
             }
-            clado_state = "allopatry";
+            clado_state = "a";
         }
         else if (event_type == "j")
         {
@@ -875,7 +881,7 @@ std::string DECCladogeneticStateFunction::simulateDataAugmentedCladogeneticState
                     static_cast<CharacterEventDiscrete*>( rightParentState[ *it ] )->setState(1);
                 }
             }
-            clado_state = "jump_dispersal";
+            clado_state = "j";
 
         }
         else

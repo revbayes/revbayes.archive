@@ -1,4 +1,5 @@
 #include "RateMatrix_Blosum62.h"
+#include "RbVectorUtilities.h"
 
 
 using namespace RevBayesCore;
@@ -112,6 +113,16 @@ RateMatrix_Blosum62::RateMatrix_Blosum62( void ) : RateMatrix_Empirical( 20 )
 	stationary_freqs[18] = 0.032; 
 	stationary_freqs[19] = 0.073;
 
+    VectorUtilities::normalize(stationary_freqs);
+    
+    // multiply stationary frequencies into exchangeability matrix
+    for (size_t i = 0; i < 20; i++)
+    {
+        for (size_t j = 0; j < 20; j++)
+        {
+            m[i][j] *= stationary_freqs[j];
+        }
+    }
     
     // set the diagonal values
     setDiagonal();

@@ -62,6 +62,12 @@ const std::string& CorrelationMatrixElementBetaProposal::getProposalName( void )
 }
 
 
+double CorrelationMatrixElementBetaProposal::getProposalTuningParameter( void ) const
+{
+    return alpha;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -150,10 +156,14 @@ void CorrelationMatrixElementBetaProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void CorrelationMatrixElementBetaProposal::printParameterSummary(std::ostream &o) const
+void CorrelationMatrixElementBetaProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "alpha = " << alpha;
+    o << "alpha = ";
+    if (name_only == false)
+    {
+        o << alpha;
+    }
     
 }
 
@@ -187,6 +197,12 @@ void CorrelationMatrixElementBetaProposal::swapNodeInternal(DagNode *oldN, DagNo
     
     variable = static_cast< StochasticNode<MatrixReal>* >(newN) ;
     
+}
+
+
+void CorrelationMatrixElementBetaProposal::setProposalTuningParameter(double tp)
+{
+    alpha = tp;
 }
 
 

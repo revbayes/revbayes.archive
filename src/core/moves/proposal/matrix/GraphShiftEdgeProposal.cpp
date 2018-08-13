@@ -76,6 +76,12 @@ const std::string& GraphShiftEdgeProposal::getProposalName( void ) const
 }
 
 
+double GraphShiftEdgeProposal::getProposalTuningParameter( void ) const
+{
+    return sampling_probability;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -208,10 +214,14 @@ void GraphShiftEdgeProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void GraphShiftEdgeProposal::printParameterSummary(std::ostream &o) const
+void GraphShiftEdgeProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "p = " << sampling_probability;
+    o << "p = ";
+    if (name_only == false)
+    {
+        o << sampling_probability;
+    }
     
 }
 
@@ -266,6 +276,13 @@ void GraphShiftEdgeProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     }
     
 }
+
+
+void GraphShiftEdgeProposal::setProposalTuningParameter(double tp)
+{
+    sampling_probability = tp;
+}
+
 
 
 /**

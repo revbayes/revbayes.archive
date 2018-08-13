@@ -62,6 +62,12 @@ const std::string& BetaSimplexProposal::getProposalName( void ) const
 }
 
 
+double BetaSimplexProposal::getProposalTuningParameter( void ) const
+{
+    return alpha;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -166,10 +172,14 @@ void BetaSimplexProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void BetaSimplexProposal::printParameterSummary(std::ostream &o) const
+void BetaSimplexProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "alpha = " << alpha;
+    o << "alpha = ";
+    if (name_only == false)
+    {
+        o << alpha;
+    }
     
 }
 
@@ -200,6 +210,12 @@ void BetaSimplexProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast<StochasticNode<Simplex>* >(newN) ;
     
+}
+
+
+void BetaSimplexProposal::setProposalTuningParameter(double tp)
+{
+    alpha = tp;
 }
 
 

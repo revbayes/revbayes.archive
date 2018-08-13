@@ -63,6 +63,12 @@ const std::string& NodeTimeSlideBetaProposal::getProposalName( void ) const
 }
 
 
+double NodeTimeSlideBetaProposal::getProposalTuningParameter( void ) const
+{
+    return delta;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -144,10 +150,14 @@ void NodeTimeSlideBetaProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void NodeTimeSlideBetaProposal::printParameterSummary(std::ostream &o) const
+void NodeTimeSlideBetaProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "delta = " << delta;
+    o << "delta = ";
+    if (name_only == false)
+    {
+        o << delta;
+    }
     
 }
 
@@ -179,6 +189,12 @@ void NodeTimeSlideBetaProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
+}
+
+
+void NodeTimeSlideBetaProposal::setProposalTuningParameter(double tp)
+{
+    delta = tp;
 }
 
 

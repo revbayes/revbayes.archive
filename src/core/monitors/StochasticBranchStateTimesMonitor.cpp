@@ -1,5 +1,5 @@
 //
-//  CharacterHistoryTimeInStatesMonitor.h
+//  StochasticBranchStateTimesMonitor.h
 //  RevBayes_development_branch
 //
 //  Created by will freyman on 4/25/18.
@@ -7,7 +7,7 @@
 //
 
 
-#include "CharacterHistoryTimeInStatesMonitor.h"
+#include "StochasticBranchStateTimesMonitor.h"
 #include "DagNode.h"
 #include "Model.h"
 #include "Monitor.h"
@@ -19,7 +19,7 @@ using namespace RevBayesCore;
 
 
 /* Constructor for state dependent birth death process */
-CharacterHistoryTimeInStatesMonitor::CharacterHistoryTimeInStatesMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, const std::string &del) : AbstractFileMonitor(ch, g, fname, del, false, false, false),
+StochasticBranchStateTimesMonitor::StochasticBranchStateTimesMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, const std::string &del) : AbstractFileMonitor(ch, g, fname, del, false, false, false),
     cdbdp( ch )
 {
     // the cdbdp is both the tree and character evolution model
@@ -32,7 +32,7 @@ CharacterHistoryTimeInStatesMonitor::CharacterHistoryTimeInStatesMonitor(Stochas
 /**
  * Copy constructor.
  */
-CharacterHistoryTimeInStatesMonitor::CharacterHistoryTimeInStatesMonitor( const CharacterHistoryTimeInStatesMonitor &m) : AbstractFileMonitor( m ),
+StochasticBranchStateTimesMonitor::StochasticBranchStateTimesMonitor( const StochasticBranchStateTimesMonitor &m) : AbstractFileMonitor( m ),
     tree( m.tree ),
     cdbdp( m.cdbdp )
 {
@@ -43,7 +43,7 @@ CharacterHistoryTimeInStatesMonitor::CharacterHistoryTimeInStatesMonitor( const 
 /**
  * Destructor.
  */
-CharacterHistoryTimeInStatesMonitor::~CharacterHistoryTimeInStatesMonitor()
+StochasticBranchStateTimesMonitor::~StochasticBranchStateTimesMonitor()
 {
     
 }
@@ -55,10 +55,10 @@ CharacterHistoryTimeInStatesMonitor::~CharacterHistoryTimeInStatesMonitor()
  *
  * \return A new copy of myself
  */
-CharacterHistoryTimeInStatesMonitor* CharacterHistoryTimeInStatesMonitor::clone(void) const
+StochasticBranchStateTimesMonitor* StochasticBranchStateTimesMonitor::clone(void) const
 {
     
-    return new CharacterHistoryTimeInStatesMonitor(*this);
+    return new StochasticBranchStateTimesMonitor(*this);
 }
 
 
@@ -67,7 +67,7 @@ CharacterHistoryTimeInStatesMonitor* CharacterHistoryTimeInStatesMonitor::clone(
  *
  * \param[in]   gen    The current generation.
  */
-void CharacterHistoryTimeInStatesMonitor::monitorVariables(unsigned long gen)
+void StochasticBranchStateTimesMonitor::monitorVariables(unsigned long gen)
 {
 
     StateDependentSpeciationExtinctionProcess *sse = dynamic_cast<StateDependentSpeciationExtinctionProcess*>( &cdbdp->getDistribution() );
@@ -94,7 +94,7 @@ void CharacterHistoryTimeInStatesMonitor::monitorVariables(unsigned long gen)
 /**
  * Print header for monitored values
  */
-void CharacterHistoryTimeInStatesMonitor::printFileHeader()
+void StochasticBranchStateTimesMonitor::printFileHeader()
 {
 
     StateDependentSpeciationExtinctionProcess *sse = dynamic_cast<StateDependentSpeciationExtinctionProcess*>( &cdbdp->getDistribution() );
@@ -109,7 +109,7 @@ void CharacterHistoryTimeInStatesMonitor::printFileHeader()
 }
 
 
-void CharacterHistoryTimeInStatesMonitor::swapNode(DagNode *oldN, DagNode* newN)
+void StochasticBranchStateTimesMonitor::swapNode(DagNode *oldN, DagNode* newN)
 {
     
     if ( oldN == tree )

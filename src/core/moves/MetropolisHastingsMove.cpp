@@ -42,7 +42,7 @@ MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) 
  */
 MetropolisHastingsMove::MetropolisHastingsMove(const MetropolisHastingsMove &m) : AbstractMove(m),
     num_accepted_current_period( m.num_accepted_current_period ),
-    num_accepted_total( m.num_accepted_current_period ),
+    num_accepted_total( m.num_accepted_total ),
     proposal( m.proposal->clone() )
 {
     
@@ -110,6 +110,12 @@ const std::string& MetropolisHastingsMove::getMoveName( void ) const
 {
     
     return proposal->getProposalName();
+}
+
+
+double MetropolisHastingsMove::getMoveTuningParameter( void ) const
+{
+    return proposal->getProposalTuningParameter();
 }
 
 
@@ -246,7 +252,7 @@ void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat
 
 
 
-void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
+void MetropolisHastingsMove::performMcmcMove( double prHeat, double lHeat, double pHeat )
 {
     
     const RbOrderedSet<DagNode*> &affected_nodes = getAffectedNodes();
@@ -324,7 +330,7 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
     
     // exponentiate with the chain heat
     double ln_posterior_ratio;
-    ln_posterior_ratio = pHeat * (lHeat * ln_likelihood_ratio + ln_prior_ratio);
+    ln_posterior_ratio = pHeat * (lHeat * ln_likelihood_ratio + prHeat * ln_prior_ratio);
 	
     bool rejected = false;
     
@@ -431,7 +437,7 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void MetropolisHastingsMove::printSummary(std::ostream &o) const 
+void MetropolisHastingsMove::printSummary(std::ostream &o, bool current_period) const 
 {
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
@@ -469,30 +475,38 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     o << weight;
     o << " ";
     
+    size_t num_tried = num_tried_total;
+    size_t num_accepted = num_accepted_total;
+    if (current_period == true)
+    {
+        num_tried = num_tried_current_period;
+        num_accepted = num_accepted_current_period;
+    }
+    
     // print the number of tries
     int t_length = 9;
-    if (num_tried_total > 0) t_length -= (int)log10(num_tried_total);
+    if (num_tried > 0) t_length -= (int)log10(num_tried);
     for (int i = 0; i < t_length; ++i)
     {
         o << " ";
     }
-    o << num_tried_total;
+    o << num_tried;
     o << " ";
     
     // print the number of accepted
     int a_length = 9;
-    if (num_accepted_total > 0) a_length -= (int)log10(num_accepted_total);
+    if (num_accepted > 0) a_length -= (int)log10(num_accepted);
     
     for (int i = 0; i < a_length; ++i)
     {
         o << " ";
     }
-    o << num_accepted_total;
+    o << num_accepted;
     o << " ";
     
     // print the acceptance ratio
-    double ratio = num_accepted_total / (double)num_tried_total;
-    if (num_tried_total == 0) ratio = 0;
+    double ratio = num_accepted / (double)num_tried;
+    if (num_tried == 0) ratio = 0;
     int r_length = 5;
     
     for (int i = 0; i < r_length; ++i)
@@ -502,7 +516,7 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     o << ratio;
     o << " ";
     
-    proposal->printParameterSummary( o );
+    proposal->printParameterSummary( o, false );
     
     o << std::endl;
     
@@ -533,6 +547,24 @@ void MetropolisHastingsMove::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     proposal->swapNode(oldN, newN);
     
+}
+
+
+void MetropolisHastingsMove::setMoveTuningParameter(double tp)
+{
+    proposal->setProposalTuningParameter(tp);
+}
+
+
+void MetropolisHastingsMove::setNumberAcceptedCurrentPeriod( size_t na )
+{
+    num_accepted_current_period = na;
+}
+
+
+void MetropolisHastingsMove::setNumberAcceptedTotal( size_t na )
+{
+    num_accepted_total = na;
 }
 
 

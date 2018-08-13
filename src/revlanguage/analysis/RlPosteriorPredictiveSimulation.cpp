@@ -6,6 +6,7 @@
 #include "Probability.h"
 #include "RlModel.h"
 #include "RlString.h"
+#include "RlAncestralStateTrace.h"
 #include "RlModelTrace.h"
 #include "RlUtils.h"
 #include "WorkspaceVector.h"
@@ -64,8 +65,21 @@ void PosteriorPredictiveSimulation::constructInternalObject( void )
     
     const std::string &    dir   = static_cast<const RlString &>( directory->getRevObject() ).getValue();
     
-    value = new RevBayesCore::PosteriorPredictiveSimulation(mdl, dir, pt);
-    
+    // get vector of ancestral state traces
+    if ( ancestral_state_trace->getRevObject() != RevNullObject::getInstance() )
+    {
+        const WorkspaceVector<AncestralStateTrace>& ast = static_cast<const WorkspaceVector<AncestralStateTrace> &>( ancestral_state_trace->getRevObject() );
+        std::vector<RevBayesCore::AncestralStateTrace> ancestral_state_traces;
+        for (int i = 0; i < ast.size(); ++i)
+        {
+            ancestral_state_traces.push_back( ast[i].getValue() );
+        }
+        value = new RevBayesCore::PosteriorPredictiveSimulation(mdl, dir, pt, ancestral_state_traces);
+    }
+    else
+    {
+        value = new RevBayesCore::PosteriorPredictiveSimulation(mdl, dir, pt);
+    }
 }
 
 
@@ -134,6 +148,7 @@ const MemberRules& PosteriorPredictiveSimulation::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule("model", Model::getClassTypeSpec(), "The reference model instance.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule("directory", RlString::getClassTypeSpec(), "The name of the directory where we store the simulations.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule("trace", WorkspaceVector<ModelTrace>::getClassTypeSpec(), "The sample trace object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule("ancestralStateTrace", WorkspaceVector<AncestralStateTrace>::getClassTypeSpec(), "The ancestral state trace object. Used only for simulating CDBDP when conditioning on sampled tip states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         rules_set = true;
     }
@@ -179,6 +194,10 @@ void PosteriorPredictiveSimulation::setConstParameter(const std::string& name, c
     else if ( name == "trace" )
     {
         trace = var;
+    }
+    else if ( name == "ancestralStateTrace" )
+    {
+        ancestral_state_trace = var;
     }
     else
     {

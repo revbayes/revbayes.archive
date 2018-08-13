@@ -71,6 +71,12 @@ const std::string& ContinuousEventScaleProposal::getProposalName( void ) const
 }
 
 
+double ContinuousEventScaleProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -154,10 +160,14 @@ void ContinuousEventScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void ContinuousEventScaleProposal::printParameterSummary(std::ostream &o) const
+void ContinuousEventScaleProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
@@ -199,6 +209,11 @@ void ContinuousEventScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN
     }
 }
 
+
+void ContinuousEventScaleProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
+}
 
 /**
  * Tune the Proposal to accept the desired acceptance ratio.

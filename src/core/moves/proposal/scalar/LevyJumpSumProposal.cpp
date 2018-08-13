@@ -65,6 +65,12 @@ const std::string& LevyJumpSumProposal::getProposalName( void ) const
 }
 
 
+double LevyJumpSumProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -156,10 +162,14 @@ void LevyJumpSumProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void LevyJumpSumProposal::printParameterSummary(std::ostream &o) const
+void LevyJumpSumProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "delta = " << lambda;
+    o << "delta = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
@@ -199,6 +209,12 @@ void LevyJumpSumProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         variable2 = static_cast<ContinuousStochasticNode* >( newN );
     }
     
+}
+
+
+void LevyJumpSumProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

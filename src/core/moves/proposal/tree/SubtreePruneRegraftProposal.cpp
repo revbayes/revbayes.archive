@@ -1,6 +1,7 @@
 #include "SubtreePruneRegraftProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TypedDagNode.h"
 
@@ -56,6 +57,13 @@ const std::string& SubtreePruneRegraftProposal::getProposalName( void ) const
     static std::string name = "SubtreePruneRegraft";
     
     return name;
+}
+
+
+double SubtreePruneRegraftProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -202,7 +210,7 @@ void SubtreePruneRegraftProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SubtreePruneRegraftProposal::printParameterSummary(std::ostream &o) const
+void SubtreePruneRegraftProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     // no parameters
@@ -305,6 +313,12 @@ void SubtreePruneRegraftProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     tree = static_cast<StochasticNode<Tree>* >(newN) ;
     
+}
+
+
+void SubtreePruneRegraftProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

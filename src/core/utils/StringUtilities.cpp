@@ -16,6 +16,7 @@
  */
 
 #include "StringUtilities.h"
+#include "RbFileManager.h"
 #include "RbVector.h"
 
 #include <sstream>
@@ -284,9 +285,11 @@ std::string StringUtilities::getStringWithDeletedLastPathComponent(const std::st
 std::string StringUtilities::getFileContentsAsString(const std::string& s)
 {
 
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(s);
+    
     // open file
 	std::ifstream fStrm;
-    fStrm.open(s.c_str(), std::ios::in);
+    fStrm.open(fm.getFullFileName().c_str(), std::ios::in);
     if ( !fStrm.is_open() )
         return "";
         

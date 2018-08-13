@@ -92,7 +92,7 @@ namespace RevBayesCore
                        const std::vector<double>& rowWeights,
                        const std::vector<double>& colWeights,
                        unsigned int nbAxes,
-                       double tol = 0.0000001) throw (RbException);
+                       double tol = 0.0000001);
         
         virtual ~DualityDiagram();
         
@@ -114,18 +114,18 @@ namespace RevBayesCore
                      const std::vector<double>& rowWeights,
                      const std::vector<double>& colWeights,
                      unsigned int nbAxes,
-                     double tol = 0.0000001) throw (RbException);
+                     double tol = 0.0000001);
         
-        std::vector<double> computeVariancePercentagePerAxis() throw (RbException);
+        std::vector<double> computeVariancePercentagePerAxis();
         
-        size_t                                  getNbOfKeptAxes() const throw (RbException) { return nbAxes_; }
-        const std::vector<double>               getRowWeights() const throw (RbException) { return rowWeights_; }
-        const	std::vector<double>             getColumnWeights() const throw (RbException) { return colWeights_; }
-        const std::vector<double>&              getEigenValues() const throw (RbException) { return eigenValues_; }
-        const MatrixReal&                       getRowCoordinates() const throw (RbException) { return rowCoord_; }
-        const MatrixReal&                       getColCoordinates() const throw (RbException) { return colCoord_; }
-        const MatrixReal&                       getPrincipalAxes() const throw (RbException) { return ppalAxes_; }
-        const MatrixReal&                       getPrincipalComponents() const throw (RbException) { return ppalComponents_; }
+        size_t                                  getNbOfKeptAxes() const { return nbAxes_; }
+        const std::vector<double>               getRowWeights() const { return rowWeights_; }
+        const	std::vector<double>             getColumnWeights() const { return colWeights_; }
+        const std::vector<double>&              getEigenValues() const { return eigenValues_; }
+        const MatrixReal&                       getRowCoordinates() const { return rowCoord_; }
+        const MatrixReal&                       getColCoordinates() const { return colCoord_; }
+        const MatrixReal&                       getPrincipalAxes() const { return ppalAxes_; }
+        const MatrixReal&                       getPrincipalComponents() const { return ppalComponents_; }
     
         
         
@@ -134,7 +134,7 @@ namespace RevBayesCore
                     const MatrixReal& matrix,
                     const std::vector<double>& rowWeights,
                     const std::vector<double>& colWeights,
-                    unsigned int nbAxes) throw (RbException);
+                    unsigned int nbAxes);
         void compute_(const MatrixReal& matrix, double tol);
 
         std::vector<double> rowWeights_;

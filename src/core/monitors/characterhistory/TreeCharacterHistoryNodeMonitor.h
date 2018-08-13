@@ -579,23 +579,29 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::monitor(unsigned l
 
 /** open the file stream for printing */
 template<class charType>
-void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::openStream(bool reopen) {
+void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::openStream(bool reopen)
+{
+    
+    RbFileManager fm = RbFileManager(filename);
+    fm.createDirectoryForFile();
     
     // open the stream to the file
     if (append)
-        outStream.open( filename.c_str(), std::fstream::out | std::fstream::app);
+        outStream.open( fm.getFullFileName().c_str(), std::fstream::out | std::fstream::app);
     else
-        outStream.open( filename.c_str(), std::fstream::out);
+        outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
 }
 
 /** Print header for monitored values */
 template<class charType>
-void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::printHeader() {
+void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::printHeader()
+{
 
     // print one column for the iteration number
     outStream << "Iter";
 
-    if ( posterior ) {
+    if ( posterior )
+    {
         // add a separator before every new element
         outStream << separator;
         outStream << "Posterior";
