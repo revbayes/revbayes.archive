@@ -100,7 +100,8 @@ namespace RevLanguage {
         void                                initializeMonitorGlobalWorkspace(void);                                     //!< Initialize global workspace for monitors
         void                                initializeMoveGlobalWorkspace(void);                                        //!< Initialize global workspace for moves
         void                                initializeTypeGlobalWorkspace(void);                                        //!< Initialize global workspace for types
-        
+        void                                initializeVectorTypeGlobalWorkspace(void);                                        //!< Initialize global workspace for types
+
         TypeTable                           typeTable;                                                                  //!< Type table
         bool                                typesInitialized;                                                           //!< Are types initialized?
 

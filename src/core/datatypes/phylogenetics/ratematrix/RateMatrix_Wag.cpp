@@ -21,7 +21,7 @@
 #include "RbException.h"
 #include "RbMathMatrix.h"
 #include "TransitionProbabilityMatrix.h"
-
+#include "RbVectorUtilities.h"
 
 using namespace RevBayesCore;
 
@@ -30,6 +30,8 @@ RateMatrix_Wag::RateMatrix_Wag( void ) : RateMatrix_Empirical( 20 ){
     
     MatrixReal &m = *the_rate_matrix;
     
+    /* Constants from https://www.ebi.ac.uk/goldman-srv/WAG/wag.dat */
+
     /* Wag */
     m[ 0][ 0] = 0.0000000; m[ 1][ 0] = 0.5515710; m[ 2][ 0] = 0.5098480; m[ 3][ 0] = 0.7389980; m[ 4][ 0] = 1.0270400;
     m[ 5][ 0] = 0.9085980; m[ 6][ 0] = 1.5828500; m[ 7][ 0] = 1.4167200; m[ 8][ 0] = 0.3169540; m[ 9][ 0] = 0.1933350;
@@ -112,27 +114,29 @@ RateMatrix_Wag::RateMatrix_Wag( void ) : RateMatrix_Empirical( 20 ){
     m[10][19] = 1.8003400; m[11][19] = 0.3054340; m[12][19] = 2.0584500; m[13][19] = 0.6498920; m[14][19] = 0.3148870;
     m[15][19] = 0.2327390; m[16][19] = 1.3882300; m[17][19] = 0.3653690; m[18][19] = 0.3147300; m[19][19] = 0.0000000;
     
-    stationary_freqs[ 0] = 0.08662790;
-    stationary_freqs[ 1] = 0.04397200;
-    stationary_freqs[ 2] = 0.03908940;
-    stationary_freqs[ 3] = 0.05704510;
-    stationary_freqs[ 4] = 0.01930780;
-    stationary_freqs[ 5] = 0.03672810;
-    stationary_freqs[ 6] = 0.05805890;
-    stationary_freqs[ 7] = 0.08325180;
-    stationary_freqs[ 8] = 0.02443130;
-    stationary_freqs[ 9] = 0.04846600;
-    stationary_freqs[10] = 0.08620970;
-    stationary_freqs[11] = 0.06202860;
-    stationary_freqs[12] = 0.01950273;
-    stationary_freqs[13] = 0.03843190;
-    stationary_freqs[14] = 0.04576310;
-    stationary_freqs[15] = 0.06951790;
-    stationary_freqs[16] = 0.06101270;
-    stationary_freqs[17] = 0.01438590;
-    stationary_freqs[18] = 0.03527420;
-    stationary_freqs[19] = 0.07089560;    
-    
+    stationary_freqs[ 0] = 0.0866279;
+    stationary_freqs[ 1] = 0.0439720;
+    stationary_freqs[ 2] = 0.0390894;
+    stationary_freqs[ 3] = 0.0570451;
+    stationary_freqs[ 4] = 0.0193078;
+    stationary_freqs[ 5] = 0.0367281;
+    stationary_freqs[ 6] = 0.0580589;
+    stationary_freqs[ 7] = 0.0832518;
+    stationary_freqs[ 8] = 0.0244313;
+    stationary_freqs[ 9] = 0.048466;
+    stationary_freqs[10] = 0.086209;
+    stationary_freqs[11] = 0.0620286;
+    stationary_freqs[12] = 0.0195027;
+    stationary_freqs[13] = 0.0384319;
+    stationary_freqs[14] = 0.0457631;
+    stationary_freqs[15] = 0.0695179;
+    stationary_freqs[16] = 0.0610127;
+    stationary_freqs[17] = 0.0143859;
+    stationary_freqs[18] = 0.0352742;
+    stationary_freqs[19] = 0.0708956;
+
+    VectorUtilities::normalize(stationary_freqs);
+
     // multiply stationary frequencies into exchangeability matrix
     for (size_t i = 0; i < 20; i++)
     {

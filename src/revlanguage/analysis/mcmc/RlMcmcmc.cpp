@@ -68,7 +68,7 @@ void Mcmcmc::constructInternalObject( void )
     int                                                     ntries  = (int)static_cast<const Natural &>( num_init_attempts->getRevObject() ).getValue();
     
     bool                                                    th      = static_cast<const RlBoolean &>( tune_heat->getRevObject() ).getValue();
-    double                                                  tht     = static_cast<const RealPos &>( tune_heat_target->getRevObject() ).getValue();
+    double                                                  tht     = static_cast<const Probability &>( tune_heat_target->getRevObject() ).getValue();
     const std::string &                                     sm      = static_cast<const RlString &>( swap_method->getRevObject() ).getValue();
     const std::string &                                     smo     = static_cast<const RlString &>( swap_mode->getRevObject() ).getValue();
     
@@ -321,7 +321,7 @@ const MemberRules& Mcmcmc::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule("swapInterval" , Natural::getClassTypeSpec(), "The interval at which swaps (between neighbor chains if the swapMethod is neighbor or both, or between chains chosen randomly if the swapMethod is random) will be attempted.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural( long(10) )) );
         memberRules.push_back( new ArgumentRule("deltaHeat"    , RealPos::getClassTypeSpec(), "The delta parameter for the heat function.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.2) ) );
         memberRules.push_back( new ArgumentRule("heats"   , ModelVector<Probability>::getClassTypeSpec(), "The heats of chains, starting from the cold chain to hotter chains so the first value must be 1.0. If heats are specified directly then the delta parameter would be ignored.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule("tuneHeat"  , RlBoolean::getClassTypeSpec() , "Should we tune the heats during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
+        memberRules.push_back( new ArgumentRule("tuneHeat"  , RlBoolean::getClassTypeSpec() , "Should we tune the heats during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( false ) ) );
         memberRules.push_back( new ArgumentRule("tuneHeatTarget", Probability::getClassTypeSpec(), "The acceptance probability of adjacent chain swaps targeted by heats auto-tuning.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability( 0.23 ) ) );
         
         std::vector<std::string> options_swapMethod;
@@ -335,7 +335,7 @@ const MemberRules& Mcmcmc::getParameterRules(void) const
         std::vector<std::string> options_swapMode;
         options_swapMode.push_back( "single" );
         options_swapMode.push_back( "multiple" );
-        memberRules.push_back( new OptionRule( "swapMode", new RlString("multiple"), options_swapMode, "Whether make a single attempt per swap interval or attempt multiple (=nchains or nchains^2 for neighbor or random swaps, respectively) times." ) );
+        memberRules.push_back( new OptionRule( "swapMode", new RlString("single"), options_swapMode, "Whether make a single attempt per swap interval or attempt multiple (= nchains-1 or choose(nchains,2) for neighbor or random swaps, respectively) times." ) );
         
         rules_set = true;
     }
