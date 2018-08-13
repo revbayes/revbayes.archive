@@ -58,7 +58,11 @@ double HostSwitchRateModifier::computeRateMultiplier(std::vector<CharacterEvent*
     // loss event (independent of other hosts)
     if (from_state > to_state)
     {
-        if (sites_with_states[1].size() == 1 && sites_with_states[2].size() == 0)
+        
+        // repertoire must contain at least a single 2 (actual host)
+        // if the current repertoire contains one 2,
+        // and if our event causes the loss of state 2
+        if (sites_with_states[2].size() == 1 && from_state==2)
         {
             // cannot enter the null range (conditions on survival)
             r = 0.0;
@@ -96,7 +100,8 @@ double HostSwitchRateModifier::computeRateMultiplier(std::vector<CharacterEvent*
         }
         
         double delta_mean = delta / n_on;
-        r = std::exp( -scaler_value * delta_mean );
+        r = std::pow( delta_mean, -scaler_value);
+//        r = std::exp( -scaler_value * delta_mean );
     }
     return r;
 }
@@ -152,11 +157,26 @@ void HostSwitchRateModifier::setTree(const RevBayesCore::Tree &t)
     distance = *RevBayesCore::TreeUtilities::getDistanceMatrix ( tau );
     
     double max_distance = 2 * tau.getRoot().getAge();
+    double sum_distance = 0.0;
     for (size_t i = 0; i < distance.size(); i++) {
-        for (size_t j = 0; j < distance[i].size(); j++) {
+        for (size_t j = i; j < distance[i].size(); j++) {
             distance[i][j] /= max_distance;
+            distance[j][i] /= max_distance;
+            sum_distance += distance[i][j];
         }
     }
+    
+    size_t n_tips = distance.size();
+    size_t n_pairs = (n_tips*n_tips-n_tips) / 2;
+    double mean_distance = sum_distance / n_pairs;
+    for (size_t i = 0; i < distance.size(); i++) {
+        for (size_t j = i; j < distance[i].size(); j++) {
+            distance[i][j] /= mean_distance;
+            distance[j][i] /= mean_distance;
+        }
+    }
+    
+
 }
 
 void HostSwitchRateModifier::setScale(const std::vector<double>& s)
