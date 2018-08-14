@@ -123,11 +123,12 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
                     HomologousDiscreteCharacterData<NaturalNumbersState> *tip_data = new HomologousDiscreteCharacterData<NaturalNumbersState>();
 
                     // read the ancestral state trace
-                    for (size_t tip_index = 0; tip_index < tips.size(); ++tip_index)
+                    for (size_t i = 0; i < tips.size(); ++i)
                     {
+                        size_t tip_index = sse->getValue().getTipIndex(tips[i]);
                         std::string tip_index_anc_str = StringUtilities::toString(tip_index + 1);
                         std::string tip_index_end_str = "end_" + StringUtilities::toString(tip_index + 1);
-                        
+  
                         if (ancestral_state_traces_lookup.find(tip_index_anc_str) != ancestral_state_traces_lookup.end())
                         {
                             size_t idx = ancestral_state_traces_lookup[tip_index_anc_str];
@@ -140,7 +141,7 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
                         }
                         const std::vector<std::string>& tip_state_vector = tip_state_trace->getValues();
                         std::string state_str = tip_state_vector[current_pp_sim];
-                       
+  
                         // create a taxon data object for each tip
                         DiscreteTaxonData<NaturalNumbersState> this_tip_data = DiscreteTaxonData<NaturalNumbersState>(tips[tip_index]);
                         NaturalNumbersState state = NaturalNumbersState(0, num_states);
@@ -152,13 +153,19 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
                     // finally set the tip data to the sampled values
                     static_cast<TreeDiscreteCharacterData*>( &sse->getValue() )->setCharacterData(tip_data);
                 }
+               
+                try 
+                {
+                    // redraw new values
+                    the_node->redraw();
                 
-                // redraw new values
-                the_node->redraw();
-
-                // we need to store the new simulated data
-                the_node->writeToFile(sim_directory_name);
-                
+                    // we need to store the new simulated data
+                    the_node->writeToFile(sim_directory_name);
+                }
+                catch(...)
+                {
+                    // skip this simulation
+                }
             }
             
         }

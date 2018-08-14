@@ -159,6 +159,75 @@ std::vector<std::string> Func_consensusTree::getFunctionNameAliases( void ) cons
 }
 
 
+/**
+ * Get the author(s) of this function so they can receive credit (and blame) for it.
+ */
+std::vector<std::string> Func_consensusTree::getHelpAuthor(void) const
+{
+    // create a vector of authors for this function
+    std::vector<std::string> authors;
+    authors.push_back( "Seraina Klopfstein" );
+    authors.push_back( "Will Freyman" );
+    authors.push_back( "Will Pett" );
+    authors.push_back( "Sebastian Hoehna" );
+    
+    return authors;
+}
+
+
+/**
+ * Get the (brief) description for this function
+ */
+std::vector<std::string> Func_consensusTree::getHelpDescription(void) const
+{
+    // create a variable for the description of the function
+    std::vector<std::string> descriptions;
+    
+    std::string description1 = "";
+    description1 += "Calculates the majority-rule consensus topology from a trace of trees and summarizes branch lengths.";
+    descriptions.push_back( description1 );
+    
+    return descriptions;
+}
+
+
+/**
+ * Get an executable and instructive example.
+ * These example should help the users to show how this function works but
+ * are also used to test if this function still works.
+ */
+std::string Func_consensusTree::getHelpExample(void) const
+{
+    // create an example as a single string variable.
+    std::string example = "";
+    
+    example += "# Read in tree trace\n";
+    example += "tree_trace = readTreeTrace(\"output/my.trees\", burnin=0.25)\n";
+    example += "\n";
+    example += "# Generate the majority-rule consensus tree\n";
+    example += "map_tree = consensusTree(trace=tree_trace, cutoff=0.5, file=\"consensus.tree\")\n";
+    
+    return example;
+}
+
+
+/**
+ * Get the names of similar and suggested other functions
+ */
+std::vector<std::string> Func_consensusTree::getHelpSeeAlso(void) const
+{
+    // create an entry for each suggested function
+    std::vector<std::string> see_also;
+    see_also.push_back( "mapTree" );
+    see_also.push_back( "mccTree" );
+    see_also.push_back( "treeTrace" );
+    see_also.push_back( "readTreeTrace" );
+    
+    
+    return see_also;
+}
+
+
 /** Get type spec */
 const TypeSpec& Func_consensusTree::getTypeSpec( void ) const
 {
