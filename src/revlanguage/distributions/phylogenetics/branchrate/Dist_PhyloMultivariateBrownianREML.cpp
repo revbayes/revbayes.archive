@@ -33,11 +33,13 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
     
     // get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const Tree &>( tree->getRevObject() ).getDagNode();
-    size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
+//    size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
     size_t n_nodes = tau->getValue().getNumberOfNodes();
     
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* vcv = static_cast<const MatrixRealSymmetric&>( rate_matrix->getRevObject() ).getDagNode();
 
+    size_t n = vcv->getValue().getDim();
+    
     RevBayesCore::PhyloMultivariateBrownianProcessREML *dist = new RevBayesCore::PhyloMultivariateBrownianProcessREML(tau, vcv, n);
 
     // set the clock rates
@@ -160,14 +162,15 @@ std::vector<std::string> Dist_PhyloMultivariateBrownianREML::getHelpDetails(void
 std::string Dist_PhyloMultivariateBrownianREML::getHelpExample(void) const
 {
     // create an example as a single string variable.
-    std::string example = "\n";
+    std::string example = "";
     
-    example += "# generate a tree and variance-covariance matrix.\n";
+    example += "\n# generate a tree and variance-covariance matrix.\n";
     example += "psi ~ dnUniformTimeTree(1, [taxon(\"A\"),taxon(\"B\"),taxon(\"C\")])\n";
     example += "Sigma <- diagonalMatrix(5)\n\n";
     example += "# generate the multivariate data.\n";
     example += "x ~ dnPhyloMultivariateBrownianREML(tree=psi, rateMatrix=Sigma)\n\n";
     example += "# print the simulated data.\n";
+    example += "x\n";
     
     return example;
 }
@@ -244,7 +247,7 @@ const MemberRules& Dist_PhyloMultivariateBrownianREML::getParameterRules(void) c
         rateMatrixTypes.push_back( MatrixReal::getClassTypeSpec() );
         dist_member_rules.push_back( new ArgumentRule( "rateMatrix", rateMatrixTypes, "The variance-covariance matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        dist_member_rules.push_back( new ArgumentRule( "nSites"         ,  Natural::getClassTypeSpec(), "The number of sites used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
+//        dist_member_rules.push_back( new ArgumentRule( "nSites"         ,  Natural::getClassTypeSpec(), "The number of sites used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
 
         
         rules_set = true;
@@ -294,15 +297,15 @@ void Dist_PhyloMultivariateBrownianREML::printValue(std::ostream& o) const
     //{
     //     o << "?";
     // }
-    o << ", nSites=";
-    if ( nSites != NULL )
-    {
-        o << nSites->getName();
-    }
-    else
-    {
-        o << "?";
-    }
+//    o << ", nSites=";
+//    if ( nSites != NULL )
+//    {
+//        o << nSites->getName();
+//    }
+//    else
+//    {
+//        o << "?";
+//    }
     o << ")";
     
 }
@@ -324,10 +327,10 @@ void Dist_PhyloMultivariateBrownianREML::setConstParameter(const std::string& na
     // {
     //    site_rates = var;
     // }
-    else if ( name == "nSites" )
-    {
-        nSites = var;
-    }
+//    else if ( name == "nSites" )
+//    {
+//        nSites = var;
+//    }
     else if ( name == "rateMatrix" )
     {
         rate_matrix = var;
