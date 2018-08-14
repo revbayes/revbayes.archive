@@ -354,7 +354,7 @@ std::string HelpRenderer::renderHelp(const RbHelpType &typeHelp, size_t w)
 
     // details
     // MRM 2018: do we want to print these details?
-//    result.append( renderDetails( typeHelp.getDetails(), w ) );
+    result.append( renderDetails( typeHelp.getDetails(), w ) );
 
     // example
     result.append( TerminalFormatter::makeUnderlined("Example") );

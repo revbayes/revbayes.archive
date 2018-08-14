@@ -109,6 +109,16 @@ std::vector<std::string> Dist_LKJ::getHelpDetails(void) const
     
     details.push_back( "The LKJ distribution is uniform over positive-definite correlation matrices when eta=1." );
     
+    std::string density1 = "";
+    density1 += "The probability density of a correlation matrix under the LKJ distribution is:";
+    
+    details.push_back( density1 );
+    
+    std::string density2 = "";
+    density2 += "f(x) = det(x)^(eta - 1)";
+    
+    details.push_back( density2 );
+    
     return details;
 }
 
