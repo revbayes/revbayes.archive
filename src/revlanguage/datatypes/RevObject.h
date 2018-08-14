@@ -55,6 +55,8 @@ namespace RevLanguage {
         virtual std::string                                     getConstructorFunctionName(void) const { std::string n = "c_name"; return n; }
         virtual std::vector<std::string>                        getConstructorFunctionAliases(void) const { std::vector<std::string> a; return a; }
         virtual RevBayesCore::RbHelpEntry*                      getHelpEntry(void) const;                                                                       //!< Get the help entry for this function
+        virtual RevBayesCore::RbHelpEntry*                      getTypeHelpEntry(void) const;                                                                       //!< Get the help entry for this type
+
 
         // Basic utility functions you may want to override
         virtual void                                            constructInternalObject(void);                                                                  //!< Objects using the ConstructorFunction should overwrite this function for proper initializiation of the internal objects.

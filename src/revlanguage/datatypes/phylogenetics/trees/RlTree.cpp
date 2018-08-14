@@ -249,6 +249,7 @@ const std::string& Tree::getClassType(void)
     return rev_type;
 }
 
+
 /** Get class type spec describing type of object */
 const TypeSpec& Tree::getClassTypeSpec(void)
 {
@@ -257,6 +258,54 @@ const TypeSpec& Tree::getClassTypeSpec(void)
 
     return rev_type_spec;
 }
+
+
+/**
+ * Get the (brief) description for this function
+ */
+std::vector<std::string> Tree::getHelpDescription(void) const
+{
+    // create a variable for the description of the function
+    std::vector<std::string> descriptions;
+    
+    std::string description1 = "";
+    description1 += "The Tree datatype stores information to describe the shared ancestry";
+    description1 += "of a taxon set. Information includes taxon labels, topology, node";
+    description1 += "count, and branch lengths. Tree objects also possess several useful";
+    description1 += "methods to traverse and manipulate the Tree's value.";
+    descriptions.push_back( description1 );
+    
+    return descriptions;
+}
+
+
+
+/**
+ * Get the names of similar and suggested other functions
+ */
+std::vector<std::string> Tree::getHelpSeeAlso(void) const
+{
+    // create an entry for each suggested function
+    std::vector<std::string> see_also;
+    see_also.push_back( "TimeTree" );
+    see_also.push_back( "BranchLengthTree" );
+    
+    
+    return see_also;
+}
+
+
+/**
+ * Get the title of this help entry
+ */
+std::string Tree::getHelpTitle(void) const
+{
+    // create a title variable
+    std::string title = "Tree datatype";
+    
+    return title;
+}
+
 
 
 /** Get type spec */

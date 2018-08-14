@@ -180,6 +180,10 @@ std::string HelpRenderer::renderConstructors(const std::vector<RbHelpFunction> &
         // check if we have multiple arguments
         if ( ctors.size() == 1 )
         {
+            if (ctors[0].getUsage() == "c_name()")
+            {
+                return result;
+            }
             result.append( TerminalFormatter::makeUnderlined("Constructor") );
         }
         else
@@ -353,11 +357,13 @@ std::string HelpRenderer::renderHelp(const RbHelpType &typeHelp, size_t w)
     result.append( renderConstructors( typeHelp.getConstructors(), w ) );
         
     // example
-    result.append( TerminalFormatter::makeUnderlined("Example") );
-    result.append( line_break );
+    if (typeHelp.getExample() != "") {
+        result.append( TerminalFormatter::makeUnderlined("Example") );
+        result.append( line_break );
     
-    result.append( StringUtilities::formatTabWrap( typeHelp.getExample(), 1, w, false) );
-    result.append( line_break );
+        result.append( StringUtilities::formatTabWrap( typeHelp.getExample(), 1, w, false) );
+        result.append( line_break );
+    }
     
     // methods
     result.append( renderMethods( typeHelp.getMethods(), w, typeHelp.getName() ) );
