@@ -11,7 +11,7 @@ using namespace RevBayesCore;
  */
 PomoStateConverter::PomoStateConverter( void )
 {
-    
+
 }
 
 
@@ -71,7 +71,7 @@ HomologousDiscreteCharacterData<PomoState>* PomoStateConverter::convertData(
         frequencies[i][2]=(i-start)*unit;
         frequencies[i][3]=(virtualPopulationSize-(i-start))*unit;
     }
-    
+
    /* std::cout << "Frequencies: "<<std::endl;
     for (size_t j = 0; j < 30; j++) {
     for (size_t i = 0 ; i < frequencies[j].size(); ++i) {
@@ -81,7 +81,7 @@ HomologousDiscreteCharacterData<PomoState>* PomoStateConverter::convertData(
         pol->setState((size_t) (j+1) );
         std::cout << "  "<<pol->getStringValue() <<std::endl;
     }*/
-    
+
     //Second, go through the map to find all the species present in the data
     std::map<std::string, std::vector<std::string> > speciesNameToSequenceNames;
     for (std::map<std::string, std::string>::const_iterator it = sequenceNameToSpeciesName.begin(); it != sequenceNameToSpeciesName.end(); it++) {
@@ -129,10 +129,10 @@ HomologousDiscreteCharacterData<PomoState>* PomoStateConverter::convertData(
         }
         data->addTaxonData(tax);
     }
-    
-    
-    
-    
+
+
+
+
     return data;
 }
 
@@ -140,7 +140,7 @@ HomologousDiscreteCharacterData<PomoState>* PomoStateConverter::convertData(
 PomoState* PomoStateConverter::convertCounts(std::vector<double> &counts,
                                                            const unsigned int virtualPopulationSize,
                                                            std::vector< std::vector<double> > &frequencies) {
-    
+
     //First, normalize the counts vector
     double sum = 0.0;
     for (size_t i = 0 ; i < counts.size(); ++i)
@@ -181,6 +181,6 @@ PomoState* PomoStateConverter::convertCounts(std::vector<double> &counts,
     }
     PomoState* pol = new PomoState(virtualPopulationSize);
     pol->setStateByIndex((size_t) (index+1) );
- //   std::cout << "  "<<pol->getStringValue() <<std::endl;;
+    std::cout << "polgetstringvalue:  "<<pol->getStringValue() <<std::endl;;
     return pol;
 }
