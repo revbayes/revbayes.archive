@@ -120,6 +120,80 @@ const TypeSpec& Func_treeTrace::getClassTypeSpec(void)
 
 
 /**
+ * Get the author(s) of this function so they can receive credit (and blame) for it.
+ */
+std::vector<std::string> Func_treeTrace::getHelpAuthor(void) const
+{
+    // create a vector of authors for this function
+    std::vector<std::string> authors;
+    authors.push_back( "Will Freyman" );
+    
+    return authors;
+}
+
+
+/**
+ * Get the (brief) description for this function
+ */
+std::vector<std::string> Func_treeTrace::getHelpDescription(void) const
+{
+    // create a variable for the description of the function
+    std::vector<std::string> descriptions;
+    
+    std::string description1 = "";
+    description1 += "Creates a tree trace object from a vector of trees.";
+    descriptions.push_back( description1 );
+    
+    return descriptions;
+}
+
+
+/**
+ * Get an executable and instructive example.
+ * These example should help the users to show how this function works but
+ * are also used to test if this function still works.
+ */
+std::string Func_treeTrace::getHelpExample(void) const
+{
+    // create an example as a single string variable.
+    std::string example = "";
+    
+    example += "# Read in a vector of trees\n";
+    example += "trees = readTrees(\"trees.nex\")\n";
+    example += "\n";
+    example += "# Create a tree trace\n";
+    example += "tree_trace = treeTrace(trees, burnin=0.25)\n";
+    example += "\n";
+    example += "# Create a distribution of trees from the tree trace\n";
+    example += "tree ~ dnEmpiricalTree(tree_trace)\n";
+    example += "\n";
+    example += "# Add an MCMC move\n";
+    example += "moves[1] = mvEmpiricalTree(tree)\n";
+    
+    return example;
+}
+
+
+/**
+ * Get the names of similar and suggested other functions
+ */
+std::vector<std::string> Func_treeTrace::getHelpSeeAlso(void) const
+{
+    // create an entry for each suggested function
+    std::vector<std::string> see_also;
+    see_also.push_back( "mvEmpiricalTree" );
+    see_also.push_back( "treeTrace" );
+    see_also.push_back( "readTreeTrace" );
+    see_also.push_back( "readTrees" );
+    
+    
+    return see_also;
+}
+
+
+
+
+/**
  * Get the primary Rev name for this function.
  */
 std::string Func_treeTrace::getFunctionName( void ) const
