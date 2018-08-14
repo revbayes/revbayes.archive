@@ -437,12 +437,12 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
 
           // Insert the parent into vector of genes in this branch.
           remaining_genes.insert( parent );
-         // // TODO @Dominik. Why do we bother about the grandparent here?
-         //  if ( ! parent->isRoot() )
-         //    {
-         //      const TopologyNode *grand_parent = &parent->getParent();
-         //      branching_times_to_nodes[ grand_parent->getAge() ] = grand_parent;
-         //    }
+          // // TODO @Dominik @Sebastian. Why do we bother about the grandparent here?
+          //  if ( ! parent->isRoot() )
+          //    {
+          //      const TopologyNode *grand_parent = &parent->getParent();
+          //      branching_times_to_nodes[ grand_parent->getAge() ] = grand_parent;
+          //    }
           if ( (fabs( parent_age - individual_age) > EPS_COAL) &&       // The branching event didn't happen close to the bottom of the individual branch (which would be a coalescence).
                (fabs( parent_age - parent_individual_age) > EPS_COAL) ) // Nor did it happen close to the top of the individual branch (which would also be a coalescence).
             {
@@ -455,8 +455,6 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
           break;
     }
 
-  // TODO @Dominik. What about one gene? Don't we also need to take the probability into account?
-  // if ( initial_genes.size() > 1 )
   if ( initial_genes.size() >= 1 )
       ln_prob_dupl_loss += computeLnDuplicationLossProbability(initial_genes.size(), duplication_times, individual_age, parent_individual_age, individual_node.getIndex(), individual_node.isRoot());
 
@@ -688,26 +686,13 @@ void DuplicationLossProcess::simulateTreeRejectionSampling(void)
 {
   const Tree &ind = individual_tree->getValue();
 
-  // // TODO: Do I need this?
-  // const std::vector< TopologyNode* > &individual_tree_nodes = ind.getNodes();
-  // // Create a map from individual names to the nodes of the individual tree.
-  // std::map<std::string, TopologyNode * > individual_names_to_nodes;
-  // for (std::vector< TopologyNode *>::const_iterator it = individual_tree_nodes.begin(); it != individual_tree_nodes.end(); ++it)
-  //   {
-  //     if ( (*it)->isTip() == true )
-  //       {
-  //         const std::string &name = (*it)->getName();
-  //         individual_names_to_nodes[name] = *it;
-  //       }
-  //   }
-
   // A map from an individual node to the genes that are present at that node.
   std::map< const TopologyNode *, std::vector< TopologyNode* > > genes_per_branch;
 
   // The time tree object (topology + times).
   Tree *psi = NULL;
 
-  // TODO: Set stop condition (we get a valid tree).
+  // TODO: Set stop condition (we get a valid tree). For now, we take any tree.
   while (true) {
     // Delete old tree, if found.
     if (psi != NULL) {
@@ -748,8 +733,9 @@ void DuplicationLossProcess::simulateTreeRejectionSampling(void)
         psi->dropTipNode(*it);
     }
 
-    // // Check if the tree matches.
     // // TODO.
+    // // Check if the tree matches.
+    // // Assign gene taxa to individual taxa.
     // for (std::vector< Taxon >::iterator it = taxa.begin(); it != taxa.end(); ++it)
     //   {
     //     const std::string &individual_name = n->getIndividualName();
