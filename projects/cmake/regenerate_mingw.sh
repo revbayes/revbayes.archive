@@ -49,7 +49,7 @@ done
 if [ "$boost" = "true" ]
 then
 echo 'Building boost libraries'
-echo 'you can turn this of with argument "-boost false"'
+echo 'you can turn this off with argument "-boost false"'
 
 cd ../../boost_1_60_0
 rm ./project-config.jam*  # clean up from previous runs
