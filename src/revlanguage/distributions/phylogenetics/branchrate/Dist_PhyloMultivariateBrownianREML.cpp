@@ -62,18 +62,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
         dist->setBranchRate( br );
     }
     
-    // set the clock rates
-    //if ( site_rates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
-    //{
-    //    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* sr = static_cast<const ModelVector<RealPos> &>( site_rates->getRevObject() ).getDagNode();
-    //    dist->setSiteRate( sr );
-    //}
-    //else
-    //{
-    //    RevBayesCore::TypedDagNode< double >* sr = static_cast<const RealPos &>( site_rates->getRevObject() ).getDagNode();
-    //    dist->setSiteRate( sr );
-    //}
-    
     return dist;
 }
 
@@ -97,6 +85,18 @@ const TypeSpec& Dist_PhyloMultivariateBrownianREML::getClassTypeSpec(void)
     return rev_type_spec;
 }
 
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Dist_PhyloMultivariateBrownianREML::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    
+    return a_names;
+}
 
 /**
  * Get the Rev name for the distribution.
@@ -112,6 +112,109 @@ std::string Dist_PhyloMultivariateBrownianREML::getDistributionFunctionName( voi
     
     return d_name;
 }
+
+/**
+ * Get the author(s) of this function so they can receive credit (and blame) for it.
+ */
+std::vector<std::string> Dist_PhyloMultivariateBrownianREML::getHelpAuthor(void) const
+{
+    // create a vector of authors for this function
+    std::vector<std::string> authors;
+    authors.push_back( "Michael R. May" );
+    authors.push_back( "Nicolai Vetr" );
+    
+    return authors;
+}
+
+
+/**
+ * Get the (brief) description for this function
+ */
+std::vector<std::string> Dist_PhyloMultivariateBrownianREML::getHelpDescription(void) const
+{
+    // create a variable for the description of the function
+    std::vector<std::string> descriptions;
+    descriptions.push_back( "Multivariate Brownian motion over a phylogeny with variance-covariance matrix rateMatrix." );
+    
+    return descriptions;
+}
+
+
+/**
+ * Get the more detailed description of the function
+ */
+std::vector<std::string> Dist_PhyloMultivariateBrownianREML::getHelpDetails(void) const
+{
+    // create a variable for the description of the function
+    std::vector<std::string> details;
+    
+    return details;
+}
+
+
+/**
+ * Get an executable and instructive example.
+ * These example should help the users to show how this function works but
+ * are also used to test if this function still works.
+ */
+std::string Dist_PhyloMultivariateBrownianREML::getHelpExample(void) const
+{
+    // create an example as a single string variable.
+    std::string example = "\n";
+    
+    example += "# generate a tree and variance-covariance matrix.\n";
+    example += "psi ~ dnUniformTimeTree(1, [taxon(\"A\"),taxon(\"B\"),taxon(\"C\")])\n";
+    example += "Sigma <- diagonalMatrix(5)\n\n";
+    example += "# generate the multivariate data.\n";
+    example += "x ~ dnPhyloMultivariateBrownianREML(tree=psi, rateMatrix=Sigma)\n\n";
+    example += "# print the simulated data.\n";
+    
+    return example;
+}
+
+
+/**
+ * Get some references/citations for this function
+ *
+ */
+std::vector<RevBayesCore::RbHelpReference> Dist_PhyloMultivariateBrownianREML::getHelpReferences(void) const
+{
+    // create an entry for each reference
+    std::vector<RevBayesCore::RbHelpReference> references;
+    
+    RevBayesCore::RbHelpReference ref1;
+    ref1.setCitation("Huelsenbeck JP, B Rannala (2003). Detecting correlation between characters in a comparative analysis with uncertain phylogeny. Evolution, 57(6):1237-1247.");
+    references.push_back( ref1 );
+
+    return references;
+}
+
+
+/**
+ * Get the names of similar and suggested other functions
+ */
+std::vector<std::string> Dist_PhyloMultivariateBrownianREML::getHelpSeeAlso(void) const
+{
+    // create an entry for each suggested function
+    std::vector<std::string> see_also;
+    see_also.push_back( "dnPhyloBrownianREML" );
+    see_also.push_back( "dnPhyloBrownianMVN" );
+    
+    return see_also;
+}
+
+
+/**
+ * Get the title of this help entry
+ */
+std::string Dist_PhyloMultivariateBrownianREML::getHelpTitle(void) const
+{
+    // create a title variable
+    std::string title = "Phylogenetic Multivariate Brownian Motion";
+    
+    return title;
+}
+
 
 
 /** Return member rules (no members) */
