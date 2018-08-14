@@ -879,8 +879,10 @@ HomologousDiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(
 bool NclReader::fileExists(const std::string &fn) const
 {
     
+    RbFileManager fm = RbFileManager(fn);
+    
 	bool exists = false;
-	FILE *fp = fopen(fn.c_str(), "r");
+	FILE *fp = fopen(fm.getFullFileName().c_str(), "r");
 	if (fp != NULL)
     {
 		fclose(fp);
@@ -1073,9 +1075,11 @@ std::string NclReader::intuitDataType(std::string& s)
 bool NclReader::isFastaFile(std::string& fn, std::string& dType)
 {
     
+    RbFileManager fm = RbFileManager(fn);
+    
     // open file
 	std::ifstream fStrm;
-    fStrm.open(fn.c_str(), ios::in);
+    fStrm.open(fm.getFullFileName().c_str(), ios::in);
     
     // read the file token-by-token looking for Fasta things
     int ch = fStrm.peek();
@@ -1142,9 +1146,11 @@ bool NclReader::isFastaFile(std::string& fn, std::string& dType)
 bool NclReader::isNexusFile(const std::string& fn)
 {
     
+    RbFileManager fm = RbFileManager(fn);
+    
     // open file, read first word, close file
 	std::ifstream fStrm;
-    fStrm.open(fn.c_str(), ios::in);
+    fStrm.open(fm.getFullFileName().c_str(), ios::in);
     std::string word;
     fStrm >> word;
     fStrm.close();
@@ -1168,9 +1174,11 @@ bool NclReader::isNexusFile(const std::string& fn)
 bool NclReader::isPhylipFile(std::string& fn, std::string& dType, bool& is_interleaved)
 {
     
+    RbFileManager fm = RbFileManager(fn);
+    
     // open file
 	std::ifstream fStrm;
-    fStrm.open(fn.c_str(), ios::in);
+    fStrm.open(fm.getFullFileName().c_str(), ios::in);
     std::string seqStr = "";
     
     // read the file token-by-token looking for NEXUS things
@@ -1380,12 +1388,14 @@ std::vector<AbstractCharacterData *> NclReader::readMatrices(const std::string &
     // instantiate a vector of matrices
     std::vector<AbstractCharacterData* > cmv;
     
+    RbFileManager fm = RbFileManager(fn);
+    
     // The data types are as follows: Nexus, Phylip+DNA/RNA/AA/Standard+Interleaved/Noninterleaved,
     // Fasta+DNA/RNA/AA.
     
     // Check that the file exists. It is likely that this has been already checked during the formation of
     // the map that is passed into the function, but it never hurts to be safe...
-    if ( !fileExists(fn.c_str()) )
+    if ( !fileExists(fm.getFullFileName().c_str()) )
     {
         addWarning("Data file not found");
     }
@@ -1406,7 +1416,7 @@ std::vector<AbstractCharacterData *> NclReader::readMatrices(const std::string &
         }
         
         // read the file
-        cmv = readMatrices( fn.c_str(), ff, dt, il );
+        cmv = readMatrices( fm.getFullFileName().c_str(), ff, dt, il );
 		nexusReader.ClearContent();
     }
     
@@ -1495,7 +1505,9 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::vector<st
 std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::string &file_name, const std::string &file_format, const std::string &data_type, bool is_interleaved)
 {
     
-    const char *fn = file_name.c_str();
+    RbFileManager fm = RbFileManager(file_name);
+    
+    const char *fn = fm.getFullFileName().c_str();
     
     // check that the file exists
 	if ( !fileExists(file_name) )
@@ -1808,6 +1820,8 @@ std::vector<Tree*>* NclReader::readBranchLengthTrees(const std::string &fn, std:
 std::vector<Tree*>* NclReader::readBranchLengthTrees(const std::string &file_name, const std::string &file_format)
 {
 	
+    RbFileManager fm = RbFileManager(file_name);
+    
 	// check that the file exists
 	if ( !fileExists(file_name) )
     {
@@ -1821,12 +1835,12 @@ std::vector<Tree*>* NclReader::readBranchLengthTrees(const std::string &file_nam
         if (file_format == "nexus")
         {
 			// NEXUS file format
-			nexusReader.ReadFilepath(file_name.c_str(), MultiFormatReader::NEXUS_FORMAT);
+			nexusReader.ReadFilepath(fm.getFullFileName().c_str(), MultiFormatReader::NEXUS_FORMAT);
         }
 		else if (file_format == "phylip")
         {
 			// phylip file format with long taxon names
-			nexusReader.ReadFilepath(file_name.c_str(), MultiFormatReader::RELAXED_PHYLIP_TREE_FORMAT);
+			nexusReader.ReadFilepath(fm.getFullFileName().c_str(), MultiFormatReader::RELAXED_PHYLIP_TREE_FORMAT);
         }
         else if (file_format == "newick")
         {

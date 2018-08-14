@@ -21,12 +21,16 @@ namespace RevBayesCore {
         // Basic utility functions
         RateAgeBetaShift*                       clone(void) const;                                                                  //!< Clone object
         const std::string&                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
-//        size_t                                  getNumberAcceptedCurrentPeriod(void) const;                         //!< Get update weight of InferenceMove
-//        size_t                                  getNumberAcceptedTotal(void) const;                                 //!< Get update weight of InferenceMove
-        void                                    printSummary(std::ostream &o) const;                                                //!< Print the move summary
+        double                                  getMoveTuningParameter(void) const;
+        size_t                                  getNumberAcceptedCurrentPeriod(void) const;                         //!< Get update weight of InferenceMove
+        size_t                                  getNumberAcceptedTotal(void) const;                                 //!< Get update weight of InferenceMove
+        void                                    printSummary(std::ostream &o, bool current_period) const;                                                //!< Print the move summary
+        void                                    setMoveTuningParameter(double tp);
+        void                                    setNumberAcceptedCurrentPeriod(size_t na);
+        void                                    setNumberAcceptedTotal(size_t na);
         
     protected:
-        void                                    performMcmcMove(double lHeat, double pHeat);                                        //!< Perform move
+        void                                    performMcmcMove(double prHeat, double lHeat, double pHeat);                                        //!< Perform move
         void                                    resetMoveCounters(void);                                                            //!< Reset the counters such as numAccepted.
         void                                    swapNodeInternal(DagNode *oldN, DagNode *newN);                                     //!< Swap the pointers to the variable on which the move works on.
         void                                    tune(void);
@@ -43,11 +47,9 @@ namespace RevBayesCore {
         TopologyNode*                           storedNode;
         double                                  storedAge;
         std::vector<double>                     storedRates;
-        
-        size_t                                  numAccepted;
 
-//        size_t                                  num_accepted_current_period;
-//        size_t                                  num_accepted_total;
+        size_t                                  num_accepted_current_period;
+        size_t                                  num_accepted_total;
 
     };
     

@@ -121,6 +121,12 @@ const std::string& VectorBinarySwitchProposal::getProposalName( void ) const
 }
 
 
+double VectorBinarySwitchProposal::getProposalTuningParameter( void ) const
+{
+    return switch_probability;
+}
+
+
 std::vector<DagNode*> VectorBinarySwitchProposal::identifyNodesToTouch(void)
 {
     std::vector<DagNode*> nodes_to_touch;
@@ -153,10 +159,15 @@ void VectorBinarySwitchProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void VectorBinarySwitchProposal::printParameterSummary(std::ostream &o) const
+void VectorBinarySwitchProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "switch_probability = " << switch_probability;
+    o << "switch_probability = ";
+    if (name_only == false)
+    {
+        o << switch_probability;
+    }
+    
     
 }
 
@@ -198,6 +209,12 @@ void VectorBinarySwitchProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
             variables[i] = static_cast<StochasticNode<long> *>(newN);
         }
     }
+}
+
+
+void VectorBinarySwitchProposal::setProposalTuningParameter(double tp)
+{
+    switch_probability = tp;
 }
 
 

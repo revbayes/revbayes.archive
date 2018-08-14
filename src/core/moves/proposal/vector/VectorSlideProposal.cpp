@@ -70,6 +70,13 @@ const std::string& VectorSlideProposal::getProposalName( void ) const
 }
 
 
+double VectorSlideProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
+
 /**
  * Perform the proposal.
  *
@@ -126,10 +133,14 @@ void VectorSlideProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void VectorSlideProposal::printParameterSummary(std::ostream &o) const
+void VectorSlideProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
@@ -168,6 +179,12 @@ void VectorSlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast<StochasticNode< RbVector<double> >* >(newN) ;
     
+}
+
+
+void VectorSlideProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

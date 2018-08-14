@@ -259,6 +259,7 @@ void Workspace::initializeGlobalWorkspace( void )
 {
     
     initializeBasicTypeGlobalWorkspace();
+    initializeVectorTypeGlobalWorkspace();
     initializeTypeGlobalWorkspace();
     initializeMonitorGlobalWorkspace();
     initializeMoveGlobalWorkspace();

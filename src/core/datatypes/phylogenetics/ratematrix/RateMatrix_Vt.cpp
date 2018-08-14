@@ -133,6 +133,14 @@ RateMatrix_Vt::RateMatrix_Vt( void ) : RateMatrix_Empirical( 20 ){
 	stationary_freqs[18] = 0.034399;
 	stationary_freqs[19] = 0.073101;
 
+    // multiply stationary frequencies into exchangeability matrix
+    for (size_t i = 0; i < 20; i++)
+    {
+        for (size_t j = 0; j < 20; j++)
+        {
+            m[i][j] *= stationary_freqs[j];
+        }
+    }
     
     // set the diagonal values
     setDiagonal();

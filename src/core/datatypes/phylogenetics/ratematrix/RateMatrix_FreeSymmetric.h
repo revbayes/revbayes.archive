@@ -33,6 +33,9 @@ namespace RevBayesCore {
     class RateMatrix_FreeSymmetric : public GeneralRateMatrix {
         
     public:
+        
+        enum METHOD { SCALING_AND_SQUARING, SCALING_AND_SQUARING_PADE, SCALING_AND_SQUARING_TAYLOR, UNIFORMIZATION, EIGEN };
+        
         RateMatrix_FreeSymmetric(size_t k);                                                                                     //!< Construct rate matrix with n states
         RateMatrix_FreeSymmetric(size_t k, bool r);
         RateMatrix_FreeSymmetric(size_t k, bool r, std::string method);
@@ -41,6 +44,7 @@ namespace RevBayesCore {
         
         // overloaded operators
         RateMatrix_FreeSymmetric&           operator=(const RateMatrix_FreeSymmetric& r);
+        virtual RateMatrix_FreeSymmetric&   assign(const Assignable &m);
         
         // RateMatrix functions
         void                                calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
@@ -58,14 +62,10 @@ namespace RevBayesCore {
         void                                updateUniformization(void);                                                         //!< Update the system for uniformization
         void                                expandUniformization(int truncation, double tolerance) const;
         void                                expMatrixTaylor(MatrixReal &A, MatrixReal &F, double tolerance) const;
+        void                                checkMatrixDiff(MatrixReal x, double tolerance, bool& diff) const;
+        void                                checkMatrixIrreducible(double tolerance, TransitionProbabilityMatrix& P) const;
         
         bool                                rescale;
-        bool                                useScalingAndSquaring;
-        bool                                useScalingAndSquaringPade;
-        bool                                useScalingAndSquaringTaylor;
-        bool                                useUniformization;
-        bool                                useEigen;
-        void                                checkMatrixTolerance(MatrixReal x, double tolerance, bool& diff) const;
         
         // members for uniformization
         MatrixReal                          singleStepMatrix;
@@ -78,6 +78,8 @@ namespace RevBayesCore {
         EigenSystem*                        theEigenSystem;                                                                     //!< Holds the eigen system
         std::vector<double>                 c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse
         std::vector<std::complex<double> >  cc_ijk;                                                                             //!< Vector of precalculated product of eigenvectors and thier inverse for complex case
+        
+        METHOD                              my_method;
         
     };
     

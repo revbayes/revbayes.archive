@@ -111,6 +111,12 @@ const std::string& UpDownSlideBactrianProposal::getProposalName( void ) const
 }
 
 
+double UpDownSlideBactrianProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -200,10 +206,14 @@ void UpDownSlideBactrianProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void UpDownSlideBactrianProposal::printParameterSummary(std::ostream &o) const
+void UpDownSlideBactrianProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
@@ -342,6 +352,12 @@ void UpDownSlideBactrianProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         }
     }
     
+}
+
+
+void UpDownSlideBactrianProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

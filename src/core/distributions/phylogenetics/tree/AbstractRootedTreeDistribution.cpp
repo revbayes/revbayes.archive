@@ -226,7 +226,7 @@ int AbstractRootedTreeDistribution::diversity(double t) const
 void AbstractRootedTreeDistribution::getAffected(RbOrderedSet<DagNode *> &affected, RevBayesCore::DagNode *affecter)
 {
     
-    if ( affecter == process_age)
+    if ( affecter == process_age && dag_node != NULL )
     {
         dag_node->getAffectedNodes( affected );
     }
@@ -660,8 +660,17 @@ void AbstractRootedTreeDistribution::simulateTree( void )
 
         ra = rng->uniform01() * ( max_age - max_node_age ) + max_node_age;
     }
+    
+    double min_node_age = max_node_age;
+    for (size_t j = 0; j < nodes.size(); ++j)
+    {
+        if ( nodes[j]->getAge() < min_node_age )
+        {
+            min_node_age = nodes[j]->getAge();
+        }
+    }
 
-    simulateClade(nodes, ra, 0.0);
+    simulateClade(nodes, ra, min_node_age);
 
     TopologyNode *root = nodes[0];
 

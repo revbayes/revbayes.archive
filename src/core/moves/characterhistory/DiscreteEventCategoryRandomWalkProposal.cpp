@@ -2,6 +2,7 @@
 #include "DiscreteEventCategoryRandomWalkProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TypedDagNode.h"
 
@@ -66,6 +67,13 @@ const std::string& DiscreteEventCategoryRandomWalkProposal::getProposalName( voi
     static std::string name = "DiscreteEventCategoryRandomWalk";
     
     return name;
+}
+
+
+double DiscreteEventCategoryRandomWalkProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -139,7 +147,7 @@ void DiscreteEventCategoryRandomWalkProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void DiscreteEventCategoryRandomWalkProposal::printParameterSummary(std::ostream &o) const
+void DiscreteEventCategoryRandomWalkProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     //    o << "delta = " << delta;
@@ -182,6 +190,12 @@ void DiscreteEventCategoryRandomWalkProposal::swapNodeInternal(DagNode *oldN, Da
     {
         throw RbException("Wrong type of variable for BirthDeathEvent move.");
     }
+}
+
+
+void DiscreteEventCategoryRandomWalkProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

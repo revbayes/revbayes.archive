@@ -63,6 +63,13 @@ const std::string& BurstEventProposal::getProposalName( void ) const
 }
 
 
+double BurstEventProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -163,7 +170,7 @@ void BurstEventProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void BurstEventProposal::printParameterSummary(std::ostream &o) const
+void BurstEventProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
 }
@@ -215,6 +222,12 @@ void BurstEventProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         psi = static_cast<StochasticNode<Tree>* >(newN) ;
     }
     
+}
+
+
+void BurstEventProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

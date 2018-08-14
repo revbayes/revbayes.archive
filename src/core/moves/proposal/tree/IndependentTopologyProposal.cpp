@@ -77,6 +77,12 @@ const std::string& IndependentTopologyProposal::getProposalName( void ) const
 }
 
 
+double IndependentTopologyProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
+}
+
 
 /** Perform the move */
 double IndependentTopologyProposal::doProposal( void )
@@ -251,7 +257,7 @@ void IndependentTopologyProposal::prepareProposal( void )
 
 
 /** Print the parameter summary */
-void IndependentTopologyProposal::printParameterSummary(std::ostream &o) const
+void IndependentTopologyProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     // nothing to do
@@ -333,6 +339,12 @@ void IndependentTopologyProposal::undoProposal( void )
             rates_vector[i]->getValue() = stored_rates[i];
         }
     }
+}
+
+
+void IndependentTopologyProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

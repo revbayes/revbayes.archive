@@ -133,6 +133,12 @@ const std::string& UpDownScaleProposal::getProposalName( void ) const
 }
 
 
+double UpDownScaleProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -264,10 +270,14 @@ void UpDownScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void UpDownScaleProposal::printParameterSummary(std::ostream &o) const
+void UpDownScaleProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
@@ -467,6 +477,12 @@ void UpDownScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         }
     }
     
+}
+
+
+void UpDownScaleProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

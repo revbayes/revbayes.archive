@@ -284,13 +284,17 @@ std::string PhylowoodNhxMonitor::buildNhxString(void)
 
 
 /** open the file stream for printing */
-void PhylowoodNhxMonitor::openStream(bool reopen) {
+void PhylowoodNhxMonitor::openStream(bool reopen)
+{
+    
+    RbFileManager fm = RbFileManager(filename);
+    fm.createDirectoryForFile();
     
     // open the stream to the file
     if (append)
-        outStream.open( filename.c_str(), std::fstream::out | std::fstream::app);
+        outStream.open( fm.getFullFileName().c_str(), std::fstream::out | std::fstream::app);
     else
-        outStream.open( filename.c_str(), std::fstream::out);
+        outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
 }
 
 /** Print header for monitored values */

@@ -29,6 +29,14 @@ namespace RevBayesCore {
         
         Mcmc&                                               operator=(const Mcmc &m);                                                               //!< Overloaded assignment operator
         
+        struct tuningInfo {
+            size_t                                          num_tried_current_period;
+            size_t                                          num_tried_total;
+            size_t                                          num_accepted_current_period;
+            size_t                                          num_accepted_total;
+            double                                          tuning_parameter;
+        };
+        
         // public methods
         void                                                addFileMonitorExtension(const std::string &s, bool dir);
         void                                                addMonitor(const Monitor &m);
@@ -37,11 +45,13 @@ namespace RevBayesCore {
         void                                                finishMonitors(size_t n, MonteCarloAnalysisOptions::TraceCombinationTypes ct);                 //!< Finish the monitors
         double                                              getChainLikelihoodHeat(void) const;                                                     //!< Get the heat for this chain
         double                                              getChainPosteriorHeat(void) const;                                                      //!< Get the heat for this chain
+        double                                              getChainPriorHeat(void) const;
         size_t                                              getChainIndex(void) const;                                                              //!< Get the index of this chain
         const Model&                                        getModel(void) const;
         double                                              getModelLnProbability(bool like_only);
         RbVector<Monitor>&                                  getMonitors(void);
         RbVector<Move>&                                     getMoves(void);
+        std::vector<tuningInfo>                             getMovesTuningInfo(void);
         MoveSchedule&                                       getSchedule(void);
         const MoveSchedule&                                 getSchedule(void) const;
         const std::string&                                  getScheduleType(void) const;
@@ -50,17 +60,19 @@ namespace RevBayesCore {
         void                                                monitor(unsigned long g);
         void                                                nextCycle(bool advanceCycle);
         bool                                                isChainActive(void);
-        void                                                printOperatorSummary(void) const;
+        void                                                printOperatorSummary(bool current_period);
         void                                                redrawStartingValues(void);                                                             //!< Redraw the starting values.
         void                                                removeMonitors(void);
         void                                                reset(void);                                                                            //!< Reset the sampler and set all the counters back to 0.
         void                                                setChainActive(bool tf);
         void                                                setChainLikelihoodHeat(double v);                                                       //!< Set the heating temparature of the likelihood of the chain
         void                                                setChainPosteriorHeat(double v);                                                        //!< Set the heating temparature of the posterior of the chain
+        void                                                setChainPriorHeat(double v);
         void                                                setChainIndex(size_t idx);                                                              //!< Set the index of the chain
         void                                                setLikelihoodHeat(double v);                                                            //!< Set the heating temparature of the likelihood of the chain
         void                                                setModel(Model *m, bool redraw);
         void                                                setMoves(const RbVector<Move> &mvs);
+        void                                                setMovesTuningInfo(const std::vector<tuningInfo> &mvs_ti);
         void                                                setScheduleType(const std::string &s);                                                  //!< Set the type of the move schedule
         void                                                startMonitors(size_t numCycles, bool reopen);                                           //!< Start the monitors
         void                                                tune(void);                                                                             //!< Tune the sampler and its moves.
@@ -76,10 +88,12 @@ namespace RevBayesCore {
         bool                                                chain_active;
         double                                              chain_likelihood_heat;
         double                                              chain_posterior_heat;
+        double                                              chain_prior_heat;
         size_t                                              chain_idx;
         Model*                                              model;
         RbVector<Monitor>                                   monitors;
         RbVector<Move>                                      moves;
+        std::vector<tuningInfo>                             moves_tuningInfo;
         size_t                                              num_init_attempts;
         MoveSchedule*                                       schedule;
         std::string                                         schedule_type;                                                                           //!< Type of move schedule to be used

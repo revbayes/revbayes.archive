@@ -92,6 +92,13 @@ const std::string& EllipticalSliceSamplingSimpleMove::getMoveName( void ) const
     return name;
 }
 
+
+double EllipticalSliceSamplingSimpleMove::getMoveTuningParameter( void ) const
+{
+    return window;
+}
+
+
 double unif()
 {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -105,6 +112,7 @@ class slice_function
   std::vector<StochasticNode<double> *> variables;
   double lHeat;
   double pHeat;
+  double prHeat;
   RbOrderedSet<DagNode*> affectedNodes;
   int num_evals;
 
@@ -130,7 +138,7 @@ public:
     }
     
       // 3. exponentiate with the chain heat
-    double lnPosterior = pHeat * (lHeat * lnLikelihood + lnPrior);
+    double lnPosterior = pHeat * (lHeat * lnLikelihood + prHeat * lnPrior);
 
     return lnPosterior;
   }
@@ -174,10 +182,11 @@ public:
       return vals;
   }
 
-    slice_function(std::vector<StochasticNode<double> *> n, double l, double p)
+    slice_function(std::vector<StochasticNode<double> *> n, double pr, double l, double p)
     :variables(n),
      lHeat(l),
      pHeat(p),
+     prHeat(pr),
      num_evals(0)
   {
       for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
@@ -188,10 +197,10 @@ public:
 };
 
 
-void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pHeat )
+void EllipticalSliceSamplingSimpleMove::performMcmcMove( double prHeat, double lHeat, double pHeat )
 {
 
-    slice_function lnL(variables, lHeat, pHeat);
+    slice_function lnL(variables, prHeat, lHeat, pHeat);
 
     // Current values
     std::vector<double> f = lnL.current_value();
@@ -224,7 +233,7 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pH
     // Run slice loop (Murray steps 4-10, with automatic termination after 200 steps)
     std::vector<double> f_prime = std::vector<double>(variables.size(),0.0);
     size_t loop_iterations = 0;
-    for (size_t i=0;i<200;++i)
+    for (size_t i=0;i<1000;++i)
     {
         ++loop_iterations;
         // step 4
@@ -254,8 +263,8 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pH
         cos_theta = std::cos(theta);
     }
     
-    if ( loop_iterations == 200 ) {
-        std::abort();
+    if ( loop_iterations == 1000 ) {
+        throw(RbException("mvEllipticalSliceSamplingSimple has iterated 1000 times without success. This should not be possible, something may be wrong."));
     }
         
     total_movement += cos_theta;
@@ -273,7 +282,7 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double lHeat, double pH
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void EllipticalSliceSamplingSimpleMove::printSummary(std::ostream &o) const 
+void EllipticalSliceSamplingSimpleMove::printSummary(std::ostream &o, bool current_period) const 
 {
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
@@ -319,13 +328,13 @@ void EllipticalSliceSamplingSimpleMove::printSummary(std::ostream &o) const
     
     // print the average distance moved
     o<<"\n";
-    if (num_tried_total > 0)
+    if (num_tried_current_period > 0)
     {
       o<<"  Ave. cos(angle(x1,x2)) = "<<total_movement/num_tried_current_period<<std::endl;
     }
 
     // print the average distance moved
-    if (num_tried_total > 0)
+    if (num_tried_current_period > 0)
     {
       o<<"  Ave. # of Pr evals = "<<double(numPr)/num_tried_current_period<<std::endl;
     }
@@ -374,16 +383,25 @@ void EllipticalSliceSamplingSimpleMove::swapNodeInternal(DagNode *oldN, DagNode 
 }
 
 
+void EllipticalSliceSamplingSimpleMove::setMoveTuningParameter(double tp)
+{
+    window = tp;
+}
+
+
 /**
  * Tune the move to accept the desired acceptance ratio.
  * We only compute the acceptance ratio here and delegate the call to the proposal.
  */
 void EllipticalSliceSamplingSimpleMove::tune( void ) 
 {
-
-    if (numPr/num_tried_current_period > 9)
+    
+    if ( num_tried_current_period > 2 )
     {
-        window *= 0.9;
+        if (numPr/num_tried_current_period > 9)
+        {
+            window *= 0.9;
+        }
     }
 
 }

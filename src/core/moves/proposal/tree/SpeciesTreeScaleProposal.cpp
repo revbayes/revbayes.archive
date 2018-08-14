@@ -98,6 +98,12 @@ const std::string& SpeciesTreeScaleProposal::getProposalName( void ) const
 }
 
 
+double SpeciesTreeScaleProposal::getProposalTuningParameter( void ) const
+{
+    return delta;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -193,10 +199,14 @@ void SpeciesTreeScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SpeciesTreeScaleProposal::printParameterSummary(std::ostream &o) const
+void SpeciesTreeScaleProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
 
-    o << "delta = " << delta;
+    o << "delta = ";
+    if (name_only == false)
+    {
+        o << delta;
+    }
 
 }
 
@@ -295,6 +305,12 @@ void SpeciesTreeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 
     }
 
+}
+
+
+void SpeciesTreeScaleProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

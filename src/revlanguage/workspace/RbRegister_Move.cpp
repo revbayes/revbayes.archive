@@ -57,6 +57,7 @@
 #include "Move_SliceSampling.h"
 #include "Move_Scale.h"
 #include "Move_GammaScale.h"
+#include "Move_RandomDive.h"
 #include "Move_ScaleBactrian.h"
 #include "Move_ScaleBactrianCauchy.h"
 #include "Move_Slide.h"
@@ -88,6 +89,7 @@
 #include "Move_ElementScale.h"
 #include "Move_ElementSlide.h"
 #include "Move_GMRFHyperpriorGibbs.h"
+#include "Move_GMRFUnevenGridHyperpriorGibbs.h"
 #include "Move_MultipleElementScale.h"
 #include "Move_ShrinkExpand.h"
 #include "Move_SingleElementScale.h"
@@ -213,12 +215,14 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Moves on real values */
         addTypeWithConstructor( new Move_Scale() );
         addTypeWithConstructor( new Move_GammaScale() );
+        addTypeWithConstructor( new Move_RandomDive() );
         addTypeWithConstructor( new Move_ScaleBactrian() );
         addTypeWithConstructor( new Move_ScaleBactrianCauchy() );
         addTypeWithConstructor( new Move_Slide() );
         addTypeWithConstructor( new Move_SlideBactrian() );
         addTypeWithConstructor( new Move_SliceSampling() );
         addTypeWithConstructor( new Move_GMRFHyperpriorGibbs() );
+        addTypeWithConstructor( new Move_GMRFUnevenGridHyperpriorGibbs() );
         /* Moves on probability */
         addTypeWithConstructor( new Move_BetaProbability() );
 

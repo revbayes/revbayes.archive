@@ -69,6 +69,12 @@ const std::string& GibbsDrawCharacterHistoryProposal::getProposalName( void ) co
 }
 
 
+double GibbsDrawCharacterHistoryProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
+}
+
 
 void GibbsDrawCharacterHistoryProposal::prepareProposal( void )
 {
@@ -76,7 +82,7 @@ void GibbsDrawCharacterHistoryProposal::prepareProposal( void )
 }
 
 
-void GibbsDrawCharacterHistoryProposal::printParameterSummary(std::ostream &o) const
+void GibbsDrawCharacterHistoryProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     
@@ -106,6 +112,12 @@ void GibbsDrawCharacterHistoryProposal::swapNodeInternal(DagNode *oldN, DagNode 
     {
         throw RbException("The GibbsDrawCharacterHistoryProposal is currently only implemented for CDBDP distributions.");
     }
+}
+
+
+void GibbsDrawCharacterHistoryProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

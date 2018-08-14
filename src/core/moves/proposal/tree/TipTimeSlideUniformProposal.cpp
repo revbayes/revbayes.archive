@@ -2,6 +2,7 @@
 #include "TipTimeSlideUniformProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TreeUtilities.h"
 #include "TypedDagNode.h"
@@ -61,6 +62,13 @@ const std::string& TipTimeSlideUniformProposal::getProposalName( void ) const
     static std::string name = "TipTimeSlideUniform";
     
     return name;
+}
+
+
+double TipTimeSlideUniformProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -172,7 +180,7 @@ void TipTimeSlideUniformProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void TipTimeSlideUniformProposal::printParameterSummary(std::ostream &o) const
+void TipTimeSlideUniformProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
 }
@@ -214,6 +222,12 @@ void TipTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         origin = static_cast<TypedDagNode<double>* >(newN) ;
     }
     
+}
+
+
+void TipTimeSlideUniformProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

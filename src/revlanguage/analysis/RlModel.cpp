@@ -220,13 +220,17 @@ void Model::setConstParameter(const std::string& name, const RevPtr<const RevVar
 /* Write a file in DOT format for viewing the model DAG in graphviz */
 //   This requires the user to have graphviz installed, or they can paste the file contents
 //   into http://graphviz-dev.appspot.com/
-void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string &bgc){
+void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string &bgc)
+{
     
     const std::vector<RevBayesCore::DagNode*>& theNodes = value->getDagNodes();
     std::vector<RevBayesCore::DagNode*>::const_iterator it;
     
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(fn);
+    fm.createDirectoryForFile();
+    
     std::ofstream o;
-    o.open(fn.c_str());
+    o.open(fm.getFullFileName().c_str());
     o << "/* Graphical model description in DOT language                                    */\n";
     o << "/*    To view graph:                                                              */\n";
     o << "/*       open this file in the program Graphviz: http://www.graphviz.org          */\n";

@@ -60,7 +60,7 @@ namespace RevBayesCore {
      * This gives the more convenient access via
      * partialLikelihoods[active*activeLikelihoodOffset + node_index*nodeOffset + siteRateIndex*mixtureOffset + siteIndex*siteOffset + charIndex]
      *
-     * Our implementation of the partial likelihoods mean that we can store the partial likelihood of a node, but not for site rates.
+     * Our implementation of the partial likelihoods means that we can store the partial likelihood of a node, but not for site rates.
      * We also use twice as much memory because we store the partial likelihood along each branch and not only for each internal node.
      * This gives us a speed improvement during MCMC proposal in the order of a factor 2.
      *
@@ -168,7 +168,7 @@ namespace RevBayesCore {
         std::vector<TransitionProbabilityMatrix>                            transition_prob_matrices;
         
         // the likelihoods
-        double*                                                             partialLikelihoods;
+        mutable double*                                                     partialLikelihoods;
         std::vector<size_t>                                                 activeLikelihood;
         double*																marginalLikelihoods;
         
@@ -189,7 +189,7 @@ namespace RevBayesCore {
         // flags for likelihood recomputation
         bool                                                                touched;
         std::vector<bool>                                                   changed_nodes;
-        std::vector<bool>                                                   dirty_nodes;
+        mutable std::vector<bool>                                           dirty_nodes;
         
         // offsets for nodes
         size_t                                                              activeLikelihoodOffset;
@@ -207,7 +207,7 @@ namespace RevBayesCore {
         bool                                                                using_weighted_characters;
         
         bool                                                                useMarginalLikelihoods;
-        bool                                                                inMcmcMode;
+        mutable bool                                                        in_mcmc_mode;
         
         // members
         const TypedDagNode< double >*                                       homogeneous_clock_rate;
@@ -307,7 +307,7 @@ treatUnknownAsGap( true ),
 treatAmbiguousAsGaps( false ),
 using_weighted_characters( wd ),
 useMarginalLikelihoods( false ),
-inMcmcMode( false ),
+in_mcmc_mode( false ),
 pattern_block_start( 0 ),
 pattern_block_end( num_patterns ),
 pattern_block_size( num_patterns ),
@@ -398,7 +398,7 @@ treatUnknownAsGap( n.treatUnknownAsGap ),
 treatAmbiguousAsGaps( n.treatAmbiguousAsGaps ),
 using_weighted_characters( n.using_weighted_characters ),
 useMarginalLikelihoods( n.useMarginalLikelihoods ),
-inMcmcMode( n.inMcmcMode ),
+in_mcmc_mode( n.in_mcmc_mode ),
 pattern_block_start( n.pattern_block_start ),
 pattern_block_end( n.pattern_block_end ),
 pattern_block_size( n.pattern_block_size ),
@@ -431,7 +431,7 @@ template_state( n.template_state )
     tau->getValue().getTreeChangeEventHandler().addListener( this );
     
     // copy the partial likelihoods if necessary
-    if ( inMcmcMode == true )
+    if ( in_mcmc_mode == true )
     {
         partialLikelihoods = new double[2*activeLikelihoodOffset];
         memcpy(partialLikelihoods, n.partialLikelihoods, 2*activeLikelihoodOffset*sizeof(double));
@@ -815,7 +815,7 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeLnProbab
     
     
     // if we are not in MCMC mode, then we need to (temporarily) allocate memory
-    if ( inMcmcMode == false )
+    if ( in_mcmc_mode == false )
     {
         partialLikelihoods = new double[2*activeLikelihoodOffset];
     }
@@ -871,7 +871,7 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeLnProbab
     }
     
     // if we are not in MCMC mode, then we need to (temporarily) free memory
-    if ( inMcmcMode == false )
+    if ( in_mcmc_mode == false )
     {
         // free the partial likelihoods
         delete [] partialLikelihoods;
@@ -1418,12 +1418,36 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::executeMethod(con
     if ( n == "siteLikelihoods" )
     {
         
+        bool delete_partial_likelihoods = false;
+        
+        // if we are not in MCMC mode, then we need to (temporarily) allocate memory
+        if ( in_mcmc_mode == false )
+        {
+            delete_partial_likelihoods = true;
+            partialLikelihoods = new double[2*activeLikelihoodOffset];
+            in_mcmc_mode = true;
+            
+            for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
+            {
+                (*it) = true;
+            }
+        }
+        
         // make sure the likelihoods are updated
         const_cast<AbstractPhyloCTMCSiteHomogeneous<charType> *>( this )->computeLnProbability();
         
         // get the per site likelihood
         std::vector<double> tmp = std::vector<double>(num_patterns, 0.0);
         computeRootLikelihoods( tmp );
+        
+        // if we are not in MCMC mode, then we need to (temporarily) free memory
+        if ( delete_partial_likelihoods == true )
+        {
+            // free the partial likelihoods
+            delete [] partialLikelihoods;
+            partialLikelihoods = NULL;
+            in_mcmc_mode = false;
+        }
         
         // now match it back to the actual sites
         rv = RbVector<double>(num_sites, 0.0);
@@ -1459,9 +1483,36 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::executeMethod(con
             r.insert(r.begin(), 0.0);
         }
         
+        bool delete_partial_likelihoods = false;
+        
+        // if we are not in MCMC mode, then we need to (temporarily) allocate memory
+        if ( in_mcmc_mode == false )
+        {
+            delete_partial_likelihoods = true;
+            partialLikelihoods = new double[2*activeLikelihoodOffset];
+            in_mcmc_mode = true;
+            
+            for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
+            {
+                (*it) = true;
+            }
+        }
+        
+        // make sure the likelihoods are updated
+        const_cast<AbstractPhyloCTMCSiteHomogeneous<charType> *>( this )->computeLnProbability();
+        
         // get the per site rate likelihood
         MatrixReal tmp = MatrixReal(num_patterns, num_site_rates_withInv, 0.0);
         computeRootLikelihoodsPerSiteRate( tmp );
+        
+        // if we are not in MCMC mode, then we need to (temporarily) free memory
+        if ( delete_partial_likelihoods == true )
+        {
+            // free the partial likelihoods
+            delete [] partialLikelihoods;
+            partialLikelihoods = NULL;
+            in_mcmc_mode = false;
+        }
         
         // now match it back to the actual sites
         MatrixReal siteRateConditionalProb = MatrixReal(num_sites, num_site_rates_withInv, 0.0);
@@ -1552,8 +1603,36 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::executeMethod(con
             num_site_rates_withInv++;
         }
         
+        bool delete_partial_likelihoods = false;
+
+        // if we are not in MCMC mode, then we need to (temporarily) allocate memory
+        if ( in_mcmc_mode == false )
+        {
+            delete_partial_likelihoods = true;
+            partialLikelihoods = new double[2*activeLikelihoodOffset];
+            in_mcmc_mode = true;
+            
+            for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
+            {
+                (*it) = true;
+            }
+        }
+        
+        // make sure the likelihoods are updated
+        const_cast<AbstractPhyloCTMCSiteHomogeneous<charType> *>( this )->computeLnProbability();
+        
+        // get the per site rate likelihood
         MatrixReal tmp = MatrixReal(num_patterns, num_site_rates_withInv, 0.0);
         computeRootLikelihoodsPerSiteRate( tmp );
+        
+        // if we are not in MCMC mode, then we need to (temporarily) free memory
+        if ( delete_partial_likelihoods == true )
+        {
+            // free the partial likelihoods
+            delete [] partialLikelihoods;
+            partialLikelihoods = NULL;
+            in_mcmc_mode = false;
+        }
 
         // now match it back to the actual sites
         rv = MatrixReal(num_sites, num_site_rates_withInv, 0.0);
@@ -2246,7 +2325,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::resizeLikelihoodV
     activeLikelihoodOffset      =  num_nodes*nodeOffset;
     
     // only do this if we are in MCMC mode. This will safe memory
-    if ( inMcmcMode == true )
+    if ( in_mcmc_mode == true )
     {
         
         // we resize the partial likelihood vectors to the new dimensions
@@ -2718,16 +2797,16 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setMcmcMode(bool 
 {
     
     // free old memory
-    if ( inMcmcMode == true )
+    if ( in_mcmc_mode == true )
     {
         delete [] partialLikelihoods;
         partialLikelihoods = NULL;
     }
     
     // set our internal flag
-    inMcmcMode = tf;
+    in_mcmc_mode = tf;
     
-    if ( inMcmcMode == true )
+    if ( in_mcmc_mode == true )
     {
         resizeLikelihoodVectors();
     }
@@ -3188,7 +3267,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
             {
                 rv[site] -= this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] * *patterns;
             }
-            
         }
         
     }

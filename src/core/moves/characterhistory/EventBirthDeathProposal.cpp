@@ -2,6 +2,7 @@
 #include "EventBirthDeathProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "TypedDagNode.h"
 
@@ -48,6 +49,13 @@ void EventBirthDeathProposal::cleanProposal( void )
         stored_value = NULL;
     }
     
+}
+
+
+double EventBirthDeathProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
 }
 
 
@@ -190,7 +198,7 @@ void EventBirthDeathProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void EventBirthDeathProposal::printParameterSummary(std::ostream &o) const
+void EventBirthDeathProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     o << "delta = " << (trie_birth - accepted_birth) << "/" << trie_birth << " <|> " << (trie_death - accepted_death) << "/" << trie_death;
@@ -241,6 +249,12 @@ void EventBirthDeathProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     {
         throw RbException("Wrong type of variable for BirthDeathEvent move.");
     }
+}
+
+
+void EventBirthDeathProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 
