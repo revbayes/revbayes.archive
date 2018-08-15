@@ -11,7 +11,6 @@
 
 n_samples = 10
 
-# set my move index
 mi = 0
 
 mu ~ dnUniform( -10, 10 )
@@ -25,12 +24,6 @@ for (i in 1:n_samples ) {
    x[i].clamp( 0.0 )
 }
 
-#############
-# THE Model #
-#############
-
-# We define our model.
-# We can use any node of our model as a handle, here we chose to use the rate matrix.
 mymodel = model(mu)
 
 
