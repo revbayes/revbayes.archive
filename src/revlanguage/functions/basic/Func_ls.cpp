@@ -355,7 +355,7 @@ const ArgumentRules& Func_ls::getArgumentRules( void ) const
         options.push_back( "uncategorized" );
         
         argumentRules.push_back( new OptionRule( "filter", new RlString("all"), options, "List objects for the provided type." ) );
-    
+        
         rules_set = true;
     }
     
