@@ -144,7 +144,7 @@ RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( DagNodeM
  * This call is started by the parent and since we don't have one this is a dummy implementation!
  */
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::getAffected(RbOrderedSet<DagNode *> &affected, DagNode* affecter)
+void RevBayesCore::ConstantNode<valueType>::getAffected(RbOrderedSet<DagNode *> & /*affected*/, DagNode* /*affecter*/)
 {
     
     // do nothing
@@ -194,7 +194,7 @@ bool RevBayesCore::ConstantNode<valueType>::isConstant( void ) const
 
 
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::keepMe( DagNode* affecter )
+void RevBayesCore::ConstantNode<valueType>::keepMe( DagNode* /*affecter*/ )
 {
     // nothing to do
 }
@@ -231,7 +231,7 @@ void RevBayesCore::ConstantNode<valueType>::redraw( void )
 
 
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::restoreMe( DagNode *restorer )
+void RevBayesCore::ConstantNode<valueType>::restoreMe( DagNode * /*restorer*/ )
 {
     // nothing to do
 }
@@ -276,7 +276,7 @@ void RevBayesCore::ConstantNode<valueType>::setValueFromString(const std::string
 
 
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::touchMe( DagNode *toucher, bool touchAll )
+void RevBayesCore::ConstantNode<valueType>::touchMe( DagNode * /*toucher*/, bool /*touchAll*/ )
 {
     // nothing to do
 }
