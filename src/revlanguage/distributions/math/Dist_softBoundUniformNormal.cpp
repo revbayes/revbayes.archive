@@ -138,8 +138,8 @@ std::vector<std::string> Dist_SoftBoundUniformNormal::getHelpDetails(void) const
     
     std::string details_1 = "";
     details_1 += "The center piece of this distribution a uniform distribution defined between the given interval.";
-    details_1 += "A variable is drawn from that uniform distribution with probability p and with probability 1-p outside the interval.";
-    details_1 += "The probability density outside the interval is described by a normal distribution with standard deviation sd.";
+    details_1 += " A variable is drawn from that uniform distribution with probability p and with probability 1-p outside the interval.";
+    details_1 += " The probability density outside the interval is described by a normal distribution with standard deviation sd.";
     
     details.push_back( details_1 );
     
