@@ -2473,6 +2473,19 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
                     {
                         max = p_site_mixture[i];
                     }
+                    if ( RbMath::isFinite( p_site_mixture[i] ) == false )
+                    {
+                        std::cerr << p_site_mixture[i] << std::endl;
+                        std::cerr << "Oh no ..." << std::endl;
+                    }
+                }
+                if ( max == 0.0 )
+                {
+                    std::cerr << "Max = " << max << std::endl;
+                    for ( size_t i=0; i<this->num_chars; ++i)
+                    {
+                        std::cerr << p_site_mixture[i] << std::endl;
+                    }
                 }
                 
             }
@@ -2490,6 +2503,11 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
                 for ( size_t i=0; i<this->num_chars; ++i)
                 {
                     p_site_mixture[i] /= max;
+                    if ( RbMath::isFinite( p_site_mixture[i] ) == false )
+                    {
+                        std::cerr << p_site_mixture[i] << std::endl;
+                        std::cerr << "Oh no ..." << std::endl;
+                    }
                 }
                 
             }
@@ -2537,6 +2555,11 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
                     {
                         max = p_site_mixture[i];
                     }
+                    if ( RbMath::isFinite( p_site_mixture[i] ) == false )
+                    {
+                        std::cerr << p_site_mixture[i] << std::endl;
+                        std::cerr << "Oh no ..." << std::endl;
+                    }
                 }
                 
             }
@@ -2554,6 +2577,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
                 for ( size_t i=0; i<this->num_chars; ++i)
                 {
                     p_site_mixture[i] /= max;
+                    
+                    if ( RbMath::isFinite( max ) == false || RbMath::isFinite( p_site_mixture[i] ) == false )
+                    {
+                        std::cerr << "Oh no ..." << std::endl;
+                    }
+                    
                 }
                 
             }
