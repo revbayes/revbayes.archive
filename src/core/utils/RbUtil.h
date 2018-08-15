@@ -60,7 +60,7 @@ namespace RevBayesCore {
         class sub_vector {
         public:
 //            static const T&  getElement(const T &obj, size_t i) { return obj; }
-            static size_t    size(const T &obj) { return sub_vector_impl< T, IsDerivedFrom<T, Container>::Is >::size(obj); }
+            static size_t    size(const T & obj) { return sub_vector_impl< T, IsDerivedFrom<T, Container>::Is >::size(obj); }
             static void      printElement(std::ostream &o, const T &obj, size_t i) { return sub_vector_impl< T, IsDerivedFrom<T, Container>::Is >::printElement(o, obj, i); }
         };
         
@@ -69,29 +69,29 @@ namespace RevBayesCore {
         class sub_vector<double> {
         public:
             //            static const T&  getElement(const T &obj, size_t i) { return obj; }
-            static size_t    size(const double &obj) { return 1; }
-            static void      printElement(std::ostream &o, const double &obj, size_t i) { o << obj; }
+            static size_t    size(const double & /*obj*/) { return 1; }
+            static void      printElement(std::ostream &o, const double &obj, size_t /*i*/) { o << obj; }
         };
         template <>
         class sub_vector<int> {
         public:
             //            static const T&  getElement(const T &obj, size_t i) { return obj; }
-            static size_t    size(const int &obj) { return 1; }
-            static void      printElement(std::ostream &o, const int &obj, size_t i) { o << obj; }
+            static size_t    size(const int & /*obj*/) { return 1; }
+            static void      printElement(std::ostream &o, const int &obj, size_t /*i*/) { o << obj; }
         };
         template <>
         class sub_vector<bool> {
         public:
             //            static const T&  getElement(const T &obj, size_t i) { return obj; }
-            static size_t    size(const bool &obj) { return 1; }
-            static void      printElement(std::ostream &o, const bool &obj, size_t i) { o << obj; }
+            static size_t    size(const bool & /*obj*/) { return 1; }
+            static void      printElement(std::ostream &o, const bool &obj, size_t /*i*/) { o << obj; }
         };
         template <>
         class sub_vector<std::string> {
         public:
             //            static const T&  getElement(const T &obj, size_t i) { return obj; }
-            static size_t    size(const std::string &obj) { return 1; }
-            static void      printElement(std::ostream &o, const std::string &obj, size_t i) { o << obj; }
+            static size_t    size(const std::string & /*obj*/) { return 1; }
+            static void      printElement(std::ostream &o, const std::string &obj, size_t /*i*/) { o << obj; }
         };
 
 //        template <typename T,typename Alloc>

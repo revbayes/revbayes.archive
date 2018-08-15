@@ -34,7 +34,7 @@ namespace RevLanguage {
         // Overloaded C++ operators
         bool                                                    operator==(const RevObject& x) const { return &x == this; }
         bool                                                    operator!=(const RevObject& x) const { return !operator==(x); }
-        bool                                                    operator<(const RevObject& x) const { return false; }
+        bool                                                    operator<(const RevObject&)    const { return false; }
     
         // Basic operator functions
         virtual RevObject*                                      add(const RevObject &rhs) const;                                                                //!< Addition operator used for example in '+=' statements
