@@ -17,12 +17,6 @@ namespace RevBayesCore {
     public:
         virtual                            ~RateMatrix(void);                                                                           //!< Destructor
 
-        // overloaded operators
-        virtual bool                        operator==(const RateMatrix &rm) const { return this == &rm; }
-        virtual bool                        operator!=(const RateMatrix &rm) const { return !operator==(rm); }
-        virtual bool                        operator<(const RateMatrix &rm) const { return this < &rm; }
-        virtual bool                        operator<=(const RateMatrix &rm) const { return operator<(rm) || operator==(rm); }
-
         // pure virtual methods you have to overwrite
         virtual double                      averageRate(void) const = 0;                                                                //!< Calculate the average rate
         virtual void                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition matrixrate matrix
