@@ -5,8 +5,8 @@
 #include "RbException.h"
 #include "RlBoolean.h"
 #include "RlUtils.h"
-#include "TypeSpec.h"
 #include "RlUserInterface.h"
+#include "TypeSpec.h"
 #include "Workspace.h"
 #include "RlDistribution.h"
 
@@ -29,7 +29,7 @@ std::stringstream Func_ls::applyFunctionTableFilters( const std::multimap<std::s
 
     std::multimap<std::string, Function*>::const_iterator it;
     
-    std::ostringstream t1, t2;
+    std::stringstream t1, t2;
     for (it = table.begin(); it != table.end(); it++)
     {
         std::string name = it->first;
