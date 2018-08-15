@@ -142,7 +142,7 @@ bool Workspace::addType(RevObject *exampleObj)
     typeTable.insert(std::pair<std::string, RevObject*>(name, exampleObj));
    
     // add the help entry for this type to the global help system instance
-    RevBayesCore::RbHelpEntry* help_entry = exampleObj->getTypeHelpEntry();
+    RevBayesCore::RbHelpEntry* help_entry = exampleObj->getHelpEntry();
     RevBayesCore::RbHelpType* help_type = static_cast<RevBayesCore::RbHelpType*>( help_entry );
     RevBayesCore::RbHelpSystem::getHelpSystem().addHelpType( help_type );
     
