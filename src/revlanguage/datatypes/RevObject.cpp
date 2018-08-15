@@ -345,7 +345,13 @@ RevBayesCore::RbHelpEntry* RevObject::getHelpEntry( void ) const
     RevBayesCore::RbHelpEntry &help_entry = *help;
     
     // name
-    help_entry.setName( getConstructorFunctionName() );
+    std::string name = getConstructorFunctionName();
+    if ( name == "c_name" )
+    {
+        TypeSpec type_spec = getTypeSpec();
+        name = type_spec.getType();
+    }
+    help_entry.setName( name );
     
     // aliases
     std::vector<std::string> aliases = getConstructorFunctionAliases();
@@ -363,6 +369,7 @@ RevBayesCore::RbHelpEntry* RevObject::getHelpEntry( void ) const
     // example
     help_entry.setExample( getHelpExample() );
     
+    // references
     help_entry.setReferences( getHelpReferences() );
     
     // author
