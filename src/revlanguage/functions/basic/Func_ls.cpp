@@ -11,6 +11,7 @@
 #include "RlDistribution.h"
 
 #include <fstream>
+#include <sstream>
 
 using namespace RevLanguage;
 
@@ -24,7 +25,7 @@ std::stringstream Func_ls::applyFunctionTableFilters( const std::multimap<std::s
 {
     FunctionTable filteredTable;
     
-    std::stringstream s("");
+    std::stringstream s;
 
     std::multimap<std::string, Function*>::const_iterator it;
     
