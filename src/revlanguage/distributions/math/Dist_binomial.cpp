@@ -124,8 +124,8 @@ std::vector<std::string> Dist_binomial::getHelpDetails(void) const
     
     std::string details_1 = "";
     details_1 += "The binomial probability distribution defines the number of success in n trials,";
-    details_1 += "where each trial has the same success probability p. The probability is given by";
-    details_1 += "(n choose x) p^(x) * (1-p)^(n-p)";
+    details_1 += " where each trial has the same success probability p. The probability is given by";
+    details_1 += " (n choose x) p^(x) * (1-p)^(n-p)";
     
     details.push_back( details_1 );
     

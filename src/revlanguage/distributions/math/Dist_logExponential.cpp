@@ -109,9 +109,9 @@ std::vector<std::string> Dist_logExponential::getHelpDetails(void) const
     
     std::string details_1 = "";
     details_1 += "The log-Exponential distribution is defined over real numbers.";
-    details_1 += "Saying that x is log-Exponential is equivalent to saying that y = exp(x) is Exponential.";
-    details_1 += "The log-Exponential distribution therefore expresses lack of information about the order of magnitude of a scale parameter: ";
-    details_1 += "if x has a log-Exponential distribution, then it has equal chance to be contained by any of the intervals of the form (10^k, 10^(k+1)) within the allowed range.";
+    details_1 += " Saying that x is log-Exponential is equivalent to saying that y = exp(x) is Exponential.";
+    details_1 += " The log-Exponential distribution therefore expresses lack of information about the order of magnitude of a scale parameter: ";
+    details_1 += " if x has a log-Exponential distribution, then it has equal chance to be contained by any of the intervals of the form (10^k, 10^(k+1)) within the allowed range.";
     
     details.push_back( details_1 );
     

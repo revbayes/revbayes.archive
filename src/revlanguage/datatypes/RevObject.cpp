@@ -345,53 +345,12 @@ RevBayesCore::RbHelpEntry* RevObject::getHelpEntry( void ) const
     RevBayesCore::RbHelpEntry &help_entry = *help;
     
     // name
-    help_entry.setName( getConstructorFunctionName() );
-    
-    // aliases
-    std::vector<std::string> aliases = getConstructorFunctionAliases();
-    help_entry.setAliases( aliases );
-    
-    // title
-    help_entry.setTitle( getHelpTitle() );
-    
-    // description
-    help_entry.setDescription( getHelpDescription() );
-    
-    // details
-    help_entry.setDetails( getHelpDetails() );
-    
-    // example
-    help_entry.setExample( getHelpExample() );
-    
-    help_entry.setReferences( getHelpReferences() );
-    
-    // author
-    help_entry.setAuthor( getHelpAuthor() );
-    
-    // see also
-    help_entry.setSeeAlso( getHelpSeeAlso() );
-    
-    // now add the specific help stuff
-    addSpecificHelpFields( help );
-    
-    return help;
-    
-}
-
-
-/**
- * Get the help entry for this class
- */
-RevBayesCore::RbHelpEntry* RevObject::getTypeHelpEntry( void ) const
-{
- 
-    // create the help function entry that we will fill with some values
-    RevBayesCore::RbHelpEntry *help = constructTypeSpecificHelp();
-    RevBayesCore::RbHelpEntry &help_entry = *help;
-    
-    // name
-    TypeSpec type_spec = getTypeSpec();
-    std::string name = type_spec.getType();
+    std::string name = getConstructorFunctionName();
+    if ( name == "c_name" )
+    {
+        TypeSpec type_spec = getTypeSpec();
+        name = type_spec.getType();
+    }
     help_entry.setName( name );
     
     // aliases
@@ -410,6 +369,7 @@ RevBayesCore::RbHelpEntry* RevObject::getTypeHelpEntry( void ) const
     // example
     help_entry.setExample( getHelpExample() );
     
+    // references
     help_entry.setReferences( getHelpReferences() );
     
     // author
@@ -424,6 +384,7 @@ RevBayesCore::RbHelpEntry* RevObject::getTypeHelpEntry( void ) const
     return help;
     
 }
+
 
 /** Get the help entry for this class */
 std::vector<RevBayesCore::RbHelpFunction> RevObject::getHelpMethods( void ) const

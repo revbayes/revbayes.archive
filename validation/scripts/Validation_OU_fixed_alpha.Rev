@@ -37,7 +37,7 @@ mvi = 0
 
 sigma ~ dnLognormal( ln(10.0), sd=0.587405 )
 optimum ~ dnUniform(-10,10)
-attraction <- 1E-9
+attraction <- 1E-5
 
 moves[++mvi] = mvScale(sigma, lambda=1.0, tune=true, weight=2.0) 
 moves[++mvi] = mvSlide(optimum, delta=1.0, tune=true, weight=2.0) 
@@ -59,7 +59,8 @@ psi <- readTrees( "data/primates.tree" )[1]
 ###################
 
 # We use an empirical estimate of the clock rate which is 0.01 (=1%) per mvillion years per site
-traits ~ dnPhyloOrnsteinUhlenbeckMVN(psi, sigma=sigma, alpha=attraction, theta=optimum, rootState=optimum, nSites=1)
+#traits ~ dnPhyloOrnsteinUhlenbeckMVN(psi, sigma=sigma, alpha=attraction, theta=optimum, rootState=optimum, nSites=1)
+traits ~ dnPhyloOrnsteinUhlenbeckREML(psi, sigma=sigma, alpha=attraction, theta=optimum, rootState=optimum, nSites=1)
 
 # attach the data
 traits.clamp(data)
@@ -85,9 +86,9 @@ monitors[1] = mnModel(filename="output/primates_OU.log",printgen=10, separator =
 mymcmc = mcmc(mymodel, monitors, moves)
 
 
-validation = validationAnalysis( mymcmc, 20 )
-validation.burnin(generations=500,tuningInterval=100)
-validation.run(generations=1000)
+validation = validationAnalysis( mymcmc, 2000 )
+validation.burnin(generations=2000,tuningInterval=100)
+validation.run(generations=10000)
 validation.summarize()
 
 
