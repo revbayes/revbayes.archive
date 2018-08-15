@@ -27,10 +27,10 @@ namespace RevBayesCore {
         CladogeneticProbabilityMatrix(size_t n);                                               //!< Construct rate matrix with n states
         virtual                             ~CladogeneticProbabilityMatrix(void);
         
-        virtual bool                        operator==(const CladogeneticProbabilityMatrix &rm) const { return this == &rm; }
-        virtual bool                        operator!=(const CladogeneticProbabilityMatrix &rm) const { return !operator==(rm); }
-        virtual bool                        operator<(const CladogeneticProbabilityMatrix &rm) const { return this < &rm; }
-        virtual bool                        operator<=(const CladogeneticProbabilityMatrix &rm) const { return operator<(rm) || operator==(rm); }
+        bool                                operator==(const CladogeneticProbabilityMatrix &rm) const { return this == &rm; }
+        bool                                operator!=(const CladogeneticProbabilityMatrix &rm) const { return !operator==(rm); }
+        bool                                operator< (const CladogeneticProbabilityMatrix &rm) const { return this < &rm; }
+        bool                                operator<=(const CladogeneticProbabilityMatrix &rm) const { return operator<(rm) || operator==(rm); }
         
         // virtual methods
         virtual CladogeneticProbabilityMatrix&              assign(const Assignable &m);
