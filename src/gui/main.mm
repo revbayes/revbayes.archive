@@ -6,6 +6,9 @@
 #include <string>
 #import <Cocoa/Cocoa.h>
 
+#include "RlCommandLineOutputStream.h"
+#include "RlUserInterface.h"
+
 
 
 int main(int argc, char *argv[]) {
@@ -19,7 +22,11 @@ int main(int argc, char *argv[]) {
         }
     
     /* initialize environment */
-    RevLanguageMain rl = RevLanguageMain();
+    RevLanguageMain rl = RevLanguageMain(false);
+
+    CommandLineOutputStream *rev_output = new CommandLineOutputStream();      // new
+    RevLanguage::UserInterface::userInterface().setOutputStream( rev_output );// new
+
     rl.startRevLanguageEnvironment(sourceFiles);
 
     return NSApplicationMain( argc, (const char **) argv );
