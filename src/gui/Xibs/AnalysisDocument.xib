@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -85,7 +85,7 @@
                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                     <tableColumns>
-                                                        <tableColumn width="135" minWidth="40" maxWidth="1000" id="100357">
+                                                        <tableColumn identifier="" width="135" minWidth="40" maxWidth="1000" id="100357">
                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Active Analyses">
                                                                 <font key="font" metaFont="smallSystem"/>
                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -208,7 +208,7 @@
                             </menu>
                         </popUpButtonCell>
                     </popUpButton>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="gq3-LW-8OB">
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="gq3-LW-8OB">
                         <rect key="frame" x="141" y="965" width="737" height="17"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="mzM-AI-uPL">
@@ -220,15 +220,7 @@
                 </subviews>
             </view>
         </window>
-        <collectionViewItem id="100207">
-            <connections>
-                <outlet property="view" destination="100208" id="100210"/>
-            </connections>
-        </collectionViewItem>
-        <view id="100208">
-            <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
+        <collectionViewItem id="100207"/>
         <arrayController objectClassName="AnalysisTools" automaticallyPreparesContent="YES" id="100347" userLabel="Analyses Controller">
             <declaredKeys>
                 <string>analysisName</string>

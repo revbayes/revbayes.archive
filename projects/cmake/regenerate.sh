@@ -216,7 +216,7 @@ set_target_properties(rb-mpi PROPERTIES PREFIX "../")
 elif [ "$help" = "true" ]
 then
 echo '
-add_executable(rb-help ${PROJECT_SOURCE_DIR}/help/HtmlHelpGenerator.cpp)
+add_executable(rb-help ${PROJECT_SOURCE_DIR}/help/YamlHelpGenerator.cpp)
 
 target_link_libraries(rb-help rb-parser rb-core libs help ${Boost_LIBRARIES})
 set_target_properties(rb-help PROPERTIES PREFIX "../")
