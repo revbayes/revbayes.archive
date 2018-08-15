@@ -56,7 +56,7 @@ namespace RevLanguage {
     private:
 //        std::map<std::string, RevObject*>               applyTypeTableFilters( const std::map<std::string, RevObject*>& table, std::string filter ) const;
 //       const std::multimap<std::string, Function*>
-        std::stringstream applyFunctionTableFilters( const std::multimap<std::string, Function*>& table, std::string filter ) const;
+        std::string                                     makeFilteredFunctionString( const std::multimap<std::string, Function*>& table, std::string filter ) const;
         void                                            printTypes(bool printAll, std::string filter) const;
         void                                            printVariables(bool printAll, std::string filter) const;
         void                                            printFunctions(bool printAll, std::string filter) const;

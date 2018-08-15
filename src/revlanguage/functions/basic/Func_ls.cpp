@@ -21,7 +21,7 @@ Func_ls::Func_ls( void ) : Procedure()
     
 }
 
-std::stringstream Func_ls::applyFunctionTableFilters( const std::multimap<std::string, Function*>& table, std::string filter ) const
+std::string Func_ls::makeFilteredFunctionString( const std::multimap<std::string, Function*>& table, std::string filter ) const
 {
     FunctionTable filteredTable;
     
@@ -46,7 +46,7 @@ std::stringstream Func_ls::applyFunctionTableFilters( const std::multimap<std::s
         }
     }
     
-    return s;
+    return s.str();
 }
 
 bool Func_ls:: matchToken( std::string name, std::string filter ) const
@@ -603,51 +603,33 @@ void Func_ls::printVariables( bool printAll, std::string filter ) const
 
 void Func_ls::printFunctions( bool printAll, std::string filter ) const
 {
-//    std::stringstream s;
-    
-//    s.str("");
     
     // we want to filter thie table prior to printing
     std::multimap<std::string, Function*> functions = FunctionTable();
-    
     if ( printAll )
     {
         const FunctionTable& globalFuncs = Workspace::globalWorkspace().getFunctionTable();
         functions.insert( globalFuncs.begin(), globalFuncs.end() );
     }
-    
     const FunctionTable& userFuncs = env->getFunctionTable();
     functions.insert( userFuncs.begin(), userFuncs.end() );
 
-//    const std::multimap<std::string, Function*>
-    std::stringstream s = applyFunctionTableFilters(functions, filter);
+    // generate string of filtered functions
+    std::string fn_str = makeFilteredFunctionString(functions, filter);
     
+    // print filter table
     std::string title = filter;
     title[0] = toupper(title[0]);
-    
-    
-    if ( s.str() != "" )
+
+    if ( fn_str != "" )
     {
         RBOUT( "\n" );
         RBOUT( title + ":" );
         RBOUT( "===============" );
-        
-        s << std::endl;
-        RBOUT( s.str() );
+        RBOUT( "\n" );
+        RBOUT( fn_str );
         
     }
-
-
-////    Workspace::userWorkspace().getFunctionTable().printValue( s, printAll );
-//    if ( s.str().size() > 0 )
-//    {
-//        RBOUT( "\n" );
-//        RBOUT( "Function table:" );
-//        RBOUT( "===============" );
-//        
-//        s << std::endl;
-//        RBOUT( s.str() );
-//    }
     
     return;
 }
