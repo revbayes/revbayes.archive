@@ -2,8 +2,8 @@
 #
 # RevBayes Validation Test: Multispecies coalescent process
 #
-# Model: Multispecies coalescent with constant effective population size.
-#        We test whether we can estimate the population size, given fixed species tree and gene trees.
+# Model: Multispecies coalescent with varying effective population sizes across branches.
+#        We test whether we can estimate the population sizes, given fixed species tree and gene trees.
 #
 #
 # authors: Bastien Boussau
@@ -30,18 +30,21 @@ n_species <- primate_tree.ntips()
 taxa <- primate_tree.taxa()
 n_branches <- 2 * n_species - 1 # number of branches in a rooted tree
 
-
 moves = VectorMoves()
 monitors = VectorMonitors()
-
 
 ###################
 # Gene-Tree model #
 ###################
 
-# We assume a single effective population size for the entire species tree.
-Ne ~ dnGamma(shape=1.0,rate=1.0)
-moves.append(mvScale(Ne,1,true,1.0) )
+# We assume independent effective population size parameters for each branch of the species tree.
+for (i in 1:n_species) {
+  Ne[i] <- 10.0
+}
+for (i in (n_species+1):n_branches) {
+  Ne[i] ~ dnExponential(0.01)
+  moves.append( mvScale(Ne[i],lambda=.1,tune=true,3.0) )
+}
 
 for (i in 1:num_loci) {
    # The gene trees from the multispecies coalescent process
@@ -60,12 +63,13 @@ for (i in 1:num_loci) {
 # We can use any node of our model as a handle, here we chose to use the rate matrix.
 mymodel = model( primate_tree )
 
+
 mymcmc = mcmc(mymodel, monitors, moves)
 
 
 validation = validationAnalysis( mymcmc, 100 )
 validation.burnin(generations=500,tuningInterval=25)
-validation.run(generations=1000)
+validation.run(generations=500)
 validation.summarize()
 
 

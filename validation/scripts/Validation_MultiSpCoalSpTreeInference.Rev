@@ -3,7 +3,7 @@
 # RevBayes Validation Test: Multispecies coalescent process
 #
 # Model: Multispecies coalescent with constant effective population size.
-#        We test whether we can estimate the population size, given fixed species tree and gene trees.
+#        We test whether we can estimate the species tree, given fixed gene trees and Ne.
 #
 #
 # authors: Bastien Boussau
@@ -33,6 +33,35 @@ n_branches <- 2 * n_species - 1 # number of branches in a rooted tree
 
 moves = VectorMoves()
 monitors = VectorMonitors()
+
+
+######################
+# Species Tree model #
+######################
+
+# Specify a prior on the diversification and turnover rate
+diversification ~ dnExp(1)
+turnover ~ dnExp(1)
+
+# now transform the diversification and turnover rates into speciation and extinction rates
+speciation := diversification + turnover
+extinction := turnover
+
+# specify a prior on the root age (our informed guess is about 75-80 mya)
+root <- primate_tree.rootAge()
+
+sampling_fraction <- 1.0
+
+# create some moves that change the stochastic variables
+# all moves are sliding proposals but you could use scaling proposals for the rates too
+moves[++mi] = mvSlide(diversification,delta=1,tune=true,weight=1)
+moves[++mi] = mvSlide(turnover,delta=1,tune=true,weight=1)
+moves[++mi] = mvScale(diversification,lambda=1,tune=true,weight=1)
+moves[++mi] = mvScale(turnover,lambda=1,tune=true,weight=1)
+
+# construct a variable for the tree drawn from a birth death process
+psi ~ dnBDP(lambda=speciation, mu=extinction, rootAge=abs(root), rho=sampling_fraction, taxa=taxa, condition="nTaxa" )
+psi.setValue( primate_tree )
 
 
 ###################
