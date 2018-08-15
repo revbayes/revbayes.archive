@@ -71,8 +71,7 @@ void UserInterface::output(std::string msg)
 
     if ( process_id == 0 )
     {
-        std::string pad = "   ";
-        std::string tmp = StringUtilities::formatStringForScreen( msg, pad, pad, RbSettings::userSettings().getLineWidth() );
+        std::string tmp = StringUtilities::formatStringForScreen( msg, RevBayesCore::RbUtils::PAD, RevBayesCore::RbUtils::PAD, RbSettings::userSettings().getLineWidth() );
         output_stream->output(tmp);
     }
     
