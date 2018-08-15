@@ -111,8 +111,8 @@ std::vector<std::string> Dist_categorical::getHelpDescription(void) const
     
     std::string descriptions_1 = "";
     descriptions_1 += "The categorical distribution, sometimes referred to as the generalized Bernoulli";
-    descriptions_1 += "distribution. It describes the probability of one of K different outcomes,";
-    descriptions_1 += "labeled from 1 to K, with each outcome probability separately specified.";
+    descriptions_1 += " distribution. It describes the probability of one of K different outcomes,";
+    descriptions_1 += " labeled from 1 to K, with each outcome probability separately specified.";
 
     
     descriptions.push_back( descriptions_1 );
@@ -131,18 +131,18 @@ std::vector<std::string> Dist_categorical::getHelpDetails(void) const
     
     std::string details_1 = "";
     details_1 += "The argument to the constructor is a simplex containing the";
-    details_1 += "probabilities of the outcomes. The outcomes are labeled from";
-    details_1 += "1 to K, where K is the number of elements in the simplex.";
-    details_1 += "Outcome i has probability specified by component i";
-    details_1 += "in the simplex.";
+    details_1 += " probabilities of the outcomes. The outcomes are labeled from";
+    details_1 += " 1 to K, where K is the number of elements in the simplex.";
+    details_1 += " Outcome i has probability specified by component i";
+    details_1 += " in the simplex.";
     
     std::string details_2 = "";
     details_2 += "A typical scenario where a categorical variable is used";
-    details_2 += "is in the definition of a variable drawn from a mixture.";
-    details_2 += "A vector of mixture components is set up first, and then";
-    details_2 += "a stochastic variable drawn from a categorical distribution";
-    details_2 += "is used as an index in a deterministic assignment that";
-    details_2 += "points to a component in the mixture. See example below.";
+    details_2 += " is in the definition of a variable drawn from a mixture.";
+    details_2 += " A vector of mixture components is set up first, and then";
+    details_2 += " a stochastic variable drawn from a categorical distribution";
+    details_2 += " is used as an index in a deterministic assignment that";
+    details_2 += " points to a component in the mixture. See example below.";
     
     details.push_back( details_1 );
     details.push_back( details_2 );

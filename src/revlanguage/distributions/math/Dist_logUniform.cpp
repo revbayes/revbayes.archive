@@ -110,9 +110,9 @@ std::vector<std::string> Dist_logUniform::getHelpDetails(void) const
     
     std::string details_1 = "";
     details_1 += "The log-uniform distribution is defined over strictly positive real numbers.";
-    details_1 += "Saying that x is log-uniform is equivalent to saying that y = ln(x) is uniform.";
-    details_1 += "The log-uniform distribution therefore expresses lack of information about the order of magnitude of a scale parameter: ";
-    details_1 += "if x has a log-uniform distribution, then it has equal chance to be contained by any of the intervals of the form (10^k, 10^(k+1)) within the allowed range.";
+    details_1 += " Saying that x is log-uniform is equivalent to saying that y = ln(x) is uniform.";
+    details_1 += " The log-uniform distribution therefore expresses lack of information about the order of magnitude of a scale parameter: ";
+    details_1 += " if x has a log-uniform distribution, then it has equal chance to be contained by any of the intervals of the form (10^k, 10^(k+1)) within the allowed range.";
     
     details.push_back( details_1 );
     
@@ -123,7 +123,7 @@ std::vector<std::string> Dist_logUniform::getHelpDetails(void) const
     
     std::string details_3 = "";
     details_3 += "The log-uniform distribution is improper when defined over the entire positive real line.";
-    details_3 += "To always make it proper, in RevBayes, a min and a max should always be specified.";
+    details_3 += " To always make it proper, in RevBayes, a min and a max should always be specified.";
     
     details.push_back( details_3 );
     

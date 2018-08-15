@@ -110,7 +110,7 @@ std::vector<std::string> Dist_inverseGamma::getHelpDetails(void) const
     
     std::string details_1 = "";
     details_1 += "The inverse Gamma distribution is the probability of the sum of exponentially distributed variables.";
-    details_1 += "Thus, it provides a natural prior distribution for parameters that could be considered as sums of exponential variables.";
+    details_1 += " Thus, it provides a natural prior distribution for parameters that could be considered as sums of exponential variables.";
     
     details.push_back( details_1 );
     
