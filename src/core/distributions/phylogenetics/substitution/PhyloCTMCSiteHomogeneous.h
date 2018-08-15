@@ -254,6 +254,19 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikeli
                 
                 // store the likelihood for this starting state
                 p_site_mixture[c1] = sum;
+                
+                if ( RbMath::isFinite( sum ) == false )
+                {
+                    std::cerr << sum << std::endl;
+                    std::cerr << "Bad prob." << std::endl;
+                    sum = 0.0;
+                    // iterate over all possible terminal states
+                    for (size_t c2 = 0; c2 < this->num_chars; ++c2 )
+                    {
+                        sum += p_site_mixture_left[c2] * p_site_mixture_right[c2] * tp_a[c2];
+                        std::cerr << p_site_mixture_left[c2] << " * " << p_site_mixture_right[c2] << " * " << tp_a[c2] << " = " << sum << std::endl;
+                    }
+                }
 
                 // increment the pointers to the next starting state
                 tp_a+=this->num_chars;
@@ -413,6 +426,31 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(cons
 
                         // store the likelihood
                         p_site_mixture[c1] = tmp;
+                        
+                        
+                        if ( RbMath::isFinite( p_site_mixture[c1] ) == false )
+                        {
+                            std::cerr << p_site_mixture[c1] << std::endl;
+                            std::cerr << "Bad tip-prob." << std::endl;
+                            const double* d  = tp_begin+(this->num_chars*c1);
+                            
+                            double tmp = 0.0;
+                            
+                            for ( size_t i=0; i<val.size(); ++i )
+                            {
+                                // check whether we observed this state
+                                if ( val.isSet(i) == true )
+                                {
+                                    // add the probability
+                                    tmp += *d;
+                                    std::cerr << tmp << " += " << *d << std::endl;
+                                }
+                                
+                                // increment the pointer to the next transition probability
+                                ++d;
+                            } 
+                            
+                        }
 
                     }
                     else if ( this->using_weighted_characters == true )
@@ -441,6 +479,31 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(cons
 
                       // store the likelihood
                       p_site_mixture[c1] = tmp;
+                        
+                        if ( RbMath::isFinite( p_site_mixture[c1] ) == false )
+                        {
+                            std::cerr << p_site_mixture[c1] << std::endl;
+                            std::cerr << "Bad tip-prob." << std::endl;
+                            const double* d  = tp_begin+(this->num_chars*c1);
+                            
+                            double tmp = 0.0;
+                            std::vector< double > weights = this->value->getCharacter(char_data_node_index, site).getWeights();
+                            for ( size_t i=0; i<val.size(); ++i )
+                            {
+                                // check whether we observed this state
+                                if ( val.isSet(i) == true )
+                                {
+                                    // add the probability
+                                    tmp += *d * weights[i] ;
+                                    std::cerr << tmp << " += " << *d << " * " << weights[i] << std::endl;
+
+                                }
+                                
+                                // increment the pointer to the next transition probability
+                                ++d;
+                            } // end-while over all observed states for this character
+
+                        }
 
                     }
                     else // no ambiguous characters in use
@@ -449,6 +512,12 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(cons
 
                         // store the likelihood
                         p_site_mixture[c1] = tp_begin[c1*this->num_chars+org_val];
+                        
+                        if ( RbMath::isFinite( p_site_mixture[c1] ) == false )
+                        {
+                            std::cerr << p_site_mixture[c1] << std::endl;
+                            std::cerr << "Bad tip-prob." << std::endl;
+                        }
 
                     }
 

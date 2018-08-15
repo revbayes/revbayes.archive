@@ -58,9 +58,6 @@
 #include "ModelVector.h"
 #include "WorkspaceVector.h"
 
-/* Container types (in folder "distributions/phylogenetics") */
-#include "Dist_bdp.h"
-
 /* Evolution types (in folder "datatypes/phylogenetics") */
 #include "RlDistanceMatrix.h"
 
@@ -119,7 +116,8 @@
 #include "RlCladogeneticSpeciationRateMatrix.h"
 #include "RlTimeTree.h"
 
-
+#include "Func_VectorMonitors.h"
+#include "Func_VectorMoves.h"
 
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeVectorTypeGlobalWorkspace(void)
@@ -144,6 +142,10 @@ void RevLanguage::Workspace::initializeVectorTypeGlobalWorkspace(void)
         AddWorkspaceVectorType<Tree,3>::addTypeToWorkspace( *this, new Tree() );
         AddWorkspaceVectorType<Clade,3>::addTypeToWorkspace( *this, new Clade() );
         //        AddWorkspaceVectorType<Dist_bdp,3>::addTypeToWorkspace( *this, new Dist_bdp() );
+        
+        addFunction( new Func_VectorMoves()  );
+        addFunction( new Func_VectorMonitors()  );
+
         
     }
     catch(RbException& rbException)
