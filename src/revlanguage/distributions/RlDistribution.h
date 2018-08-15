@@ -47,6 +47,7 @@ namespace RevLanguage {
 
         
         // Basit utility functions
+        std::string                                         getRevDeclaration(void) const;
         virtual const TypeSpec&                             getVariableTypeSpec(void) const = 0;                                                //!< Get the variable type spec of this distribution
         //void                                                printValue(std::ostream& o) const;                                                  //!< Print value for user
 

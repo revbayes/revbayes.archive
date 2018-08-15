@@ -205,21 +205,16 @@ template<class valueType>
 void RevBayesCore::ConstantNode<valueType>::printStructureInfo(std::ostream &o, bool verbose) const
 {
     
-    if ( verbose == true )
-    {
-        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
-    }
-    
-    o << "_dagType      = Constant DAG node" << std::endl;
-    
-    if ( verbose == true )
-    {
-        o << "_refCount     = " << this->getReferenceCount() << std::endl;
-    }
-    
+    o << "_dagType      = Constant node" << std::endl;
     o << "_children     = ";
     this->printChildren(o, 16, 70, verbose);
     o << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+        o << "_refCount     = " << this->getReferenceCount() << std::endl;
+    }
 }
 
 
