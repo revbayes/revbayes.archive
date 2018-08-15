@@ -135,8 +135,8 @@ std::vector<std::string> Dist_halfNormal::getHelpDetails(void) const
     
     std::string details_1 = "";
     details_1 += "The half-normal distribution has density:";
-    details_1 += "f(x) = 2/(sqrt(2 pi) sigma) e^-((x - offset)^2/(2 sigma^2))";
-    details_1 += "where offset is the offset of the distribution and sigma the standard deviation.";
+    details_1 += " f(x) = 2/(sqrt(2 pi) sigma) e^-((x - offset)^2/(2 sigma^2))";
+    details_1 += " where offset is the offset of the distribution and sigma the standard deviation.";
     
     details.push_back( details_1 );
     
