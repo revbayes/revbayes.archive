@@ -110,7 +110,7 @@ std::vector<std::string> Dist_whiteNoise::getHelpDetails(void) const
     
     std::string details_1 = "";
     details_1 += "The white-noise process is a process of a positive continuous variable similar to Brownian motion and the Ornstein-Uhlenbeck process.";
-    details_1 += "However, the white-noise process has a large variance when the time is small, and has small variance if the time is large.";
+    details_1 += " However, the white-noise process has a large variance when the time is small, and has small variance if the time is large.";
     
     details.push_back( details_1 );
     

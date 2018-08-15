@@ -124,8 +124,8 @@ std::vector<std::string> Dist_nbinomial::getHelpDetails(void) const
     
     std::string details_1 = "";
     details_1 += "The negative binomial probability distribution describes the number of successes";
-    details_1 += "before r failures, where the success probability is p. The probability is given by";
-    details_1 += "(x + r - 1 choose x) p^(x) * (1-p)^r";
+    details_1 += " before r failures, where the success probability is p. The probability is given by";
+    details_1 += " (x + r - 1 choose x) p^(x) * (1-p)^r";
     
     details.push_back( details_1 );
     
