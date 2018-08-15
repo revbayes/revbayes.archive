@@ -24,11 +24,12 @@ cmake .
 make
 
 Command line options are:
--h | -help                      : print this help and exit.
+-h                              : print this help and exit.
 -boost          <true|false>    : true (re)compiles boost libs, false dont. Defaults to true.
 -mac            <true|false>    : set to true if you are building for a OS X - compatible with 10.6 and higher. Defaults to false.
 -win            <true|false>    : set to true if you are building on a Windows system. Defaults to false.
 -mpi            <true|false>    : set to true if you want to build the MPI version. Defaults to false.
+-help           <true|false>    : Build the help generator. Defaults to false.
 '
 # secret test option
 # -jupyter        <true|false>    : set to true if you want ot buikd the jupyter version. Defaults to false.
@@ -181,7 +182,7 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 # TODO Split these up based on sub-package dependency
 INCLUDE_DIRECTORIES(' >> "$HERE/CMakeLists.txt"
-find libs core revlanguage -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
+find libs core revlanguage help -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
 echo ' ${Boost_INCLUDE_DIR} )
 
 
@@ -200,7 +201,7 @@ add_subdirectory(revlanguage)
 if [ "$help" = "true" ]
 then
 echo '
-add_subdirectory(revlanguage)
+add_subdirectory(help)
 ' >> $HERE/CMakeLists.txt
 fi
 
@@ -215,10 +216,10 @@ set_target_properties(rb-mpi PROPERTIES PREFIX "../")
 elif [ "$help" = "true" ]
 then
 echo '
-add_executable(rb ${PROJECT_SOURCE_DIR}/tool/help/HtmlHelpGenerator.cpp)
+add_executable(rb-help ${PROJECT_SOURCE_DIR}/help/HtmlHelpGenerator.cpp)
 
-target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
-set_target_properties(rb PROPERTIES PREFIX "../")
+target_link_libraries(rb-help rb-parser rb-core libs help ${Boost_LIBRARIES})
+set_target_properties(rb-help PROPERTIES PREFIX "../")
 ' >> $HERE/CMakeLists.txt
 elif [ "$jupyter" = "true" ]
 then
@@ -319,6 +320,14 @@ echo 'set(LIBS_FILES' > "$HERE/libs/CMakeLists.txt"
 find libs | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/libs/CMakeLists.txt"
 echo ')
 add_library(libs ${LIBS_FILES})'  >> "$HERE/libs/CMakeLists.txt"
+
+if [ ! -d "$HERE/help" ]; then
+mkdir "$HERE/help"
+fi
+echo 'set(HELP_FILES' > "$HERE/help/CMakeLists.txt"
+find help | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/help/CMakeLists.txt"
+echo ')
+add_library(help ${HELP_FILES})'  >> "$HERE/help/CMakeLists.txt"
 
 if [ ! -d "$HERE/core" ]; then
 mkdir "$HERE/core"
