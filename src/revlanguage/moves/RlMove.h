@@ -36,6 +36,7 @@ namespace RevLanguage {
         
         virtual void                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);   //!< Set member variable
 
+        virtual std::string                                 getHelpCategoryType(void) const { return "Move"; }
         virtual std::string                                 getConstructorUsage(void) const { return ""; }
         virtual std::vector<std::string>                    getConstructorDetails(void) const { return std::vector<std::string>(); }
         virtual std::string                                 getConstructorExample(void) const { return ""; }

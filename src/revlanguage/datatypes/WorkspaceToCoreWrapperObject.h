@@ -47,7 +47,9 @@ namespace RevLanguage {
         WorkspaceToCoreWrapperObject(void);
         WorkspaceToCoreWrapperObject(rbType *v);
         WorkspaceToCoreWrapperObject(const WorkspaceToCoreWrapperObject &v);
-                
+        
+        virtual std::string                                 getHelpCategoryType(void) const { return "WorkspaceToCoreWrapperObject"; }
+        
         rbType*                                             value;
     };
     

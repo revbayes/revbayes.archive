@@ -378,6 +378,9 @@ RevBayesCore::RbHelpEntry* RevObject::getHelpEntry( void ) const
     // see also
     help_entry.setSeeAlso( getHelpSeeAlso() );
     
+    // category type
+    help_entry.setCategoryType( getHelpCategoryType() );
+
     // now add the specific help stuff
     addSpecificHelpFields( help );
     
@@ -489,6 +492,8 @@ std::vector<RevBayesCore::RbHelpFunction> RevObject::getHelpMethods( void ) cons
         help_methods.push_back( help_method );
         
     }
+    
+    // virtual dummy function
     
     return help_methods;
 }

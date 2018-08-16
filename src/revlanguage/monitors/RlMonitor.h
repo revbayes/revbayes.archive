@@ -38,7 +38,7 @@ namespace RevLanguage {
         
     protected:
         
-        
+        virtual std::string                                 getHelpCategoryType(void) const { return "Monitor"; }
         virtual std::string                                 getConstructorUsage(void) const { return ""; }
         virtual std::vector<std::string>                    getConstructorDetails(void) const { return std::vector<std::string>(); }
         virtual std::string                                 getConstructorExample(void) const { return ""; }
