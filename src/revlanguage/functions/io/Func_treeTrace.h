@@ -26,7 +26,7 @@ namespace RevLanguage {
         
     public:
         // Basic utility functions
-        Func_treeTrace*                 clone(void) const;                                                                  //!< Clone the object
+        Func_treeTrace*                     clone(void) const;                                                                  //!< Clone the object
         static const std::string&           getClassType(void);                                                                 //!< Get Rev type
         static const TypeSpec&              getClassTypeSpec(void);                                                             //!< Get class type spec
         std::string                         getFunctionName(void) const;                                                        //!< Get the primary name of the function in Rev
@@ -35,6 +35,10 @@ namespace RevLanguage {
         // Regular functions
         RevPtr<RevVariable>                 execute(void);                                                                      //!< Execute function
         const ArgumentRules&                getArgumentRules(void) const;                                                       //!< Get argument rules
+        std::vector<std::string>            getHelpAuthor(void) const;      
+        std::vector<std::string>            getHelpDescription(void) const; 
+        std::string                         getHelpExample(void) const;    
+        std::vector<std::string>            getHelpSeeAlso(void) const;     
         const TypeSpec&                     getReturnType(void) const;                                                          //!< Get type of return value
         
     private:

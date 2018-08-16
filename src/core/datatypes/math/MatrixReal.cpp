@@ -227,9 +227,9 @@ RbVector<double> MatrixReal::getColumn( size_t columnIndex ) const
 RbVector<double> MatrixReal::getDiagonal( void ) const
 {
     
-//    if ( isDiagonal() == false ) {
-//        throw RbException("MatrixReal: Can only get the diagonal elements of a diagonal matrix.");
-//    }
+    if ( isSquareMatrix() == false ) {
+        throw RbException("MatrixReal: Can only get the diagonal elements of a square matrix.");
+    }
     
     RbVector<double> diagonal_elements(n_rows, 0.0);
     

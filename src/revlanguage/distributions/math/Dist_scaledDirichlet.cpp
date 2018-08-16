@@ -113,8 +113,8 @@ std::vector<std::string> Dist_scaledDirichlet::getHelpDetails(void) const
     
     std::string details_1 = "";
     details_1 += "The scaled Dirichlet probability distribution is the generalization of the dirichlet distribution.";
-    details_1 += "A random variable from a scaled Dirichlet distribution is a simplex, i.e., a vector of probabilities that sum to 1.";
-    details_1 += "If b[1]=b[2]=...=b[n], then the scaledDirichlet(alpha,beta) collapses to the Dirichlet with the same alphas.";
+    details_1 += " A random variable from a scaled Dirichlet distribution is a simplex, i.e., a vector of probabilities that sum to 1.";
+    details_1 += " If b[1]=b[2]=...=b[n], then the scaledDirichlet(alpha,beta) collapses to the Dirichlet with the same alphas.";
     
     details.push_back( details_1 );
     
