@@ -187,14 +187,14 @@ void Distribution::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
         }
         argument.setArgumentDagNodeType( type );
         
-        std::string passing_method = "pass by value";
+        std::string passing_method = "value";
         if ( the_rule.getEvaluationType() == ArgumentRule::BY_CONSTANT_REFERENCE )
         {
-            passing_method = "pass by const reference";
+            passing_method = "const reference";
         }
         else if ( the_rule.getEvaluationType() == ArgumentRule::BY_REFERENCE )
         {
-            passing_method = "pass by reference";
+            passing_method = "reference";
         }
         argument.setArgumentPassingMethod(  passing_method );
         
