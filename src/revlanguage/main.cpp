@@ -38,7 +38,7 @@ string short_description()
     return "Bayesian phylogenetic inference using probabilistic graphical models and an interpreted language";
 }
 
-// 
+//
 variables_map parse_cmd_line(int argc, char* argv[])
 {
     using namespace po;
@@ -84,7 +84,8 @@ variables_map parse_cmd_line(int argc, char* argv[])
 }
 
 int main(int argc, char* argv[]) {
-    
+
+      using namespace po;
 #   ifdef RB_MPI
     int process_id = 0;
     int num_processes = 0;
@@ -95,30 +96,30 @@ int main(int argc, char* argv[]) {
         MPI_Comm_rank(MPI_COMM_WORLD, &process_id);
 //        num_processes = MPI::COMM_WORLD.Get_size();
         MPI_Comm_size(MPI_COMM_WORLD, &num_processes);
-        
+
         unsigned int seed = 0;
-        
+
         // sync the random number generators
         if ( process_id == 0 )
         {
             seed = RevBayesCore::GLOBAL_RNG->getSeed();
-            
+
         }
-        
+
         MPI_Bcast(&seed, 1, MPI_INT, 0, MPI_COMM_WORLD);
-        
+
         RevBayesCore::GLOBAL_RNG->setSeed( seed );
-        
+
     }
     catch (char* str)
     {
         return -1;
     }
 #endif
-    
+
 
     /* Parse argv to get the command line arguments */
-    auto args = parse_cmd_line(argc, argv);
+    variables_map args = parse_cmd_line(argc, argv);
 
     if (args.count("version"))
     {
@@ -153,14 +154,14 @@ int main(int argc, char* argv[]) {
     vector<string> sourceFiles;
     if (args.count("file"))
 	sourceFiles = args["file"].as<vector<string> >();
-    
+
     /* initialize environment */
     RevLanguageMain rl = RevLanguageMain(batch_mode);
-    
+
     CommandLineOutputStream *rev_output = new CommandLineOutputStream();
     RevLanguage::UserInterface::userInterface().setOutputStream( rev_output );
     rl.startRevLanguageEnvironment(sourceFiles);
-    
+
 #   ifdef RB_XCODE
 
 #   ifndef RB_MPI
@@ -171,7 +172,7 @@ int main(int argc, char* argv[]) {
     int result = 0;
     std::string commandLine = "";
     std::string line = "";
-        
+
     for (;;)
     {
         /* Print prompt based on state after previous iteration */
@@ -195,7 +196,7 @@ int main(int argc, char* argv[]) {
 #               endif
                 exit(0);
             }
-            
+
             if (result == 0 || result == 2)
             {
                 commandLine = line;
@@ -205,12 +206,12 @@ int main(int argc, char* argv[]) {
                 commandLine += ";" + line;
             }
         }
-        
+
         size_t bsz = commandLine.size();
 #       ifdef RB_MPI
         MPI_Bcast(&bsz, 1, MPI_INT, 0, MPI_COMM_WORLD);
 #       endif
-        
+
         char * buffer = new char[bsz+1];
         buffer[bsz] = 0;
         for (int i = 0; i < bsz; i++)
@@ -220,24 +221,22 @@ int main(int argc, char* argv[]) {
 #       ifdef RB_MPI
         MPI_Bcast(buffer, (int)bsz, MPI_CHAR, 0, MPI_COMM_WORLD);
 #       endif
-        
+
         std::string tmp = std::string( buffer );
 
         result = RevLanguage::Parser::getParser().processCommand(tmp, &RevLanguage::Workspace::userWorkspace());
     }
-    
+
 #   else
-    
+
     RevClient c;
     c.startInterpretor();
-    
+
 #   endif
 
 #   ifdef RB_MPI
     MPI_Finalize();
 #   endif
-    
+
     return 0;
 }
-
-
