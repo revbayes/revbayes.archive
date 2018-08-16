@@ -95,8 +95,8 @@ mymcmc = mcmc(mymodel, monitors, moves)
 
 
 validation = validationAnalysis( mymcmc, 100 )
-validation.burnin(generations=500,tuningInterval=25)
-validation.run(generations=1000)
+validation.burnin(generations=1000,tuningInterval=100)
+validation.run(generations=5000)
 validation.summarize()
 
 
