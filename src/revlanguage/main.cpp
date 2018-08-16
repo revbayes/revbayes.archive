@@ -55,8 +55,8 @@ variables_map parse_cmd_line(int argc, char* argv[])
 
 	("batch,b","Run in batch mode.")
 	// composing means that --file can occur multiple times
-	("file",value<vector<string>>()->composing(),"File(s) to source.")
-	("setOption",value<vector<string>>()->composing(),"Set an option key=value.")
+	("file",value<vector<string> >()->composing(),"File(s) to source.")
+	("setOption",value<vector<string> >()->composing(),"Set an option key=value.")
 	;
 
     // Treat all positional options as "file" options.
@@ -133,7 +133,7 @@ int main(int argc, char* argv[]) {
 
     if (args.count("setOption"))
     {
-	vector<string> options = args["setOption"].as<vector<string>>();
+	vector<string> options = args["setOption"].as<vector<string> >();
 	for(int i=0;i<options.size();i++)
 	{
 	    vector<string> tokens;
@@ -152,7 +152,7 @@ int main(int argc, char* argv[]) {
     /* seek out files from command line */
     vector<string> sourceFiles;
     if (args.count("file"))
-	sourceFiles = args["file"].as<vector<string>>();
+	sourceFiles = args["file"].as<vector<string> >();
     
     /* initialize environment */
     RevLanguageMain rl = RevLanguageMain(batch_mode);
