@@ -44,11 +44,11 @@ matrix:
           packages:
           - g++-7
           - pandoc
-    - os: osx
-      osx_image: xcode9.4
-# Remove this, in hopes that xcode9.4 will no longer time out.
+# xcode9.4 times out a lot
 #    - os: osx
-#      osx_image: xcode8.3
+#      osx_image: xcode9.4
+    - os: osx
+      osx_image: xcode8.3
       
 before_install:
   # We need to re-export CC and CXX here, because travis exports CXX=g++ or clang++ AFTER we set CXX.
