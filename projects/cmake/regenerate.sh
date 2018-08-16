@@ -94,8 +94,6 @@ project(RevBayes)
 #    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg")
 #endif ()
 
-SET(BOOST_LIBRARY ../../../boost_1_60_0/stage/lib)
-
 ' > "$HERE/CMakeLists.txt"
 
 if [ "$debug" = "true" ]
