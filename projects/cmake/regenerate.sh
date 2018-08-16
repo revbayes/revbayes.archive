@@ -94,6 +94,8 @@ project(RevBayes)
 #    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg")
 #endif ()
 
+SET(BOOST_LIBRARY ../../../boost_1_60_0/stage/lib)
+
 ' > "$HERE/CMakeLists.txt"
 
 if [ "$debug" = "true" ]
@@ -161,6 +163,7 @@ set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../src)
 
 
 SET(BOOST_ROOT ../../../boost_1_60_0)
+SET(BOOST_LIBRARY ../../../boost_1_60_0/stage/lib)
 SET(Boost_USE_STATIC_RUNTIME true)
 SET(Boost_USE_STATIC_LIBS ON)
 find_package(Boost
