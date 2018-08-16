@@ -17,10 +17,10 @@
 #import "StationarityTest.h"
 #import "SemMin.h"
 #import "Trace.h"
-#import "TraceAnalysisContinuous.h"
+//#import "TraceAnalysisContinuous.h"
 #import "ToolNumericalMcmcOutput.h"
 
-#if 1
+#if 0
 
 @implementation ToolMcmcDiagnostic
 

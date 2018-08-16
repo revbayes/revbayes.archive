@@ -3,21 +3,19 @@
 # RevBayes Validation Test: Normal Distribution
 # 
 # Model: Just a single random variable from an normal distribution. 
-#            
 #
-# authors: Sebastian Hoehna
+# Authors: Sebastian Hoehna
 #
 ################################################################################
 
 n_samples = 10
 
-mi = 0
-
 mu ~ dnUniform( -10, 10 )
 sigma ~ dnExponential( 1.0 )
 
-moves[ ++mi ] = mvSlide( mu )
-moves[ ++mi ] = mvScale( sigma )
+moves = VectorMoves()
+moves.append(mvSlide(mu))
+moves.append(mvScale(sigma))
 
 for (i in 1:n_samples ) {
    x[i] ~ dnNormal(mu,sigma)
@@ -26,16 +24,12 @@ for (i in 1:n_samples ) {
 
 mymodel = model(mu)
 
-
-
-
-
-
-monitors[1] = mnModel(filename="output/normal_test.log",printgen=10, separator = TAB)
+monitors = VectorMonitors()
+monitors.append(mnModel(filename="output/normal_test.log",printgen=10, separator = TAB))
 
 mymcmc = mcmc(mymodel, monitors, moves)
 
-validation = validationAnalysis( mymcmc, 1000 )
+validation = validationAnalysis(mymcmc, 1000)
 validation.burnin(generations=10000,tuningInterval=1000)
 validation.run(generations=30000)
 validation.summarize()

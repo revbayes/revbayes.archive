@@ -145,26 +145,10 @@ const RevLanguage::Function& RevLanguage::DeterministicNode<valueType>::getRlFun
 template<class valueType>
 void RevLanguage::DeterministicNode<valueType>::printStructureInfo( std::ostream& o, bool verbose ) const
 {
-    if ( verbose )
-    {
-        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
-    }
-    else
-    {
-        if ( this->name != "")
-            o << "_dagNode      = " << this->name << std::endl;
-        else
-            o << "_dagNode      = <" << this << ">" << std::endl;
-    }
-    o << "_dagType      = Deterministic Rev function node" << std::endl;
-    
-    if ( verbose == true )
-    {
-        o << "_refCount     = " << this->getReferenceCount() << std::endl;
-    }
+
+    o << "_type         = Deterministic node (function)" << std::endl;
     o << "_function     = " << rlFunction->getRevDeclaration() << std::endl;
 
-    
     o << "_parents      = ";
     this->printParents( o, 16, 70, verbose );
     o << std::endl;
@@ -172,6 +156,12 @@ void RevLanguage::DeterministicNode<valueType>::printStructureInfo( std::ostream
     o << "_children     = ";
     this->printChildren( o, 16, 70, verbose );
 
+    if ( verbose == true )
+    {
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+        o << "_refCount     = " << this->getReferenceCount() << std::endl;
+    }
+    
     o << std::endl;
 }
 

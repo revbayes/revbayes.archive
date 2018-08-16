@@ -19,11 +19,10 @@ namespace RevBayesCore {
         
         DistanceMatrix&                                 operator=(const DistanceMatrix& a);
        
-        // overloaded operators
-        virtual bool                                    operator==(const DistanceMatrix &m) const { return this == &m; }
-        virtual bool                                    operator!=(const DistanceMatrix &m) const { return !operator==(m); }
-        virtual bool                                    operator<(const DistanceMatrix &m) const { return this < & m; }
-        virtual bool                                    operator<=(const DistanceMatrix &m) const { return operator<(m) || operator==(m); }
+        bool                                            operator==(const DistanceMatrix &m) const { return this == &m; }
+        bool                                            operator!=(const DistanceMatrix &m) const { return !operator==(m); }
+        bool                                            operator<(const DistanceMatrix &m) const { return this < & m; }
+        bool                                            operator<=(const DistanceMatrix &m) const { return operator<(m) || operator==(m); }
 
         virtual DistanceMatrix*                         clone(void) const;
         const std::vector<Taxon>&                       getTaxa(void) const;

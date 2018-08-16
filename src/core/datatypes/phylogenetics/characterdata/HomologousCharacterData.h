@@ -31,11 +31,6 @@ namespace RevBayesCore {
         // Overloaded operators
         virtual const AbstractTaxonData&        operator[](size_t i) const = 0;                                             //!< Subscript operator (const)
         
-        virtual bool                            operator==(const HomologousCharacterData &rm) const { return this == &rm; }
-        virtual bool                            operator!=(const HomologousCharacterData &rm) const { return !operator==(rm); }
-        virtual bool                            operator<(const HomologousCharacterData &rm) const { return this < &rm; }
-        virtual bool                            operator<=(const HomologousCharacterData &rm) const { return operator<(rm) || operator==(rm); }
-        
         // methods of the Cloneable interface
         virtual HomologousCharacterData*        clone(void) const = 0;
         
