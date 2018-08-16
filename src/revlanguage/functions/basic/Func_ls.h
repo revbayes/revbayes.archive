@@ -24,6 +24,7 @@
 
 namespace RevLanguage {
     
+//    class TypeTable;
     class Func_ls : public Procedure {
         
     public:
@@ -52,6 +53,20 @@ namespace RevLanguage {
         std::vector<std::string>                        getHelpSeeAlso(void) const;                                 //!< Get suggested other functions
         std::string                                     getHelpTitle(void) const;                                   //!< Get the title of this help entry
 
+    private:
+//        std::map<std::string, RevObject*>               applyTypeTableFilters( const std::map<std::string, RevObject*>& table, std::string filter ) const;
+//       const std::multimap<std::string, Function*>
+        std::string                                     makeFilteredFunctionString( const std::multimap<std::string, Function*>& table, std::string filter ) const;
+        void                                            printTypes(bool printAll, std::string filter) const;
+        void                                            printVariables(bool printAll, std::string filter) const;
+        void                                            printFunctions(bool printAll, std::string filter) const;
+        bool                                            isTokenCategorized( std::string name ) const;
+        bool                                            matchToken( std::string name, std::string filter ) const;
+        bool                                            matchAnalysisToken( std::string name ) const;
+        bool                                            matchMathToken( std::string name ) const;
+        bool                                            matchFileToken( std::string name ) const;
+        bool                                            matchSummaryToken( std::string name ) const;
+        bool                                            matchUtilityToken( std::string name ) const;
     };
     
 }

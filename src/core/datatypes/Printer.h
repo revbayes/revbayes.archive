@@ -28,7 +28,7 @@ namespace RevBayesCore {
         
     public:
         //!< Printer the given object.
-        static void                     printForUser( const objType &a, std::ostream &o, const std::string & /* sep */, int l, bool /* left */) {
+        static void                     printForUser( const objType &a, std::ostream &o, const std::string & /*sep*/, int /*l*/, bool /*left*/) {
             
             long previousPrecision = o.precision();
             std::ios_base::fmtflags previousFlags = o.flags();
@@ -42,7 +42,7 @@ namespace RevBayesCore {
             o.precision( previousPrecision );
         }
         
-        static void                     printForSimpleStoring( const objType &a, std::ostream &o, const std::string & /* sep */, int l, bool left )
+        static void                     printForSimpleStoring( const objType &a, std::ostream &o, const std::string & /*sep*/, int l, bool left )
         {
             std::stringstream ss;
             ss << a;
@@ -54,7 +54,7 @@ namespace RevBayesCore {
             o << s;
         }
         
-        static void                     printForComplexStoring( const objType &a, std::ostream &o, const std::string & /* sep */, int l, bool left )
+        static void                     printForComplexStoring( const objType &a, std::ostream &o, const std::string & /*sep*/, int l, bool left )
         {
             std::stringstream ss;
             ss << a;

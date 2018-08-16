@@ -218,7 +218,7 @@ then
 echo '
 add_executable(rb-help ${PROJECT_SOURCE_DIR}/help/YamlHelpGenerator.cpp)
 
-target_link_libraries(rb-help rb-parser rb-core libs help ${Boost_LIBRARIES})
+target_link_libraries(rb-help rb-parser rb-core libs help_yaml ${Boost_LIBRARIES})
 set_target_properties(rb-help PROPERTIES PREFIX "../")
 ' >> $HERE/CMakeLists.txt
 elif [ "$jupyter" = "true" ]
@@ -327,7 +327,7 @@ fi
 echo 'set(HELP_FILES' > "$HERE/help/CMakeLists.txt"
 find help | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/help/CMakeLists.txt"
 echo ')
-add_library(help ${HELP_FILES})'  >> "$HERE/help/CMakeLists.txt"
+add_library(help_yaml ${HELP_FILES})'  >> "$HERE/help/CMakeLists.txt"
 
 if [ ! -d "$HERE/core" ]; then
 mkdir "$HERE/core"

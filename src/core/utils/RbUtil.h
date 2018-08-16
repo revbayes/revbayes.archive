@@ -36,8 +36,8 @@ namespace RevBayesCore {
         class sub_vector_impl {
         public:
             //            static const T&  getElement(const T &obj, size_t i) { return obj; }
-            static size_t    size(const T &obj) { return 1; }
-            static void      printElement(std::ostream &o, const T &obj, size_t i) { o << obj; }
+            static size_t    size(const T & /*obj*/) { return 1; }
+            static void      printElement(std::ostream &o, const T &obj, size_t /*i*/) { o << obj; }
         };
         
         
