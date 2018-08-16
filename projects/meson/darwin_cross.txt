@@ -13,4 +13,4 @@ cpu = 'x86_64'
 endian = 'little'
 
 [properties]
-root = '/home/bredelings/Applications/osxcross/target/SDK/MacOSX10.10.sdk'
+root = '/path/to/osxcross/target/SDK/MacOSX10.10.sdk'
