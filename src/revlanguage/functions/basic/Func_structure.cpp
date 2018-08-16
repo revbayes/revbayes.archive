@@ -89,7 +89,10 @@ RevPtr<RevVariable> Func_structure::execute( void )
     
     if ( the_var->getRevObject().isModelObject() == true )
     {
-        the_var->getRevObject().getDagNode()->printStructureInfo( o, verbose );
+        
+        const RevObject& obj = the_var->getRevObject();
+        RevBayesCore::DagNode* dag_node = obj.getDagNode();
+        dag_node->printStructureInfo(o, verbose);
     }
     
     o << std::endl;

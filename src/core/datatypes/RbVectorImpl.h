@@ -35,7 +35,7 @@ namespace RevBayesCore {
         RbVectorImpl(size_t n) { for (size_t i = 0; i < n; ++i) this->push_back( valueType() ); }
         RbVectorImpl(size_t n, const valueType &v) { for (size_t i = 0; i < n; ++i) this->push_back( v ); }
         RbVectorImpl(const vectorType &v) { size_t n=v.size(); for (size_t i = 0; i < n; ++i) this->push_back( v[i] ); }
-        RbVectorImpl(const RbVectorImpl<valueType,indicator> &v) { size_t n=v.size(); for (size_t i = 0; i < n; ++i) this->push_back( v[i] ); }
+        RbVectorImpl(const RbVectorImpl<valueType,indicator> &v):std::vector<valueType>() { size_t n=v.size(); for (size_t i = 0; i < n; ++i) this->push_back( v[i] ); }
         virtual                                            ~RbVectorImpl<valueType,indicator>(void) { }
         
         

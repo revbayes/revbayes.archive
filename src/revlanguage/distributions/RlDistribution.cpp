@@ -99,6 +99,44 @@ std::string Distribution::getConstructorFunctionName( void ) const
 }
 
 
+/**
+ * Get Rev declaration of the function, formatted for output
+ */
+std::string Distribution::getRevDeclaration(void) const
+{
+    
+    std::ostringstream o;
+    
+    // Sebastian: We don't want to print the return type in the usage.
+    // It only confuses.
+    //    o << getReturnType().getType();
+    
+    if ( getDistributionFunctionName() == "" )
+    {
+        o << "<unnamed>(";
+    }
+    else
+    {
+        std::string tmp = getDistributionFunctionName();
+        std::string dn_name = "dn" + StringUtilities::firstCharToUpper( tmp );
+        o << "" << dn_name << "(";
+    }
+    
+    const ArgumentRules& argRules = getParameterRules();
+    for (size_t i=0; i<argRules.size(); ++i)
+    {
+        if (i != 0)
+        {
+            o << ", ";
+        }
+        argRules[i].printValue(o);
+    }
+    o << ")";
+    
+    return o.str();
+}
+
+
 RevBayesCore::RbHelpDistribution* Distribution::constructTypeSpecificHelp( void ) const
 {
     
