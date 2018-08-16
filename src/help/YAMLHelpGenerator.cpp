@@ -34,11 +34,21 @@ int main(int argc, const char * argv[])
     fnfs.open(fnFile, std::fstream::out | std::fstream::trunc );
 
     const std::set<std::string> &functionEntryNames = help.getFunctionEntries();
+    const std::set<std::string> &typeEntryNames = help.getTypeEntries();
     
     for (std::set<std::string>::const_iterator it=functionEntryNames.begin(); it!=functionEntryNames.end(); ++it)
     {
         std::string name = *it;
         
+        std::string base = name;
+        base.erase(base.begin());
+        std::string base_upper = StringUtilities::firstCharToUpper(base);
+
+        if ( typeEntryNames.find("dn"+base) != typeEntryNames.end() || typeEntryNames.find("dn"+base_upper) != typeEntryNames.end() )
+        {
+            continue;
+        }
+
         const RevBayesCore::RbHelpFunction& entry = static_cast<const RevBayesCore::RbHelpFunction&>( help.getHelp( name ) );
         
         if (name.size() > 0 && entry.getUsage() != "c_name()")
@@ -63,13 +73,18 @@ int main(int argc, const char * argv[])
     mnfs.open(mnFile, std::fstream::out | std::fstream::trunc );
     mvfs.open(mvFile, std::fstream::out | std::fstream::trunc );
     tpfs.open(tpFile, std::fstream::out | std::fstream::trunc );
-
-    const std::set<std::string> &typeEntryNames = help.getTypeEntries();
     
     for (std::set<std::string>::const_iterator it=typeEntryNames.begin(); it!=typeEntryNames.end(); ++it)
     {
-        
         std::string name = *it;
+        
+        StringUtilities::replaceSubstring(name,"[]","");
+
+        // skip vector types
+        if( *it != name )
+        {
+            continue;
+        }
 
         if (name.size() > 0 && name != "c_name" && functionEntryNames.find(name) == functionEntryNames.end() )
         {
