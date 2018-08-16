@@ -28,7 +28,7 @@ namespace RevLanguage {
         
         virtual RevPtr<RevVariable>             executeMethod(const std::string &name, const std::vector<Argument> &args, bool &found) = 0;     //!< Execute the member method
         virtual const MethodTable&              getMethods(void) const = 0;                                                                     //!< Get member methods
-
+	virtual ~RevMemberObject() {}
     };
     
 }
