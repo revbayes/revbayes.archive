@@ -604,6 +604,10 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
             
             if ( runs[i] != NULL )
             {
+                
+                // @todo: #thread
+                // This part should be done on several threads if possible
+                // Sebastian: this call is very slow; a lot of work happens in nextCycle()
                 runs[i]->nextCycle(true);
                 
                 // Monitor
