@@ -18,6 +18,11 @@ const std::vector<std::string>& RbHelpEntry::getAuthor( void ) const
     return author;
 }
 
+const std::string& RbHelpEntry::getCategoryType( void ) const
+{
+    // return a const reference to the internal value
+    return categoryType;
+}
 
 const std::vector<std::string>& RbHelpEntry::getDescription( void ) const
 {
@@ -81,6 +86,12 @@ void RbHelpEntry::setAuthor(const std::vector<std::string> &a)
     author = a;
 }
 
+
+void RbHelpEntry::setCategoryType(const std::string &a)
+{
+    // overwrite the internal value with the new value
+    categoryType = a;
+}
 
 void RbHelpEntry::setDescription(const std::vector<std::string> &d)
 {

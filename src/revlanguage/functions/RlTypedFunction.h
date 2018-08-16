@@ -51,7 +51,7 @@ namespace RevLanguage {
         
     protected:
         TypedFunction<valueType>(void);                                                                                                     //!< Basic constructor
-        
+        virtual std::string                             getHelpCategoryType(void) const { return "Function"; }
     };
     
 }
