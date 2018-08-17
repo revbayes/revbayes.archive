@@ -30,14 +30,9 @@
 #include <cstdlib>
 
 /* Files including helper classes */
-#include "AddContinuousDistribution.h"
-#include "AddDistribution.h"
 #include "AddWorkspaceVectorType.h"
 #include "AddVectorizedWorkspaceType.h"
-#include "RbException.h"
-#include "RevAbstractType.h"
 #include "RlUserInterface.h"
-#include "Workspace.h"
 
 /// Miscellaneous types ///
 
@@ -58,15 +53,6 @@
 #include "ModelVector.h"
 #include "WorkspaceVector.h"
 
-/* Evolution types (in folder "datatypes/phylogenetics") */
-#include "RlDistanceMatrix.h"
-
-/* Character state types (in folder "datatypes/phylogenetics/character") */
-#include "RlAminoAcidState.h"
-#include "RlDnaState.h"
-#include "RlRnaState.h"
-#include "RlStandardState.h"
-
 /* Character data types (in folder "datatypes/phylogenetics/datamatrix") */
 #include "RlAbstractCharacterData.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
@@ -78,46 +64,22 @@
 
 
 /* Taxon types (in folder "datatypes/phylogenetics") */
+#include "RlCladogeneticProbabilityMatrix.h"
+#include "RlCladogeneticSpeciationRateMatrix.h"
+#include "RlDistanceMatrix.h"
+#include "RlCharacterHistoryRateModifier.h"
 #include "RlTaxon.h"
 
-/* Inference types (in folder "analysis") */
-#include "RlBootstrapAnalysis.h"
-#include "RlBurninEstimationConvergenceAssessment.h"
-#include "RlHillClimber.h"
-#include "RlMcmc.h"
-#include "RlMcmcmc.h"
-#include "RlModel.h"
-#include "RlPathSampler.h"
-#include "RlPosteriorPredictiveAnalysis.h"
-#include "RlPosteriorPredictiveSimulation.h"
-#include "RlPowerPosteriorAnalysis.h"
-#include "RlSteppingStoneSampler.h"
-#include "RlValidationAnalysis.h"
-#include "RlAncestralStateTrace.h"
-
-/// Stopping Rules ///
-#include "RlMaxIterationStoppingRule.h"
-#include "RlMaxTimeStoppingRule.h"
-#include "RlMinEssStoppingRule.h"
-#include "RlGelmanRubinStoppingRule.h"
-#include "RlGewekeStoppingRule.h"
-#include "RlStationarityStoppingRule.h"
 
 
 /// Types ///
 
 /* These types are needed as template types for the moves */
 #include "RlBranchLengthTree.h"
-#include "RlCharacterHistoryRateModifier.h"
 #include "RlMonitor.h"
 #include "RlMove.h"
 #include "RlRateGenerator.h"
-#include "RlCladogeneticProbabilityMatrix.h"
-#include "RlCladogeneticSpeciationRateMatrix.h"
 #include "RlTimeTree.h"
-
-#include "Func_VectorMonitors.h"
-#include "Func_VectorMoves.h"
 
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeVectorTypeGlobalWorkspace(void)
@@ -143,9 +105,6 @@ void RevLanguage::Workspace::initializeVectorTypeGlobalWorkspace(void)
         AddWorkspaceVectorType<Clade,3>::addTypeToWorkspace( *this, new Clade() );
         //        AddWorkspaceVectorType<Dist_bdp,3>::addTypeToWorkspace( *this, new Dist_bdp() );
         
-        addFunction( new Func_VectorMoves()  );
-        addFunction( new Func_VectorMonitors()  );
-
         
     }
     catch(RbException& rbException)
