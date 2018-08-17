@@ -12,16 +12,16 @@
 const double EPS_COAL = 1E-10;
 
 namespace RevBayesCore {
-
   class Clade;
 
   class DuplicationLossProcess : public TypedDistribution<Tree> {
 
   public:
     DuplicationLossProcess(const TypedDagNode<Tree> *it, const std::vector<Taxon> &t);
-    virtual                                            ~DuplicationLossProcess(void);                                                                       //!< Virtual destructor
+    // Virtual destructor.
+    virtual                                             ~DuplicationLossProcess(void);
 
-    // public member functions
+    // Public member functions.
     double                                              computeLnProbability(void);
     void                                                redrawValue(void);
     void                                                setDuplicationRate(TypedDagNode<RbVector<double> >* d);
@@ -29,16 +29,18 @@ namespace RevBayesCore {
     void                                                setLossRate(TypedDagNode<RbVector<double> >* l);
     void                                                setLossRate(TypedDagNode<double>* l);
     void                                                setGeneSamplingProbability(TypedDagNode<RbVector<double> >* s);
-    virtual void                                        setValue(Tree *v, bool f=false);                                                                    //!< Set the current value, e.g. attach an observation (clamp)
+    // Set the current value, e.g. attach an observation (clamp).
+    virtual void                                        setValue(Tree *v, bool f=false);
 
-    // pure virtual member functions
-    virtual DuplicationLossProcess*                     clone(void) const;                                                                                  //!< Create an independent clone
+    // Pure virtual member functions.
+    // Create an independent clone
+    virtual DuplicationLossProcess*                     clone(void) const;
 
   protected:
-    // Parameter management functions
-    void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+    // Parameter management functions.
+    void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP); //!< Swap a parameter
 
-    // helper functions
+    // Helper functions.
     void                                                attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times);
     void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
     double                                              computeD(double dt, double e);
@@ -56,7 +58,7 @@ namespace RevBayesCore {
     void                                                simulateTreeRejectionSampling(void);
     void                                                recursivelySimulateTreeForward(double age_begin, const TopologyNode *i_node, std::vector<TopologyNode *> genes);
 
-    // members
+    // Members.
     std::vector<Taxon>                                  taxa;
     const TypedDagNode<Tree>*                           individual_tree;
     size_t                                              num_taxa;
@@ -70,7 +72,8 @@ namespace RevBayesCore {
 
     std::vector< std::set< const TopologyNode* > >      genes_per_branch_recent;
     std::vector< std::set< const TopologyNode* > >      genes_per_branch_ancient;
-    std::vector< double >                               extinction_probs;                               // extinction probabilities at start (older/ancient end) of individual branch;
+    // Extinction probabilities at start (older/ancient end) of individual branch.
+    std::vector< double >                               extinction_probs;
   };
 }
 #endif
