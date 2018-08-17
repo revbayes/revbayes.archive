@@ -138,6 +138,7 @@ std::vector<std::string> Dist_multivariateNorm::getHelpAuthor(void) const
     // create a vector of authors for this function
     std::vector<std::string> authors;
     authors.push_back( "Sebastian Hoehna" );
+    authors.push_back( "Michael Landis" );
     
     return authors;
 }
@@ -150,8 +151,9 @@ std::vector<std::string> Dist_multivariateNorm::getHelpDescription(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> descriptions;
-    descriptions.push_back( "A multivariate normal distribution." );
-    
+    descriptions.push_back( "The multivariate normal distribution has the probability density:" );
+    descriptions.push_back( "f(x) = det(2 pi Sigma)^(-1/2) e^{-(1/2) (x-mu)' Sigma^-1 (x-mu)}" );
+    descriptions.push_back( "where mu is a vector of mean values and Sigma is a covariance matrix. Note, this distribution may also be parameterized in terms of the precision matrix, Sigma^-1." );
     return descriptions;
 }
 
@@ -177,17 +179,19 @@ std::string Dist_multivariateNorm::getHelpExample(void) const
 {
     // create an example as a single string variable.
     std::string example = "";
-    
-//    example += "p ~ dnBeta(1.0,1.0)\n";
-//    example += "x ~ dnBernoulli(p)\n";
-//    example += "x.clamp(1)\n";
-//    example += "moves[1] = mvSlide(p, delta=0.1, weight=1.0)\n";
-//    example += "monitors[1] = screenmonitor(printgen=1000, separator = \"\t\", speciation)\n";
-//    example += "mymodel = model(p)\n";
-//    example += "mymcmc = mcmc(mymodel, monitors, moves)\n";
-//    example += "mymcmc.burnin(generations=20000,tuningInterval=100)\n";
-//    example += "mymcmc.run(generations=200000)\n";
-    
+   
+    example += "dim = 4\n";
+    example += "df = 100\n";
+    example += "kappa <- 2\n";
+    example += "Sigma ~ dnWishart(df, kappa, dim)\n";
+    example += "for (i in 1:dim) { mu[i] ~ dnUnif(-1, 1) }\n";
+    example += "x ~ dnMultivariateNormal( mean=mu, covariance=Sigma )\n";
+    example += "mv[1] = mvCorrelationMatrixElementSwap(Sigma)\n";
+    example += "mv[2] = mvCorrelationMatrixRandomWalk(Sigma)\n";
+    example += "mv[3] = mvCorrelationMatrixSingleElementBeta(Sigma)\n";
+    example += "mv[4] = mvCorrelationMatrixSpecificElementBeta(Sigma)\n";
+    example += "mv[5] = mvCorrelationMatrixUpdate(Sigma)\n";
+    example += "mv[6] = mvVectorSlide(x)\n";
     return example;
 }
 
@@ -213,7 +217,9 @@ std::vector<std::string> Dist_multivariateNorm::getHelpSeeAlso(void) const
 {
     // create an entry for each suggested function
     std::vector<std::string> see_also;
-    see_also.push_back( "dnBinomial" );
+    see_also.push_back( "dnNormal" );
+    see_also.push_back( "dnWishart" );
+    see_also.push_back( "mvCorrelationMatrixUpdate" );
     
     
     return see_also;
@@ -226,7 +232,7 @@ std::vector<std::string> Dist_multivariateNorm::getHelpSeeAlso(void) const
 std::string Dist_multivariateNorm::getHelpTitle(void) const
 {
     // create a title variable
-    std::string title = "Bernoulli Distribution";
+    std::string title = "Multivariate Normal Distribution";
     
     return title;
 }
