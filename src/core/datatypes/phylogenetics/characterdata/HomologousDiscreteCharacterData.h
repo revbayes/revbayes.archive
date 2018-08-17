@@ -280,7 +280,7 @@ double RevBayesCore::HomologousDiscreteCharacterData<charType>::computeMultinomi
         double c = pattern_counts[i];
         lnl += c*log(c);
     }
-    lnl += double(num_sites) * log(num_sites);
+    lnl -= double(num_sites) * log(num_sites);
     
     
     return lnl;
