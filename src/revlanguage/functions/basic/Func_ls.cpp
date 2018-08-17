@@ -626,7 +626,6 @@ void Func_ls::printFunctions( bool printAll, std::string filter ) const
         RBOUT( "\n" );
         RBOUT( title + ":" );
         RBOUT( "===============" );
-        RBOUT( "\n" );
         RBOUT( fn_str );
         
     }

@@ -74,6 +74,7 @@ namespace RevLanguage {
 //        virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const = 0;
 //        virtual std::vector<std::string>                    getHelpSeeAlso(void) const = 0;
 //        virtual std::string                                 getHelpTitle(void) const = 0;
+        std::string                                  getHelpCategoryType(void) const { return "Distribution"; }
         
         // virtual method that may be overwritten
         virtual void                                        addSpecificHelpFields(RevBayesCore::RbHelpEntry* e) const;

@@ -44,8 +44,9 @@ matrix:
           packages:
           - g++-7
           - pandoc
-    - os: osx
-      osx_image: xcode9.4
+# xcode9.4 times out a lot
+#    - os: osx
+#      osx_image: xcode9.4
     - os: osx
       osx_image: xcode8.3
       
