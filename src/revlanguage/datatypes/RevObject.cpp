@@ -245,14 +245,14 @@ void RevObject::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
         }
         argument.setArgumentDagNodeType( type );
         
-        std::string passing_method = "pass by value";
+        std::string passing_method = "value";
         if ( the_rule.getEvaluationType() == ArgumentRule::BY_CONSTANT_REFERENCE )
         {
-            passing_method = "pass by const reference";
+            passing_method = "const reference";
         }
         else if ( the_rule.getEvaluationType() == ArgumentRule::BY_REFERENCE )
         {
-            passing_method = "pass by reference";
+            passing_method = "reference";
         }
         argument.setArgumentPassingMethod(  passing_method );
         
@@ -378,6 +378,9 @@ RevBayesCore::RbHelpEntry* RevObject::getHelpEntry( void ) const
     // see also
     help_entry.setSeeAlso( getHelpSeeAlso() );
     
+    // category type
+    help_entry.setCategoryType( getHelpCategoryType() );
+
     // now add the specific help stuff
     addSpecificHelpFields( help );
     
@@ -489,6 +492,8 @@ std::vector<RevBayesCore::RbHelpFunction> RevObject::getHelpMethods( void ) cons
         help_methods.push_back( help_method );
         
     }
+    
+    // virtual dummy function
     
     return help_methods;
 }

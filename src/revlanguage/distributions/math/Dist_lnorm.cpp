@@ -79,6 +79,133 @@ std::string Dist_lnorm::getDistributionFunctionName( void ) const
 }
 
 
+
+/**
+ * Get the author(s) of this function so they can receive credit (and blame) for it.
+ */
+std::vector<std::string> Dist_lnorm::getHelpAuthor(void) const
+{
+    // create a vector of authors for this function
+    std::vector<std::string> authors;
+    authors.push_back( "Michael Landis" );
+    
+    return authors;
+}
+
+
+/**
+ * Get the (brief) description for this function
+ */
+std::vector<std::string> Dist_lnorm::getHelpDescription(void) const
+{
+    // create a variable for the description of the function
+    std::vector<std::string> descriptions;
+    descriptions.push_back( "Lognormal distribution is the distribution for a log-transformed normally distributed random variable with mean 'mu' and standard deviation 'sigma'." );
+    
+    return descriptions;
+}
+
+
+/**
+ * Get the more detailed description of the function
+ */
+std::vector<std::string> Dist_lnorm::getHelpDetails(void) const
+{
+    // create a variable for the description of the function
+    std::vector<std::string> details;
+    
+    std::string details_a = "";
+    details_a += "The lognormal random variable is defined as:";
+    
+    details.push_back( details_a );
+    
+    std::string details_b = "";
+    details_b += "X = exp(mu + sigma Z)";
+    
+    details.push_back( details_b );
+    
+    std::string details_c = "";
+    details_c += "where mu is the mean parameter, sigma is the standard deviation, and Z is a standard normal random variable. ";
+    details_c += "Note, in effect, the mean and standard deviation provide the location and scale of the exponentiated normal variate, mu + sigma Z.";
+    details_c += "The lognormal distribution has density:";
+    
+    details.push_back( details_c );
+    
+    std::string details_2 = "";
+    details_2 += "f(x) = 1/(x sigma sqrt(2 pi)) e^-((ln x - mu)^2/(2 sigma^2))";
+    
+    details.push_back( details_2 );
+    
+    std::string details_3 = "";
+    details_3 += "where mu is the mean of the distribution and sigma the standard deviation.";
+    
+    details.push_back( details_3 );
+    
+    return details;
+}
+
+
+/**
+ * Get an executable and instructive example.
+ * These example should help the users to show how this function works but
+ * are also used to test if this function still works.
+ */
+std::string Dist_lnorm::getHelpExample(void) const
+{
+    // create an example as a single string variable.
+    std::string example = "";
+    
+    example += "# set an expected value for x\n";
+    example += "expectation_of_x <- 1\n";
+    example += "# set a mean and sd parameter\n";
+    example += "sd <- 0.5\n";
+    example += "mean <- ln(expectation_of_x) - 0.5 * sd^2\n";
+    example += "# create a lognormal distribution with expected value of 1\n";
+    example += "x ~ dnLognormal(mean=mean, sd=sd)\n";
+    
+    return example;
+}
+
+
+/**
+ * Get some references/citations for this function
+ *
+ */
+std::vector<RevBayesCore::RbHelpReference> Dist_lnorm::getHelpReferences(void) const
+{
+    // create an entry for each reference
+    std::vector<RevBayesCore::RbHelpReference> references;
+    
+    
+    return references;
+}
+
+
+/**
+ * Get the names of similar and suggested other functions
+ */
+std::vector<std::string> Dist_lnorm::getHelpSeeAlso(void) const
+{
+    // create an entry for each suggested function
+    std::vector<std::string> see_also;
+    // see_also.push_back( "dnLognormal" );
+    
+    
+    return see_also;
+}
+
+
+/**
+ * Get the title of this help entry
+ */
+std::string Dist_lnorm::getHelpTitle(void) const
+{
+    // create a title variable
+    std::string title = "Lognormal Distribution";
+    
+    return title;
+}
+
 /** Return member rules (no members) */
 const MemberRules& Dist_lnorm::getParameterRules(void) const
 {

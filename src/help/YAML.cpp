@@ -74,10 +74,7 @@ std::string Node::render(size_t depth)
     {
         if( elements.size() == 1)
         {
-            std::string v = elements.front()->value;
-            StringUtilities::replaceSubstring(v,"\n","\\n");
-            StringUtilities::replaceSubstring(v,"'","''");
-            result += "'" + v + "'\n";
+            result += format(elements.front()->value, depth) + "\n";
         }
         else
         {
@@ -85,13 +82,9 @@ std::string Node::render(size_t depth)
 
             for(size_t i = 0; i < elements.size(); i++)
             {
-                std::string v = elements[i]->value;
-                StringUtilities::replaceSubstring(v,"\n","\\n");
-                StringUtilities::replaceSubstring(v,"'","''");
-
                 std::string pad = "- ";
 
-                result += indent + pad + "'" + v + "'\n";
+                result += indent + pad + format(elements[i]->value, depth) + "\n";
             }
         }
     }
@@ -129,4 +122,25 @@ std::string Node::render(size_t depth)
     }
 
     return result;
+}
+
+std::string Node::format(std::string value, size_t depth)
+{
+    if (value.find("\n") != std::string::npos) {
+        std::string indent(depth*4, ' ');
+
+        StringUtilities::replaceSubstring(value,"\n","\n"+indent);
+
+        value.erase(value.find_last_not_of(" \n\r\t")+1);
+
+        value = "|\n" + indent + value;
+    }
+    else
+    {
+        StringUtilities::replaceSubstring(value,"'","''");
+        value.erase(value.find_last_not_of(" \n\r\t")+1);
+        value = "'" + value + "'";
+    }
+
+    return value;
 }
