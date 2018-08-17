@@ -344,11 +344,12 @@ RevBayesCore::RbHelpEntry* RevObject::getHelpEntry( void ) const
     RevBayesCore::RbHelpEntry *help = constructTypeSpecificHelp();
     RevBayesCore::RbHelpEntry &help_entry = *help;
     
+    const TypeSpec& type_spec = getTypeSpec();
+
     // name
     std::string name = getConstructorFunctionName();
     if ( name == "c_name" )
     {
-        TypeSpec type_spec = getTypeSpec();
         name = type_spec.getType();
     }
     help_entry.setName( name );
@@ -378,8 +379,17 @@ RevBayesCore::RbHelpEntry* RevObject::getHelpEntry( void ) const
     // see also
     help_entry.setSeeAlso( getHelpSeeAlso() );
     
-    // category type
-    help_entry.setCategoryType( getHelpCategoryType() );
+    const TypeSpec* parentTypeSpec = type_spec.getParentTypeSpec();
+
+    std::vector<std::string> typeSpec;
+    while(parentTypeSpec != NULL)
+    {
+        typeSpec.push_back( parentTypeSpec->getType() );
+        parentTypeSpec = parentTypeSpec->getParentTypeSpec();
+    }
+
+    // type spec
+    help_entry.setTypeSpec( typeSpec );
 
     // now add the specific help stuff
     addSpecificHelpFields( help );

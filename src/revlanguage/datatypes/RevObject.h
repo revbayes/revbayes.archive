@@ -112,7 +112,6 @@ namespace RevLanguage {
 
         /* These (optional) help fields must be filled in manually */
         virtual std::vector<std::string>                        getHelpAuthor(void) const { return std::vector<std::string>(); }                        //!< Get a list of authors
-        virtual std::string                                     getHelpCategoryType(void) const { return "Uncategorized"; }                             //!< Get the category type for the object
         virtual std::vector<std::string>                        getHelpDescription(void) const { return std::vector<std::string>(); }                   //!< Get a brief description
         virtual std::vector<std::string>                        getHelpDetails(void) const { return std::vector<std::string>(); }                       //!< Get a more detailed description
         virtual std::string                                     getHelpExample(void) const { return ""; }                                               //!< Get an executable and instructive example

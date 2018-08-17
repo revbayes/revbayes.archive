@@ -58,8 +58,6 @@ namespace RevLanguage {
         ModelObject(RevBayesCore::TypedDagNode<rbType> *v);
         ModelObject(const ModelObject &v);
         
-        virtual std::string                     getHelpCategoryType(void) const { return "Datatype"; } 
-        
         RevBayesCore::TypedDagNode<rbType>*     dag_node;
 
     };
