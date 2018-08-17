@@ -24,14 +24,14 @@ const std::vector<std::string>& RbHelpEntry::getTypeSpec( void ) const
     return typeSpec;
 }
 
-const std::vector<std::string>& RbHelpEntry::getDescription( void ) const
+const std::string& RbHelpEntry::getDescription( void ) const
 {
     // return a const reference to the internal value
     return description;
 }
 
 
-const std::vector<std::string>& RbHelpEntry::getDetails( void ) const
+const std::string& RbHelpEntry::getDetails( void ) const
 {
     // return a const reference to the internal value
     return details;
@@ -93,14 +93,14 @@ void RbHelpEntry::setTypeSpec(const std::vector<std::string> &a)
     typeSpec = a;
 }
 
-void RbHelpEntry::setDescription(const std::vector<std::string> &d)
+void RbHelpEntry::setDescription(const std::string &d)
 {
     // overwrite the internal value with the new value
     description = d;
 }
 
 
-void RbHelpEntry::setDetails(const std::vector<std::string> &d)
+void RbHelpEntry::setDetails(const std::string &d)
 {
     // overwrite the internal value with the new value
     details = d;

@@ -63,16 +63,6 @@ namespace RevLanguage {
     protected:
         Distribution(void);
         
-        
-//        virtual std::string                                 getConstructorUsage(void) const = 0;
-//        virtual std::vector<std::string>                    getConstructorDetails(void) const = 0;
-//        virtual std::string                                 getConstructorExample(void) const = 0;
-//        virtual std::string                                 getHelpAuthor(void) const = 0;
-//        virtual std::vector<std::string>                    getHelpDescription(void) const = 0;
-//        virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const = 0;
-//        virtual std::vector<std::string>                    getHelpSeeAlso(void) const = 0;
-//        virtual std::string                                 getHelpTitle(void) const = 0;
-        
         // virtual method that may be overwritten
         virtual void                                        addSpecificHelpFields(RevBayesCore::RbHelpEntry* e) const;
         virtual RevBayesCore::RbHelpDistribution*           constructTypeSpecificHelp(void) const;

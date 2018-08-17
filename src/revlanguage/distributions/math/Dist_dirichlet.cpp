@@ -92,29 +92,24 @@ std::vector<std::string> Dist_dirichlet::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_dirichlet::getHelpDescription(void) const
+std::string Dist_dirichlet::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Dirichlet probability distribution on a simplex." );
+    std::string description = "Dirichlet probability distribution on a simplex.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_dirichlet::getHelpDetails(void) const
+std::string Dist_dirichlet::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
-    std::string details_1 = "";
-    details_1 += "The Dirichlet probability distribution is the generalization of the Beta distribution.";
-    details_1 += " A random variable from a Dirichlet distribution is a simplex, i.e., a vector of probabilities that sum to 1.";
-    
-    details.push_back( details_1 );
+    std::string details = "";
+    details += "The Dirichlet probability distribution is the generalization of the Beta distribution.";
+    details += " A random variable from a Dirichlet distribution is a simplex, i.e., a vector of probabilities that sum to 1.";
     
     return details;
 }

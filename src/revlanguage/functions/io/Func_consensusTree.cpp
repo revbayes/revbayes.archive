@@ -178,16 +178,12 @@ std::vector<std::string> Func_consensusTree::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_consensusTree::getHelpDescription(void) const
+std::string Func_consensusTree::getHelpDescription(void) const
 {
-    // create a variable for the description of the function
-    std::vector<std::string> descriptions;
+    std::string description = "";
+    description += "Calculates the majority-rule consensus topology from a trace of trees and summarizes branch lengths.";
     
-    std::string description1 = "";
-    description1 += "Calculates the majority-rule consensus topology from a trace of trees and summarizes branch lengths.";
-    descriptions.push_back( description1 );
-    
-    return descriptions;
+    return description;
 }
 
 

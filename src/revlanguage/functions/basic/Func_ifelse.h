@@ -42,8 +42,8 @@ namespace RevLanguage {
     protected:
         
         std::vector<std::string>                                        getHelpAuthor(void) const;                                  //!< Get the author(s) of this function
-        std::vector<std::string>                                        getHelpDescription(void) const;                             //!< Get the description for this function
-        std::vector<std::string>                                        getHelpDetails(void) const;                                 //!< Get the more detailed description of the function
+        std::string                                                     getHelpDescription(void) const;                             //!< Get the description for this function
+        std::string                                                     getHelpDetails(void) const;                                 //!< Get the more detailed description of the function
         std::string                                                     getHelpExample(void) const;                                 //!< Get an executable and instructive example
         std::vector<RevBayesCore::RbHelpReference>                      getHelpReferences(void) const;                              //!< Get some references/citations for this function
         std::vector<std::string>                                        getHelpSeeAlso(void) const;                                 //!< Get suggested other functions
@@ -167,13 +167,12 @@ std::vector<std::string> RevLanguage::Func_ifelse<valType>::getHelpAuthor(void) 
  * Get the (brief) description for this function
  */
 template <typename valType>
-std::vector<std::string> RevLanguage::Func_ifelse<valType>::getHelpDescription(void) const
+std::string RevLanguage::Func_ifelse<valType>::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "If the expression is true, then the function returns the first value, otherwise the second value." );
+    std::string description = "If the expression is true, then the function returns the first value, otherwise the second value.";
     
-    return descriptions;
+    return description;
 }
 
 
@@ -181,11 +180,10 @@ std::vector<std::string> RevLanguage::Func_ifelse<valType>::getHelpDescription(v
  * Get the more detailed description of the function
  */
 template <typename valType>
-std::vector<std::string> RevLanguage::Func_ifelse<valType>::getHelpDetails(void) const
+std::string RevLanguage::Func_ifelse<valType>::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    details.push_back( "The ifelse function is important when the value of a variable should deterministically change during an analysis depending on other variables. Standard if-else statements are not dynamically re-evaluated." );
+    std::string details =  "The ifelse function is important when the value of a variable should deterministically change during an analysis depending on other variables. Standard if-else statements are not dynamically re-evaluated." ;
     
     return details;
 }

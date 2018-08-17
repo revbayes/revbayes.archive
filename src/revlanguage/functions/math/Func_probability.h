@@ -37,7 +37,7 @@ namespace RevLanguage {
         RevBayesCore::TypedFunction<double>*            createFunction(void) const;                                 //!< Create internal function object
         const ArgumentRules&                            getArgumentRules(void) const;                               //!< Get argument rules                              
         std::vector<std::string>                        getHelpAuthor(void) const; 
-        std::vector<std::string>                        getHelpDescription(void) const; 
+        std::string                                     getHelpDescription(void) const; 
         std::string                                     getHelpExample(void) const;
         
     };

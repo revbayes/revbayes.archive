@@ -104,30 +104,25 @@ std::vector<std::string> Dist_nbinomial::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_nbinomial::getHelpDescription(void) const
+std::string Dist_nbinomial::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Negative binomial probability distribution of x successes before r failures." );
+    std::string description = "Negative binomial probability distribution of x successes before r failures.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_nbinomial::getHelpDetails(void) const
+std::string Dist_nbinomial::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
-    std::string details_1 = "";
-    details_1 += "The negative binomial probability distribution describes the number of successes";
-    details_1 += " before r failures, where the success probability is p. The probability is given by";
-    details_1 += " (x + r - 1 choose x) p^(x) * (1-p)^r";
-    
-    details.push_back( details_1 );
+    std::string details = "";
+    details += "The negative binomial probability distribution describes the number of successes";
+    details += " before r failures, where the success probability is p. The probability is given by";
+    details += " (x + r - 1 choose x) p^(x) * (1-p)^r";
     
     return details;
 }

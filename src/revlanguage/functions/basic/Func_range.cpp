@@ -170,24 +170,22 @@ std::vector<std::string> Func_range::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_range::getHelpDescription(void) const
+std::string Func_range::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Create a sequence of number in the given range (interval)." );
+    std::string description = "Create a sequence of number in the given range (interval).";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Func_range::getHelpDetails(void) const
+std::string Func_range::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    details.push_back( "This function is a simplified version of the sequence function 'seq'. The range function creates a sequence of integer numbers with a step size of 1." );
+    std::string details =  "This function is a simplified version of the sequence function 'seq'. The range function creates a sequence of integer numbers with a step size of 1." ;
     
     return details;
 }

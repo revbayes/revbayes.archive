@@ -103,24 +103,22 @@ std::vector<std::string> Func_abs::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_abs::getHelpDescription(void) const
+std::string Func_abs::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "The 'abs' function returns the absolute value of a number." );
+    std::string description = "The 'abs' function returns the absolute value of a number.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Func_abs::getHelpDetails(void) const
+std::string Func_abs::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
+    std::string details;
     return details;
 }
 

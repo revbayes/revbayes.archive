@@ -105,26 +105,18 @@ std::vector<std::string> Dist_beta::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_beta::getHelpDescription(void) const
+std::string Dist_beta::getHelpDescription(void) const
 {
-    // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "The Beta probability distribution." );
-    
-    return descriptions;
+    return "The Beta probability distribution.";
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_beta::getHelpDetails(void) const
+std::string Dist_beta::getHelpDetails(void) const
 {
-    // create a variable for the description of the function
-    std::vector<std::string> details;
-    details.push_back("The Beta distribution is a probability distribution defined on 0 to 1.");
-    
-    return details;
+    return "The Beta distribution is a probability distribution defined on 0 to 1.";
 }
 
 

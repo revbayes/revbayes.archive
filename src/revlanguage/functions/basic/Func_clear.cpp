@@ -117,24 +117,22 @@ std::vector<std::string> Func_clear::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_clear::getHelpDescription(void) const
+std::string Func_clear::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Clear (e.g., remove) variables and functions from the workspace." );
+    std::string description = "Clear (e.g., remove) variables and functions from the workspace.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Func_clear::getHelpDetails(void) const
+std::string Func_clear::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    details.push_back( "The clear function removes either a given variable or all variables from the workspace. Clearing the workspace is very useful between analysis if you do not want to have old connections between variables hanging around." );
+    std::string details =  "The clear function removes either a given variable or all variables from the workspace. Clearing the workspace is very useful between analysis if you do not want to have old connections between variables hanging around." ;
     
     return details;
 }

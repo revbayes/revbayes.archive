@@ -306,30 +306,18 @@ const TypeSpec& Move_AVMVN::getClassTypeSpec(void)
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Move_AVMVN::getHelpDescription(void) const
+std::string Move_AVMVN::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
+    std::string details = "The adaptive variance multivariate-normal proposal of Baele et al. 2017, uses MCMC samples to fit covariance matrix to parameters.\n\n";
     
-    std::string details_1 = "The adaptive variance multivariate-normal proposal of Baele et al. 2017, uses MCMC samples to fit covariance matrix to parameters.";
+    details += "After user-defined waiting time, proposes using covariance matrix epsilon * I + (1 - epsilon) * sigmaSquared * empirical_matrix.\n\n";
     
-    details.push_back( details_1 );
-
-    std::string details_2 = "After user-defined waiting time, proposes using covariance matrix epsilon * I + (1 - epsilon) * sigmaSquared * empirical_matrix.";
+    details += "Internally transforms variables based on whether variables are (finitely) bounded, strictly positive, or simplexed.\n\n";
     
-    details.push_back( details_2 );
+    details += "Non-simplex-valued vector random variables are untransformed.\n\n";
     
-    std::string details_3 = "Internally transforms variables based on whether variables are (finitely) bounded, strictly positive, or simplexed.";
-    
-    details.push_back( details_3 );
-
-    std::string details_4 = "Non-simplex-valued vector random variables are untransformed.";
-    
-    details.push_back( details_4 );
-
-    std::string details_5 = "Add random variables to the move directly (e.g. branch_rates[1], not branch_rates).";
-    
-    details.push_back( details_5 );
+    details += "Add random variables to the move directly (e.g. branch_rates[1], not branch_rates).";
     
     return details;
 }
