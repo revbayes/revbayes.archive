@@ -13,9 +13,6 @@
 
 using namespace RevBayesCore;
 
-
-
-
 DuplicationLossProcess::DuplicationLossProcess(const TypedDagNode<Tree> *it, const std::vector<Taxon> &t) : TypedDistribution<Tree>( NULL ),
     taxa(t),
     individual_tree( it ),
@@ -32,7 +29,6 @@ DuplicationLossProcess::DuplicationLossProcess(const TypedDagNode<Tree> *it, con
     log_tree_topology_prob = (num_taxa - 1) * RbConstants::LN2 - 2.0 * ln_fact - std::log( num_taxa ) ;
 
     redrawValue();
-
 }
 
 
@@ -40,8 +36,6 @@ DuplicationLossProcess::~DuplicationLossProcess()
 {
 
 }
-
-
 
 void DuplicationLossProcess::attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times)
 {
@@ -83,7 +77,6 @@ void DuplicationLossProcess::attachTimes(Tree *psi, std::vector<TopologyNode *> 
 
 void DuplicationLossProcess::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
 {
-
     if (tips.size() < num_taxa)
     {
         // Get the rng
@@ -118,7 +111,6 @@ void DuplicationLossProcess::buildRandomBinaryTree(std::vector<TopologyNode*> &t
 
 DuplicationLossProcess* DuplicationLossProcess::clone(void) const
 {
-
     return new DuplicationLossProcess(*this);
 }
 
@@ -135,7 +127,6 @@ double DuplicationLossProcess::computeLnProbability( void )
 
 
     return ln_prob_coal; // + logTreeTopologyProb;
-
 }
 
 double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_genes_recent, const std::vector<double> &dupl_ages, double age_recent, double age_ancient, const TopologyNode &node_individual, bool is_root)
@@ -481,7 +472,6 @@ void DuplicationLossProcess::redrawValue( void ) {
 
 void DuplicationLossProcess::resetTipAllocations( void )
 {
-
     const Tree &ind_tree = individual_tree->getValue();
     const std::vector< TopologyNode* > &individual_tree_nodes = ind_tree.getNodes();
 
@@ -507,8 +497,6 @@ void DuplicationLossProcess::resetTipAllocations( void )
         TopologyNode *individual_node = individual_names_2_individual_nodes[individual_name];
         genes_per_branch_recent[ individual_node->getIndex() ].insert( &n );
     }
-
-
 }
 
 
@@ -517,19 +505,16 @@ void DuplicationLossProcess::resetTipAllocations( void )
  */
 void DuplicationLossProcess::setValue(Tree *v, bool f )
 {
-
     // delegate to super class
     TypedDistribution<Tree>::setValue(v, f);
 
     resetTipAllocations();
-
 }
 
 
 
 void DuplicationLossProcess::setDuplicationRate(TypedDagNode<RbVector<double> >* d)
 {
-
     removeParameter( duplication_rate );
     removeParameter( duplication_rates );
 
@@ -537,13 +522,11 @@ void DuplicationLossProcess::setDuplicationRate(TypedDagNode<RbVector<double> >*
     duplication_rates = d;
 
     addParameter( duplication_rates );
-
 }
 
 
 void DuplicationLossProcess::setDuplicationRate(TypedDagNode<double>* d)
 {
-
     removeParameter( duplication_rate );
     removeParameter( duplication_rates );
 
@@ -556,7 +539,6 @@ void DuplicationLossProcess::setDuplicationRate(TypedDagNode<double>* d)
 
 void DuplicationLossProcess::setLossRate(TypedDagNode<RbVector<double> >* l)
 {
-
     removeParameter( loss_rate );
     removeParameter( loss_rates );
 
@@ -569,7 +551,6 @@ void DuplicationLossProcess::setLossRate(TypedDagNode<RbVector<double> >* l)
 
 void DuplicationLossProcess::setLossRate(TypedDagNode<double>* l)
 {
-
     removeParameter( loss_rate );
     removeParameter( loss_rates );
 
@@ -577,19 +558,16 @@ void DuplicationLossProcess::setLossRate(TypedDagNode<double>* l)
     loss_rates = NULL;
 
     addParameter( loss_rate );
-
 }
 
 
 void DuplicationLossProcess::setGeneSamplingProbability(TypedDagNode<RbVector<double> >* s)
 {
-
     removeParameter( gene_sampling_probability );
 
     gene_sampling_probability = s;
 
     addParameter( gene_sampling_probability );
-
 }
 
 // age_begin :: Age at the top of the considered branch.
@@ -865,7 +843,6 @@ void DuplicationLossProcess::simulateTree( void )
 /** Swap a parameter of the distribution */
 void DuplicationLossProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
-
     if ( oldP == individual_tree )
     {
         individual_tree = static_cast<const TypedDagNode< Tree >* >( newP );
@@ -895,5 +872,4 @@ void DuplicationLossProcess::swapParameterInternal(const DagNode *oldP, const Da
     {
         gene_sampling_probability = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
-
 }
