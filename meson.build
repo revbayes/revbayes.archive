@@ -14,7 +14,14 @@ add_project_arguments(['-O3','-msse','-msse2','-msse3'], language : 'cpp')
 add_project_arguments(['-O3'], language : 'c')
 
 # So many warnings!
-add_project_arguments(['-Wall','-Wno-sign-compare','-Woverloaded-virtual','-Wstrict-aliasing','-Wno-unknown-pragmas'], language : 'cpp')
+add_project_arguments(['-Wall','-Wno-sign-compare','-Woverloaded-virtual',
+		       '-Wstrict-aliasing','-Wno-unknown-pragmas'],
+		      language : 'cpp')
+
+# Handle file too large error when cross-compiling to windows
+if host_machine.system() == 'windows'
+  add_project_arguments(['-Wa,-mbig-obj'], language : 'cpp')
+endif
 
 boost_modules = [ 'regex',
 		  'program_options',
@@ -27,16 +34,29 @@ boost_modules = [ 'regex',
 # This doesn't build an internal boost from the internal copy, yet.
 boost = dependency('boost', modules : boost_modules)
 
+rb_name = 'rb'
+if get_option('mpi')
+  rb_name += '-mpi'
+  mpi = dependency('mpi', language='cpp')
+else
+  mpi = dependency('', required: false)
+endif
+
+if get_option('jupyter')
+  rb_name += '-jupyter'
+  add_project_arguments(['-DRB_XCODE'], language : 'cpp')
+endif
+
+
 ####
 subdir('src')
 subdir('tests')
 
 ############# executables #################
 
-rb = executable('rb',
+rb = executable(rb_name,
 		rb_sources,
 		include_directories: [root_inc],
-		dependencies: [boost],
+		dependencies: [boost, mpi],
 		install: true)
-
 

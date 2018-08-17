@@ -1,0 +1,3 @@
+option('mpi', type : 'boolean', value : false, description: 'Compile with MPI')
+option('jupyter', type: 'boolean', value: false, description: 'Build rb-jupyter kernel')
+
