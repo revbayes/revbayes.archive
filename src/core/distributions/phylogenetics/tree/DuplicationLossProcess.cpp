@@ -31,15 +31,12 @@ DuplicationLossProcess::DuplicationLossProcess(const TypedDagNode<Tree> *it, con
     redrawValue();
 }
 
-
 DuplicationLossProcess::~DuplicationLossProcess()
 {
-
 }
 
 void DuplicationLossProcess::attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times)
 {
-
     if (index < num_taxa-1)
     {
         // Get the rng
