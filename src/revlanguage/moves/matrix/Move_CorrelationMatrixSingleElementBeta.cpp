@@ -116,7 +116,7 @@ std::vector<std::string> Move_CorrelationMatrixSingleElementBeta::getHelpDetails
     std::vector<std::string> details;
     
     std::string details_1 = "";
-    details_1 += "This move chooses a single element of the correlation matrix at random, and draws a proposed value from a Beta distribution centered on the current value (and strength to range from -1 to 1).";
+    details_1 += "This move chooses a single element of the correlation matrix at random, and draws a proposed value from a Beta distribution centered on the current value (and stretched to range from -1 to 1).";
     details.push_back( details_1 );
     
     return details;
