@@ -29,6 +29,7 @@ namespace RevBayesCore {
         // getter
         const std::vector<std::string>&             getAliases(void) const;
         const std::vector<std::string>&             getAuthor(void) const;
+        const std::string&                          getCategoryType(void) const;
         const std::vector<std::string>&             getDescription(void) const;
         const std::vector<std::string>&             getDetails(void) const;
         const std::string&                          getExample(void) const;
@@ -40,6 +41,7 @@ namespace RevBayesCore {
         // setters
         void                                        setAliases(const std::vector<std::string> &a);
         void                                        setAuthor(const std::vector<std::string> &a);
+        void                                        setCategoryType(const std::string &a);
         void                                        setDetails(const std::vector<std::string> &d);
         void                                        setDescription(const std::vector<std::string> &d);
         void                                        setExample(const std::string &e);
@@ -53,6 +55,7 @@ namespace RevBayesCore {
         
         std::vector<std::string>                    aliases;
         std::vector<std::string>                    author;
+        std::string                                 categoryType;
         std::vector<std::string>                    description;
         std::vector<std::string>                    details;
         std::string                                 example;
