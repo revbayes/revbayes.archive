@@ -10,7 +10,6 @@
 #include "RealPos.h"
 #include "RevObject.h"
 #include "GammaScaleProposal.h"
-// #include "ScaleProposalContinuous.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -62,20 +61,8 @@ void Move_GammaScale::constructInternalObject( void )
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     double r = static_cast<const Probability &>( tuneTarget->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<double>* tmp = static_cast<const RealPos &>( x->getRevObject() ).getDagNode();
-    RevBayesCore::ContinuousStochasticNode *n = dynamic_cast<RevBayesCore::ContinuousStochasticNode *>( tmp );
-    //if ( n != NULL )
-    //{
-    //    std::cout << "n is NOT null";
-    //    p = new RevBayesCore::GammaScaleProposal(n, d, r);
-    //}
-    //else
-    //{
-    //    std::cout << "n is null";
-        RevBayesCore::StochasticNode<double> *n2 = dynamic_cast<RevBayesCore::StochasticNode<double> *>( tmp );
-        p = new RevBayesCore::GammaScaleProposal(n2, d, r);
-    //    p = new RevBayesCore::ScaleProposal(n2, d, r);
-    //
-    //}
+    RevBayesCore::StochasticNode<double> *n = dynamic_cast<RevBayesCore::StochasticNode<double> *>( tmp );
+    p = new RevBayesCore::GammaScaleProposal(n, d, r);
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
     value = new RevBayesCore::MetropolisHastingsMove(p, w, t);
@@ -221,3 +208,83 @@ void Move_GammaScale::setConstParameter(const std::string& name, const RevPtr<co
     }
     
 }
+
+/**
+ * Get the author(s) of this function so they can receive credit (and blame) for it.
+ */
+std::vector<std::string> Move_GammaScale::getHelpAuthor(void) const
+{
+    // create a vector of authors for this function
+    std::vector<std::string> authors;
+    authors.push_back( "Jeremy M. Brown" );
+    return authors;
+}
+
+/**
+ * Get the names of similar and suggested other functions
+ */
+std::vector<std::string> Move_GammaScale::getHelpSeeAlso(void) const
+{
+    // create an entry for each suggested function
+    std::vector<std::string> see_also;
+    see_also.push_back( "mvScale" );
+    return see_also;
+}
+
+/**
+ * Get the (brief) description for this move
+ */
+std::vector<std::string> Move_GammaScale::getHelpDescription(void) const
+{
+    // create a variable for the description of the function
+    std::vector<std::string> descriptions;
+    descriptions.push_back( "A move to scale a single continuous value by multiplying by a value drawn from a Gamma(lambda,1) distribution. Lambda is the tuning parameter that controls the size of the proposals." );
+    return descriptions;
+}
+
+/**
+ * Get an executable and instructive example.
+ * These example should help the users to show how this function works but
+ * are also used to test if this function still works.
+ */
+std::string Move_GammaScale::getHelpExample(void) const
+{
+    // create an example as a single string variable.
+    std::string example = "";
+    
+    example += "# Here is a simple example for conducting MCMC on the mean and sd of a Normal distribution.\n";
+    example += "\n";
+    example += "# Uniform(0,1) priors on the mean and sd\n";
+    example += "mean ~ dnUnif(0,1)\n";
+    example += "sd ~ dnUnif(0,1)\n";
+    example += "\n";
+    example += "# Dummy data (will not actually be analyzed)\n";
+    example += "data <- v(0.4,0.5,0.6)\n";
+    example += "\n";
+    example += "# Clamping data\n";
+    example += "for (i in 1:data.size()){ outcomes[i] ~ dnNorm(mean,sd); outcomes[i].clamp(data[i]) }\n";
+    example += "\n";
+    example += "# Initializing move and monitor counters\n";
+    example += "mvi = 1\n";
+    example += "mni = 1\n";
+    example += "\n";
+    example += "# Adding Gamma scale moves for the mean and sd (THIS MOVE IS HERE)\n";
+    example += "moves[mvi++] = mvGammaScale(mean)\n";
+    example += "moves[mvi++] = mvGammaScale(sd)\n";
+    example += "\n";
+    example += "# Instantiating the model\n";
+    example += "mymodel = model(outcomes)\n";
+    example += "\n";
+    example += "# Adding screen monitor for the mean\n";
+    example += "monitors[mni++] = mnScreen(mean, printgen=1000)\n";
+    example += "\n";
+    example += "# Creating MCMC object\n";
+    example += "mymcmc = mcmc(mymodel, moves, monitors)\n";
+    example += "\n";
+    example += "# Running MCMC under the prior\n";
+    example += "mymcmc.run(30000,underPrior=TRUE);\n";
+    
+    return example;
+}
+
+
