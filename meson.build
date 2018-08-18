@@ -47,6 +47,12 @@ if get_option('jupyter')
   add_project_arguments(['-DRB_XCODE'], language : 'cpp')
 endif
 
+if get_option('cmd-gtk')
+  gtk2 = dependency('gtk+-2.0')
+else
+  gtk2 = dependency('', required: false)
+endif
+
 
 ####
 subdir('src')
@@ -57,6 +63,6 @@ subdir('tests')
 rb = executable(rb_name,
 		rb_sources,
 		include_directories: [root_inc],
-		dependencies: [boost, mpi],
+		dependencies: [boost, mpi, gtk2],
 		install: true)
 

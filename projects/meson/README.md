@@ -42,14 +42,81 @@ ninja -C meson
 
 # Cross-build
 
-To do a cross-build with meson, we need to supply a "cross-file" that says which compiler and assembler and such to use.
+## Linux to windows
 
-We also need to have a cross-compiler installed.  The convention these days is that cross-compilers live in `/usr/bin/` and are prefixed with the description of the target architecture.  For example, `/usr/bin/x86_64-w64-mingw32-g++` is the compiler that targets 64-bit windows.
+To do a cross-build from linux to windows, we need to
+* download windows libraries
+* install the cross-compiler
+* create a meson cross-file
+* run meson
 
-There are some cross-files in `projects/meson`.  Before using these, you need to edit the `root` that acts like a filesystem for the target architecture.  When cross-compiler to Mac, the root contains the SDK.  When cross-compiling to Windows, the root would contain other libraries you need, such as GTK, in native windows format.
+1. Let's put our windows libraries in a directory called `~/win_root`.  The libraries will end up in `~/win_root/mingw64/lib` with header files in `~/win_root/mingw64/include`.
+
+``` sh
+mkdir ~/win_root
+cd ~/win_root
+
+for PKG in boost-1.67.0-2 \
+           pango-1.42.3-1 \
+	   glib2-2.56.1-3 \
+	   cairo-1.15.8-1 \
+	   gdk-pixbuf2-2.36.9-1 \
+	   atk-2.28.1-1 \
+	   gtk2-2.24.32-1 \
+	   pcre-8.42-1 \
+	   fribidi-1.0.5-1 \
+	   pixman-0.34.0-3 \
+	   fontconfig-2.13.0-1 \
+	   freetype-2.9.1-1 \
+	   zlib-1.2.8-9 \
+	   bzip2-1.0.6-6 \
+	   libpng-1.6.35-1 \
+	   harfbuzz-1.8.5-1 \
+	   graphite2-1.3.9-1 \
+	   expat-2.2.5-1 \
+	   ; do
+   wget http://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-${PKG}-any.pkg.tar.xz
+   tar -Jxf mingw-w64-x86_64-${PKG}-any.pkg.tar.xz
+done
+# Check that GTK has been installed successfully
+PKG_CONFIG_PATH=~/win_root/mingw64/lib/pkgconfig pkg-config --libs gtk+-2.0
+```
+
+If you just want to install BOOST, only the first package above is actually necessary.  All the remaining packages are dependencies of GTK.
+
+2. We also need to have a cross-compiler installed.  The convention these days is that cross-compilers live in `/usr/bin/` and are prefixed with the description of the target architecture.  For example, `/usr/bin/x86_64-w64-mingw32-g++` is the compiler that targets 64-bit windows.
 
 ```
 apt-get install g++-mingw-w64
 apt-get install wine64
-meson build --cross-file=projects/meson/mingw-64bit-cross.txt
 ```
+
+I think on homebrew, you can do:
+```
+brew install mingw
+brew install wine
+```
+However, I have not tried this.
+
+3. Look at the cross file `revbayes/projects/meson/mingw-64bit-cross.txt`. Change the string `/path/to/win_root/` to refer to `$HOME/win_root`.
+
+
+4. Before running meson, we need to create `revbayes/src/meson.build`, which just has a long list of all the include directories and `*.cpp` files.
+```
+cd revbayes/projects/meson
+./generate.sh
+```
+
+Then we can finally run meson.  If this works, everything is probably OK.
+```
+export PKG_CONFIG_PATH=$HOME/win_root/mingw64/lib/pkgconfig
+cd revbayes
+meson build --cross-file=projects/meson/mingw-64bit-cross.txt -Dcmd-gtk=true
+```
+This creates a subdirectory called `build` where the build will take place.
+
+The we can actually start the build:
+```
+ninja -C build
+```
+This runs `ninja` inside the `build` directory.
