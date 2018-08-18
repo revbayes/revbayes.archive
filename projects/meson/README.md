@@ -36,8 +36,10 @@ cd ../..
 Then we need to run meson (which is like `cmake`) and `ninja` (which is like `make`).
 
 ```
+# Create a directory `build` where the build will take place
 meson build -Dprefix=$HOME/Applications/revbayes
-ninja -C meson
+# Run `ninja` in the `build` directory
+ninja -C build
 ```
 
 # Cross-build
@@ -78,8 +80,10 @@ for PKG in boost-1.67.0-2 \
    wget http://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-${PKG}-any.pkg.tar.xz
    tar -Jxf mingw-w64-x86_64-${PKG}-any.pkg.tar.xz
 done
+# Tell pkg-config where to look for `*.pc` files.
+export PKG_CONFIG_PATH=$HOME//win_root/mingw64/lib/pkgconfig 
 # Check that GTK has been installed successfully
-PKG_CONFIG_PATH=~/win_root/mingw64/lib/pkgconfig pkg-config --libs gtk+-2.0
+pkg-config --libs gtk+-2.0
 ```
 
 If you just want to install BOOST, only the first package above is actually necessary.  All the remaining packages are dependencies of GTK.
@@ -102,21 +106,14 @@ However, I have not tried this.
 
 
 4. Before running meson, we need to create `revbayes/src/meson.build`, which just has a long list of all the include directories and `*.cpp` files.
-```
-cd revbayes/projects/meson
-./generate.sh
-```
+   ```
+   cd revbayes/projects/meson
+   ./generate.sh
+   ```
 
-Then we can finally run meson.  If this works, everything is probably OK.
-```
-export PKG_CONFIG_PATH=$HOME/win_root/mingw64/lib/pkgconfig
-cd revbayes
-meson build --cross-file=projects/meson/mingw-64bit-cross.txt -Dcmd-gtk=true
-```
-This creates a subdirectory called `build` where the build will take place.
-
-The we can actually start the build:
-```
-ninja -C build
-```
-This runs `ninja` inside the `build` directory.
+   Then we can finally run meson.
+   ```
+   cd revbayes
+   meson cross-build --cross-file=projects/meson/mingw-64bit-cross.txt -Dcmd-gtk=true
+   ninja -C cross-build
+   ```
