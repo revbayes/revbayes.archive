@@ -1,8 +1,6 @@
 project('RevBayes', ['cpp', 'c'],
 	version: '1.0.9',
-	default_options: [
-	  'cpp_std=c++14'
-	],
+	default_options: [ 'cpp_std=c++14' ],
 	meson_version: '>= 0.47',
 	license: 'GPLv2')
 
@@ -47,22 +45,45 @@ if get_option('jupyter')
   add_project_arguments(['-DRB_XCODE'], language : 'cpp')
 endif
 
-if get_option('cmd-gtk')
-  gtk2 = dependency('gtk+-2.0')
-else
-  gtk2 = dependency('', required: false)
-endif
-
-
 ####
 subdir('src')
 subdir('tests')
 
 ############# executables #################
+core = static_library('rb-core',
+		      core_sources,
+		      include_directories: [root_inc])
+
+revlanguage = static_library('rb-revlanguage',
+			     revlanguage_sources,
+			     include_directories: [root_inc])
+
+libs = static_library('rb-lib',
+		      libs_sources,
+		      include_directories: [root_inc])
+
+############# executables #################
 
 rb = executable(rb_name,
-		rb_sources,
+		['src/revlanguage/main.cpp'],
+		link_with: [core, revlanguage, libs],
 		include_directories: [root_inc],
-		dependencies: [boost, mpi, gtk2],
+		dependencies: [boost, mpi],
 		install: true)
+
+if get_option('studio')
+  gtk2 = dependency('gtk+-2.0')
+  cmd = static_library('rb-cmd',cmd_sources, dependencies: [gtk2])
+
+  #  Add cmd/main.cpp cmd/RbGTKGui.cpp
+  #  includes: RbGTRGui.ui
+  revstudio = executable('RevStudio',
+			 ['src/cmd/main.cpp'],
+			 link_with: [core, revlanguage, libs, cmd],
+			 include_directories: [root_inc],
+			 dependencies: [boost, mpi, gtk2],
+			 install: true)
+
+endif
+
 
