@@ -61,22 +61,22 @@ To do a cross-build from linux to windows, we need to
    for PKG in boost-1.67.0-2 \
               pango-1.42.3-1 \
               glib2-2.56.1-3 \
-	      cairo-1.15.8-1 \
-   	      gdk-pixbuf2-2.36.9-1 \
-	      atk-2.28.1-1 \
-	      gtk2-2.24.32-1 \
-	      pcre-8.42-1 \
-	      fribidi-1.0.5-1 \
-	      pixman-0.34.0-3 \
-	      fontconfig-2.13.0-1 \
-	      freetype-2.9.1-1 \
-	      zlib-1.2.8-9 \
-	      bzip2-1.0.6-6 \
-	      libpng-1.6.35-1 \
-	      harfbuzz-1.8.5-1 \
-	      graphite2-1.3.9-1 \
-	      expat-2.2.5-1 \
-	      ; do
+              cairo-1.15.8-1 \
+              gdk-pixbuf2-2.36.9-1 \
+              atk-2.28.1-1 \
+              gtk2-2.24.32-1 \
+              pcre-8.42-1 \
+              fribidi-1.0.5-1 \
+              pixman-0.34.0-3 \
+              fontconfig-2.13.0-1 \
+              freetype-2.9.1-1 \
+              zlib-1.2.8-9 \
+              bzip2-1.0.6-6 \
+              libpng-1.6.35-1 \
+              harfbuzz-1.8.5-1 \
+              graphite2-1.3.9-1 \
+              expat-2.2.5-1 \
+              ; do
       wget http://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-${PKG}-any.pkg.tar.xz
       tar -Jxf mingw-w64-x86_64-${PKG}-any.pkg.tar.xz
    done
