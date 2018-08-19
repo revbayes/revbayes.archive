@@ -25,21 +25,60 @@ pip3 install meson
 
 # Build
 
-We first have to generate the list of include directories, and the list of `*.cpp` and `*.c` files.  These could easily be split up into libraries, but I haven't done that yet:
-
+## Preparing to run meson
+Before building with meson, we first need to generate the files `src/meson.build`, `src/libs/meson.build`,
+`src/revlanguage/meson.build`, `src/core/meson.build`, and `src/cmd/meson.build`.
 ```
 cd projects/meson
 ./generate.sh
-cd ../..
 ```
+The script `generate.sh`
+* scans the directories for `*.cpp` and `*.c` to find the source files in each directory.
+* scans the directories for `*.h` files to find the directories that need to be in the include path.
 
-Then we need to run meson (which is like `cmake`) and `ninja` (which is like `make`).
+## Configuring
 
+To configure the build, we run:
 ```
-# Create a directory `build` where the build will take place
+cd revbayes
 meson build -Dprefix=$HOME/Applications/revbayes
+```
+This creates a `revbayes/build` where the build will take place.  If you want to change configuration options, you can run `meson configure` in the `build` directory.  For to change the install prefix to `/usr/local`,
+```
+cd build
+meson configure -Dprefix=/usr/local
+``
+If there are errors in the configure step, you can look in `build-gtk/meson-logs/meson-log.txt` for log messages to help diagnose the problem.
+
+## Perform the build
+You won't need to re-run meson, since `ninja` will do that automatically if any changes are detected.
+```
 # Run `ninja` in the `build` directory
 ninja -C build
+ninja -C build install
+```
+
+## RevStudio
+
+To build `RevStudio` in addition to `rb`, you need to enable the `studio` flag when running meson:
+```
+meson build-gtk -Dstudio=true
+```
+However, if GTK2 is not installed or not usable, this will produce an error message.
+Meson uses `pkg-config` to find most dependencies, and to find out what compiler and linker flags they need.
+If meson cannot find GTK2, you can:
+* run `pkg-config gtk+-2.0 --cflags` to see if pkg-config can find GTK2.
+* look in `build-gtk/meson-logs/meson-log.txt` for log messages to help diagnose the problem.
+
+### Installing GTK2
+To install GTK2 on Debian & Ubuntu:
+```
+apt-get install libgtk+-2.0-dev
+```
+
+To install GTK2 on Mac:
+```
+brew install gtk2
 ```
 
 # Cross-build
@@ -114,6 +153,6 @@ To do a cross-build from linux to windows, we need to
    Then we can finally run meson.
    ```
    cd revbayes
-   meson cross-build --cross-file=projects/meson/mingw-64bit-cross.txt -Dcmd-gtk=true
+   meson cross-build --cross-file=projects/meson/mingw-64bit-cross.txt -Dstudio=true
    ninja -C cross-build
    ```
