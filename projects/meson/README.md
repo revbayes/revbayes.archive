@@ -120,15 +120,24 @@ To do a cross-build from linux to windows, we need to
       wget http://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-${PKG}-any.pkg.tar.xz
       tar -Jxf mingw-w64-x86_64-${PKG}-any.pkg.tar.xz
    done
-   # Tell pkg-config where to look for `*.pc` files.
-   export PKG_CONFIG_PATH=$HOME/win_root/mingw64/lib/pkgconfig
-   # Check that GTK has been installed successfully
-   pkg-config --cflags --libs gtk+-2.0
    ```
 
    If you just want to install BOOST, only the first package above is actually necessary.  All the remaining packages are dependencies of GTK.
 
-2. We also need to have a cross-compiler installed.  The convention these days is that cross-compilers live in `/usr/bin/` and are prefixed with the description of the target architecture.  For example, `/usr/bin/x86_64-w64-mingw32-g++` is the compiler that targets 64-bit windows.
+2. We also need to tell pkg-config that our libraries live in a different place than they would if this was really windows.
+
+   ```
+   # Tell pkg-config where to look for `*.pc` files.
+   export PKG_CONFIG_PATH=$HOME/win_root/mingw64/lib/pkgconfig
+   # Tell pkg-config to prefix -I/-L paths with this
+   export PKG_CONFIG_SYSROOT_DIR=$HOME/win_root
+   # Check that GTK has been installed successfully
+   pkg-config --cflags --libs gtk+-2.0
+   ```
+
+   If pkg-config cannot find `gtk+-2.0`, then the configuring with meson won't succeed.  If don't tell it about the sysroot, running meson will succeed, but the compiler won't be able to find GTK2.
+
+3. We also need to have a cross-compiler installed.  The convention these days is that cross-compilers live in `/usr/bin/` and are prefixed with the description of the target architecture.  For example, `/usr/bin/x86_64-w64-mingw32-g++` is the compiler that targets 64-bit windows.
 
    ```
    apt-get install g++-mingw-w64
@@ -142,25 +151,14 @@ To do a cross-build from linux to windows, we need to
    ```
    However, I have not tried this.
 
-3. Look at the cross file `revbayes/projects/meson/mingw-64bit-cross.txt`. Change the string `/path/to/win_root/` to refer to `$HOME/win_root`.
+4. Look at the cross file `revbayes/projects/meson/mingw-64bit-cross.txt`. Change the string `/path/to/win_root/` to refer to `$HOME/win_root`.
 
 
-4. Before running meson, we need to create `revbayes/src/meson.build`, which just has a long list of all the include directories and `*.cpp` files.
-   ```
-   cd revbayes/projects/meson
-   ./generate.sh
-   ```
+5. Now we can finally run meson:
 
-   Let's check that we have defined `PKG_CONFIG_PATH` so that the windows GTK2 libraries are available:
-   ```
-   echo $PKG_CONFIG_PATH
-   pkg-config --cflags --libs gtk+-2.0
-   ```
-   If pkg-config can't find GTK2, then meson will give an error message.
-
-   Then we can finally run meson.
    ```
    cd revbayes
+   ( cd projects/meson ; ./generate.sh )
    meson cross-build --cross-file=projects/meson/mingw-64bit-cross.txt -Dstudio=true
    ninja -C cross-build
    ```
