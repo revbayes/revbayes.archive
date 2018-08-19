@@ -120,9 +120,9 @@ To do a cross-build from linux to windows, we need to
       tar -Jxf mingw-w64-x86_64-${PKG}-any.pkg.tar.xz
    done
    # Tell pkg-config where to look for `*.pc` files.
-   export PKG_CONFIG_PATH=$HOME//win_root/mingw64/lib/pkgconfig 
+   export PKG_CONFIG_PATH=$HOME/win_root/mingw64/lib/pkgconfig
    # Check that GTK has been installed successfully
-   pkg-config --libs gtk+-2.0
+   pkg-config --cflags --libs gtk+-2.0
    ```
 
    If you just want to install BOOST, only the first package above is actually necessary.  All the remaining packages are dependencies of GTK.
@@ -149,6 +149,13 @@ To do a cross-build from linux to windows, we need to
    cd revbayes/projects/meson
    ./generate.sh
    ```
+
+   Let's check that we have defined `PKG_CONFIG_PATH` so that the windows GTK2 libraries are available:
+   ```
+   echo $PKG_CONFIG_PATH
+   pkg-config --cflags --libs gtk+-2.0
+   ```
+   If pkg-config can't find GTK2, then meson will give an error message.
 
    Then we can finally run meson.
    ```
