@@ -1,8 +1,8 @@
 project('RevBayes', ['cpp', 'c'],
-	version: '1.0.9',
-	default_options: [ 'cpp_std=c++14' ],
-	meson_version: '>= 0.47',
-	license: 'GPLv2')
+        version: '1.0.9',
+        default_options: [ 'cpp_std=c++14' ],
+        meson_version: '>= 0.47',
+        license: 'GPLv2')
 
 cpp = meson.get_compiler('cpp')
 cc = meson.get_compiler('c')
@@ -13,8 +13,8 @@ add_project_arguments(['-O3'], language : 'c')
 
 # So many warnings!
 add_project_arguments(['-Wall','-Wno-sign-compare','-Woverloaded-virtual',
-		       '-Wstrict-aliasing','-Wno-unknown-pragmas'],
-		      language : 'cpp')
+                       '-Wstrict-aliasing','-Wno-unknown-pragmas'],
+                      language : 'cpp')
 
 # Handle file too large error when cross-compiling to windows
 if host_machine.system() == 'windows'
@@ -22,12 +22,12 @@ if host_machine.system() == 'windows'
 endif
 
 boost_modules = [ 'regex',
-		  'program_options',
-		  'thread','signals',
-		  'system',
-		  'filesystem',
-		  'date_time',
-		  'serialization']
+                  'program_options',
+                  'thread','signals',
+                  'system',
+                  'filesystem',
+                  'date_time',
+                  'serialization']
 
 # This doesn't build an internal boost from the internal copy, yet.
 boost = dependency('boost', modules : boost_modules)
@@ -51,41 +51,41 @@ subdir('tests')
 
 ############# executables #################
 core = static_library('rb-core',
-		      core_sources,
-		      include_directories: [root_inc])
+                      core_sources,
+                      include_directories: [root_inc])
 
 revlanguage = static_library('rb-revlanguage',
-			     revlanguage_sources,
-			     include_directories: [root_inc])
+                             revlanguage_sources,
+                             include_directories: [root_inc])
 
 libs = static_library('rb-lib',
-		      libs_sources,
-		      include_directories: [root_inc])
+                      libs_sources,
+                      include_directories: [root_inc])
 
 ############# executables #################
 
 rb = executable(rb_name,
-		['src/revlanguage/main.cpp'],
-		link_with: [core, revlanguage, libs],
-		include_directories: [root_inc],
-		dependencies: [boost, mpi],
-		install: true)
+                ['src/revlanguage/main.cpp'],
+                link_with: [core, revlanguage, libs],
+                include_directories: [root_inc],
+                dependencies: [boost, mpi],
+                install: true)
 
 if get_option('studio')
   gtk2 = dependency('gtk+-2.0')
   cmd = static_library('rb-cmd',
-		       cmd_sources,
-		       include_directories: [root_inc],
-		       dependencies: [gtk2])
+                       cmd_sources,
+                       include_directories: [root_inc],
+                       dependencies: [gtk2])
 
   #  Add cmd/main.cpp cmd/RbGTKGui.cpp
   #  includes: RbGTRGui.ui
   revstudio = executable('RevStudio',
-			 ['src/cmd/main.cpp'],
-			 link_with: [core, revlanguage, libs, cmd],
-			 include_directories: [root_inc],
-			 dependencies: [boost, mpi, gtk2],
-			 install: true)
+                         ['src/cmd/main.cpp'],
+                         link_with: [core, revlanguage, libs, cmd],
+                         include_directories: [root_inc],
+                         dependencies: [boost, mpi, gtk2],
+                         install: true)
 
 endif
 
