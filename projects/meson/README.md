@@ -47,7 +47,7 @@ This creates a `revbayes/build` where the build will take place.  If you want to
 ```
 cd build
 meson configure -Dprefix=/usr/local
-``
+```
 If there are errors in the configure step, you can look in `build-gtk/meson-logs/meson-log.txt` for log messages to help diagnose the problem.
 
 ## Perform the build
