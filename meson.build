@@ -73,7 +73,10 @@ rb = executable(rb_name,
 
 if get_option('studio')
   gtk2 = dependency('gtk+-2.0')
-  cmd = static_library('rb-cmd',cmd_sources, dependencies: [gtk2])
+  cmd = static_library('rb-cmd',
+		       cmd_sources,
+		       include_directories: [root_inc],
+		       dependencies: [gtk2])
 
   #  Add cmd/main.cpp cmd/RbGTKGui.cpp
   #  includes: RbGTRGui.ui
