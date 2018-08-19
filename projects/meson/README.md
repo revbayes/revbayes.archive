@@ -115,6 +115,7 @@ To do a cross-build from linux to windows, we need to
               harfbuzz-1.8.5-1 \
               graphite2-1.3.9-1 \
               expat-2.2.5-1 \
+              gettext-0.19.4-4 \
               ; do
       wget http://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-${PKG}-any.pkg.tar.xz
       tar -Jxf mingw-w64-x86_64-${PKG}-any.pkg.tar.xz
