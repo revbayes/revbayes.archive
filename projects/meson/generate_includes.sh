@@ -4,9 +4,9 @@ SRC=../../src
 
 cd $SRC
 
-echo -n "Generating includes ... "
+echo -n "Defining variable 'src_inc' in 'src/meson.build' ... "
 
-echo "root_inc = include_directories([" > meson.build
+echo "src_inc = include_directories([" > meson.build
 find libs revlanguage core cmd -name '*.h' |
     xargs dirname |
     sort |

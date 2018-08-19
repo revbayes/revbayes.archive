@@ -2,7 +2,7 @@
 
 DIR=$1 
 
-echo -n "Generating source list for $DIR ... "
+echo -n "Defining variable '${DIR}_sources' in src/${DIR}/meson.build ... "
 
 SRC=../../src
 

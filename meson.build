@@ -52,22 +52,22 @@ subdir('tests')
 ############# executables #################
 core = static_library('rb-core',
                       core_sources,
-                      include_directories: [root_inc])
+                      include_directories: [src_inc])
 
 revlanguage = static_library('rb-revlanguage',
                              revlanguage_sources,
-                             include_directories: [root_inc])
+                             include_directories: [src_inc])
 
 libs = static_library('rb-lib',
                       libs_sources,
-                      include_directories: [root_inc])
+                      include_directories: [src_inc])
 
 ############# executables #################
 
 rb = executable(rb_name,
                 ['src/revlanguage/main.cpp'],
                 link_with: [core, revlanguage, libs],
-                include_directories: [root_inc],
+                include_directories: [src_inc],
                 dependencies: [boost, mpi],
                 install: true)
 
@@ -75,7 +75,7 @@ if get_option('studio')
   gtk2 = dependency('gtk+-2.0')
   cmd = static_library('rb-cmd',
                        cmd_sources,
-                       include_directories: [root_inc],
+                       include_directories: [src_inc],
                        dependencies: [gtk2])
 
   #  Add cmd/main.cpp cmd/RbGTKGui.cpp
@@ -83,7 +83,7 @@ if get_option('studio')
   revstudio = executable('RevStudio',
                          ['src/cmd/main.cpp'],
                          link_with: [core, revlanguage, libs, cmd],
-                         include_directories: [root_inc],
+                         include_directories: [src_inc],
                          dependencies: [boost, mpi, gtk2],
                          install: true)
 
