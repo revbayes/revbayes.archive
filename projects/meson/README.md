@@ -25,6 +25,23 @@ source meson/bin/activate
 pip3 install meson
 ```
 
+## Install BOOST
+
+This `README.md` assumes that you've already installed BOOST, and that it is installed as a system library.
+On mac:
+```
+brew install boost
+```
+On Debian/Ubuntu Linux:
+```
+apt-get install libboost-dev
+```
+I think on RedHat-based Linux, you can do:
+```
+dnf install boost-devel
+```
+
+
 # Build
 
 ## Preparing to run meson
