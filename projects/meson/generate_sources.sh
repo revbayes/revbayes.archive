@@ -2,7 +2,7 @@
 
 DIR=$1 
 
-echo -n "Defining variable '${DIR}_sources' in src/${DIR}/meson.build ... "
+echo "Defining variable '${DIR}_sources' in src/${DIR}/meson.build"
 
 SRC=../../src
 
@@ -18,6 +18,3 @@ find . -name '*.c' |
     sed "s|$|',|" >> meson.build
 echo "])" >> meson.build
 echo >> meson.build
-
-
-echo "done."
