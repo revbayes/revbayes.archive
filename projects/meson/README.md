@@ -18,8 +18,10 @@ apt-get install meson
 
 On Windows or other Linux distributions:
 
+First, install ninja.  For example, you could [download ninja](https://github.com/ninja-build/ninja/releases) and modify your PATH variable so the windows `cmd` shell can find it.
+
+Second,
 ```
-# First install ninja
 python3 -m venv meson
 source meson/bin/activate
 pip3 install meson
@@ -40,7 +42,7 @@ I think on RedHat-based Linux, you can do:
 ```
 dnf install boost-devel
 ```
-
+On Windows, you can [download boost](https://www.boost.org/users/download/)
 
 # Build
 
