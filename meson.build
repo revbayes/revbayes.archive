@@ -53,11 +53,13 @@ subdir('tests')
 ############# executables #################
 core = static_library('rb-core',
                       core_sources,
-                      include_directories: [src_inc])
+                      include_directories: [src_inc],
+                      dependencies: [mpi])
 
 revlanguage = static_library('rb-revlanguage',
                              revlanguage_sources,
-                             include_directories: [src_inc])
+                             include_directories: [src_inc],
+                             dependencies: [mpi])
 
 libs = static_library('rb-lib',
                       libs_sources,
