@@ -13,7 +13,6 @@ find libs revlanguage core cmd -name '*.h' |
     uniq |
     sed "s|^|'|" |
     sed "s|$|',|" >> meson.build
-truncate -s-2 meson.build
 echo "])" >> meson.build
 echo >> meson.build
 

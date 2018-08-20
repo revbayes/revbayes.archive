@@ -16,7 +16,6 @@ find . -name '*.cpp' |
 find . -name '*.c' |
     sed "s|^|'|" |
     sed "s|$|',|" >> meson.build
-truncate -s-2 meson.build
 echo "])" >> meson.build
 echo >> meson.build
 
