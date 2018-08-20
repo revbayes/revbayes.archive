@@ -35,7 +35,8 @@ boost = dependency('boost', modules : boost_modules)
 rb_name = 'rb'
 if get_option('mpi')
   rb_name += '-mpi'
-  mpi = dependency('mpi', language='cpp')
+  add_project_arguments(['-DRB_MPI'], language: 'cpp')
+  mpi = dependency('mpi', language: 'cpp')
 else
   mpi = dependency('', required: false)
 endif
