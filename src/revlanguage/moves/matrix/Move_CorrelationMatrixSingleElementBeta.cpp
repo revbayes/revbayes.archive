@@ -97,11 +97,11 @@ std::vector<std::string> Move_CorrelationMatrixSingleElementBeta::getHelpAuthor(
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Move_CorrelationMatrixSingleElementBeta::getHelpDescription(void) const
+std::string Move_CorrelationMatrixSingleElementBeta::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Beta proposal on a random element of a correlation matrix." );
+    std::string descriptions = "";
+    descriptions += "Beta proposal on a random element of a correlation matrix.";
     
     return descriptions;
 }
@@ -110,14 +110,11 @@ std::vector<std::string> Move_CorrelationMatrixSingleElementBeta::getHelpDescrip
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Move_CorrelationMatrixSingleElementBeta::getHelpDetails(void) const
+std::string Move_CorrelationMatrixSingleElementBeta::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
-    std::string details_1 = "";
-    details_1 += "This move chooses a single element of the correlation matrix at random, and draws a proposed value from a Beta distribution centered on the current value (and stretched to range from -1 to 1).";
-    details.push_back( details_1 );
+    std::string details = "";
+    details += "This move chooses a single element of the correlation matrix at random, and draws a proposed value from a Beta distribution centered on the current value (and stretched to range from -1 to 1).";
     
     return details;
 }
