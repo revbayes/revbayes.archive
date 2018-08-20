@@ -34,6 +34,7 @@ std::vector<Element*> HelpRenderer::getAttributes(const RevBayesCore::RbHelpType
     yaml.push_back( new Attribute("example", help.getExample() ) );
     yaml.push_back( new Attribute("authors", help.getAuthor() ) );
     yaml.push_back( new Attribute("see_also", help.getSeeAlso() ) );
+    yaml.push_back( new Attribute("type_spec", help.getTypeSpec() ) );
 
     Attribute* constructors = new Attribute("constructor");
     for( size_t i = 0; i < help.getConstructors().size(); i++)
@@ -99,6 +100,7 @@ std::vector<Element*> HelpRenderer::getAttributes(const RevBayesCore::RbHelpFunc
         yaml.push_back( new Attribute("example", help.getExample() ) );
         yaml.push_back( new Attribute("authors", help.getAuthor() ) );
         yaml.push_back( new Attribute("see_also", help.getSeeAlso() ) );
+        yaml.push_back( new Attribute("type_spec", help.getTypeSpec() ) );
 
         Attribute* refs = new Attribute("references");
         for( size_t i = 0; i < help.getReferences().size(); i++)
@@ -120,6 +122,7 @@ std::vector<Element*> HelpRenderer::getAttributes(const RevBayesCore::RbHelpArgu
     yaml.push_back( new Attribute("dag_type", help.getArgumentDagNodeType() ) );
     yaml.push_back( new Attribute("pass_by", help.getArgumentPassingMethod() ) );
     yaml.push_back( new Attribute("value_type", help.getValueType() ) );
+    yaml.push_back( new Attribute("default", help.getDefaultValue() ) );
     yaml.push_back( new Attribute("options", help.getOptions() ) );
 
     return yaml;

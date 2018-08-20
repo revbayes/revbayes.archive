@@ -259,33 +259,25 @@ std::vector<std::string> Dist_DuplicationLoss::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_DuplicationLoss::getHelpDescription(void) const
+std::string Dist_DuplicationLoss::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Multispecies coalescent distribution describing how gene trees can be generated from within a species tree given a constant effective population size. Requires an ultrametric species tree, a single effective population size (a single real positive), and taxa with species and individual names." );
+    std::string description = "Multispecies coalescent distribution describing how gene trees can be generated from within a species tree given a constant effective population size. Requires an ultrametric species tree, a single effective population size (a single real positive), and taxa with species and individual names.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_DuplicationLoss::getHelpDetails(void) const
+std::string Dist_DuplicationLoss::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
+    std::string details = "";
+    details += "The species tree must be ultrametric.\n";
     
-    std::string details_1 = "";
-    details_1 += "The species tree must be ultrametric.";
-    
-    details.push_back( details_1 );
-    
-    std::string details_2 = "";
-    details_2 += "The effective population size is constant across the species tree. ";
-    
-    details.push_back( details_2 );
+    details += "The effective population size is constant across the species tree. ";
     
     return details;
 }

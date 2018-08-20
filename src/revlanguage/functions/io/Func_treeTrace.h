@@ -36,7 +36,7 @@ namespace RevLanguage {
         RevPtr<RevVariable>                 execute(void);                                                                      //!< Execute function
         const ArgumentRules&                getArgumentRules(void) const;                                                       //!< Get argument rules
         std::vector<std::string>            getHelpAuthor(void) const;      
-        std::vector<std::string>            getHelpDescription(void) const; 
+        std::string                         getHelpDescription(void) const; 
         std::string                         getHelpExample(void) const;    
         std::vector<std::string>            getHelpSeeAlso(void) const;     
         const TypeSpec&                     getReturnType(void) const;                                                          //!< Get type of return value

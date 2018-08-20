@@ -84,7 +84,7 @@ std::string Node::render(size_t depth)
             {
                 std::string pad = "- ";
 
-                result += indent + pad + format(elements.front()->value, depth) + "\n";
+                result += indent + pad + format(elements[i]->value, depth) + "\n";
             }
         }
     }

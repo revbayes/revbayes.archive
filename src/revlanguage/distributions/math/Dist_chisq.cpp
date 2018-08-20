@@ -90,23 +90,22 @@ std::vector<std::string> Dist_chisq::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_chisq::getHelpDescription(void) const
+std::string Dist_chisq::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "The chi-square probability distribution." );
+    std::string description = "The chi-square probability distribution.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_chisq::getHelpDetails(void) const
+std::string Dist_chisq::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
+    std::string details;
     
     return details;
 }

@@ -286,7 +286,7 @@ TARGET_LINK_LIBRARIES(RevStudio rb-cmd-lib rb-parser rb-core libs ${Boost_LIBRAR
 ' >> $HERE/CMakeLists.txt
 else
 echo '
-TARGET_LINK_LIBRARIES(RevStudio rb-parser rb-core libs rb-cmd-lib ${Boost_LIBRARIES} ${GTK_LIBRARIES})
+TARGET_LINK_LIBRARIES(RevStudio rb-cmd-lib rb-parser rb-core libs ${Boost_LIBRARIES} ${GTK_LIBRARIES})
 ' >> $HERE/CMakeLists.txt
 fi
 
@@ -345,4 +345,3 @@ echo 'set(PARSER_FILES' > "$HERE/revlanguage/CMakeLists.txt"
 find revlanguage | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/revlanguage/CMakeLists.txt"
 echo ')
 add_library(rb-parser ${PARSER_FILES})'  >> "$HERE/revlanguage/CMakeLists.txt"
-
