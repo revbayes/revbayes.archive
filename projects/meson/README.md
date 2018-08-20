@@ -60,9 +60,24 @@ ninja -C build
 ninja -C build install
 ```
 
-## RevStudio
+## Option: MPI
 
-To build `RevStudio` in addition to `rb`, you need to enable the `studio` flag when running meson:
+To build with MPI, set the `mpi` option:
+```
+meson build-mpi -Dmpi=true -Dprefix=$HOME/Applications/revbayes-mpi
+ninja -C build-mpi install
+
+## Option: Jupyter Kernel
+
+To build the jupyter kernel, set the `jupyter` option:
+```
+meson build-jupyter -Djupyter=true -Dprefix=$HOME/Applications/revbayes-jupyter
+ninja -C build-jupyter install
+```
+
+## Option: RevStudio
+
+To build the `RevStudio` GUI in addition to `rb`, you need to enable the `studio` flag when running meson:
 ```
 meson build-gtk -Dstudio=true
 ninja -C build-gtk install
