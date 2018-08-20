@@ -55,7 +55,7 @@ If there are errors in the configure step, you can look in `build-gtk/meson-logs
 ## Perform the build
 You won't need to re-run meson, since `ninja` will do that automatically if any changes are detected.
 ```
-# Run `ninja` in the `build` directory
+# Run `ninja` while targetting the `build` directory
 ninja -C build
 ninja -C build install
 ```
