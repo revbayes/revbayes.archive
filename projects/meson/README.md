@@ -2,6 +2,8 @@
 
 [Meson](https://mesonbuild.com/) ([git](https://github.com/mesonbuild/meson)) is a new build system that aims to replace autotools and compete with CMake.  It is written in Python and works on Windows, Mac, and Linux.
 
+See the conference talk [Making build systems not suck](https://www.youtube.com/watch?v=KPi0AuVpxLI)
+
 # Install
 
 On Mac:
@@ -33,7 +35,7 @@ cd projects/meson
 ./generate.sh
 ```
 The script `generate.sh`
-* scans the directories for `*.cpp` and `*.c` to find the source files in each directory.
+* scans the directories for `*.cpp` and `*.c` files to find the source files in each directory.
 * scans the directories for `*.h` files to find the directories that need to be in the include path.
 
 ## Configuring
@@ -43,7 +45,7 @@ To configure the build, we run:
 cd revbayes
 meson build -Dprefix=$HOME/Applications/revbayes
 ```
-This creates a `revbayes/build` where the build will take place.  If you want to change configuration options, you can run `meson configure` in the `build` directory.  For to change the install prefix to `/usr/local`,
+This creates a `revbayes/build` directory where the build will take place.  If you want to change configuration options, you can run `meson configure` in the `build` directory.  For example, to change the install prefix to `/usr/local`,
 ```
 cd build
 meson configure -Dprefix=/usr/local
@@ -63,6 +65,7 @@ ninja -C build install
 To build `RevStudio` in addition to `rb`, you need to enable the `studio` flag when running meson:
 ```
 meson build-gtk -Dstudio=true
+ninja -C build-gtk install
 ```
 However, if GTK2 is not installed or not usable, this will produce an error message.
 Meson uses `pkg-config` to find most dependencies, and to find out what compiler and linker flags they need.
@@ -87,6 +90,7 @@ brew install gtk2
 
 To do a cross-build from linux to windows, we need to
 * download windows libraries
+* tell pkg-config where to find them
 * install the cross-compiler
 * create a meson cross-file
 * run meson
