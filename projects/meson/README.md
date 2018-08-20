@@ -16,11 +16,7 @@ On Debian/Ubuntu Linux
 apt-get install meson
 ```
 
-On Windows or other Linux distributions:
-
-First, install ninja.  For example, you could [download ninja](https://github.com/ninja-build/ninja/releases) and modify your PATH variable so the windows `cmd` shell can find it.
-
-Second,
+On Windows, first, install ninja.  For example, you could [download ninja](https://github.com/ninja-build/ninja/releases) and modify your PATH variable so the windows `cmd` shell can find it.  Second,
 ```
 python3 -m venv meson
 source meson/bin/activate
@@ -59,24 +55,28 @@ The script `generate.sh`
 
 ## Configuring
 
-To configure the build, we run:
+To configure the build, we run the following command from the `revbayes` directory:
 ```
-cd revbayes
 meson build -Dprefix=$HOME/Applications/revbayes
 ```
-This creates a `revbayes/build` directory where the build will take place.  If you want to change configuration options, you can run `meson configure` in the `build` directory.  For example, to change the install prefix to `/usr/local`,
+This creates a `revbayes/build` directory where the build will take place, and says that the executables will eventually be installed in `$HOME/Applications/revbayes`.  If you want to install someplace else, you can use a different "prefix".
+
+If there are errors in the configure step, you can look in `build/meson-logs/meson-log.txt` for log messages to help diagnose the problem.
+
+## Perform the build
+Next, Run `ninja` while targetting the `build` directory
+```
+ninja -C build
+ninja -C build install
+```
+You won't need to re-run meson if your `meson.build` files have changed.  `ninja` will do that automatically if any changes are detected.
+
+## Altering the configuration
+
+If you want to change configuration options after you have run `meson`, you can run `meson configure` in the `build` directory to view the current settings.  Then you can alter the settings by running `meson configure -Doption=value`.  For example, to change the install prefix to `/usr/local`,
 ```
 cd build
 meson configure -Dprefix=/usr/local
-```
-If there are errors in the configure step, you can look in `build-gtk/meson-logs/meson-log.txt` for log messages to help diagnose the problem.
-
-## Perform the build
-You won't need to re-run meson, since `ninja` will do that automatically if any changes are detected.
-```
-# Run `ninja` while targetting the `build` directory
-ninja -C build
-ninja -C build install
 ```
 
 ## Option: MPI
