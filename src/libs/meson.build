@@ -1,0 +1,22 @@
+libs_sources = files([
+'./ncl/nxsblock.cpp',
+'./ncl/nxsexception.cpp',
+'./ncl/nxstaxablock.cpp',
+'./ncl/nxsdatablock.cpp',
+'./ncl/nxstaxaassociationblock.cpp',
+'./ncl/nxsassumptionsblock.cpp',
+'./ncl/nxspublicblocks.cpp',
+'./ncl/nxsunalignedblock.cpp',
+'./ncl/nxsreader.cpp',
+'./ncl/nxssetreader.cpp',
+'./ncl/nxscharactersblock.cpp',
+'./ncl/nxscxxdiscretematrix.cpp',
+'./ncl/nxstreesblock.cpp',
+'./ncl/nxstoken.cpp',
+'./ncl/nxsmultiformat.cpp',
+'./ncl/nxsstring.cpp',
+'./ncl/nxsdistancesblock.cpp',
+'./linenoise/utf8.c',
+'./linenoise/linenoise.c',
+])
+
