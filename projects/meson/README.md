@@ -46,7 +46,7 @@ On Windows, you can [download boost](https://www.boost.org/users/download/)
 Before building with meson, we first need to generate the files `src/meson.build`, `src/libs/meson.build`,
 `src/revlanguage/meson.build`, `src/core/meson.build`, and `src/cmd/meson.build`.
 ```
-cd projects/meson
+cd revbayes/projects/meson
 ./generate.sh
 ```
 The script `generate.sh`
@@ -64,12 +64,12 @@ This creates a `revbayes/build` directory where the build will take place, and s
 If there are errors in the configure step, you can look in `build/meson-logs/meson-log.txt` for log messages to help diagnose the problem.
 
 ## Perform the build
-Next, Run `ninja` while targetting the `build` directory
+Next, run `ninja` while targetting the `build` directory
 ```
 ninja -C build
 ninja -C build install
 ```
-You won't need to re-run meson if your `meson.build` files have changed.  `ninja` will do that automatically if any changes are detected.
+You won't need to re-run meson if your `meson.build` files have changed, since  `ninja` will do that automatically.
 
 ## Altering the configuration
 
