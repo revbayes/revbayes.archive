@@ -128,7 +128,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     if ( dt == "DNA" )
     {
         RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState> *dist =
-        new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState>(tau, true, n, ambig, internal, gapmatch);
+        new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState>(tau, !true, n, ambig, internal, gapmatch);
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -424,7 +424,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             nChars = rm->getValue().getNumberOfStates();
         }
 
-        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PomoState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PomoState>(tau, nChars, true, n, ambig, internal, gapmatch);
+        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PomoState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PomoState>(tau, nChars, !true, n, ambig, internal, gapmatch);
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );

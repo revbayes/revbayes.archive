@@ -37,8 +37,6 @@ namespace RevLanguage {
         static const TypeSpec&                              getClassTypeSpec(void);                                                             //!< Get class type spec
         virtual MethodTable                                 getDistributionMethods( void ) const;                                                                       //!< Get the member methods
 
-//        virtual RevBayesCore::RbHelpDistribution*       getHelpEntry(void) const = 0;
-//        virtual RevBayesCore::RbHelpDistribution*           getHelpEntry(void) const;                                                           //!< Get the help entry for this function
 
         std::vector<std::string>                            getConstructorFunctionAliases(void) const;                                              //!< Get the alternative names used for the constructor function in Rev.
         std::string                                         getConstructorFunctionName(void) const;
@@ -46,7 +44,8 @@ namespace RevLanguage {
         virtual std::string                                 getDistributionFunctionName(void) const = 0;
 
         
-        // Basit utility functions
+        // Basic utility functions
+        std::string                                         getRevDeclaration(void) const;
         virtual const TypeSpec&                             getVariableTypeSpec(void) const = 0;                                                //!< Get the variable type spec of this distribution
         //void                                                printValue(std::ostream& o) const;                                                  //!< Print value for user
 
@@ -63,16 +62,6 @@ namespace RevLanguage {
     
     protected:
         Distribution(void);
-        
-        
-//        virtual std::string                                 getConstructorUsage(void) const = 0;
-//        virtual std::vector<std::string>                    getConstructorDetails(void) const = 0;
-//        virtual std::string                                 getConstructorExample(void) const = 0;
-//        virtual std::string                                 getHelpAuthor(void) const = 0;
-//        virtual std::vector<std::string>                    getHelpDescription(void) const = 0;
-//        virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const = 0;
-//        virtual std::vector<std::string>                    getHelpSeeAlso(void) const = 0;
-//        virtual std::string                                 getHelpTitle(void) const = 0;
         
         // virtual method that may be overwritten
         virtual void                                        addSpecificHelpFields(RevBayesCore::RbHelpEntry* e) const;

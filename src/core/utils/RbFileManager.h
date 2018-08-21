@@ -44,6 +44,7 @@ namespace RevBayesCore {
         std::istream&           safeGetline(std::istream& is, std::string& t);
         std::string             getStringByDeletingLastPathComponent(const std::string& s);
         bool                    isDirectory(void) const;                                                                                                //!< Is this a directory
+        bool                    isDirectoryPresent(const std::string &mp) const;                                                                        //!< Checks for presence of a directory
         bool                    isFile(void) const;                                                                                                     //!< Is this a file
         bool                    isFileNamePresent(void) const;                                                                                          //!< Checks whether the file name is present (true) or empty (false)
         bool                    listDirectoryContents(void);                                                                                            //!< Recursively lists the contents of the directory filePath
@@ -59,7 +60,6 @@ namespace RevBayesCore {
     private:
 
         std::string             getLastPathComponent(const std::string& s);
-        bool                    isDirectoryPresent(const std::string &mp) const;                                                                        //!< Checks for presence of a directory
         bool                    isFilePresent(const std::string &fn) const;                                                                             //!< Checks for the presence of a file
         bool                    isFilePresent(const std::string &mp, const std::string &mf) const;                                                      //!< Checks for the presence of a file
         bool                    listDirectoryContents(const std::string& dirpath);                                                                      //!< Recursively lists the contents of the directory passed in as the argument dirpath

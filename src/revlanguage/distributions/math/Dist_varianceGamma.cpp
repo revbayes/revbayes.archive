@@ -140,39 +140,27 @@ std::vector<std::string> Dist_varianceGamma::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_varianceGamma::getHelpDescription(void) const
+std::string Dist_varianceGamma::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Variance-gamma distribution with location ‘mu’." );
+    std::string description = "Variance-gamma distribution with location ‘mu’.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_varianceGamma::getHelpDetails(void) const
+std::string Dist_varianceGamma::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
+    std::string details = "";
+    details += "The variance-gamma distribution has density:\n\n";
     
-    std::string details_1 = "";
-    details_1 += "The variance-gamma distribution has density:";
+    details += "f(x) = 1/(sqrt(2 pi) sigma) e^-((x - mu)^2/(2 sigma^2))\n\n";
     
-    details.push_back( details_1 );
-    
-    std::string details_2 = "";
-    details_2 += "f(x) = 1/(sqrt(2 pi) sigma) e^-((x - mu)^2/(2 sigma^2))";
-    
-    details.push_back( details_2 );
-    
-    std::string details_3 = "";
-    details_3 += "where mu is the mean of the distribution and sigma the standard deviation.";
-    
-    details.push_back( details_3 );
-    
+    details += "where mu is the mean of the distribution and sigma the standard deviation.";
     
     return details;
 }

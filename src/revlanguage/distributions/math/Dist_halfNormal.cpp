@@ -115,41 +115,27 @@ std::vector<std::string> Dist_halfNormal::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_halfNormal::getHelpDescription(void) const
+std::string Dist_halfNormal::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "half-normal (gaussian) distribution with offset equal to ‘offset’ and standard deviation equal to ‘sd’." );
+    std::string description = "half-normal (gaussian) distribution with offset equal to ‘offset’ and standard deviation equal to ‘sd’.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_halfNormal::getHelpDetails(void) const
+std::string Dist_halfNormal::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
-    std::string details_1 = "";
-    details_1 += "The half-normal distribution has density:";
-    details_1 += "f(x) = 2/(sqrt(2 pi) sigma) e^-((x - offset)^2/(2 sigma^2))";
-    details_1 += "where offset is the offset of the distribution and sigma the standard deviation.";
-    
-    details.push_back( details_1 );
-    
-    std::string details_2 = "";
-    details_2 += "f(x) = 2/(sqrt(2 pi) sigma) e^-((x - offset)^2/(2 sigma^2))";
-    
-    details.push_back( details_2 );
-    
-    std::string details_3 = "";
-    details_3 += "where offset is the offset of the distribution and sigma the standard deviation.";
-    
-    details.push_back( details_3 );
-    
+    std::string details = "";
+    details += "The half-normal distribution has density:\n\n";
+    details += " f(x) = 2/(sqrt(2 pi) sigma) e^-((x - offset)^2/(2 sigma^2))";
+    details += " where offset is the offset of the distribution and sigma the standard deviation.\n\n";
+    details += "f(x) = 2/(sqrt(2 pi) sigma) e^-((x - offset)^2/(2 sigma^2))\n\n";
+    details += "where offset is the offset of the distribution and sigma the standard deviation.";
     
     return details;
 }

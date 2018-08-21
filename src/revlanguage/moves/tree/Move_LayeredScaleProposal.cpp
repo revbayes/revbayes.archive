@@ -246,38 +246,27 @@ void Move_LayeredScaleProposal::setConstParameter(const std::string& name, const
   /**
    * Get the (brief) description for this function
    */
-  std::vector<std::string> Move_LayeredScaleProposal::getHelpDescription(void) const
+  std::string Move_LayeredScaleProposal::getHelpDescription(void) const
   {
       // create a variable for the description of the function
-      std::vector<std::string> descriptions;
-      descriptions.push_back( "Makes a subtree scale move on all subtrees below a given age in the tree. Tree topology is not altered." );
+      std::string description =  "Makes a subtree scale move on all subtrees below a given age in the tree. Tree topology is not altered." ;
 
-      return descriptions;
+      return description;
   }
 
 
   /**
    * Get the more detailed description of the function
    */
-  std::vector<std::string> Move_LayeredScaleProposal::getHelpDetails(void) const
+  std::string Move_LayeredScaleProposal::getHelpDetails(void) const
   {
       // create a variable for the description of the function
-      std::vector<std::string> details;
+      std::string details = "";
+      details += "The tree must be ultrametric.\n\n";
 
-      std::string details_1 = "";
-      details_1 += "The tree must be ultrametric.";
+      details += "An age is randomly drawn between the root age and the age of the oldest tip.";
 
-      details.push_back( details_1 );
-
-      std::string details_2 = "";
-      details_2 += "An age is randomly drawn between the root age and the age of the oldest tip;";
-
-      details.push_back( details_2 );
-
-      std::string details_3 = "";
-      details_3 += "Then all subtrees below this age are scaled up or down depending on a scaler drawn from an exponential distribution.";
-
-      details.push_back( details_3 );
+      details += " Then all subtrees below this age are scaled up or down depending on a scaler drawn from an exponential distribution.";
 
       return details;
   }

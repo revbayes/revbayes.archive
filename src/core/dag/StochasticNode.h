@@ -36,7 +36,7 @@ namespace RevBayesCore {
         const valueType&                                    getValue(void) const;
         bool                                                isClamped(void) const;                                                      //!< Is this DAG node clamped?
         bool                                                isStochastic(void) const;                                                   //!< Is this DAG node stochastic?
-        void                                                printStructureInfo(std::ostream &o, bool verbose=false) const;              //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
+        virtual void                                        printStructureInfo(std::ostream &o, bool verbose=false) const;              //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         void                                                redraw(void);                                                               //!< Redraw the current value of the node (applies only to stochastic nodes)
         virtual void                                        reInitializeMe(void);                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
         virtual void                                        setClamped(bool tf);                                                        //!< Set directly the flag whether this node is clamped.
@@ -397,21 +397,10 @@ template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::printStructureInfo( std::ostream &o, bool verbose ) const
 {
     
-    if ( verbose == true )
-    {
-        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
-    }
     
-    o << "_dagType      = Stochastic DAG node" << std::endl;
-    
-    if ( verbose == true )
-    {
-        o << "_refCount     = " << this->getReferenceCount() << std::endl;
-        o << "_distribution = " << "<" << distribution << ">" << std::endl;
-        o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
-    }
-    
-    o << "_clamped      = " << ( clamped ? "TRUE" : "FALSE" ) << std::endl;
+    o << "_dagType      = Stochastic node (distribution)" << std::endl;
+    o << "_distribution = " << "<" << distribution << ">" << std::endl;
+    o << "_clamped      = " << ( this->clamped ? "TRUE" : "FALSE" ) << std::endl;
     o << "_lnProb       = " << const_cast< StochasticNode<valueType>* >( this )->getLnProbability() << std::endl;
     
     if ( this->touched == true && verbose == true)
@@ -425,6 +414,13 @@ void RevBayesCore::StochasticNode<valueType>::printStructureInfo( std::ostream &
     o << "_children     = ";
     this->printChildren(o, 16, 70, verbose);
     o << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+        o << "_refCount     = " << this->getReferenceCount() << std::endl;
+        o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
+    }
 }
 
 

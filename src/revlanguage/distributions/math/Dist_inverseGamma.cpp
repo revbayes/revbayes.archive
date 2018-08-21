@@ -90,29 +90,24 @@ std::vector<std::string> Dist_inverseGamma::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_inverseGamma::getHelpDescription(void) const
+std::string Dist_inverseGamma::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "inverse-gamma probability distribution for positive real numbers." );
+    std::string description = "inverse-gamma probability distribution for positive real numbers.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_inverseGamma::getHelpDetails(void) const
+std::string Dist_inverseGamma::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
-    std::string details_1 = "";
-    details_1 += "The inverse Gamma distribution is the probability of the sum of exponentially distributed variables.";
-    details_1 += "Thus, it provides a natural prior distribution for parameters that could be considered as sums of exponential variables.";
-    
-    details.push_back( details_1 );
+    std::string details = "";
+    details += "The inverse Gamma distribution is the probability of the sum of exponentially distributed variables.";
+    details += " Thus, it provides a natural prior distribution for parameters that could be considered as sums of exponential variables.";
     
     return details;
 }

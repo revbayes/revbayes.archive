@@ -1,7 +1,7 @@
 #include "RbHelpRenderer.h"
 
 #include "RbException.h"
-#include "RbHelpArgument.h"
+#include "RbHelpDistribution.h"
 #include "RlUserInterface.h"
 #include "StringUtilities.h"
 #include "TerminalFormatter.h"
@@ -17,8 +17,10 @@ HelpRenderer::HelpRenderer(void)
 }
 
 
-std::string HelpRenderer::renderAliases(const std::vector<std::string> &aliases, size_t w) const
+std::string HelpRenderer::renderAliases(const RbHelpEntry &helpEntry, size_t w) const
 {
+    const std::vector<std::string> &aliases = helpEntry.getAliases();
+
     std::string result = "";
     
     // aliases
@@ -39,8 +41,10 @@ std::string HelpRenderer::renderAliases(const std::vector<std::string> &aliases,
 }
 
 
-std::string HelpRenderer::renderArguments(const std::vector<RbHelpArgument> &arguments, size_t w) const
+std::string HelpRenderer::renderArguments(const RbHelpFunction &functionHelp, size_t w) const
 {
+    const std::vector<RbHelpArgument> &arguments = functionHelp.getArguments();
+
     std::string result = "";
     
     if ( arguments.size() > 0)
@@ -148,8 +152,10 @@ std::string HelpRenderer::renderArgument(const RevBayesCore::RbHelpArgument &arg
 }
 
 
-std::string HelpRenderer::renderAuthors(const std::vector<std::string> &authors, size_t w) const
+std::string HelpRenderer::renderAuthors(const RbHelpEntry &helpEntry, size_t w) const
 {
+    const std::vector<std::string> &authors = helpEntry.getAuthor();
+
     std::string result = "";
     
     if ( authors.size() > 0 )
@@ -171,8 +177,10 @@ std::string HelpRenderer::renderAuthors(const std::vector<std::string> &authors,
 }
 
 
-std::string HelpRenderer::renderConstructors(const std::vector<RbHelpFunction> &ctors, size_t w) const
+std::string HelpRenderer::renderConstructors(const RbHelpType &typeHelp, size_t w) const
 {
+    const std::vector<RbHelpFunction> &ctors = typeHelp.getConstructors();
+
     std::string result = "";
     
     if ( ctors.size() > 0)
@@ -180,6 +188,10 @@ std::string HelpRenderer::renderConstructors(const std::vector<RbHelpFunction> &
         // check if we have multiple arguments
         if ( ctors.size() == 1 )
         {
+            if (ctors[0].getUsage() == "c_name()")
+            {
+                return result;
+            }
             result.append( TerminalFormatter::makeUnderlined("Constructor") );
         }
         else
@@ -197,7 +209,7 @@ std::string HelpRenderer::renderConstructors(const std::vector<RbHelpFunction> &
             result.append( section_break );
             
             // arguments
-            result.append( renderArguments( functionHelp.getArguments(), w ) );
+            result.append( renderArguments( functionHelp, w ) );
             
         }
         
@@ -208,23 +220,21 @@ std::string HelpRenderer::renderConstructors(const std::vector<RbHelpFunction> &
 }
 
 
-std::string HelpRenderer::renderDescription(const std::vector<std::string> &descriptions, size_t w) const
+std::string HelpRenderer::renderDescription(const RbHelpEntry &helpEntry, size_t w) const
 {
+    const std::string &description = helpEntry.getDescription();
+
     std::string result = "";
     
     // descriptions
-    if ( descriptions.size() > 0 )
+    if ( description.size() > 0 )
     {
         result.append( TerminalFormatter::makeUnderlined("Description") );
         result.append( section_break );
     
-        for (std::vector<std::string>::const_iterator it = descriptions.begin(); it != descriptions.end(); ++it)
-        {
-            result.append( StringUtilities::formatTabWrap(*it, 1, w) );
-            result.append( line_break );
-            result.append( section_break );
-        }
-    
+        result.append( StringUtilities::formatTabWrap(description, 1, w) );
+        result.append( line_break );
+        result.append( section_break );
     }
     
     return result;
@@ -232,8 +242,10 @@ std::string HelpRenderer::renderDescription(const std::vector<std::string> &desc
 
 
 
-std::string HelpRenderer::renderDetails(const std::vector<std::string> &details, size_t w) const
+std::string HelpRenderer::renderDetails(const RbHelpEntry &helpEntry, size_t w) const
 {
+    const std::string &details = helpEntry.getDetails();
+
     std::string result = "";
     
     // details
@@ -242,80 +254,34 @@ std::string HelpRenderer::renderDetails(const std::vector<std::string> &details,
         result.append( TerminalFormatter::makeUnderlined("Details") );
         result.append( section_break );
         
-        for (std::vector<std::string>::const_iterator it = details.begin(); it != details.end(); ++it)
-        {
-            result.append( StringUtilities::formatTabWrap(*it, 1, w) );
-            result.append( section_break );
-        }
-        
-        result.append( line_break );
-    }
-    
-    return result;
-}
-
-
-std::string HelpRenderer::renderHelp(const RbHelpFunction &functionHelp, size_t w)
-{
-    
-    std::string result = "";
-    
-    // we do not print the name at the top
-    
-    // title
-    if ( functionHelp.getTitle().size() > 0 )
-    {
-        result.append( functionHelp.getTitle() );
+        result.append( StringUtilities::formatTabWrap(details, 1, w) );
         result.append( line_break );
         result.append( section_break );
     }
     
-    // aliases
-    result.append( renderAliases( functionHelp.getAliases(), w ) );
-    
-    // description
-    result.append( renderDescription( functionHelp.getDescription(), w ) );
+    return result;
+}
 
-    // usage
-    result.append( renderUsage( functionHelp.getUsage(), w ) );
-    
-    // arguments
-    result.append( renderArguments( functionHelp.getArguments(), w ) );
-    
-    // return value
-    result.append( TerminalFormatter::makeUnderlined("Return type") );
-    result.append( section_break );
-    result.append( StringUtilities::formatTabWrap(functionHelp.getReturnType(), 1, w) );
-    result.append( line_break );
-    result.append( section_break );
-    
-    
-    // details
-    result.append( renderDetails( functionHelp.getDetails(), w ) );
-    
+
+std::string HelpRenderer::renderExample(const RbHelpEntry &helpEntry, size_t w) const
+{
+    const std::string &example = helpEntry.getExample();
+
+    std::string result = "";
+
     // example
-    if ( functionHelp.getExample().size() > 0 )
+    if ( example.size() > 0 )
     {
         result.append( TerminalFormatter::makeUnderlined("Example") );
-        result.append( line_break );
-    
-        result.append( StringUtilities::formatTabWrap(functionHelp.getExample(), 1, w, false) );
-        result.append( line_break );
+        result.append( section_break );
+
+        result.append( StringUtilities::formatTabWrap(example, 1, w, false) );
+        result.append( section_break );
     }
-    
-    // author
-    result.append( renderAuthors( functionHelp.getAuthor(), w ) );
-    
-    // references
-    result.append( renderReferences( functionHelp.getReferences(), w ) );
-    
-    // see also
-    result.append( renderSeeAlso( functionHelp.getSeeAlso(), w ) );
-    
-    
+
     return result;
-    
 }
+
 
 std::string HelpRenderer::renderHelp(const RbHelpEntry &entryHelp, size_t w)
 {
@@ -327,8 +293,54 @@ std::string HelpRenderer::renderHelp(const RbHelpEntry &entryHelp, size_t w)
     {
         return renderHelp( static_cast<const RbHelpType &>( entryHelp ), w);
     }
-    
+
     throw RbException("Unexpected help type.");
+}
+
+
+std::string HelpRenderer::renderHelp(const RbHelpFunction &functionHelp, size_t w)
+{
+    
+    std::string result = "";
+    
+    // we do not print the name at the top
+    
+    // title
+    result.append( renderTitle( functionHelp, w ) );
+    
+    // aliases
+    result.append( renderAliases( functionHelp, w ) );
+    
+    // description
+    result.append( renderDescription( functionHelp, w ) );
+
+    // usage
+    result.append( renderUsage( functionHelp, w ) );
+    
+    // arguments
+    result.append( renderArguments( functionHelp, w ) );
+    
+    // return type
+    result.append( renderReturnType( functionHelp, w ) );
+    
+    // details
+    result.append( renderDetails( functionHelp, w ) );
+    
+    // example
+    result.append( renderExample( functionHelp, w ) );
+    
+    // author
+    result.append( renderAuthors( functionHelp, w ) );
+    
+    // references
+    result.append( renderReferences( functionHelp, w ) );
+    
+    // see also
+    result.append( renderSeeAlso( functionHelp, w ) );
+    
+    
+    return result;
+    
 }
 
 
@@ -339,49 +351,56 @@ std::string HelpRenderer::renderHelp(const RbHelpType &typeHelp, size_t w)
     // we do not print the name at the top
     
     // title
-    result.append( typeHelp.getTitle() );
-    result.append( line_break );
-    result.append( section_break );
+    result.append( renderTitle( typeHelp, w ) );
     
     // aliases
-    result.append( renderAliases( typeHelp.getAliases(), w ) );
+    result.append( renderAliases( typeHelp, w ) );
     
     // description
-    result.append( renderDescription( typeHelp.getDescription(), w ) );
+    result.append( renderDescription( typeHelp, w ) );
     
     // constructors
-    result.append( renderConstructors( typeHelp.getConstructors(), w ) );
+    result.append( renderConstructors( typeHelp, w ) );
+
+    if ( dynamic_cast< const RbHelpDistribution *>( &typeHelp ) != NULL)
+    {
+        // domain type
+        result.append( renderReturnType( typeHelp.getConstructors().front(), w, true ) );
+    }
         
+    // details
+    result.append( renderDetails( typeHelp, w ) );
+
     // example
-    result.append( TerminalFormatter::makeUnderlined("Example") );
-    result.append( line_break );
-    
-    result.append( StringUtilities::formatTabWrap( typeHelp.getExample(), 1, w, false) );
-    result.append( line_break );
+    result.append( renderExample( typeHelp, w ) );
     
     // methods
-    result.append( renderMethods( typeHelp.getMethods(), w, typeHelp.getName() ) );
+    result.append( renderMethods( typeHelp, w ) );
     
     // authors
-    result.append( renderAuthors( typeHelp.getAuthor(), w ) );
+    result.append( renderAuthors( typeHelp, w ) );
     
     // references
-    result.append( renderReferences( typeHelp.getReferences(), w ) );
+    result.append( renderReferences( typeHelp, w ) );
     
     // see also
-    result.append( renderSeeAlso( typeHelp.getSeeAlso(), w ) );
+    result.append( renderSeeAlso( typeHelp, w ) );
     
     
     return result;
 }
 
 
-std::string HelpRenderer::renderMethods( const std::vector<RbHelpFunction>& methods, size_t w, const std::string &base_name ) const
+std::string HelpRenderer::renderMethods( const RbHelpType &typeHelp, size_t w ) const
 {
+    const std::vector<RbHelpFunction>& methods = typeHelp.getMethods();
+
+    const std::string &base_name = typeHelp.getName();
+
     std::string result = "";
     
     // methods
-    if ( methods.size() > 0)
+    if ( methods.size() > 1)
     {
         // check if we have multiple arguments
         if ( methods.size() == 1 )
@@ -396,16 +415,20 @@ std::string HelpRenderer::renderMethods( const std::vector<RbHelpFunction>& meth
         
         for (std::vector<RbHelpFunction>::const_iterator it = methods.begin(); it != methods.end(); ++it)
         {
+            if ( it->getUsage() == "methods()" )
+            {
+                continue;
+            }
+
             result.append( StringUtilities::formatTabWrap(it->getUsage(),1,w,true) );
             result.append( line_break );
             
-            const std::vector<std::string> & d = it->getDescription();
-            for (std::vector<std::string>::const_iterator desc_it = d.begin(); desc_it != d.end(); ++desc_it)
+            if ( it->getDescription().size() > 0 )
             {
-                result.append( StringUtilities::formatTabWrap(*desc_it, 2, w) );
+                result.append( StringUtilities::formatTabWrap(it->getDescription(), 1, w) );
+                result.append( line_break );
                 result.append( section_break );
             }
-            
         }
         
         result.append( line_break );
@@ -422,8 +445,10 @@ std::string HelpRenderer::renderMethods( const std::vector<RbHelpFunction>& meth
 
 
 
-std::string HelpRenderer::renderReferences(const std::vector<RbHelpReference> &refs, size_t w) const
+std::string HelpRenderer::renderReferences(const RbHelpEntry &helpEntry, size_t w) const
 {
+    const std::vector<RbHelpReference> &refs = helpEntry.getReferences();
+
     std::string result = "";
     
     if ( refs.size() > 0 )
@@ -472,9 +497,29 @@ std::string HelpRenderer::renderReferences(const std::vector<RbHelpReference> &r
     return result;
 }
 
-
-std::string HelpRenderer::renderSeeAlso(const std::vector<std::string> &others, size_t w) const
+std::string HelpRenderer::renderReturnType(const RbHelpFunction &functionHelp, size_t w, bool dist) const
 {
+    const std::string &return_type = functionHelp.getReturnType();
+
+    std::string result = "";
+
+    // example
+    if ( return_type.size() > 0 )
+    {
+        result.append( TerminalFormatter::makeUnderlined(dist ? "Domain Type" : "Return Type") );
+        result.append( section_break );
+        result.append( StringUtilities::formatTabWrap(functionHelp.getReturnType(), 1, w) );
+        result.append( line_break );
+        result.append( section_break );
+    }
+
+    return result;
+}
+
+std::string HelpRenderer::renderSeeAlso(const RbHelpEntry &helpEntry, size_t w) const
+{
+    const std::vector<std::string> &others = helpEntry.getSeeAlso();
+
     std::string result = "";
     
     if ( others.size() > 0 )
@@ -494,9 +539,26 @@ std::string HelpRenderer::renderSeeAlso(const std::vector<std::string> &others, 
     return result;
 }
 
-
-std::string HelpRenderer::renderUsage(const std::string &usage, size_t w) const
+std::string HelpRenderer::renderTitle(const RbHelpEntry &helpEntry, size_t w) const
 {
+    const std::string &title = helpEntry.getTitle();
+
+    std::string result = "";
+
+    if ( title.size() > 0 )
+    {
+        result.append( title );
+        result.append( line_break );
+        result.append( section_break );
+    }
+
+    return result;
+}
+
+std::string HelpRenderer::renderUsage(const RbHelpFunction &functionHelp, size_t w) const
+{
+    const std::string &usage = functionHelp.getUsage();
+
     std::string result = "";
     
     if (usage.size() > 0)

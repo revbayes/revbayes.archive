@@ -129,24 +129,22 @@ std::vector<std::string> Dist_poisson::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_poisson::getHelpDescription(void) const
+std::string Dist_poisson::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "A Poisson distribution defines probabilities for natural numbers. It is defined as the number of exponentially distributed events in a given interval." );
+    std::string description = "A Poisson distribution defines probabilities for natural numbers. It is defined as the number of exponentially distributed events in a given interval.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_poisson::getHelpDetails(void) const
+std::string Dist_poisson::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
+    std::string details;
     return details;
 }
 
@@ -165,7 +163,7 @@ std::string Dist_poisson::getHelpExample(void) const
     example += "x ~ dnPoisson(l)\n";
     example += "x.clamp(10)\n";
     example += "moves[1] = mvSlide(l, delta=0.1, weight=1.0)\n";
-    example += "monitors[1] = screenmonitor(printgen=1000, separator = \"\t\", l)\n";
+    example += "monitors[1] = mnScreen(printgen=1000, separator = \"\t\", l)\n";
     example += "mymodel = model(l)\n";
     example += "mymcmc = mcmc(mymodel, monitors, moves)\n";
     example += "mymcmc.burnin(generations=20000,tuningInterval=100)\n";
