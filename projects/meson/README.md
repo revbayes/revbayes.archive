@@ -85,6 +85,7 @@ To build with MPI, set the `mpi` option:
 ```
 meson build-mpi -Dmpi=true -Dprefix=$HOME/Applications/revbayes-mpi
 ninja -C build-mpi install
+```
 
 ## Option: Jupyter Kernel
 
