@@ -127,6 +127,10 @@
 #include "Func_type.h"
 #include "Func_workspaceVector.h"
 
+#if defined( RB_BEAGLE )
+#include "Func_beagleInfo.h"
+#endif /* RB_BEAGLE */
+
 
 /* Internal functions (in folder ("functions/internal") */
 
@@ -303,6 +307,10 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func_system()                      );
         addFunction( new Func_time()                        );
         addFunction( new Func_type()                        );
+        
+#       if defined( RB_BEAGLE )
+        addFunction( new Func_beagleInfo()                  );
+#       endif /* RB_BEAGLE */
 
         /* Internal functions (in folder "functions/internal") */
         /* Note: These are functions that are called implicitly, and the name of which, if

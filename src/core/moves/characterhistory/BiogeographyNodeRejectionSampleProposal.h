@@ -403,7 +403,7 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::compute
     {
         // Any combination of bits for one range (with the sister having its complement)
         // excluding the all-zero range and the all-one range (hence, -2)
-        size_t n_events = std::pow(2, n_n_on) - 2;
+        size_t n_events = std::pow((float) 2, (int) n_n_on) - 2;
         p = clado_probs[ "allopatry" ] * (1.0 / n_events);
     }
     else if ( clado_type == "sympatry_subset" )
@@ -973,7 +973,7 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::sampleC
             
             n_child1_on -= 1;
         }
-        size_t n_events = std::pow(2, idx_on.size()) - 2;
+        size_t n_events = std::pow((float) 2, (int) idx_on.size()) - 2;
         lnP = std::log( clado_probs["allopatry"] * (1.0 / n_events) );
     }
     else if (clado_type == "jump_dispersal")
