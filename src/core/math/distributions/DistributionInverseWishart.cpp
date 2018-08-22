@@ -32,7 +32,7 @@ using namespace RevBayesCore;
  * \return Returns the probability density.
  * \throws Throws an RbException::ERROR.
  */
-double RbStatistics::InverseWishart::pdf(const MatrixReal &sigma0, size_t df, const MatrixReal &z) {
+double RbStatistics::InverseWishart::pdf(const MatrixReal &sigma0, double df, const MatrixReal &z) {
 	
     return exp(lnPdf(sigma0,df,z));
 }
@@ -50,7 +50,7 @@ double RbStatistics::InverseWishart::pdf(const MatrixReal &sigma0, size_t df, co
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::InverseWishart::lnPdf(const MatrixReal &sigma0, size_t df, const MatrixReal &z)
+double RbStatistics::InverseWishart::lnPdf(const MatrixReal &sigma0, double df, const MatrixReal &z)
 {
     
     if ( !z.isPositive() )
@@ -78,7 +78,7 @@ double RbStatistics::InverseWishart::lnPdf(const MatrixReal &sigma0, size_t df, 
     
     // MRM: including the denominator
     size_t p = sigma0.getDim();
-    double d = (double)df;
+    double d = df;
     for (size_t i = 0; i < p; ++i)
     {
         ret -= RbMath::lnGamma( d / 2.0 );
@@ -100,7 +100,7 @@ double RbStatistics::InverseWishart::lnPdf(const MatrixReal &sigma0, size_t df, 
  * \return Returns a vector containing the InverseWishart random variable.
  * \throws Does not throw an error.
  */
-MatrixReal RbStatistics::InverseWishart::rv(const MatrixReal &sigma0, size_t df, RandomNumberGenerator& rng)
+MatrixReal RbStatistics::InverseWishart::rv(const MatrixReal &sigma0, double df, RandomNumberGenerator& rng)
 {
     
     size_t p = sigma0.getDim();
@@ -118,7 +118,7 @@ MatrixReal RbStatistics::InverseWishart::rv(const MatrixReal &sigma0, size_t df,
     MatrixReal z = MatrixReal(p);
     
     // generate chi-square random variables on the diagonals
-    double k = (double)df;
+    double k = df;
     for(size_t i = 0; i < p; ++i)
     {
         z[i][i] = std::sqrt(RbStatistics::ChiSquare::rv(k--, rng));
@@ -175,28 +175,32 @@ MatrixReal RbStatistics::InverseWishart::rv(const MatrixReal &sigma0, size_t df,
  * \return Returns a vector containing the InverseWishart random variable.
  * \throws Does not throw an error.
  */
-MatrixReal RbStatistics::InverseWishart::rvCovariance(const MatrixReal &sigma0, size_t df, RandomNumberGenerator& rng)
+MatrixReal RbStatistics::InverseWishart::rvCovariance(const MatrixReal &sigma0, double df, RandomNumberGenerator& rng)
 {
     
-    size_t dim = sigma0.getDim();
+    sigma0.setCholesky(true);
     
-    MatrixReal z = MatrixReal(dim);
-    std::vector<double> mean = std::vector<double>(dim, 0.0);
+    return rv(sigma0.computeInverse(), df, rng);
     
-    for (size_t k=0; k<df; k++)
-    {
-        std::vector<double> tmp = RbStatistics::MultivariateNormal::rvCovariance(mean, sigma0, rng);
-        for (size_t i=0; i<dim; i++)
-        {
-            for (size_t j=0; j<dim; j++)
-            {
-                z[i][j] += tmp[i] * tmp[j];
-            }
-        }
-    }
-    
-    z.setCholesky(true);
-    return z.computeInverse();
+//    size_t dim = sigma0.getDim();
+//    
+//    MatrixReal z = MatrixReal(dim);
+//    std::vector<double> mean = std::vector<double>(dim, 0.0);
+//    
+//    for (size_t k=0; k<df; k++)
+//    {
+//        std::vector<double> tmp = RbStatistics::MultivariateNormal::rvCovariance(mean, sigma0, rng);
+//        for (size_t i=0; i<dim; i++)
+//        {
+//            for (size_t j=0; j<dim; j++)
+//            {
+//                z[i][j] += tmp[i] * tmp[j];
+//            }
+//        }
+//    }
+//    
+//    z.setCholesky(true);
+//    return z.computeInverse();
     //    return z;
 }
 
@@ -212,7 +216,7 @@ MatrixReal RbStatistics::InverseWishart::rvCovariance(const MatrixReal &sigma0, 
  * \return Returns the probability density.
  * \throws Throws an RbException::ERROR.
  */
-double RbStatistics::InverseWishart::pdf(const std::vector<double>& kappa, size_t df, const MatrixReal &z)
+double RbStatistics::InverseWishart::pdf(const std::vector<double>& kappa, double df, const MatrixReal &z)
 {
 	
     return exp(lnPdf(kappa,df,z));
@@ -235,7 +239,7 @@ double RbStatistics::InverseWishart::pdf(const std::vector<double>& kappa, size_
 // this log density is only up to a normalization factor that *does* depend on df
 // df is therefore assumed to be constant throughout
 
-double RbStatistics::InverseWishart::lnPdf(const std::vector<double>& kappa, size_t df, const MatrixReal &z)
+double RbStatistics::InverseWishart::lnPdf(const std::vector<double>& kappa, double df, const MatrixReal &z)
 {
 
     
@@ -263,6 +267,16 @@ double RbStatistics::InverseWishart::lnPdf(const std::vector<double>& kappa, siz
     
     ret -= 0.5 * trace;
     
+    // MRM: including the denominator
+    size_t p = dim;
+    double d = df;
+    for (size_t i = 0; i < p; ++i)
+    {
+        ret -= RbMath::lnGamma( d / 2.0 );
+        d--;
+    }
+    ret -= 0.5 * df * p * std::log(2) + 0.25 * p * (p - 1) * std::log(RbConstants::PI);
+
     return ret;
 
 }
@@ -277,31 +291,42 @@ double RbStatistics::InverseWishart::lnPdf(const std::vector<double>& kappa, siz
  * \return Returns a vector containing the InverseWishart random variable.
  * \throws Does not throw an error.
  */
-MatrixReal RbStatistics::InverseWishart::rv(const std::vector<double>& kappa, size_t df, RandomNumberGenerator& rng) {
+MatrixReal RbStatistics::InverseWishart::rv(const std::vector<double>& kappa, double df, RandomNumberGenerator& rng) {
         
     size_t dim = kappa.size();
-    MatrixReal z(dim);
-    std::vector<double> tmp(dim);
-
-    for (size_t k=0; k<df; k++)
-    {
-
-        for (size_t i=0; i<dim; i++)
-        {
-            double sk = 1.0 / sqrt(kappa[i]);
-            tmp[i] = RbStatistics::Normal::rv(0, sk, rng);
-        }
-
-        for (size_t i=0; i<dim; i++)
-        {
-            for (size_t j=0; j<dim; j++)
-            {
-                z[i][j] += tmp[i] * tmp[j];
-            }
-        }
-    }
     
-    return z.computeInverse();
+    MatrixReal sigma0(dim, dim, 0.0);
+    for (size_t i = 0; i < dim; ++i)
+    {
+        sigma0[i][i] = kappa[i];
+    }
+    sigma0.computeInverse();
+    
+    return rv(sigma0, df, rng);
+    
+//    MatrixReal z(dim);
+//    std::vector<double> tmp(dim);
+//
+//    for (size_t k=0; k<df; k++)
+//    {
+//
+//        for (size_t i=0; i<dim; i++)
+//        {
+//            double sk = 1.0 / sqrt(kappa[i]);
+//            tmp[i] = RbStatistics::Normal::rv(0, sk, rng);
+//        }
+//
+//        for (size_t i=0; i<dim; i++)
+//        {
+//            for (size_t j=0; j<dim; j++)
+//            {
+//                z[i][j] += tmp[i] * tmp[j];
+//            }
+//        }
+//    }
+//    
+//    return z.computeInverse();
+    
 }
 
 
@@ -317,7 +342,7 @@ MatrixReal RbStatistics::InverseWishart::rv(const std::vector<double>& kappa, si
  * \return Returns the probability density.
  * \throws Throws an RbException::ERROR.
  */
-double RbStatistics::InverseWishart::pdf(double kappa, size_t df, const MatrixReal &z)
+double RbStatistics::InverseWishart::pdf(double kappa, double df, const MatrixReal &z)
 {
 	
     return exp(lnPdf(kappa,df,z));
@@ -340,7 +365,7 @@ double RbStatistics::InverseWishart::pdf(double kappa, size_t df, const MatrixRe
 // this log density is only up to a normalization factor that *does* depend on df
 // df is therefore assumed to be constant throughout
 
-double RbStatistics::InverseWishart::lnPdf(double kappa, size_t df, const MatrixReal &z)
+double RbStatistics::InverseWishart::lnPdf(double kappa, double df, const MatrixReal &z)
 {
 
     
@@ -365,6 +390,16 @@ double RbStatistics::InverseWishart::lnPdf(double kappa, size_t df, const Matrix
     
     ret -= 0.5 * trace;
     
+    // MRM: including the denominator
+    size_t p = dim;
+    double d = df;
+    for (size_t i = 0; i < p; ++i)
+    {
+        ret -= RbMath::lnGamma( d / 2.0 );
+        d--;
+    }
+    ret -= 0.5 * df * p * std::log(2) + 0.25 * p * (p - 1) * std::log(RbConstants::PI);
+
     return ret;
 
 }
@@ -379,30 +414,40 @@ double RbStatistics::InverseWishart::lnPdf(double kappa, size_t df, const Matrix
  * \return Returns a vector containing the InverseWishart random variable.
  * \throws Does not throw an error.
  */
-MatrixReal RbStatistics::InverseWishart::rv(double kappa, size_t dim, size_t df, RandomNumberGenerator& rng)
+MatrixReal RbStatistics::InverseWishart::rv(double kappa, size_t dim, double df, RandomNumberGenerator& rng)
 {
-
-    MatrixReal z(dim);
-    std::vector<double> tmp = std::vector<double>(dim,0.0);
     
-    double sk = 1.0 / sqrt(kappa);
-    for (size_t k=0; k<df; k++)
+    MatrixReal sigma0(dim, dim, 0.0);
+    for (size_t i = 0; i < dim; ++i)
     {
-        
-        for (size_t i=0; i<dim; i++)
-        {
-            tmp[i] = RbStatistics::Normal::rv(0, sk, rng);
-        }
-
-        for (size_t i=0; i<dim; i++)
-        {
-            for (size_t j=0; j<dim; j++)
-            {
-                z[i][j] += tmp[i] * tmp[j];
-            }
-        }
+        sigma0[i][i] = kappa;
     }
+    sigma0.computeInverse();
     
-    return z.computeInverse();
+    return rv(sigma0, df, rng);
+
+//    MatrixReal z(dim);
+//    std::vector<double> tmp = std::vector<double>(dim,0.0);
+//    
+//    double sk = 1.0 / sqrt(kappa);
+//    for (size_t k=0; k<df; k++)
+//    {
+//        
+//        for (size_t i=0; i<dim; i++)
+//        {
+//            tmp[i] = RbStatistics::Normal::rv(0, sk, rng);
+//        }
+//
+//        for (size_t i=0; i<dim; i++)
+//        {
+//            for (size_t j=0; j<dim; j++)
+//            {
+//                z[i][j] += tmp[i] * tmp[j];
+//            }
+//        }
+//    }
+//    
+//    return z.computeInverse();
+    
 }
 

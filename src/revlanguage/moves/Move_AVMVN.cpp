@@ -10,6 +10,7 @@
 #include "RealPos.h"
 #include "RevObject.h"
 #include "RlBoolean.h"
+#include "RlMatrixRealSymmetric.h"
 #include "RlSimplex.h"
 #include "RlString.h"
 #include "TypedDagNode.h"
@@ -33,27 +34,33 @@ Move_AVMVN::Move_AVMVN() : Move()
     ArgumentRules* addScalarArgRules                = new ArgumentRules();
     ArgumentRules* addSimplexArgRules               = new ArgumentRules();
     ArgumentRules* addModelVectorArgRules           = new ArgumentRules();
+    ArgumentRules* addCorrelationMatrixArgRules     = new ArgumentRules();
     ArgumentRules* removeScalarArgRules             = new ArgumentRules();
     ArgumentRules* removeSimplexArgRules            = new ArgumentRules();
     ArgumentRules* removeModelVectorArgRules        = new ArgumentRules();
+    ArgumentRules* removeCorrelationMatrixArgRules  = new ArgumentRules();
     
     
     // next, set the specific arguments
     addScalarArgRules->push_back(                   new ArgumentRule( "var"        , Real::getClassTypeSpec(),                 "The variable to move"             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
     addSimplexArgRules->push_back(                  new ArgumentRule( "var"        , Simplex::getClassTypeSpec(),              "The variable to move"             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
     addModelVectorArgRules->push_back(              new ArgumentRule( "var"        , ModelVector<Real>::getClassTypeSpec(),    "The variable to move"             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+    addCorrelationMatrixArgRules->push_back(        new ArgumentRule( "var"        , MatrixRealSymmetric::getClassTypeSpec(),  "The variable to move"             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
     removeScalarArgRules->push_back(                new ArgumentRule( "var"        , Real::getClassTypeSpec(),                 "The variable to move"             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
     removeSimplexArgRules->push_back(               new ArgumentRule( "var"        , Simplex::getClassTypeSpec(),              "The variable to move"             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
     removeModelVectorArgRules->push_back(           new ArgumentRule( "var"        , ModelVector<Real>::getClassTypeSpec(),    "The variable to move"             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+    removeCorrelationMatrixArgRules->push_back(     new ArgumentRule( "var"        , MatrixRealSymmetric::getClassTypeSpec(),  "The variable to move"             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
     
     
     // finally, create the methods
-    methods.addFunction( new MemberProcedure( "addVariable",    RlUtils::Void, addScalarArgRules) );
-    methods.addFunction( new MemberProcedure( "addVariable",    RlUtils::Void, addSimplexArgRules) );
-    methods.addFunction( new MemberProcedure( "addVariable",    RlUtils::Void, addModelVectorArgRules) );
-    methods.addFunction( new MemberProcedure( "removeVariable", RlUtils::Void, removeScalarArgRules) );
-    methods.addFunction( new MemberProcedure( "removeVariable", RlUtils::Void, removeSimplexArgRules) );
-    methods.addFunction( new MemberProcedure( "removeVariable", RlUtils::Void, removeModelVectorArgRules) );
+    methods.addFunction( new MemberProcedure( "addVariable",             RlUtils::Void, addScalarArgRules) );
+    methods.addFunction( new MemberProcedure( "addVariable",             RlUtils::Void, addSimplexArgRules) );
+    methods.addFunction( new MemberProcedure( "addVariable",             RlUtils::Void, addModelVectorArgRules) );
+    methods.addFunction( new MemberProcedure( "addCorrelationMatrix",    RlUtils::Void, addCorrelationMatrixArgRules) );
+    methods.addFunction( new MemberProcedure( "removeVariable",          RlUtils::Void, removeScalarArgRules) );
+    methods.addFunction( new MemberProcedure( "removeVariable",          RlUtils::Void, removeSimplexArgRules) );
+    methods.addFunction( new MemberProcedure( "removeVariable",          RlUtils::Void, removeModelVectorArgRules) );
+    methods.addFunction( new MemberProcedure( "removeCorrelationMatrix", RlUtils::Void, removeCorrelationMatrixArgRules) );
     
 }
 
@@ -270,6 +277,55 @@ RevPtr<RevVariable> Move_AVMVN::executeMethod(const std::string& name, const std
         }
         
         return NULL;
+    }
+    else if ( name == "addCorrelationMatrix" )
+    {
+        found = true;
+        
+        MatrixRealSymmetric* corr = dynamic_cast<MatrixRealSymmetric *>( &args[0].getVariable()->getRevObject() );
+
+        if (corr != NULL)
+        {
+            
+            RevBayesCore::StochasticNode<RevBayesCore::MatrixReal> *n = dynamic_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixReal> *>( corr->getDagNode() );
+            
+            RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
+            RevBayesCore::AVMVNProposal &prop = static_cast<RevBayesCore::AVMVNProposal&>( m->getProposal() );
+
+            prop.addCorrelationMatrix(n);
+            
+        }
+        else
+        {
+            throw RbException("A problem occured when trying to add " + args[0].getVariable()->getName() + " to the move.");
+        }
+        
+        return NULL;
+    }
+    else if ( name == "removeCorrelationMatrix" )
+    {
+        found = true;
+        
+        MatrixRealSymmetric* corr = dynamic_cast<MatrixRealSymmetric *>( &args[0].getVariable()->getRevObject() );
+        
+        if (corr != NULL)
+        {
+            
+            RevBayesCore::StochasticNode<RevBayesCore::MatrixReal> *n = dynamic_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixReal> *>( corr );
+
+            RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
+            RevBayesCore::AVMVNProposal &prop = static_cast<RevBayesCore::AVMVNProposal&>( m->getProposal() );
+            
+            prop.removeCorrelationMatrix(n);
+            
+        }
+        else
+        {
+            throw RbException("A problem occured when trying to remove " + args[0].getVariable()->getName() + " from the move.");
+        }
+        
+        return NULL;
+        
     }
     
     return Move::executeMethod( name, args, found );

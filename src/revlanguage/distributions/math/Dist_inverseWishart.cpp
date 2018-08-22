@@ -34,9 +34,9 @@ RevBayesCore::InverseWishartDistribution* Dist_inverseWishart::createDistributio
     // get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* sg = NULL;
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* dv = NULL;
-    RevBayesCore::TypedDagNode<double>* ka = NULL;
-    RevBayesCore::TypedDagNode<long>* deg = NULL;
-    RevBayesCore::TypedDagNode<long>* dm = NULL;
+    RevBayesCore::TypedDagNode<double>* ka  = NULL;
+    RevBayesCore::TypedDagNode<double>* deg = NULL;
+    RevBayesCore::TypedDagNode<long>*   dm  = NULL;
     
     if ( sigma->getRevObject() != RevNullObject::getInstance() )
     {
@@ -55,7 +55,7 @@ RevBayesCore::InverseWishartDistribution* Dist_inverseWishart::createDistributio
     
     if ( df->getRevObject() != RevNullObject::getInstance() )
     {
-        deg = static_cast<const Natural &>( df->getRevObject()).getDagNode();
+        deg = static_cast<const RealPos&>( df->getRevObject()).getDagNode();
     }
 
     if ( dim->getRevObject() != RevNullObject::getInstance() )
@@ -147,7 +147,7 @@ const MemberRules& Dist_inverseWishart::getParameterRules(void) const
         
         dist_member_rules.push_back( new ArgumentRule( "sigma"   , MatrixRealSymmetric::getClassTypeSpec() , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL  ) );
         dist_member_rules.push_back( new ArgumentRule( "diagonal", ModelVector<RealPos>::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL  ) );
-        dist_member_rules.push_back( new ArgumentRule( "df"      , Natural::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "df"      , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         dist_member_rules.push_back( new ArgumentRule( "kappa"   , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         dist_member_rules.push_back( new ArgumentRule( "dim"     , Natural::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         

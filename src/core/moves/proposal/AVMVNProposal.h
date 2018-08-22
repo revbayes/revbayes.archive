@@ -2,6 +2,7 @@
 #define AVMVNProposal_H
 
 #include "RbVector.h"
+#include "MatrixReal.h"
 #include "Proposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -34,6 +35,7 @@ namespace RevBayesCore {
     public:
         AVMVNProposal( double s, double e, double n0, double c0, double m );                                 //!< Constructor
         
+        void                                        addCorrelationMatrix(StochasticNode<MatrixReal> *v);
         void                                        addUntransformedScalar(StochasticNode<double> *v);                                    //!< Add an up-scaling variable
         void                                        addLogScalar(StochasticNode<double> *v);                                    //!< Add an up-scaling variable
         void                                        addLogitScalar(ContinuousStochasticNode *v);                                    //!< Add an up-scaling variable
@@ -46,6 +48,7 @@ namespace RevBayesCore {
         double                                      getProposalTuningParameter(void) const;
         void                                        printParameterSummary(std::ostream &o, bool name_only) const;                                       //!< Print the parameter summary
         void                                        prepareProposal(void);                                                              //!< Prepare the proposal
+        void                                        removeCorrelationMatrix(StochasticNode<MatrixReal> *v);
         void                                        removeUntransformedScalar(StochasticNode<double> *v);                                    //!< Add an up-scaling variable
         void                                        removeLogScalar(StochasticNode<double> *v);                                    //!< Add an up-scaling variable
         void                                        removeLogitScalar(ContinuousStochasticNode *v);                                    //!< Add an up-scaling variable
@@ -68,6 +71,7 @@ namespace RevBayesCore {
         std::vector<ContinuousStochasticNode *>             logitTransformScalarVariables;
         std::vector<StochasticNode<RbVector<double> > *>    noTransformVectorVariables;
         std::vector<StochasticNode<Simplex> *>              logConstrainedSumTransformVectorVariables;
+        std::vector<StochasticNode<MatrixReal> *>           correlationMatrixVariables;
         
         MatrixReal                                          C_emp;                                                   //!< The empirical covariance matrix of the samples
         MatrixReal                                          AVMVN_cholesky_L;                                       //!< Lower diagonal of Cholesky decomposition of

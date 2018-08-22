@@ -50,6 +50,17 @@ AVMVNProposal::AVMVNProposal( double s, double e, double n0, double c0, double m
     }
 }
 
+/**
+ * Add a variable.
+ */
+void AVMVNProposal::addCorrelationMatrix( StochasticNode<MatrixReal> *v )
+{
+    // add it to the nodes vector
+    addNode( v );
+    
+    correlationMatrixVariables.push_back( v );
+}
+
 
 /**
  * Add a variable.
@@ -148,6 +159,27 @@ double AVMVNProposal::getProposalTuningParameter( void ) const
  */
 void AVMVNProposal::getAVMVNMemberVariableValues( std::vector<double> *x )
 {
+    
+    for (size_t i = 0; i < correlationMatrixVariables.size(); ++i)
+    {
+        MatrixReal corr_matrix = correlationMatrixVariables[i]->getValue();
+        size_t n_rows = corr_matrix.getNumberOfRows();
+        
+        double lb = -1.0;
+        double ub =  1.0;
+        
+        for ( size_t r = 0; r < n_rows; ++r)
+        {
+            for ( size_t c = r + 1; c < n_rows; ++c)
+            {
+                double rho = corr_matrix[r][c];
+                double p   = (rho - lb) / (ub - lb);
+                x->push_back( log(p / (1 - p)) );
+            }
+        }
+        
+    }
+    
     for (size_t i = 0; i < noTransformScalarVariables.size(); ++i)
     {
         x->push_back( noTransformScalarVariables[i]->getValue() );
@@ -198,6 +230,42 @@ void AVMVNProposal::setAVMVNMemberVariableValues( std::vector<double> x_prime, s
 {
     // Calculate hastings ratio and give variables their new values
     size_t index = 0;
+    
+    for (size_t i = 0; i < correlationMatrixVariables.size(); ++i)
+    {
+        
+        // get the correlation matrix (for dimensions)
+        MatrixReal corr_matrix = correlationMatrixVariables[i]->getValue();
+        size_t n_rows = corr_matrix.getNumberOfRows();
+        
+        // make the container for the new parameters (with default values of 1);
+        MatrixReal tmp(n_rows, n_rows, 1.0);
+
+        double lb = -1.0;
+        double ub =  1.0;
+
+        for ( size_t r = 0; r < n_rows; ++r)
+        {
+            for ( size_t c = r + 1; c < n_rows; ++c)
+            {
+                double p_old = 1 / (1 + exp(-x[index]));
+                double p_proposed = 1 / (1 + exp(-x_prime[index]));
+                double rho = p_proposed * (ub - lb) + lb;
+                
+                tmp[r][c] = rho;
+                tmp[c][r] = rho;
+                
+                lnHastingsratio += ( -log(1.0 - p_old) - log(p_old) ) - ( -log(1.0 - p_proposed) - log(p_proposed) );
+                ++index;
+
+            }
+        }
+
+        correlationMatrixVariables[i]->getValue() = tmp;
+
+    }
+
+    
     for (size_t i = 0; i < noTransformScalarVariables.size(); ++i)
     {
         noTransformScalarVariables[i]->getValue() = x_prime[index];
@@ -412,6 +480,18 @@ void AVMVNProposal::printParameterSummary(std::ostream &o, bool name_only) const
 /**
  * Remove a variable.
  */
+void AVMVNProposal::removeCorrelationMatrix( StochasticNode<MatrixReal> *v )
+{
+    
+    // add it to the nodes vector
+    removeNode( v );
+    
+    correlationMatrixVariables.erase(std::remove(correlationMatrixVariables.begin(), correlationMatrixVariables.end(), v), correlationMatrixVariables.end());
+}
+
+/**
+ * Remove a variable.
+ */
 void AVMVNProposal::removeUntransformedScalar( StochasticNode<double> *v )
 {
     
@@ -484,7 +564,15 @@ void AVMVNProposal::undoProposal( void )
  */
 void AVMVNProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
-    
+
+    for (size_t i = 0; i < correlationMatrixVariables.size(); ++i)
+    {
+        if ( correlationMatrixVariables[i] == oldN )
+        {
+            correlationMatrixVariables[i] = static_cast<StochasticNode<MatrixReal> *>(newN);
+        }
+    }
+
     for (size_t i = 0; i < noTransformScalarVariables.size(); ++i)
     {
         if ( noTransformScalarVariables[i] == oldN )
