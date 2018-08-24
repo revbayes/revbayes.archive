@@ -144,9 +144,10 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
 {
     double lnProb = computeLnProbabilityRanges();
 
-    // integrate speciation times for descendants of sampled ancestors
     for(size_t i = 0; i < taxa.size(); i++)
     {
+        // if this is an extended tree, then include the anagenetic speciation density for descendants of sampled ancestors
+        // otherwise, integrate out the speciation times for descendants of sampled ancestors
         if ( I[i] == true )
         {
             double y_a = b_i[i];
@@ -154,76 +155,53 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
 
             size_t y_ai = l(y_a);
 
-            size_t oi = presence_absence ? oldest_intervals[i] : l(o);
-
             // offset speciation density
             lnProb -= log( birth[y_ai] );
 
-            // evaluate antiderivative at oi
-
-            double x = 0.0;
-
-            if ( extended == false )
+            // if this is a sampled tree, then integrate out the speciation times for descendants of sampled ancestors
+            if( extended == false )
             {
+                size_t oi = presence_absence ? oldest_intervals[i] : l(o);
+
+                // evaluate antiderivative at oi
+
+                double x = 0.0;
+
                 // replace q with q~ at the birth time
                 x = q(y_ai, y_a, true) - q(y_ai, y_a);
-            }
-            else
-            {
-                throw(RbException("Sampled ancestors not implemented under extended mixed speciation model"));
 
-                x = - this->getAnageneticSpeciationRate(y_ai) * y_a;
-            }
-
-            // replace intermediate q terms
-            for (size_t j = y_ai; j < oi; j++)
-            {
-                if ( extended == false )
+                // replace intermediate q terms
+                for (size_t j = y_ai; j < oi; j++)
                 {
-                     x += q_tilde_i[j] - q_i[j];
+                    x += q_tilde_i[j] - q_i[j];
                 }
-                else
-                {
-                    x += - this->getAnageneticSpeciationRate(j+1) * times[j];
-                }
-            }
 
-            if( presence_absence )
-            {
-                double a = std::max(d_i[i], times[oi]);
-                double Ls_plus_a = oi > 0 ? std::min(y_a, times[oi-1]) : y_a;
-                double Ls = Ls_plus_a - a;
-
-                if ( extended == false )
+                if( presence_absence )
                 {
+                    double a = std::max(d_i[i], times[oi]);
+                    double Ls_plus_a = oi > 0 ? std::min(y_a, times[oi-1]) : y_a;
+                    double Ls = Ls_plus_a - a;
+
                     // replace H_i
                     x += log(expm1(Ls*fossil[oi])) - H[i];
                 }
                 else
                 {
-                    x += this->getAnageneticSpeciationRate(oi) * times[oi];
-                }
-            }
-            else
-            {
-                if ( extended == false )
-                {
                     // replace q terms at oi
                     x += q(oi, o) - q(oi, o, true);
                 }
-                else
-                {
-                    x +=  this->getAnageneticSpeciationRate(oi) * o;
-                }
+
+                // compute definite integral
+                lnProb += log(-expm1(x));
             }
-
-            // compute definite integral
-            lnProb += log(-expm1(x));
-
-            if( extended == false )
+            // if this is an extended tree, use the anagenetic speciation density for descendants of sampled ancestors
+            else
             {
-                lnProb -= log( p(y_ai, y_a) );
+                lnProb += log( anagenetic[y_ai] );
             }
+
+            // offset the extinction density (included later for all taxa)
+            lnProb -= log( p(y_ai, y_a) );
         }
 
         // if this is a sampled tree
@@ -257,7 +235,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
             }
 
             // if the tip is a sampling event in the past
-            // replace observed extinction time with unobserved extinction time
+            // replace observed extinction density with unobserved extinction density
             if( d_i[i] > 0.0 )
             {
                 lnProb -= log( death[di] );
