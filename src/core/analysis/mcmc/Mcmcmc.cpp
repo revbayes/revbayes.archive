@@ -87,7 +87,7 @@ Mcmcmc::Mcmcmc(const Mcmcmc &m) : MonteCarloSampler(m)
     swap_interval2      = m.swap_interval2;
     swap_mode           = m.swap_mode;
     tune_heat           = m.tune_heat;
-    tune_heat_target     = m.tune_heat_target;
+    tune_heat_target    = m.tune_heat_target;
     useNeighborSwapping = m.useNeighborSwapping;
     useRandomSwapping   = m.useRandomSwapping;
     
@@ -115,7 +115,7 @@ Mcmcmc::Mcmcmc(const Mcmcmc &m) : MonteCarloSampler(m)
     chain_heats          = m.chain_heats;
     chain_moves_tuningInfo = m.chain_moves_tuningInfo;
     
-    burnin_generation   = m.burnin_generation;
+    burnin_generation    = m.burnin_generation;
     current_generation   = m.current_generation;
     base_chain           = m.base_chain->clone();
     
@@ -378,6 +378,10 @@ void Mcmcmc::nextCycle(bool advanceCycle)
         
         if ( chains[i] != NULL )
         {
+            // @todo: #thread
+            // This part should be done on several threads if possible
+            // Sebastian: this call is very slow; a lot of work happens in nextCycle()
+
             // advance chain j by a single cycle
             chains[i]->nextCycle( advanceCycle );
         }
@@ -411,7 +415,7 @@ void Mcmcmc::nextCycle(bool advanceCycle)
             }
             else if (swap_mode == "multiple")
             {
-                for (size_t i = 0; i < num_chains; ++i)
+                for (size_t i = 0; i < num_chains - 1; ++i)
                 {
                     swapChains("neighbor");
                 }
@@ -433,9 +437,9 @@ void Mcmcmc::nextCycle(bool advanceCycle)
             }
             else if (swap_mode == "multiple")
             {
-                for (size_t i = 0; i < num_chains; ++i)
+                for (size_t i = 0; i < num_chains - 1; ++i)
                 {
-                    for (size_t j = 0; j < num_chains; ++j)
+                    for (size_t j = i + 1; j < num_chains; ++j)
                     {
                         swapChains("random");
                     }

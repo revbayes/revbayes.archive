@@ -16,6 +16,7 @@
  */
 
 #include "StringUtilities.h"
+#include "RbFileManager.h"
 #include "RbVector.h"
 
 #include <sstream>
@@ -169,27 +170,29 @@ std::string StringUtilities::formatTabWrap(std::string s, size_t tabs, size_t wi
             cc++;
         }
         
-        if (lastChar == '\n')
+        if( i < s.size() - 1 )
         {
-            cc = 0;
-            result.append(tabbing);
-        }
-        
-        if (lastChar == ' ')
-        {
-            // we now have a possible point where to wrap the line.
-            // peek ahead and see where next possible wrap point is:
-            std::string sub_str = s.substr(i);
-            size_t next = StringUtilities::findFirstOf(sub_str, ' ');
-            
-            // if next wrap point is beyond the width, then wrap line now
-            if (cc + next >= w)
+            if (lastChar == '\n')
             {
-                result.append("\n").append(tabbing);
-                // reset char count for next line
                 cc = 0;
+                result.append(tabbing);
             }
-            
+            else if (lastChar == ' ')
+            {
+                // we now have a possible point where to wrap the line.
+                // peek ahead and see where next possible wrap point is:
+                std::string sub_str = s.substr(i+1);
+                size_t next = StringUtilities::findFirstOf(sub_str, ' ');
+
+                // if next wrap point is beyond the width, then wrap line now
+                if (cc + next >= w)
+                {
+                    result.append("\n").append(tabbing);
+                    // reset char count for next line
+                    cc = 0;
+                }
+
+            }
         }
         
     }
@@ -284,9 +287,11 @@ std::string StringUtilities::getStringWithDeletedLastPathComponent(const std::st
 std::string StringUtilities::getFileContentsAsString(const std::string& s)
 {
 
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(s);
+    
     // open file
 	std::ifstream fStrm;
-    fStrm.open(s.c_str(), std::ios::in);
+    fStrm.open(fm.getFullFileName().c_str(), std::ios::in);
     if ( !fStrm.is_open() )
         return "";
         

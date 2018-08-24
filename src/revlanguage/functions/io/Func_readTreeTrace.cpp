@@ -255,9 +255,11 @@ TraceTree* Func_readTreeTrace::readTrees(const std::vector<std::string> &vector_
         bool has_header_been_read = false;
         const std::string &fn = *p;
         
+        RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(fn);
+        
         // let us quickly count the number of lines
         size_t lines = 0;
-        std::ifstream tmp_in_file( fn.c_str() );
+        std::ifstream tmp_in_file( fm.getFullFileName().c_str() );
         
         if ( !tmp_in_file )
         {
@@ -282,7 +284,7 @@ TraceTree* Func_readTreeTrace::readTrees(const std::vector<std::string> &vector_
         // now we actually process the input
         
         /* Open file */
-        std::ifstream in_file( fn.c_str() );
+        std::ifstream in_file( fm.getFullFileName().c_str() );
         
         if ( !in_file )
         {

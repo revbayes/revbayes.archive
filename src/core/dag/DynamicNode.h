@@ -163,7 +163,7 @@ const std::string& RevBayesCore::DynamicNode<valueType>::getRevTypeOfValue(void)
  * At this point, we also need to make sure we update the stored ln probability.
  */
 template<class valueType>
-void RevBayesCore::DynamicNode<valueType>::keepMe( DagNode* affecter )
+void RevBayesCore::DynamicNode<valueType>::keepMe( DagNode* /*affecter*/ )
 {
     
     // unset the touched flag
@@ -176,7 +176,7 @@ void RevBayesCore::DynamicNode<valueType>::keepMe( DagNode* affecter )
  * Restore the old value of the node and tell affected 
  */
 template<class valueType>
-void RevBayesCore::DynamicNode<valueType>::restoreMe(DagNode *restorer)
+void RevBayesCore::DynamicNode<valueType>::restoreMe(DagNode * /*restorer*/)
 {
 
     // unset the touched flag
@@ -188,7 +188,7 @@ void RevBayesCore::DynamicNode<valueType>::restoreMe(DagNode *restorer)
  * Touch this node for recalculation 
  */
 template<class valueType>
-void RevBayesCore::DynamicNode<valueType>::touchMe( DagNode *toucher, bool touchAll )
+void RevBayesCore::DynamicNode<valueType>::touchMe( DagNode * /*toucher*/, bool /*touchAll*/ )
 {
 
     // set the touched flag

@@ -21,6 +21,7 @@
 #include "RbException.h"
 #include "RbMathMatrix.h"
 #include "TransitionProbabilityMatrix.h"
+#include "RbVectorUtilities.h"
 
 
 using namespace RevBayesCore;
@@ -133,6 +134,16 @@ RateMatrix_MtMam::RateMatrix_MtMam( void ) : RateMatrix_Empirical( 20 ){
 	stationary_freqs[18] = 0.0340;
 	stationary_freqs[19] = 0.0428;
 
+    VectorUtilities::normalize(stationary_freqs);
+
+    // multiply stationary frequencies into exchangeability matrix
+    for (size_t i = 0; i < 20; i++)
+    {
+        for (size_t j = 0; j < 20; j++)
+        {
+            m[i][j] *= stationary_freqs[j];
+        }
+    }
     
     // set the diagonal values
     setDiagonal();

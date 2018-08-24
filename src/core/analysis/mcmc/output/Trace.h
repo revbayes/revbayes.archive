@@ -160,7 +160,7 @@ RevBayesCore::Trace<valueType>* RevBayesCore::Trace<valueType>::clone() const
 
 
 template <class valueType>
-bool RevBayesCore::Trace<valueType>::isCoveredInInterval(const std::string &v, double alpha, bool verbose)
+bool RevBayesCore::Trace<valueType>::isCoveredInInterval(const std::string & /*v*/, double /*alpha*/, bool /*verbose*/)
 {
     throw RbException("Cannot compute interval coverage for '" + parmName + "' because there are not trace objects implemented for this value type.");
 }

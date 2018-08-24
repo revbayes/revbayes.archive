@@ -219,24 +219,22 @@ std::vector<std::string> Func_readTrees::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_readTrees::getHelpDescription(void) const
+std::string Func_readTrees::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Reads trees from a file containing trees (Nexus, Phylip or Newick accepted), or from a string containing Newick representations of trees." );
+    std::string description = "Reads trees from a file containing trees (Nexus, Phylip or Newick accepted), or from a string containing Newick representations of trees.";
 
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Func_readTrees::getHelpDetails(void) const
+std::string Func_readTrees::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    details.push_back( "Either a file name (with the file argument) or a string (with the text argument) must be provided as argument. If both are provided, trees will be read from both sources." );
+    std::string details = "Either a file name (with the file argument) or a string (with the text argument) must be provided as argument. If both are provided, trees will be read from both sources.";
 
     return details;
 }

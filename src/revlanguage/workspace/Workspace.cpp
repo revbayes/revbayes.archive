@@ -129,7 +129,7 @@ bool Workspace::addDistribution( Distribution *dist )
 bool Workspace::addType(RevObject *exampleObj)
 {
 
-    std::string name = exampleObj->getType();
+    const std::string& name = exampleObj->getType();
 
     if (typeTable.find(name) != typeTable.end())
     {
@@ -140,7 +140,11 @@ bool Workspace::addType(RevObject *exampleObj)
     }
     
     typeTable.insert(std::pair<std::string, RevObject*>(name, exampleObj));
-
+   
+    // add the help entry for this type to the global help system instance
+    RevBayesCore::RbHelpType* help_type = static_cast<RevBayesCore::RbHelpType*>( exampleObj->getHelpEntry() );
+    RevBayesCore::RbHelpSystem::getHelpSystem().addHelpType( help_type );
+    
     return true;
 }
 
@@ -259,6 +263,7 @@ void Workspace::initializeGlobalWorkspace( void )
 {
     
     initializeBasicTypeGlobalWorkspace();
+    initializeVectorTypeGlobalWorkspace();
     initializeTypeGlobalWorkspace();
     initializeMonitorGlobalWorkspace();
     initializeMoveGlobalWorkspace();

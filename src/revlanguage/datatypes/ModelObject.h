@@ -58,7 +58,6 @@ namespace RevLanguage {
         ModelObject(RevBayesCore::TypedDagNode<rbType> *v);
         ModelObject(const ModelObject &v);
         
-        
         RevBayesCore::TypedDagNode<rbType>*     dag_node;
 
     };

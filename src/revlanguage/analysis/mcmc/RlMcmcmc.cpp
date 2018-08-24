@@ -68,7 +68,7 @@ void Mcmcmc::constructInternalObject( void )
     int                                                     ntries  = (int)static_cast<const Natural &>( num_init_attempts->getRevObject() ).getValue();
     
     bool                                                    th      = static_cast<const RlBoolean &>( tune_heat->getRevObject() ).getValue();
-    double                                                  tht     = static_cast<const RealPos &>( tune_heat_target->getRevObject() ).getValue();
+    double                                                  tht     = static_cast<const Probability &>( tune_heat_target->getRevObject() ).getValue();
     const std::string &                                     sm      = static_cast<const RlString &>( swap_method->getRevObject() ).getValue();
     const std::string &                                     smo     = static_cast<const RlString &>( swap_mode->getRevObject() ).getValue();
     
@@ -182,38 +182,31 @@ std::vector<std::string> Mcmcmc::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Mcmcmc::getHelpDescription(void) const
+std::string Mcmcmc::getHelpDescription(void) const
 {
-    // create a variable for the description of the function
-    std::vector<std::string> descriptions;
+    std::string description = "";
+    description += "The Mcmcmc analysis object keeps a model and the associated moves and monitors.";
+    description += " The object is used to run Metropolis Couped Markov chain Monte Carlo (Mcmcmc) simulation on";
+    description += " the model, using the provided moves, to obtain a sample of the posterior probability";
+    description += " distribution. During the analysis, the monitors are responsible for sampling model parameters of interest.";
     
-    std::string description1 = "";
-    description1 += "The Mcmcmc analysis object keeps a model and the associated moves and monitors.";
-    description1 += "The object is used to run Metropolis Couped Markov chain Monte Carlo (Mcmcmc) simulation on";
-    description1 += "the model, using the provided moves, to obtain a sample of the posterior probability";
-    description1 += "distribution. During the analysis, the monitors are responsible for sampling model parameters of interest.";
-    descriptions.push_back( description1 );
-    
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Mcmcmc::getHelpDetails(void) const
+std::string Mcmcmc::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
+    std::string details;
     
-    std::string details1 = "";
-    details1 += "The Mcmcmc analysis object produced by a call to this function keeps copies of the model";
-    details1 += "and the associated moves and monitors. The Mcmcmc analysis object is used to run Markov";
-    details1 += "chain Monte Carlo (Mcmcmc) simulation on the model, using the provided moves,";
-    details1 += "to obtain a sample of the posterior probability distribution. During the analysis,";
-    details1 += "the monitors are responsible for sampling model parameters of interest.";
-    details.push_back( details1 );
-    
+    details += "The Mcmcmc analysis object produced by a call to this function keeps copies of the model";
+    details += " and the associated moves and monitors. The Mcmcmc analysis object is used to run Markov";
+    details += " chain Monte Carlo (Mcmcmc) simulation on the model, using the provided moves,";
+    details += " to obtain a sample of the posterior probability distribution. During the analysis,";
+    details += " the monitors are responsible for sampling model parameters of interest.";
     
     return details;
 }
@@ -321,7 +314,7 @@ const MemberRules& Mcmcmc::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule("swapInterval" , Natural::getClassTypeSpec(), "The interval at which swaps (between neighbor chains if the swapMethod is neighbor or both, or between chains chosen randomly if the swapMethod is random) will be attempted.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural( long(10) )) );
         memberRules.push_back( new ArgumentRule("deltaHeat"    , RealPos::getClassTypeSpec(), "The delta parameter for the heat function.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.2) ) );
         memberRules.push_back( new ArgumentRule("heats"   , ModelVector<Probability>::getClassTypeSpec(), "The heats of chains, starting from the cold chain to hotter chains so the first value must be 1.0. If heats are specified directly then the delta parameter would be ignored.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule("tuneHeat"  , RlBoolean::getClassTypeSpec() , "Should we tune the heats during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
+        memberRules.push_back( new ArgumentRule("tuneHeat"  , RlBoolean::getClassTypeSpec() , "Should we tune the heats during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( false ) ) );
         memberRules.push_back( new ArgumentRule("tuneHeatTarget", Probability::getClassTypeSpec(), "The acceptance probability of adjacent chain swaps targeted by heats auto-tuning.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability( 0.23 ) ) );
         
         std::vector<std::string> options_swapMethod;
@@ -335,7 +328,7 @@ const MemberRules& Mcmcmc::getParameterRules(void) const
         std::vector<std::string> options_swapMode;
         options_swapMode.push_back( "single" );
         options_swapMode.push_back( "multiple" );
-        memberRules.push_back( new OptionRule( "swapMode", new RlString("multiple"), options_swapMode, "Whether make a single attempt per swap interval or attempt multiple (=nchains or nchains^2 for neighbor or random swaps, respectively) times." ) );
+        memberRules.push_back( new OptionRule( "swapMode", new RlString("single"), options_swapMode, "Whether make a single attempt per swap interval or attempt multiple (= nchains-1 or choose(nchains,2) for neighbor or random swaps, respectively) times." ) );
         
         rules_set = true;
     }

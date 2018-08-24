@@ -1655,7 +1655,8 @@ double StateDependentSpeciationExtinctionProcess::pSurvival(double start, double
 void StateDependentSpeciationExtinctionProcess::redrawValue( void )
 {
     size_t attempts = 0;    
-    while (attempts < 100000)
+    //while (attempts < 100000)
+    while (attempts < 10000)
     {
         bool success = false;
 
@@ -2008,6 +2009,19 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
     // simulate moving backwards in time
     while (true) {
 
+        // scale extinction as a function of time so simulations can't go back in time forever....
+        if (true)
+        {
+            for (size_t i = 0; i < num_states; ++i)
+            {
+                extinction_rates[i] -= t/10; // TODO make this a user option
+                if (extinction_rates[i] < 0)
+                {
+                    extinction_rates[i] = 0.0;
+                }
+            }
+        }
+
         // calculate c and g from Hua and Bromham 2016
         for (size_t i = 0; i < num_states; ++i)
         {
@@ -2044,6 +2058,7 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
         std::vector<double> prob_transition_sum = std::vector<double>(num_states, 0);
         std::vector<double> prob_state = std::vector<double>(num_states, 0);
         double prob_sum = 0.0;
+        size_t tries = 0;
         while (true) 
         {
         
@@ -2120,8 +2135,14 @@ bool StateDependentSpeciationExtinctionProcess::simulateTreeConditionedOnTips( s
             prob_transition_sum = std::vector<double>(num_states, 0);
             prob_state = std::vector<double>(num_states, 0);
             prob_sum = 0.0;
-
+       
+            tries++;
+            if (tries == 100)
+            {
+                return false;
+            }
         }
+
         t = t + dt;
 
         // stop and retry if lineages didn't coalesce in time

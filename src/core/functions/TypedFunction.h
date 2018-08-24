@@ -154,7 +154,7 @@ void RevBayesCore::TypedFunction<valueType>::setDeterministicNode(DeterministicN
 
 
 template <class valueType>
-void RevBayesCore::TypedFunction<valueType>::touch( RevBayesCore::DagNode* toucher )
+void RevBayesCore::TypedFunction<valueType>::touch( RevBayesCore::DagNode* /*toucher*/ )
 {
     // nothing to do here in the base class
 

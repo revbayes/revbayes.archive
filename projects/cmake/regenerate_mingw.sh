@@ -49,7 +49,7 @@ done
 if [ "$boost" = "true" ]
 then
 echo 'Building boost libraries'
-echo 'you can turn this of with argument "-boost false"'
+echo 'you can turn this off with argument "-boost false"'
 
 cd ../../boost_1_60_0
 rm ./project-config.jam*  # clean up from previous runs
@@ -156,6 +156,7 @@ set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../src)
 
 
 SET(BOOST_ROOT ../../../boost_1_60_0)
+SET(BOOST_LIBRARY ../../../boost_1_60_0/stage/lib)
 SET(Boost_USE_STATIC_RUNTIME true)
 SET(Boost_USE_STATIC_LIBS ON)
 find_package(Boost
