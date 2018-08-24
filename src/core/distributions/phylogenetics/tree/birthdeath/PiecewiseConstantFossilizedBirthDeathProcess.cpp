@@ -177,7 +177,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
                 double Ls = Ls_plus_a - a;
 
                 // replace H_i
-                x += log(1.0 - exp(-Ls*fossil[oi]) ) - H[i];
+                x += expm1(Ls*fossil[oi]) - H[i];
             }
             else
             {
