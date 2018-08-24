@@ -170,6 +170,8 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
             }
             else
             {
+                throw(RbException("Sampled ancestors not implemented under extended mixed speciation model"));
+
                 x = - this->getAnageneticSpeciationRate(y_ai) * y_a;
             }
 
