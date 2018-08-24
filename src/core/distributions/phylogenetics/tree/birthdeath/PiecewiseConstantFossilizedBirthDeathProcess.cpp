@@ -161,13 +161,29 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
 
             // evaluate antiderivative at oi
 
-            // replace q with q~ at the birth time
-            double x = q(y_ai, y_a, true) - q(y_ai, y_a);
+            double x = 0.0;
+
+            if ( extended == false )
+            {
+                // replace q with q~ at the birth time
+                x = q(y_ai, y_a, true) - q(y_ai, y_a);
+            }
+            else
+            {
+                x = - this->getAnageneticSpeciationRate(y_ai) * y_a;
+            }
 
             // replace intermediate q terms
             for (size_t j = y_ai; j < oi; j++)
             {
-                x += q_tilde_i[j] - q_i[j];
+                if ( extended == false )
+                {
+                     x += q_tilde_i[j] - q_i[j];
+                }
+                else
+                {
+                    x += - this->getAnageneticSpeciationRate(j+1) * times[j];
+                }
             }
 
             if( presence_absence )
@@ -176,13 +192,27 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
                 double Ls_plus_a = oi > 0 ? std::min(y_a, times[oi-1]) : y_a;
                 double Ls = Ls_plus_a - a;
 
-                // replace H_i
-                x += expm1(Ls*fossil[oi]) - H[i];
+                if ( extended == false )
+                {
+                    // replace H_i
+                    x += log(expm1(Ls*fossil[oi])) - H[i];
+                }
+                else
+                {
+                    x += this->getAnageneticSpeciationRate(oi) * times[oi];
+                }
             }
             else
             {
-                // replace q terms at oi
-                x += q(oi, o) - q(oi, o, true);
+                if ( extended == false )
+                {
+                    // replace q terms at oi
+                    x += q(oi, o) - q(oi, o, true);
+                }
+                else
+                {
+                    x +=  this->getAnageneticSpeciationRate(oi) * o;
+                }
             }
 
             // compute definite integral
