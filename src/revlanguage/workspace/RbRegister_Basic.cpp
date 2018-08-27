@@ -108,6 +108,7 @@
 #include "Func_exists.h"
 #include "Func_getOption.h"
 #include "Func_getwd.h"
+#include "Func_help.h"
 #include "Func_ifelse.h"
 #include "Func_license.h"
 #include "Func_listOptions.h"
@@ -282,6 +283,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func_exists()                      );
         addFunction( new Func_getwd()                       );
         addFunction( new Func_getOption()                   );
+        addFunction( new Func_help()                        );
         addFunction( new Func_ifelse<Natural>()             );
         addFunction( new Func_ifelse<Integer>()             );
         addFunction( new Func_ifelse<Real>()                );

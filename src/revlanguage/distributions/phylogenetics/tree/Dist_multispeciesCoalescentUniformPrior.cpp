@@ -208,33 +208,25 @@ const TypeSpec& Dist_multispeciesCoalescentUniformPrior::getTypeSpec( void ) con
   /**
    * Get the (brief) description for this function
    */
-  std::vector<std::string> Dist_multispeciesCoalescentUniformPrior::getHelpDescription(void) const
+  std::string Dist_multispeciesCoalescentUniformPrior::getHelpDescription(void) const
   {
       // create a variable for the description of the function
-      std::vector<std::string> descriptions;
-      descriptions.push_back( "Multispecies coalescent distribution describing how gene trees can be generated from within a species tree given effective population sizes. Requires an ultrametric species tree, effective population size(s) (a single real positive or a vector of real positives), and taxa with species and individual names." );
+      std::string description = "Multispecies coalescent distribution describing how gene trees can be generated from within a species tree given effective population sizes. Requires an ultrametric species tree, effective population size(s) (a single real positive or a vector of real positives), and taxa with species and individual names.";
 
-      return descriptions;
+      return description;
   }
 
 
   /**
    * Get the more detailed description of the function
    */
-  std::vector<std::string> Dist_multispeciesCoalescentUniformPrior::getHelpDetails(void) const
+  std::string Dist_multispeciesCoalescentUniformPrior::getHelpDetails(void) const
   {
       // create a variable for the description of the function
-      std::vector<std::string> details;
+      std::string details = "";
+      details += "The species tree must be ultrametric.\n";
 
-      std::string details_1 = "";
-      details_1 += "The species tree must be ultrametric.";
-
-      details.push_back( details_1 );
-
-      std::string details_2 = "";
-      details_2 += "Effective population sizes can be constant across the species tree, if a single real positive is provided, or branchwise, if a vector is provided. ";
-
-      details.push_back( details_2 );
+      details += "Effective population sizes can be constant across the species tree, if a single real positive is provided, or branchwise, if a vector is provided. ";
 
       return details;
   }

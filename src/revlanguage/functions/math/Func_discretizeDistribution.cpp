@@ -108,23 +108,21 @@ std::vector<std::string> Func_discretizeDistribution::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_discretizeDistribution::getHelpDescription(void) const
+std::string Func_discretizeDistribution::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    
-    return descriptions;
+    std::string description;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Func_discretizeDistribution::getHelpDetails(void) const
+std::string Func_discretizeDistribution::getHelpDetails(void) const
 {
-    // create a variable for the description of the function
-    std::vector<std::string> details;
-    
+    // create a variable for the details of the function
+    std::string details;
     return details;
 }
 

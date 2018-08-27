@@ -2096,8 +2096,8 @@
             newTool = [[ToolNumericalMcmcOutput alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_TREEDIAGNOSIS)
             newTool = [[ToolTreeMcmcDiagnostic alloc] initWithScaleFactor:scaleFactor];
-        else if (toolIdx == TOOL_NUMBERDIAGNOSIS)
-            newTool = [[ToolMcmcDiagnostic alloc] initWithScaleFactor:scaleFactor];
+        //else if (toolIdx == TOOL_NUMBERDIAGNOSIS)
+        //    newTool = [[ToolMcmcDiagnostic alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_TREECONSENSUS)
             newTool = [[ToolTreeConsensus alloc] initWithScaleFactor:scaleFactor];
 

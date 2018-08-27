@@ -27,6 +27,7 @@ namespace RevLanguage {
         const MethodTable&                          getMethods( void ) const;                                                                       //!< Get the member methods
         Distribution&                               getRlDistribution(void);                                                                        //!< Get the Rev distribution
         const Distribution&                         getRlDistribution(void) const;                                                                  //!< Get the Rev distribution (const)
+        void                                        printStructureInfo(std::ostream &o, bool verbose=false) const;                                  //!< Print information on structure
         
     private:
         

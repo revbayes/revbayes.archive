@@ -111,24 +111,22 @@ std::vector<std::string> Func_quit::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_quit::getHelpDescription(void) const
+std::string Func_quit::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Terminates the currently running instance of RevBayes." );
+    std::string description = "Terminates the currently running instance of RevBayes.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Func_quit::getHelpDetails(void) const
+std::string Func_quit::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
+    std::string details;
     return details;
 }
 

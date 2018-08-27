@@ -36,9 +36,7 @@ RevPtr<RevVariable> Func_setwd::execute( void )
 {
     
     const std::string &wd = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
-    
-    std::cerr << "Received directory:\t\t" << wd << std::endl;
-    
+        
     RbSettings& s = RbSettings::userSettings();
     s.setWorkingDirectory( wd );
     
@@ -112,24 +110,22 @@ std::vector<std::string> Func_setwd::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_setwd::getHelpDescription(void) const
+std::string Func_setwd::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Set the current working directory which RevBayes uses." );
+    std::string description = "Set the current working directory which RevBayes uses.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Func_setwd::getHelpDetails(void) const
+std::string Func_setwd::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
+    std::string details;
     return details;
 }
 

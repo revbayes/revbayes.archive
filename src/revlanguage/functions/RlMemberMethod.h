@@ -24,7 +24,7 @@ namespace RevLanguage {
     public:
         
         virtual void            setMemberObject(const RevPtr<RevVariable> &obj) = 0;           //!< Set the member object to which this method belongs
-
+	virtual ~MemberMethod() {};
     };
     
 }

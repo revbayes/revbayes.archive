@@ -90,42 +90,31 @@ std::vector<std::string> Dist_logUniform::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_logUniform::getHelpDescription(void) const
+std::string Dist_logUniform::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "A strictly positive real number x has a log-uniform distribution over interval (min,max) if its logarithm y = ln(x) has uniform distribution over interval (ln(min),ln(max))." );
+    std::string description = "A strictly positive real number x has a log-uniform distribution over interval (min,max) if its logarithm y = ln(x) has uniform distribution over interval (ln(min),ln(max)).";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_logUniform::getHelpDetails(void) const
+std::string Dist_logUniform::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
+    std::string details = "";
+    details += "The log-uniform distribution is defined over strictly positive real numbers.";
+    details += " Saying that x is log-uniform is equivalent to saying that y = ln(x) is uniform.";
+    details += " The log-uniform distribution therefore expresses lack of information about the order of magnitude of a scale parameter: ";
+    details += " if x has a log-uniform distribution, then it has equal chance to be contained by any of the intervals of the form (10^k, 10^(k+1)) within the allowed range.\n\n";
     
-    std::string details_1 = "";
-    details_1 += "The log-uniform distribution is defined over strictly positive real numbers.";
-    details_1 += "Saying that x is log-uniform is equivalent to saying that y = ln(x) is uniform.";
-    details_1 += "The log-uniform distribution therefore expresses lack of information about the order of magnitude of a scale parameter: ";
-    details_1 += "if x has a log-uniform distribution, then it has equal chance to be contained by any of the intervals of the form (10^k, 10^(k+1)) within the allowed range.";
+    details += "The density is p(x) = 1/x, which can be seen by defining x = exp(y) where y has uniform distribution and apply the change-of-variable formula.\n\n";
     
-    details.push_back( details_1 );
-    
-    std::string details_2 = "";
-    details_2 += "The density is p(x) = 1/x, which can be seen by defining x = exp(y) where y has uniform distribution and apply the change-of-variable formula.";
-    
-    details.push_back( details_2 );
-    
-    std::string details_3 = "";
-    details_3 += "The log-uniform distribution is improper when defined over the entire positive real line.";
-    details_3 += "To always make it proper, in RevBayes, a min and a max should always be specified.";
-    
-    details.push_back( details_3 );
+    details += "The log-uniform distribution is improper when defined over the entire positive real line.";
+    details += " To always make it proper, in RevBayes, a min and a max should always be specified.";
     
     return details;
 }

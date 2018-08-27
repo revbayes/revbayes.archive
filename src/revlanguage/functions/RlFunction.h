@@ -86,10 +86,7 @@ namespace RevLanguage {
         // virtual method that may be overwritten
         virtual RevBayesCore::RbHelpFunction*           constructTypeSpecificHelp(void) const;
         virtual void                                    addSpecificHelpFields(RevBayesCore::RbHelpEntry* e) const;
-        virtual std::vector<std::string>                getHelpDetails(void) const { return std::vector<std::string>(); }
-        virtual std::string                             getHelpExample(void) const { return ""; }
-//        virtual std::string                             getFunctionUsage(void) const { return ""; }
-        
+
         // Function you may want to override
         virtual void                                    clearArguments(void);                                                               //!< Clear arguments
 

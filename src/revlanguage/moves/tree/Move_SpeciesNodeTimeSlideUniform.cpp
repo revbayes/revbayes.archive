@@ -249,38 +249,27 @@ void Move_SpeciesNodeTimeSlideUniform::setConstParameter(const std::string& name
   /**
    * Get the (brief) description for this function
    */
-  std::vector<std::string> Move_SpeciesNodeTimeSlideUniform::getHelpDescription(void) const
+  std::string Move_SpeciesNodeTimeSlideUniform::getHelpDescription(void) const
   {
       // create a variable for the description of the function
-      std::vector<std::string> descriptions;
-      descriptions.push_back( "Makes a node time slide move both in the species tree and in the gene trees that contain nodes of the relevant populations. Tree topologies are not altered." );
+      std::string description =  "Makes a node time slide move both in the species tree and in the gene trees that contain nodes of the relevant populations. Tree topologies are not altered." ;
 
-      return descriptions;
+      return description;
   }
 
 
   /**
    * Get the more detailed description of the function
    */
-  std::vector<std::string> Move_SpeciesNodeTimeSlideUniform::getHelpDetails(void) const
+  std::string Move_SpeciesNodeTimeSlideUniform::getHelpDetails(void) const
   {
       // create a variable for the description of the function
-      std::vector<std::string> details;
+      std::string details = "";
+      details += "The species tree must be ultrametric.\n\n";
 
-      std::string details_1 = "";
-      details_1 += "The species tree must be ultrametric.";
+      details += "All the gene trees that evolved along the species tree according to some form of multispecies coalescent must be added to the move using the addGeneTreeVariable method.\n\n";
 
-      details.push_back( details_1 );
-
-      std::string details_2 = "";
-      details_2 += "All the gene trees that evolved along the species tree according to some form of multispecies coalescent must be added to the move using the addGeneTreeVariable method. ";
-
-      details.push_back( details_2 );
-
-      std::string details_3 = "";
-      details_3 += "This move jointly performs node time slides (branch length alterations, keeping the topologies fixed) on the species tree and on gene trees, all of which must be ultrametric. ";
-
-      details.push_back( details_3 );
+      details += "This move jointly performs node time slides (branch length alterations, keeping the topologies fixed) on the species tree and on gene trees, all of which must be ultrametric.";
 
       return details;
   }
