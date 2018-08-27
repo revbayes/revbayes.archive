@@ -128,33 +128,24 @@ std::vector<std::string> Dist_Cauchy::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_Cauchy::getHelpDescription(void) const
+std::string Dist_Cauchy::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Cauchy distribution with location equal to ‘location’ and scale equal to ‘scale’." );
+    std::string description = "Cauchy distribution with location equal to ‘location’ and scale equal to ‘scale’.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_Cauchy::getHelpDetails(void) const
+std::string Dist_Cauchy::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
-    std::string details_1 = "";
-    details_1 += "The Cauchy distribution has density:";
-    
-    details.push_back( details_1 );
-    
-    std::string details_2 = "";
-    details_2 += "f(x) = 1/(pi * scale) * 1/(1 + x-(location/scale)^2)";
-    
-    details.push_back( details_2 );
+    std::string details = "";
+    details += "The Cauchy distribution has density:\n\n";
+    details += "f(x) = 1/(pi * scale) * 1/(1 + x-(location/scale)^2)";
     
     return details;
 }

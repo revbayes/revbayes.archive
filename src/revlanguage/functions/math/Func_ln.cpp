@@ -110,16 +110,12 @@ std::vector<std::string> Func_ln::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_ln::getHelpDescription(void) const
+std::string Func_ln::getHelpDescription(void) const
 {
-    // create a variable for the description of the function
-    std::vector<std::string> descriptions;
+    std::string description = "";
+    description += "Returns the natural log of a (positive) value.";
     
-    std::string description1 = "";
-    description1 += "Returns the natural log of a (positive) value.";
-    descriptions.push_back( description1 );
-    
-    return descriptions;
+    return description;
 }
 
 /**

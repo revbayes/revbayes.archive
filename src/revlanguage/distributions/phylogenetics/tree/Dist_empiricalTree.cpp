@@ -153,16 +153,12 @@ std::vector<std::string> Dist_empiricalTree::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_empiricalTree::getHelpDescription(void) const
+std::string Dist_empiricalTree::getHelpDescription(void) const
 {
-    // create a variable for the description of the function
-    std::vector<std::string> descriptions;
+    std::string description = "";
+    description += "Creates a distribution of trees from a trace of trees.";
     
-    std::string description1 = "";
-    description1 += "Creates a distribution of trees from a trace of trees.";
-    descriptions.push_back( description1 );
-    
-    return descriptions;
+    return description;
 }
 
 

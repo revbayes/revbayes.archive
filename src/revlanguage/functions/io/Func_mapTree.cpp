@@ -156,16 +156,12 @@ std::vector<std::string> Func_mapTree::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_mapTree::getHelpDescription(void) const
+std::string Func_mapTree::getHelpDescription(void) const
 {
-    // create a variable for the description of the function
-    std::vector<std::string> descriptions;
+    std::string description = "";
+    description += "Finds the maximum a posteriori (MAP) topology from a trace of trees and summarizes branch lengths.";
     
-    std::string description1 = "";
-    description1 += "Finds the maximum a posteriori (MAP) topology from a trace of trees and summarizes branch lengths.";
-    descriptions.push_back( description1 );
-    
-    return descriptions;
+    return description;
 }
 
 

@@ -96,50 +96,33 @@ std::vector<std::string> Dist_lnorm::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_lnorm::getHelpDescription(void) const
+std::string Dist_lnorm::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Lognormal distribution is the distribution for a log-transformed normally distributed random variable with mean 'mu' and standard deviation 'sigma'." );
+    std::string description = "Lognormal distribution is the distribution for a log-transformed normally distributed random variable with mean 'mu' and standard deviation 'sigma'.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_lnorm::getHelpDetails(void) const
+std::string Dist_lnorm::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
+    std::string details = "";
+    details += "The lognormal random variable is defined as\n\n:";
     
-    std::string details_a = "";
-    details_a += "The lognormal random variable is defined as:";
+    details += "X = exp(mu + sigma Z)\n\n";
     
-    details.push_back( details_a );
+    details += "where mu is the mean parameter, sigma is the standard deviation, and Z is a standard normal random variable. ";
+    details += "Note, in effect, the mean and standard deviation provide the location and scale of the exponentiated normal variate, mu + sigma Z.";
+    details += "The lognormal distribution has density:\n\n";
     
-    std::string details_b = "";
-    details_b += "X = exp(mu + sigma Z)";
+    details += "f(x) = 1/(x sigma sqrt(2 pi)) e^-((ln x - mu)^2/(2 sigma^2))\n\n";
     
-    details.push_back( details_b );
-    
-    std::string details_c = "";
-    details_c += "where mu is the mean parameter, sigma is the standard deviation, and Z is a standard normal random variable. ";
-    details_c += "Note, in effect, the mean and standard deviation provide the location and scale of the exponentiated normal variate, mu + sigma Z.";
-    details_c += "The lognormal distribution has density:";
-    
-    details.push_back( details_c );
-    
-    std::string details_2 = "";
-    details_2 += "f(x) = 1/(x sigma sqrt(2 pi)) e^-((ln x - mu)^2/(2 sigma^2))";
-    
-    details.push_back( details_2 );
-    
-    std::string details_3 = "";
-    details_3 += "where mu is the mean of the distribution and sigma the standard deviation.";
-    
-    details.push_back( details_3 );
+    details += "where mu is the mean of the distribution and sigma the standard deviation.";
     
     return details;
 }

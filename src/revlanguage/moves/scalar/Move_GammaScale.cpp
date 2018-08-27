@@ -234,12 +234,11 @@ std::vector<std::string> Move_GammaScale::getHelpSeeAlso(void) const
 /**
  * Get the (brief) description for this move
  */
-std::vector<std::string> Move_GammaScale::getHelpDescription(void) const
+std::string Move_GammaScale::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "A move to scale a single continuous value by multiplying by a value drawn from a Gamma(lambda,1) distribution. Lambda is the tuning parameter that controls the size of the proposals." );
-    return descriptions;
+    std::string description = "A move to scale a single continuous value by multiplying by a value drawn from a Gamma(lambda,1) distribution. Lambda is the tuning parameter that controls the size of the proposals.";
+    return description;
 }
 
 /**

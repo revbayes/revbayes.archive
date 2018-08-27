@@ -41,7 +41,6 @@ namespace RevLanguage {
     protected:
 
         WorkspaceObject(void);
-        virtual std::string                                 getHelpCategoryType(void) const { return "WorkspaceObject"; }
 
     };
 }

@@ -104,28 +104,23 @@ std::vector<std::string> Dist_unif::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_unif::getHelpDescription(void) const
+std::string Dist_unif::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Uniform distribution with lower and uppper bounds." );
+    std::string description = "Uniform distribution with lower and uppper bounds.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_unif::getHelpDetails(void) const
+std::string Dist_unif::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
-    std::string details_1 = "";
-    details_1 += "The uniform distribution has density, f(x) = 1/(b-a), where b is the upper bound and a is the lower bound.";
-    
-    details.push_back( details_1 );
+    std::string details = "";
+    details += "The uniform distribution has density, f(x) = 1/(b-a), where b is the upper bound and a is the lower bound.";
     
     return details;
 }

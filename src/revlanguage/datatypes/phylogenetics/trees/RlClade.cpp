@@ -230,31 +230,26 @@ std::vector<std::string> Clade::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Clade::getHelpDescription(void) const
+std::string Clade::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "A clade is a subtree within a phylogeny." );
+    std::string description = "A clade is a subtree within a phylogeny.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Clade::getHelpDetails(void) const
+std::string Clade::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
-    std::string details_1 = "";
-    details_1 += "Clades are defined in terms of a taxon set and a shared tree topology. In phylogenetic ";
-    details_1 += "analyses, clades are generally used (a) to constrain tree topologies to match provided ";
-    details_1 += "taxon relationships, (b) to identify the most recent common ancestor of a taxon set ";
-    details_1 += "within a phylogeny, or (c) to apply node age calibrations on particular nodes in the phylogeny.";
-    details.push_back( details_1 );
-    
+    std::string details = "";
+    details += "Clades are defined in terms of a taxon set and a shared tree topology. In phylogenetic ";
+    details += "analyses, clades are generally used (a) to constrain tree topologies to match provided ";
+    details += "taxon relationships, (b) to identify the most recent common ancestor of a taxon set ";
+    details += "within a phylogeny, or (c) to apply node age calibrations on particular nodes in the phylogeny.";
     
     return details;
 }

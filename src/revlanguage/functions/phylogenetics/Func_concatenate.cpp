@@ -125,23 +125,22 @@ std::vector<std::string> Func_concatenate::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_concatenate::getHelpDescription(void) const
+std::string Func_concatenate::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Creates a new data matrix by concatentating the provided data matrices (by order)." );
+    std::string description = "Creates a new data matrix by concatentating the provided data matrices (by order).";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Func_concatenate::getHelpDetails(void) const
+std::string Func_concatenate::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
+    std::string details;
     
     return details;
 }

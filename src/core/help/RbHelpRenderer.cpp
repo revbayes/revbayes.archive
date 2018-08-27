@@ -222,23 +222,19 @@ std::string HelpRenderer::renderConstructors(const RbHelpType &typeHelp, size_t 
 
 std::string HelpRenderer::renderDescription(const RbHelpEntry &helpEntry, size_t w) const
 {
-    const std::vector<std::string> &descriptions = helpEntry.getDescription();
+    const std::string &description = helpEntry.getDescription();
 
     std::string result = "";
     
     // descriptions
-    if ( descriptions.size() > 0 )
+    if ( description.size() > 0 )
     {
         result.append( TerminalFormatter::makeUnderlined("Description") );
         result.append( section_break );
     
-        for (std::vector<std::string>::const_iterator it = descriptions.begin(); it != descriptions.end(); ++it)
-        {
-            result.append( StringUtilities::formatTabWrap(*it, 1, w) );
-            result.append( line_break );
-            result.append( section_break );
-        }
-    
+        result.append( StringUtilities::formatTabWrap(description, 1, w) );
+        result.append( line_break );
+        result.append( section_break );
     }
     
     return result;
@@ -248,7 +244,7 @@ std::string HelpRenderer::renderDescription(const RbHelpEntry &helpEntry, size_t
 
 std::string HelpRenderer::renderDetails(const RbHelpEntry &helpEntry, size_t w) const
 {
-    const std::vector<std::string> &details = helpEntry.getDetails();
+    const std::string &details = helpEntry.getDetails();
 
     std::string result = "";
     
@@ -258,13 +254,9 @@ std::string HelpRenderer::renderDetails(const RbHelpEntry &helpEntry, size_t w) 
         result.append( TerminalFormatter::makeUnderlined("Details") );
         result.append( section_break );
         
-        for (std::vector<std::string>::const_iterator it = details.begin(); it != details.end(); ++it)
-        {
-            result.append( StringUtilities::formatTabWrap(*it, 1, w) );
-            result.append( section_break );
-        }
-        
+        result.append( StringUtilities::formatTabWrap(details, 1, w) );
         result.append( line_break );
+        result.append( section_break );
     }
     
     return result;
@@ -408,7 +400,7 @@ std::string HelpRenderer::renderMethods( const RbHelpType &typeHelp, size_t w ) 
     std::string result = "";
     
     // methods
-    if ( methods.size() > 0)
+    if ( methods.size() > 1)
     {
         // check if we have multiple arguments
         if ( methods.size() == 1 )
@@ -423,16 +415,20 @@ std::string HelpRenderer::renderMethods( const RbHelpType &typeHelp, size_t w ) 
         
         for (std::vector<RbHelpFunction>::const_iterator it = methods.begin(); it != methods.end(); ++it)
         {
+            if ( it->getUsage() == "methods()" )
+            {
+                continue;
+            }
+
             result.append( StringUtilities::formatTabWrap(it->getUsage(),1,w,true) );
             result.append( line_break );
             
-            const std::vector<std::string> & d = it->getDescription();
-            for (std::vector<std::string>::const_iterator desc_it = d.begin(); desc_it != d.end(); ++desc_it)
+            if ( it->getDescription().size() > 0 )
             {
-                result.append( StringUtilities::formatTabWrap(*desc_it, 2, w) );
+                result.append( StringUtilities::formatTabWrap(it->getDescription(), 1, w) );
+                result.append( line_break );
                 result.append( section_break );
             }
-            
         }
         
         result.append( line_break );

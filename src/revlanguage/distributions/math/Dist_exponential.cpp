@@ -130,33 +130,27 @@ std::vector<std::string> Dist_exponential::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_exponential::getHelpDescription(void) const
+std::string Dist_exponential::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Exponential distribution with rate equal to ‘lambda’." );
+    std::string description = "Exponential distribution with rate equal to ‘lambda’.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_exponential::getHelpDetails(void) const
+std::string Dist_exponential::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
     std::string s = "";
-    s = "The exponential distribution has density:\n";
-    details.push_back(s);
-    s = "f(x) = 1/r * exp(-lambda*x)\n";
-    details.push_back(s);
-    s = "where lambda is the rate parameter.\n";
-    details.push_back(s);
+    s = "The exponential distribution has density:\n\n";
+    s += "f(x) = 1/r * exp(-lambda*x)\n\n";
+    s += "where lambda is the rate parameter.";
     
-    return details;
+    return s;
 }
 
 
