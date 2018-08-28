@@ -2,28 +2,19 @@
 
 SRC=../../src
 
-cd $SRC
+./generate_includes.sh
 
-echo "root_inc = include_directories([" > meson.build
-find libs revlanguage core -name '*.h' |
-    xargs dirname |
-    sort |
-    uniq |
-    sed "s|^|'|" |
-    sed "s|$|',|" >> meson.build
-truncate -s-2 meson.build
-echo "])" >> meson.build
-echo >> meson.build
+echo "
+subdir('core')
+subdir('revlanguage')
+subdir('libs')
+subdir('cmd')
+" >> $SRC/meson.build
 
-echo "rb_sources = files([" >> meson.build
-find libs core revlanguage -name '*.cpp' |
-    sed "s|^|'|" |
-    sed "s|$|',|" >> meson.build
-find libs core revlanguage -name '*.c' |
-    sed "s|^|'|" |
-    sed "s|$|',|" >> meson.build
-truncate -s-2 meson.build
-echo "])" >> meson.build
-echo >> meson.build
+./generate_sources.sh core
 
+./generate_sources.sh revlanguage
 
+./generate_sources.sh libs
+
+./generate_sources.sh cmd
