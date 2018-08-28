@@ -163,8 +163,6 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
             {
                 size_t oi = presence_absence ? oldest_intervals[i] : l(o);
 
-                // evaluate antiderivative at oi
-
                 double x = 0.0;
 
                 // replace q with q~ at the birth time
@@ -200,7 +198,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
                 lnProb += log( anagenetic[y_ai] );
             }
 
-            // offset the extinction density (included later for all taxa)
+            // in either case, offset the extinction density for the sampled ancestor (included later for all taxa)
             lnProb -= log( p(y_ai, y_a) );
         }
 
