@@ -47,7 +47,7 @@ if get_option('jupyter')
 endif
 
 if get_option('beagle') == 'disable'
-  beagle = dependency('hmsbeagle-1')
+  beagle = dependency('', required: false)
 else
   beagle = dependency('hmsbeagle-1', required: get_option('beagle') == 'enable')
   if beagle.found()
