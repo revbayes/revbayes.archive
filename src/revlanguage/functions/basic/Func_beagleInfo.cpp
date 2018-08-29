@@ -132,25 +132,18 @@ std::vector<std::string> Func_beagleInfo::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_beagleInfo::getHelpDescription(void) const
+std::string Func_beagleInfo::getHelpDescription(void) const
 {
-    // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Print information on the available BEAGLE resources." );
-    
-    return descriptions;
+    return "Print information on the available BEAGLE resources.";
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Func_beagleInfo::getHelpDetails(void) const
+std::string Func_beagleInfo::getHelpDetails(void) const
 {
-    // create a variable for the description of the function
-    std::vector<std::string> details;
-    
-    return details;
+    return "";
 }
 
 
