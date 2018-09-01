@@ -72,16 +72,12 @@ std::vector<std::string> Func_probability::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_probability::getHelpDescription(void) const
+std::string Func_probability::getHelpDescription(void) const
 {
-    // create a variable for the description of the function
-    std::vector<std::string> descriptions;
+    std::string description = "";
+    description += "This Rev function converts between Rev types from Real to Probability.";
     
-    std::string description1 = "";
-    description1 += "This Rev function converts between Rev types from Real to Probability.";
-    descriptions.push_back( description1 );
-    
-    return descriptions;
+    return description;
 }
 
 

@@ -75,10 +75,12 @@ PomoCountFileReader::PomoCountFileReader(const std::string &fn, const size_t vir
 
 		std::string chromosome = chars[i][0];
 		size_t position = StringUtilities::asIntegerNumber( chars[i][1] );
+		std::cout << "POSITION: "<< chars[i][1] << std::endl;
 
 		for (size_t j = 2; j < 2 + numberOfPopulations_; ++j)
 		{
 
+			std::cout << "State: " << chars[i][j] <<std::endl;
 			PomoState pState (chars[i][j], chromosome, position, virtualPopulationSize_ );
 
 			nameToTaxonData.at(names_[j-2]).addCharacter( pState);

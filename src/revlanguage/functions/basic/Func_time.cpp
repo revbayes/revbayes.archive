@@ -144,24 +144,22 @@ std::vector<std::string> Func_time::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_time::getHelpDescription(void) const
+std::string Func_time::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Get the current system time in milliseconds." );
+    std::string description = "Get the current system time in milliseconds.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Func_time::getHelpDetails(void) const
+std::string Func_time::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
+    std::string details;
     return details;
 }
 

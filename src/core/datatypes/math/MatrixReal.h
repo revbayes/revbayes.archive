@@ -47,10 +47,11 @@ namespace RevBayesCore {
         MatrixReal&                             operator=(const MatrixReal& m);
         RbVector<double>&                       operator[](size_t index);
         const RbVector<double>&                 operator[](size_t index) const;
-        virtual bool                            operator==(const MatrixReal &m) const { return this == &m; }
-        virtual bool                            operator!=(const MatrixReal &m) const { return !operator==(m); }
-        virtual bool                            operator<(const MatrixReal &m) const { return this < & m; }
-        virtual bool                            operator<=(const MatrixReal &m) const { return operator<(m) || operator==(m); }
+
+        bool                                    operator==(const MatrixReal &m) const { return this == &m; }
+        bool                                    operator!=(const MatrixReal &m) const { return !operator==(m); }
+        bool                                    operator<(const MatrixReal &m) const { return this < & m; }
+        bool                                    operator<=(const MatrixReal &m) const { return operator<(m) || operator==(m); }
 
         // global operators
         MatrixReal&                             operator+=(double b);                                               //!< operator += for scalar 

@@ -89,16 +89,12 @@ std::vector<std::string> Move_EmpiricalTree::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Move_EmpiricalTree::getHelpDescription(void) const
+std::string Move_EmpiricalTree::getHelpDescription(void) const
 {
-    // create a variable for the description of the function
-    std::vector<std::string> descriptions;
+    std::string description = "";
+    description += "An MCMC move that operates on empirical tree distributions.";
     
-    std::string description1 = "";
-    description1 += "An MCMC move that operates on empirical tree distributions.";
-    descriptions.push_back( description1 );
-    
-    return descriptions;
+    return description;
 }
 
 

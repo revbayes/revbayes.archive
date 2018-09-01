@@ -104,30 +104,25 @@ std::vector<std::string> Dist_binomial::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_binomial::getHelpDescription(void) const
+std::string Dist_binomial::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Binomial probability distribution of x successes in n trials." );
+    std::string description = "Binomial probability distribution of x successes in n trials.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_binomial::getHelpDetails(void) const
+std::string Dist_binomial::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
-    std::string details_1 = "";
-    details_1 += "The binomial probability distribution defines the number of success in n trials,";
-    details_1 += "where each trial has the same success probability p. The probability is given by";
-    details_1 += "(n choose x) p^(x) * (1-p)^(n-p)";
-    
-    details.push_back( details_1 );
+    std::string details = "";
+    details += "The binomial probability distribution defines the number of success in n trials,";
+    details += " where each trial has the same success probability p. The probability is given by";
+    details += " (n choose x) p^(x) * (1-p)^(n-p)";
     
     return details;
 }

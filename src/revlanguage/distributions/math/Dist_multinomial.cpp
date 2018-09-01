@@ -91,24 +91,22 @@ std::vector<std::string> Dist_multinomial::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_multinomial::getHelpDescription(void) const
+std::string Dist_multinomial::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "A multinomial distribution defines a probability distribution on a vector of natural numbers. It is understood as randomly picking n times from the k categories with replacement where each catefory has its own probability p[i]." );
+    std::string description = "A multinomial distribution defines a probability distribution on a vector of natural numbers. It is understood as randomly picking n times from the k categories with replacement where each catefory has its own probability p[i].";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_multinomial::getHelpDetails(void) const
+std::string Dist_multinomial::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
+    std::string details;
     return details;
 }
 

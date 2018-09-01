@@ -99,16 +99,12 @@ std::vector<std::string> Func_choose::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_choose::getHelpDescription(void) const
+std::string Func_choose::getHelpDescription(void) const
 {
-    // create a variable for the description of the function
-    std::vector<std::string> descriptions;
+    std::string description = "";
+    description += "Rev function to calculate the binomial coefficients.";
     
-    std::string description1 = "";
-    description1 += "Rev function to calculate the binomial coefficients.";
-    descriptions.push_back( description1 );
-    
-    return descriptions;
+    return description;
 }
 
 

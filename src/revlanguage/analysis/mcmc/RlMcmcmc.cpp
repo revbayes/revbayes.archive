@@ -182,38 +182,31 @@ std::vector<std::string> Mcmcmc::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Mcmcmc::getHelpDescription(void) const
+std::string Mcmcmc::getHelpDescription(void) const
 {
-    // create a variable for the description of the function
-    std::vector<std::string> descriptions;
+    std::string description = "";
+    description += "The Mcmcmc analysis object keeps a model and the associated moves and monitors.";
+    description += " The object is used to run Metropolis Couped Markov chain Monte Carlo (Mcmcmc) simulation on";
+    description += " the model, using the provided moves, to obtain a sample of the posterior probability";
+    description += " distribution. During the analysis, the monitors are responsible for sampling model parameters of interest.";
     
-    std::string description1 = "";
-    description1 += "The Mcmcmc analysis object keeps a model and the associated moves and monitors.";
-    description1 += "The object is used to run Metropolis Couped Markov chain Monte Carlo (Mcmcmc) simulation on";
-    description1 += "the model, using the provided moves, to obtain a sample of the posterior probability";
-    description1 += "distribution. During the analysis, the monitors are responsible for sampling model parameters of interest.";
-    descriptions.push_back( description1 );
-    
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Mcmcmc::getHelpDetails(void) const
+std::string Mcmcmc::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
+    std::string details;
     
-    std::string details1 = "";
-    details1 += "The Mcmcmc analysis object produced by a call to this function keeps copies of the model";
-    details1 += "and the associated moves and monitors. The Mcmcmc analysis object is used to run Markov";
-    details1 += "chain Monte Carlo (Mcmcmc) simulation on the model, using the provided moves,";
-    details1 += "to obtain a sample of the posterior probability distribution. During the analysis,";
-    details1 += "the monitors are responsible for sampling model parameters of interest.";
-    details.push_back( details1 );
-    
+    details += "The Mcmcmc analysis object produced by a call to this function keeps copies of the model";
+    details += " and the associated moves and monitors. The Mcmcmc analysis object is used to run Markov";
+    details += " chain Monte Carlo (Mcmcmc) simulation on the model, using the provided moves,";
+    details += " to obtain a sample of the posterior probability distribution. During the analysis,";
+    details += " the monitors are responsible for sampling model parameters of interest.";
     
     return details;
 }
