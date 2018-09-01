@@ -98,15 +98,18 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirt
     
     bool cond_tip_states = false;
     bool cond_num_tips = false;
+    bool cond_tree = false;
     if (simulate_cond == "tipStates")
     {
         cond_tip_states = true;
-        cond_num_tips = false;
     }
-    if (simulate_cond == "numTips")
+    else if (simulate_cond == "numTips")
     {
-        cond_tip_states = false;
         cond_num_tips = true;
+    }
+    else if (simulate_cond == "tree")
+    {
+        cond_tree = true;
     }
     
     size_t max_l = static_cast<const Integer &>( max_lineages->getRevObject() ).getValue();
@@ -117,7 +120,7 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirt
     size_t prune = static_cast<const RlBoolean &>( prune_extinct_lineages->getRevObject() ).getValue();
     
     // finally make the distribution 
-    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, bf, rh, cond, uo, min_l, max_l, exact_l, max_t, prune, cond_tip_states, cond_num_tips );
+    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, bf, rh, cond, uo, min_l, max_l, exact_l, max_t, prune, cond_tip_states, cond_num_tips, cond_tree );
    
     // set speciation/cladogenetic event rates
     if (speciation_rates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ))
@@ -271,6 +274,7 @@ const MemberRules& Dist_CharacterDependentBirthDeathProcess::getParameterRules(v
         optionsSimulateCondition.push_back("startTime");
         optionsSimulateCondition.push_back("numTips");
         optionsSimulateCondition.push_back("tipStates");
+        optionsSimulateCondition.push_back("tree");
         memberRules.push_back( new OptionRule("simulateCondition", new RlString("startTime"), optionsSimulateCondition, "The conditions under which to simulate." ) );
         memberRules.push_back( new ArgumentRule("minNumLineages", Natural::getClassTypeSpec(), "The minimum number of lineages to simulate; applied under the startTime condition.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural() ) );
         memberRules.push_back( new ArgumentRule("maxNumLineages", Natural::getClassTypeSpec(), "The maximum number of lineages to simulate; applied under the startTime condition.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(500) ) );

@@ -48,7 +48,8 @@ namespace RevBayesCore {
                                                   double max_t,
                                                   bool prune,
                                                   bool condition_on_tip_states,
-                                                  bool condition_on_num_tips);
+                                                  bool condition_on_num_tips,
+                                                  bool condition_on_tree);
         
         // pure virtual member functions
         virtual StateDependentSpeciationExtinctionProcess*              clone(void) const;
@@ -72,8 +73,8 @@ namespace RevBayesCore {
         
         void                                                            drawJointConditionalAncestralStates(std::vector<size_t>& startStates, std::vector<size_t>& endStates);
         void                                                            recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<size_t>& startStates, std::vector<size_t>& endStates);
-        void                                                            drawStochasticCharacterMap(std::vector<std::string*>& character_histories);
-        void                                                            recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string*>& character_histories);
+        void                                                            drawStochasticCharacterMap(std::vector<std::string*>& character_histories, bool set_amb_char_data = false);
+        void                                                            recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string*>& character_histories, bool set_amb_char_data);
         void                                                            numericallyIntegrateProcess(state_type &likelihoods, double begin_age, double end_age, bool use_backward, bool extinction_only) const; //!< Wrapper function for the ODE time stepper function.
         void                                                            resizeVectors(size_t num_nodes);
         
@@ -146,6 +147,7 @@ namespace RevBayesCore {
         bool                                                            prune_extinct_lineages;
         bool                                                            condition_on_tip_states;
         bool                                                            condition_on_num_tips;
+        bool                                                            condition_on_tree;
         double                                                          NUM_TIME_SLICES;
     };
     
