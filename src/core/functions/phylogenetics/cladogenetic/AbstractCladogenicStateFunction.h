@@ -34,6 +34,8 @@ namespace RevBayesCore {
 //        virtual std::vector<std::map< std::vector<unsigned>, double > >&        getEventMap(void) = 0;
 //        virtual const std::vector<std::map< std::vector<unsigned>, double > >&  getEventMap(void) const = 0;
         
+	virtual ~AbstractCladogenicStateFunction() {};
+
     protected:
         
         virtual void                                                    swapParameterInternal(const DagNode *oldP, const DagNode *newP) = 0;
