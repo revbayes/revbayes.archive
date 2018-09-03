@@ -50,7 +50,7 @@ namespace RevLanguage {
         std::string                     getGuiInfo(void) { return ""; }
         
     protected:
-        void                            printValue(std::ostream& o, bool user) const;                           //!< Print value (for user)
+        void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
     
     };
     
