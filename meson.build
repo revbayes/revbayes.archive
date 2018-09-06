@@ -12,7 +12,11 @@ add_project_arguments(['-O3','-msse','-msse2','-msse3'], language : 'cpp')
 add_project_arguments(['-O3'], language : 'c')
 
 # So many warnings!
-add_project_arguments(['-Wall','-Wno-sign-compare','-Woverloaded-virtual',
+# FIXME: -Woverloaded-virtual is useful, but has too many false-positives with GCC?
+add_project_arguments(['-Wall','-Wno-sign-compare',
+		       # These should be fixed, but there are so many we can't see the really bad ones.
+		       # So, disable them for now.
+		       '-Wno-reorder','-Wno-unused-variable','-Wno-unused-but-set-variable',
                        '-Wstrict-aliasing','-Wno-unknown-pragmas'],
                       language : 'cpp')
 
