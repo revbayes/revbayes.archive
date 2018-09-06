@@ -1,7 +1,6 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Dist_empiricalTree.h"
-#include "EmpiricalDistribution.h"
 #include "ModelVector.h"
 #include "Natural.h"
 #include "OptionRule.h"
@@ -124,7 +123,7 @@ const MemberRules& Dist_empiricalTree::getParameterRules(void) const
     static MemberRules member_rules;
     static bool rules_set = false;
     
-    if ( !rules_set )
+    if ( rules_set == false )
     {
         member_rules.push_back( new ArgumentRule( "trace", TraceTree::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
         member_rules.push_back( new ArgumentRule( "density", Trace::getClassTypeSpec(), "Optional trace of probability density values for each tree.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
