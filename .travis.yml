@@ -66,7 +66,6 @@ script:
   - ./run_integration_tests.sh
 # Run testiphy
   - export PATH=${TRAVIS_BUILD_DIR}/projects/cmake:$PATH
-  - echo "outputPrecision=15" > ~/.RevBayes.ini
   - cd
   - git clone https://gitlab.com/testiphy/testiphy.git
   - cd testiphy

@@ -49,7 +49,8 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
                                                                                    double max_t,
                                                                                    bool prune,
                                                                                    bool condition_on_tip_states,
-                                                                                   bool condition_on_num_tips) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
+                                                                                   bool condition_on_num_tips,
+                                                                                   bool condition_on_tree) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
     condition( cdt ),
     active_likelihood( std::vector<bool>(5, 0) ),
     changed_nodes( std::vector<bool>(5, false) ),
@@ -82,6 +83,7 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
     prune_extinct_lineages( prune ),
     condition_on_tip_states( condition_on_tip_states ),
     condition_on_num_tips( condition_on_num_tips ),
+    condition_on_tree( condition_on_tree ),
     NUM_TIME_SLICES( 500.0 )
 {
     addParameter( mu );
@@ -909,7 +911,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyFlagNodeDirty( const 
 }
 
 
-void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::vector<std::string*>& character_histories)
+void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::vector<std::string*>& character_histories, bool set_amb_char_data)
 {
     // first populate partial likelihood vectors along all the branches
     sample_character_history = true;
@@ -1024,8 +1026,8 @@ void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::
     character_histories[node_index] = simmap_string;
     
     // recurse towards tips
-    recursivelyDrawStochasticCharacterMap(left, l, character_histories);
-    recursivelyDrawStochasticCharacterMap(right, r, character_histories);
+    recursivelyDrawStochasticCharacterMap(left, l, character_histories, set_amb_char_data);
+    recursivelyDrawStochasticCharacterMap(right, r, character_histories, set_amb_char_data);
 
     Tree t = Tree(*value);
     t.clearNodeParameters();
@@ -1038,7 +1040,7 @@ void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::
 }
 
 
-void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string*>& character_histories)
+void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string*>& character_histories, bool set_amb_char_data)
 {
     
     size_t node_index = node.getIndex();
@@ -1155,10 +1157,10 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
     {
         // the last time slice of the branch will be the observed state
         
-        const AbstractHomologousDiscreteCharacterData& data = static_cast<TreeDiscreteCharacterData*>(this->value)->getCharacterData();
-        const AbstractDiscreteTaxonData& taxon_data = data.getTaxonData( node.getName() );
+        AbstractHomologousDiscreteCharacterData& data = static_cast<TreeDiscreteCharacterData*>(this->value)->getCharacterData();
+        AbstractDiscreteTaxonData& taxon_data = data.getTaxonData( node.getName() );
         
-        const DiscreteCharacterState &char_state = taxon_data.getCharacter(0);
+        DiscreteCharacterState &char_state = taxon_data.getCharacter(0);
         size_t new_state = current_state;
         
         if ( char_state.isAmbiguous() == false )
@@ -1169,6 +1171,11 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         {
             // use the simulated state
             new_state = current_state;
+            if (set_amb_char_data == true)
+            {
+                // overwrite the character data 
+                char_state.setStateByIndex(new_state);
+            }
         }
         
         // keep track of rates in this interval so we can calculate per branch averages of each rate
@@ -1369,8 +1376,8 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         average_extinction[node_index] = total_extinction_rate / num_dts;
         
         // recurse towards tips
-        recursivelyDrawStochasticCharacterMap(left, l, character_histories);
-        recursivelyDrawStochasticCharacterMap(right, r, character_histories);
+        recursivelyDrawStochasticCharacterMap(left, l, character_histories, set_amb_char_data);
+        recursivelyDrawStochasticCharacterMap(right, r, character_histories, set_amb_char_data);
     }
 }
 
@@ -1660,7 +1667,35 @@ void StateDependentSpeciationExtinctionProcess::redrawValue( void )
     {
         bool success = false;
 
-        if ( condition_on_tip_states == true && static_cast<TreeDiscreteCharacterData *>(this->value)->hasCharacterData() == true )
+        if ( condition_on_tree == true && value->getNumberOfTips() > 0 )
+        {
+            // simulate a character history conditioned on the observed tree
+
+            // make character data objects -- all unknown/missing
+            std::vector<string> tips = value->getTipNames();
+            HomologousDiscreteCharacterData<NaturalNumbersState> *tip_data = new HomologousDiscreteCharacterData<NaturalNumbersState>();
+            for (size_t i = 0; i < tips.size(); i++)
+            {
+                DiscreteTaxonData<NaturalNumbersState> this_tip_data = DiscreteTaxonData<NaturalNumbersState>(tips[i]);
+                NaturalNumbersState state = NaturalNumbersState(0, num_states);
+                state.setState("?");
+                this_tip_data.addCharacter(state);
+                tip_data->addTaxonData(this_tip_data);
+            }
+            static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData(tip_data);
+           
+            // simulate character history over the new tree
+            size_t num_nodes = value->getNumberOfNodes();
+            if (num_nodes > 2)
+            {
+                std::vector<std::string*> character_histories(num_nodes);
+                drawStochasticCharacterMap(character_histories, true);
+            }
+            static_cast<TreeDiscreteCharacterData*>(this->value)->setTimeInStates(time_in_states);
+
+            success = true;
+        }
+        else if ( condition_on_tip_states == true && static_cast<TreeDiscreteCharacterData *>(this->value)->hasCharacterData() == true )
         {
             success = simulateTreeConditionedOnTips(attempts);
         }
