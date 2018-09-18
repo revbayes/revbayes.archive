@@ -830,6 +830,43 @@ double RevBayesCore::TreeUtilities::getMeanInverseES(const Tree &t, const Abstra
 }
 
 
+std::vector<double> RevBayesCore::TreeUtilities::getInverseES(const Tree &t)
+{
+    if (t.isRooted() == false)
+    {
+        throw RbException("Mean inverse ES can only be calculated on rooted trees.");
+    }
+
+    std::vector<double> inverse_es;
+
+    // calculate equal splits (ES) measure for each tip
+    for (size_t i = 0; i < t.getNumberOfTips(); i++)
+    {
+        double tip_es = 0;
+        size_t node_index = t.getTipNode(i).getIndex();
+
+        // traverse from tip to root
+        double depth = 1;
+        while (true)
+        {
+            if (t.getNode(node_index).isRoot() == true)
+            {
+                break;
+            }
+            tip_es += t.getNode(node_index).getBranchLength() * (1 / pow(2, depth - 1));
+            node_index = t.getNode(node_index).getParent().getIndex();
+            depth++;
+        }
+        if (tip_es != 0)
+        {
+            inverse_es.push_back(1/tip_es);
+        }
+    }
+
+    return inverse_es;
+}
+
+
 /* 
  * Returns the Parsimoniously Same State Paths (PSSP). This is the set of branch lengths 
  * from clades parsimoniously reconstructed to have the same state. Given (((A,B),C),(D,E)), if A, B, 
@@ -1163,3 +1200,27 @@ double RevBayesCore::TreeUtilities::calculateMNTD(const Tree &t, const AbstractH
     }
     return 0.0;
 }
+
+
+std::vector<double> RevBayesCore::TreeUtilities::calculateEDR(Tree &t)
+{
+    TopologyNode node = t.getRoot();
+    std::vector<double> ages = std::vector<double>(t.getNumberOfNodes(), 0.0);
+    TreeUtilities::getAges(&t, &node, ages);
+    std::sort(ages.begin(), ages.end());
+
+    std::vector<double> edr;
+    double time = 0.0;
+    size_t n = t.getNumberOfTips();
+    for (size_t i = 0; i < ages.size(); ++i)
+    {
+        if (ages[i] > 0)
+        {
+            edr.push_back(n * (ages[i] - time));
+            time = ages[i];
+            --n;
+        }
+    }
+    return edr;
+}
+      

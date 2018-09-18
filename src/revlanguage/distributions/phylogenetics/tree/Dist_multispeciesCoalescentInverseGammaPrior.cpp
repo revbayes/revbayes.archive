@@ -212,50 +212,31 @@ std::vector<std::string> Dist_multispeciesCoalescentInverseGammaPrior::getHelpAu
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_multispeciesCoalescentInverseGammaPrior::getHelpDescription(void) const
+std::string Dist_multispeciesCoalescentInverseGammaPrior::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Multispecies coalescent distribution describing how gene trees can be generated from within a species tree given effective population sizes. Requires an ultrametric species tree, parameters of an inverse gamma prior on effective population sizes, and taxa with species and individual names." );
+    std::string description = "Multispecies coalescent distribution describing how gene trees can be generated from within a species tree given effective population sizes. Requires an ultrametric species tree, parameters of an inverse gamma prior on effective population sizes, and taxa with species and individual names.";
 
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_multispeciesCoalescentInverseGammaPrior::getHelpDetails(void) const
+std::string Dist_multispeciesCoalescentInverseGammaPrior::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
+    std::string details = "";
+    details += "The species tree must be ultrametric.\n";
 
-    std::string details_1 = "";
-    details_1 += "The species tree must be ultrametric.";
+    details += "Parameters of an inverse gamma prior on effective population sizes must be provided.\n";
 
-    details.push_back( details_1 );
+    details += "This distribution uses a conjugate prior on effective population sizes.";
 
-    std::string details_2 = "";
-    details_2 += "Parameters of an inverse gamma prior on effective population sizes must be provided.";
+    details += " As a consequence, effective population sizes are integrated out and treated as nuisance parameters.\n\n";
 
-    details.push_back( details_2 );
-
-    std::string details_3 = "";
-    details_3 += "This distribution uses a conjugate prior on effective population sizes.";
-
-    details.push_back( details_3 );
-
-    std::string details_4 = "";
-    details_4 += "As a consequence, effective population sizes are integrated out and treated as nuisance parameters.";
-
-    details.push_back( details_4 );
-
-    std::string details_5 = "";
-    details_5 += "If you are interested in reconstructing ancestral effective population sizes, use dnMultiSpeciesCoalescent.";
-
-    details.push_back( details_5 );
-
-
+    details += "If you are interested in reconstructing ancestral effective population sizes, use dnMultiSpeciesCoalescent.";
 
     return details;
 }

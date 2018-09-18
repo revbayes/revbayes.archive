@@ -107,7 +107,7 @@ void CovarionFunction::update( void )
                     }
                     else if (initial_org_state == final_org_state)
                     {
-                        rate_matrix[i][j] = switch_rates->getValue()[initial_category][initial_org_state];
+                        rate_matrix[i][j] = switch_rates->getValue()[initial_category][final_category];
                     }
                 }
             }

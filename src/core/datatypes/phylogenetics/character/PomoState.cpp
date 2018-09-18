@@ -212,6 +212,14 @@ void PomoState::populateWeightedStatesForMonoallelicState(int id1, int sum) {
     throw RbException( "Pomo string state not correct. We found "+ id1  );
   }
 
+  for (size_t i =0; i < weights_.size(); ++i) {
+    if (weights_[i] < 1e-8) {
+      weights_[i] = 1e-8;
+    }
+  //    std::cout << weights_[i] << " ";
+  }
+
+
   return;
 }
 
@@ -272,6 +280,7 @@ void PomoState::setState(const std::string &symbol)
         }
         else if ( count == 2 ) //biallelic state
         {
+          std::cout << "BIALLELIC STATE" <<std::endl;
           int basicIndex = 4;
           if (id1==0) {
             if (id2 == 1) {
@@ -310,38 +319,50 @@ void PomoState::setState(const std::string &symbol)
             throw RbException( "Pomo string state not correct. We found "+ symbol  );
           }
 
+          std::cout << "basicIndex: "<<basicIndex <<std::endl;
+
+
           size_t situation = (id1+1)*2+(id2+1);
 
           state.clear();
           // index corresponds to the closest place where the pomo state is.
-          // In case the virtual population size is inferior to the counts in the state,
+          // In case the virtual population size is inferior to the counts in the state, or the reverse,
           // we have to do some maths.
           // We have to get the closest numbers to the observed counts.
           // Basically, the lowest count has to be >=1, and as close as possible
           // to the observed count.
-          if (sum > virtualPopulationSize_) {
+          if (sum != virtualPopulationSize_) {
             double obs_proportion = (double) (sum - num) / (double)sum ;
             size_t corrected_num = 0;
-            if  (obs_proportion <= 1.0) {
+            std::cout<< "obs_proportion*virtualPopulationSize_: " << obs_proportion*virtualPopulationSize_ <<std::endl;
+            // A minima we decide there must be at least
+            // one sample from the least frequent allele
+            if  (obs_proportion*virtualPopulationSize_ <= 1.0) {
               corrected_num = virtualPopulationSize_ - 1;
             }
             else {
-              corrected_num = virtualPopulationSize_ - (size_t)round(obs_proportion);
+              corrected_num = virtualPopulationSize_ - (size_t)round(obs_proportion*virtualPopulationSize_);
             }
+            std::cout << "corrected_num: " << corrected_num << " vs num: " << num << std::endl;
             index = basicIndex + virtualPopulationSize_ - corrected_num - 1;
           }
           else {
             index = basicIndex + virtualPopulationSize_ - num - 1;
           }
+          std::cout << "index: "<<index <<std::endl;
+
           //index = 3 + id1*virtualPopulationSize_ + id2 ;
           // Let's try Pomo state averaging.
           // Basically all cells in the weight matrix that contain only id1, only id2, or a combination of both should have a non-zero weight.
           double n = (double)sum;
           double p = (double)num/(double)sum;
 
-          std::vector<double> prob (virtualPopulationSize_ + 1);
-          for (size_t j =0; j <= virtualPopulationSize_; ++j) {
+          std::vector<double> prob (virtualPopulationSize_ );
+          for (size_t j =0; j <= virtMinus1; ++j) {
             prob[j] = RbMath::choose(sum, num) *  pow( ( (double)j/double(virtualPopulationSize_)) , num) * pow( ( (double)(virtualPopulationSize_ - j)/double(virtualPopulationSize_) ) , (double)(sum-num)) ;
+            if (prob[j] < 1e-8) {
+              prob[j] = 0.0;
+            }
             //RbStatistics::Binomial::pdf(n, (double)j/double(virtualPopulationSize_), (double)(virtualPopulationSize_));
           }
 
@@ -376,8 +397,9 @@ void PomoState::setState(const std::string &symbol)
             }
           }
           else if (situation == 10) { //G.T.
-            for (size_t j =0; j < virtualPopulationSize_; ++j) {
+            for (size_t j =0; j < virtMinus1; ++j) {
                 weights_[4 + 5 * virtMinus1 + j] = prob[j+1];
+                std::cout << " at " << 4 + 5 * virtMinus1 + j << " we have : " << prob[j+1] <<std::endl;
                 state.set( 4 + 5 * virtMinus1 + j );
             }
           }
@@ -396,6 +418,12 @@ void PomoState::setState(const std::string &symbol)
       }
     index_single_state = index;
     num_observed_states = 1;
+
+    std::cout << "stringvalue: " << stringValue_ <<std::endl;
+    for (size_t i =0; i < weights_.size(); ++i) {
+      std::cout << weights_[i] << " ";
+    }
+    std::cout << "\n\n "<<std::endl;
 }
 
 

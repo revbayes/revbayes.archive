@@ -52,8 +52,8 @@ namespace RevLanguage {
     protected:
         
         std::vector<std::string>                        getHelpAuthor(void) const;                                  //!< Get the author(s) of this function
-        std::vector<std::string>                        getHelpDescription(void) const;                             //!< Get the description for this function
-        std::vector<std::string>                        getHelpDetails(void) const;                                 //!< Get the more detailed description of the function
+        std::string                                     getHelpDescription(void) const;                             //!< Get the description for this function
+        std::string                                     getHelpDetails(void) const;                                 //!< Get the more detailed description of the function
         std::string                                     getHelpExample(void) const;                                 //!< Get an executable and instructive example
         std::vector<RevBayesCore::RbHelpReference>      getHelpReferences(void) const;                              //!< Get some references/citations for this function
         std::vector<std::string>                        getHelpSeeAlso(void) const;                                 //!< Get suggested other functions
@@ -181,13 +181,12 @@ std::vector<std::string> RevLanguage::Func_seq<valType>::getHelpAuthor(void) con
  * Get the (brief) description for this function
  */
 template <typename valType>
-std::vector<std::string> RevLanguage::Func_seq<valType>::getHelpDescription(void) const
+std::string RevLanguage::Func_seq<valType>::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Create a sequence of values separate by a given step-size." );
+    std::string description = "Create a sequence of values separate by a given step-size.";
     
-    return descriptions;
+    return description;
 }
 
 
@@ -195,11 +194,10 @@ std::vector<std::string> RevLanguage::Func_seq<valType>::getHelpDescription(void
  * Get the more detailed description of the function
  */
 template <typename valType>
-std::vector<std::string> RevLanguage::Func_seq<valType>::getHelpDetails(void) const
+std::string RevLanguage::Func_seq<valType>::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    details.push_back( "The 'seq' function create a sequence of values, starting with the initial value and then adding the step-size to it until the value reaches the 'to'-value." );
+    std::string details =  "The 'seq' function create a sequence of values, starting with the initial value and then adding the step-size to it until the value reaches the 'to'-value." ;
     
     return details;
 }

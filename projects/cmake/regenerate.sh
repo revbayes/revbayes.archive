@@ -24,11 +24,12 @@ cmake .
 make
 
 Command line options are:
--h | -help                      : print this help and exit.
+-h                              : print this help and exit.
 -boost          <true|false>    : true (re)compiles boost libs, false dont. Defaults to true.
 -mac            <true|false>    : set to true if you are building for a OS X - compatible with 10.6 and higher. Defaults to false.
 -win            <true|false>    : set to true if you are building on a Windows system. Defaults to false.
 -mpi            <true|false>    : set to true if you want to build the MPI version. Defaults to false.
+-help           <true|false>    : Build the help generator. Defaults to false.
 '
 # secret test option
 # -jupyter        <true|false>    : set to true if you want ot buikd the jupyter version. Defaults to false.
@@ -49,7 +50,7 @@ done
 if [ "$boost" = "true" ]
 then
 echo 'Building boost libraries'
-echo 'you can turn this of with argument "-boost false"'
+echo 'you can turn this off with argument "-boost false"'
 
 cd ../../boost_1_60_0
 rm ./project-config.jam*  # clean up from previous runs
@@ -86,10 +87,10 @@ project(RevBayes)
 
 # Default compiler flags
 #if (WIN32)
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -static -msse -msse2 -msse3")
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -static -msse -msse2 -msse3 -Wall -Wno-sign-compare")
 #    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg -static")
 #else ()
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -msse -msse2 -msse3 -stdlib=libstdc++")
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -msse -msse2 -msse3 -stdlib=libstdc++ -Wall -Wno-sign-compare")
 #    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg")
 #endif ()
 
@@ -98,7 +99,11 @@ project(RevBayes)
 if [ "$debug" = "true" ]
 then
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -Wall -msse -msse2 -msse3")
+# -Woverloaded-virtual has some false-positives with GCC
+# We should ultimiately remove -Wno-reorder -Wno-unused-variable -Wno-unused-but-set-variable
+# But there are so many of them we cant see the really bad warnings.
+# So, disable those warnings for now.
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -Wall -msse -msse2 -msse3 -Wno-sign-compare -Wno-reorder -Wno-unused-variable -Wno-unused-but-set-variable")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -Wall")
 '  >> "$HERE/CMakeLists.txt"
 elif [ "$mac" = "true" ]
@@ -160,6 +165,7 @@ set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../src)
 
 
 SET(BOOST_ROOT ../../../boost_1_60_0)
+SET(BOOST_LIBRARY ../../../boost_1_60_0/stage/lib)
 SET(Boost_USE_STATIC_RUNTIME true)
 SET(Boost_USE_STATIC_LIBS ON)
 find_package(Boost
@@ -181,7 +187,7 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 # TODO Split these up based on sub-package dependency
 INCLUDE_DIRECTORIES(' >> "$HERE/CMakeLists.txt"
-find libs core revlanguage -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
+find libs core revlanguage help -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
 echo ' ${Boost_INCLUDE_DIR} )
 
 
@@ -200,7 +206,7 @@ add_subdirectory(revlanguage)
 if [ "$help" = "true" ]
 then
 echo '
-add_subdirectory(revlanguage)
+add_subdirectory(help)
 ' >> $HERE/CMakeLists.txt
 fi
 
@@ -215,10 +221,10 @@ set_target_properties(rb-mpi PROPERTIES PREFIX "../")
 elif [ "$help" = "true" ]
 then
 echo '
-add_executable(rb ${PROJECT_SOURCE_DIR}/tool/help/HtmlHelpGenerator.cpp)
+add_executable(rb-help ${PROJECT_SOURCE_DIR}/help/YAMLHelpGenerator.cpp)
 
-target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
-set_target_properties(rb PROPERTIES PREFIX "../")
+target_link_libraries(rb-help rb-parser rb-core libs help_yaml ${Boost_LIBRARIES})
+set_target_properties(rb-help PROPERTIES PREFIX "../")
 ' >> $HERE/CMakeLists.txt
 elif [ "$jupyter" = "true" ]
 then
@@ -284,7 +290,7 @@ TARGET_LINK_LIBRARIES(RevStudio rb-cmd-lib rb-parser rb-core libs ${Boost_LIBRAR
 ' >> $HERE/CMakeLists.txt
 else
 echo '
-TARGET_LINK_LIBRARIES(RevStudio rb-parser rb-core libs rb-cmd-lib ${Boost_LIBRARIES} ${GTK_LIBRARIES})
+TARGET_LINK_LIBRARIES(RevStudio rb-cmd-lib rb-parser rb-core libs ${Boost_LIBRARIES} ${GTK_LIBRARIES})
 ' >> $HERE/CMakeLists.txt
 fi
 
@@ -320,6 +326,14 @@ find libs | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/libs/CM
 echo ')
 add_library(libs ${LIBS_FILES})'  >> "$HERE/libs/CMakeLists.txt"
 
+if [ ! -d "$HERE/help" ]; then
+mkdir "$HERE/help"
+fi
+echo 'set(HELP_FILES' > "$HERE/help/CMakeLists.txt"
+find help | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/help/CMakeLists.txt"
+echo ')
+add_library(help_yaml ${HELP_FILES})'  >> "$HERE/help/CMakeLists.txt"
+
 if [ ! -d "$HERE/core" ]; then
 mkdir "$HERE/core"
 fi
@@ -335,4 +349,3 @@ echo 'set(PARSER_FILES' > "$HERE/revlanguage/CMakeLists.txt"
 find revlanguage | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/revlanguage/CMakeLists.txt"
 echo ')
 add_library(rb-parser ${PARSER_FILES})'  >> "$HERE/revlanguage/CMakeLists.txt"
-

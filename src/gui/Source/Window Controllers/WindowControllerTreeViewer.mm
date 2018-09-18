@@ -450,6 +450,8 @@
             return value;
             }
         }
+    CGFloat v; // to kill an obnoxious compiler error
+    return v;
 }
 
 @end

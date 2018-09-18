@@ -8,6 +8,7 @@
 #include <cstring>
 #include <sys/stat.h>
 #include <cstdlib>
+#include <algorithm>
 
 #ifndef RB_XCODE
 #include <boost/filesystem.hpp>

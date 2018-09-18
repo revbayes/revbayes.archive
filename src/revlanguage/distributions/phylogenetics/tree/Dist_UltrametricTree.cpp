@@ -6,6 +6,7 @@
 #include "RlDistributionMemberFunction.h"
 #include "ModelVector.h"
 #include "RlTimeTree.h"
+#include "RlTrace.h"
 #include "RlTraceTree.h"
 #include "UltrametricTreeDistribution.h"
 
@@ -58,9 +59,15 @@ RevBayesCore::UltrametricTreeDistribution* Dist_UltrametricTree::createDistribut
     RevBayesCore::TypedDagNode<double>* ra                      = static_cast<const RealPos &>( root_age->getRevObject() ).getDagNode();
 
     const RevBayesCore::TraceTree& tt                           = static_cast<const TraceTree &>( trees->getRevObject() ).getValue();
-    
+
+    RevBayesCore::Trace<double>* nt = NULL;
+    if( density->getRevObject() != RevNullObject::getInstance() )
+    {
+        nt = &static_cast<const Trace &>( density->getRevObject() ).getValue();
+    }
+
     // create the internal distribution object
-    RevBayesCore::UltrametricTreeDistribution* dist = new RevBayesCore::UltrametricTreeDistribution(tp, rp, ra, tt);
+    RevBayesCore::UltrametricTreeDistribution* dist = new RevBayesCore::UltrametricTreeDistribution(tp, rp, ra, tt, nt);
     
     
     return dist;
@@ -161,6 +168,7 @@ const MemberRules& Dist_UltrametricTree::getParameterRules(void) const
         member_rules.push_back( new ArgumentRule( "ratePrior", TypedDistribution<RealPos>::getClassTypeSpec(), "The prior distribution for the branch rates.",   ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         member_rules.push_back( new ArgumentRule( "rootAge", RealPos::getClassTypeSpec(), "The root age variable.",   ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         member_rules.push_back( new ArgumentRule( "trees", TraceTree::getClassTypeSpec(), "The trace of tree samples.",   ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        member_rules.push_back( new ArgumentRule( "density", Trace::getClassTypeSpec(), "Optional trace of probability density values for each tree.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         rules_set = true;
     }
@@ -209,6 +217,10 @@ void Dist_UltrametricTree::setConstParameter(const std::string& name, const RevP
     else if ( name == "rootAge" )
     {
         root_age = var;
+    }
+    else if ( name == "density" )
+    {
+        density = var;
     }
     else
     {
