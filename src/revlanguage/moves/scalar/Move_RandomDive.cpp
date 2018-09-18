@@ -10,7 +10,7 @@
 #include "RealPos.h"
 #include "RevObject.h"
 #include "RandomDiveProposal.h"
-#include "LogRandomDiveProposal.h"
+#include "HalfRandomDiveProposal.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -70,7 +70,7 @@ void Move_RandomDive::constructInternalObject( void )
     {
         RevBayesCore::TypedDagNode<double>* tmp = static_cast<const RealPos &>( x->getRevObject() ).getDagNode();
         RevBayesCore::StochasticNode<double> *n = dynamic_cast<RevBayesCore::StochasticNode<double> *>( tmp );
-        p = new RevBayesCore::LogRandomDiveProposal(n,d,r);
+        p = new RevBayesCore::HalfRandomDiveProposal(n,d,r);
     }
     else
     {

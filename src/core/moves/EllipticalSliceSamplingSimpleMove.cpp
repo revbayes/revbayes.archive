@@ -111,8 +111,6 @@ class slice_function
 {
   std::vector<StochasticNode<double> *> variables;
   double lHeat;
-  double pHeat;
-  double prHeat;
   RbOrderedSet<DagNode*> affectedNodes;
   int num_evals;
 
@@ -138,7 +136,7 @@ public:
     }
     
       // 3. exponentiate with the chain heat
-    double lnPosterior = pHeat * (lHeat * lnLikelihood + prHeat * lnPrior);
+    double lnPosterior = lHeat * lnLikelihood + lnPrior;
 
     return lnPosterior;
   }
@@ -182,11 +180,9 @@ public:
       return vals;
   }
 
-    slice_function(std::vector<StochasticNode<double> *> n, double pr, double l, double p)
+    slice_function(std::vector<StochasticNode<double> *> n, double l)
     :variables(n),
      lHeat(l),
-     pHeat(p),
-     prHeat(pr),
      num_evals(0)
   {
       for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
@@ -199,8 +195,12 @@ public:
 
 void EllipticalSliceSamplingSimpleMove::performMcmcMove( double prHeat, double lHeat, double pHeat )
 {
+    if ( prHeat != 1 || pHeat != 1)
+    {
+        throw(RbException("Elliptical slice sampling moves are invalid with heated priors or posteriors."));
+    }
 
-    slice_function lnL(variables, prHeat, lHeat, pHeat);
+    slice_function lnL(variables, lHeat);
 
     // Current values
     std::vector<double> f = lnL.current_value();
