@@ -79,6 +79,12 @@ const std::string& MultipleElementScaleProposal::getProposalName( void ) const
 }
 
 
+double MultipleElementScaleProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -161,10 +167,14 @@ void MultipleElementScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void MultipleElementScaleProposal::printParameterSummary(std::ostream &o) const
+void MultipleElementScaleProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
@@ -205,6 +215,12 @@ void MultipleElementScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN
         }
     }
     
+}
+
+
+void MultipleElementScaleProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

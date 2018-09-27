@@ -158,7 +158,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
 
         for (size_t i = 0; i < characters.size(); i++)
         {
-//            if (i != 0) ss << ",";
+            if (i != 0) ss << ",";
             ss << static_cast<CharacterEventDiscrete*>(characters[i])->getState();
         }
     }
@@ -167,7 +167,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
         std::vector<CharacterEvent*> characters = bh.getParentCharacters();
         for (size_t i = 0; i < characters.size(); i++)
         {
-//            if (i != 0) ss << ",";
+            if (i != 0) ss << ",";
             ss << static_cast<CharacterEventDiscrete*>(characters[i])->getState();
         }
     }
@@ -328,12 +328,12 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildExtend
         characterStream << "index=" << n->getIndex();
 
         // character history
-        characterStream << ",nd=" << buildCharacterHistoryString(n,"child") << "";
-        characterStream << ",pa=" << buildCharacterHistoryString(n,"parent") << "";
+        characterStream << ",nd={" << buildCharacterHistoryString(n,"child") << "}";
+        characterStream << ",pa={" << buildCharacterHistoryString(n,"parent") << "}";
         if (!n->isTip())
         {
-            characterStream << ",ch0=" << buildCharacterHistoryString(&n->getChild(0),"parent") << "";
-            characterStream << ",ch1=" << buildCharacterHistoryString(&n->getChild(1),"parent") << "";
+            characterStream << ",ch0={" << buildCharacterHistoryString(&n->getChild(0),"parent") << "}";
+            characterStream << ",ch1={" << buildCharacterHistoryString(&n->getChild(1),"parent") << "}";
 
 //            characterStream << ",&cs=" << buildCharacterHistoryString(&n->getChild(0),"clado_state");
 //            characterStream << ",&bs=" << buildCharacterHistoryString(&n->getChild(0),"bud_state");
@@ -579,23 +579,29 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::monitor(unsigned l
 
 /** open the file stream for printing */
 template<class charType>
-void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::openStream(bool reopen) {
+void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::openStream(bool reopen)
+{
+    
+    RbFileManager fm = RbFileManager(filename);
+    fm.createDirectoryForFile();
     
     // open the stream to the file
     if (append)
-        outStream.open( filename.c_str(), std::fstream::out | std::fstream::app);
+        outStream.open( fm.getFullFileName().c_str(), std::fstream::out | std::fstream::app);
     else
-        outStream.open( filename.c_str(), std::fstream::out);
+        outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
 }
 
 /** Print header for monitored values */
 template<class charType>
-void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::printHeader() {
+void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::printHeader()
+{
 
     // print one column for the iteration number
     outStream << "Iter";
 
-    if ( posterior ) {
+    if ( posterior )
+    {
         // add a separator before every new element
         outStream << separator;
         outStream << "Posterior";

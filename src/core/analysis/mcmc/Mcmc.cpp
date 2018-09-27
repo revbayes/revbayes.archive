@@ -43,6 +43,7 @@ Mcmc::Mcmc(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &m
     chain_active( true ),
     chain_likelihood_heat( 1.0 ),
     chain_posterior_heat( 1.0 ),
+    chain_prior_heat( 1.0 ),
     chain_idx( 0 ),
     model( m.clone() ),
     monitors( mons ),
@@ -53,6 +54,23 @@ Mcmc::Mcmc(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &m
 {
     // create an independent copy of the model, monitors and moves
     replaceDag(mvs,mons);
+    
+    tuningInfo ti;
+    ti.num_tried_current_period = 0;
+    ti.num_tried_total = 0;
+    ti.num_accepted_current_period = 0;
+    ti.num_accepted_total = 0;
+    ti.tuning_parameter = RbConstants::Double::neginf;
+    
+    moves_tuningInfo = std::vector<tuningInfo> (moves.size(), ti);
+    for (size_t i = 0; i < moves.size(); ++i)
+    {
+        moves_tuningInfo[i].num_tried_current_period = moves[i].getNumberTriedCurrentPeriod();
+        moves_tuningInfo[i].num_tried_total = moves[i].getNumberTriedTotal();
+        moves_tuningInfo[i].num_accepted_current_period = moves[i].getNumberAcceptedCurrentPeriod();
+        moves_tuningInfo[i].num_accepted_total = moves[i].getNumberAcceptedTotal();
+        moves_tuningInfo[i].tuning_parameter = moves[i].getMoveTuningParameter();
+    }
     
     initializeSampler();
     initializeMonitors();
@@ -69,6 +87,7 @@ Mcmc::Mcmc(const Mcmc &m) : MonteCarloSampler(m),
     chain_active( m.chain_active ),
     chain_likelihood_heat( m.chain_likelihood_heat ),
     chain_posterior_heat( m.chain_posterior_heat ),
+    chain_prior_heat( m.chain_prior_heat ),
     chain_idx( m.chain_idx ),
     model( m.model->clone() ),
     monitors( m.monitors ),
@@ -85,6 +104,8 @@ Mcmc::Mcmc(const Mcmc &m) : MonteCarloSampler(m),
     
     // create an independent copy of the model, monitors and moves
     replaceDag(mvs,mons);
+    
+    moves_tuningInfo = m.moves_tuningInfo;
     
     initializeSampler();
     initializeMonitors();
@@ -240,6 +261,15 @@ double Mcmc::getChainPosteriorHeat(void) const
 
 
 /**
+ * Get the heat of the prior of this chain.
+ */
+double Mcmc::getChainPriorHeat(void) const
+{
+    return chain_prior_heat;
+}
+
+
+/**
  * Get the index of this chain.
  */
 size_t Mcmc::getChainIndex(void) const
@@ -310,6 +340,38 @@ RbVector<Monitor>& Mcmc::getMonitors(void)
 RbVector<Move>& Mcmc::getMoves(void)
 {
     return moves;
+}
+
+
+std::vector<Mcmc::tuningInfo> Mcmc::getMovesTuningInfo(void)
+{
+    
+    if (moves_tuningInfo.size() != moves.size())
+    {
+        throw RbException( "The number of moves does not match the length of tuning information structures." );
+    }
+    
+    // iterate over the moves
+    for (size_t i = 0; i < moves.size(); ++i)
+    {
+        moves_tuningInfo[i].num_tried_current_period = moves[i].getNumberTriedCurrentPeriod();
+        moves_tuningInfo[i].num_tried_total = moves[i].getNumberTriedTotal();
+        moves_tuningInfo[i].num_accepted_current_period = moves[i].getNumberAcceptedCurrentPeriod();
+        moves_tuningInfo[i].num_accepted_total = moves[i].getNumberAcceptedTotal();
+        
+        double tmp_tuningParameter = moves[i].getMoveTuningParameter();
+        
+        if ((std::isnan(moves_tuningInfo[i].tuning_parameter) == true && std::isnan(tmp_tuningParameter) == false) || (std::isnan(moves_tuningInfo[i].tuning_parameter) == false && std::isnan(tmp_tuningParameter) == true))
+        {
+            throw RbException( "The tunability of some moves changed." );
+        }
+        else if (std::isnan(tmp_tuningParameter) == false)
+        {
+            moves_tuningInfo[i].tuning_parameter = moves[i].getMoveTuningParameter();
+        }
+    }
+    
+    return moves_tuningInfo;
 }
 
 
@@ -556,7 +618,7 @@ void Mcmc::nextCycle(bool advance_cycle)
         Move& the_move = schedule->nextMove( generation );
 
         // Perform the move
-        the_move.performMcmcStep( chain_likelihood_heat, chain_posterior_heat );
+        the_move.performMcmcStep( chain_prior_heat, chain_likelihood_heat, chain_posterior_heat );
         
     }
     
@@ -571,20 +633,24 @@ void Mcmc::nextCycle(bool advance_cycle)
 
 
 
-void Mcmc::printOperatorSummary(void) const
+void Mcmc::printOperatorSummary(bool current_period)
 {
     
-    
-    // printing the moves summary
-    std::cout << std::endl;
-    std::cout << "                  Name                  | Param              |  Weight  |  Tried   | Accepted | Acc. Ratio| Parameters" << std::endl;
-    std::cout << "===============================================================================================================================" << std::endl;
-    for (RbConstIterator<Move> it = moves.begin(); it != moves.end(); ++it)
+    if ( process_active == true )
     {
-        it->printSummary(std::cout);
+        // printing the moves summary
+        std::cout << std::endl;
+        std::cout << "                  Name                  | Param              |  Weight  |  Tried   | Accepted | Acc. Ratio| Parameters" << std::endl;
+        std::cout << "===============================================================================================================================" << std::endl;
+        for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
+        {
+            it->printSummary(std::cout, current_period);
+        }
+        
+        std::cout << std::endl;
+        std::cout.flush();
     }
     
-    std::cout << std::endl;
 }
 
 
@@ -791,7 +857,7 @@ void Mcmc::setChainLikelihoodHeat(double h)
 
 /**
  * Set the heat of the likelihood of the current chain.
- * This heat is used in posterior posterior MCMC algorithms to
+ * This heat is used in power posterior MCMC algorithms to
  * heat the likelihood
  * The heat is passed to the moves for the accept-reject mechanism.
  */
@@ -809,6 +875,12 @@ void Mcmc::setLikelihoodHeat(double h)
 void Mcmc::setChainPosteriorHeat(double h)
 {
     chain_posterior_heat = h;
+}
+
+
+void Mcmc::setChainPriorHeat(double h)
+{
+    chain_prior_heat = h;
 }
 
 
@@ -855,6 +927,37 @@ void Mcmc::setModel( Model *m, bool redraw )
 void Mcmc::setMoves(const RbVector<Move> &mvs)
 {
     moves = mvs;
+}
+
+
+void Mcmc::setMovesTuningInfo(const std::vector<tuningInfo> &mvs_ti)
+{
+    moves_tuningInfo = mvs_ti;
+    
+    if (moves_tuningInfo.size() != moves.size())
+    {
+        throw RbException( "The number of moves does not match the length of tuning information structures." );
+    }
+    
+    for (size_t i = 0; i < moves.size(); ++i)
+    {
+        moves[i].setNumberTriedCurrentPeriod(moves_tuningInfo[i].num_tried_current_period);
+        moves[i].setNumberTriedTotal(moves_tuningInfo[i].num_tried_total);
+        moves[i].setNumberAcceptedCurrentPeriod(moves_tuningInfo[i].num_accepted_current_period);
+        moves[i].setNumberAcceptedTotal(moves_tuningInfo[i].num_accepted_total);
+        
+        double tmp_tuningParameter = moves[i].getMoveTuningParameter();
+        
+        if ((std::isnan(moves_tuningInfo[i].tuning_parameter) == true && std::isnan(tmp_tuningParameter) == false) || (std::isnan(moves_tuningInfo[i].tuning_parameter) == false && std::isnan(tmp_tuningParameter) == true))
+        {
+            throw RbException( "The tunability of some moves changed." );
+        }
+        else if (std::isnan(tmp_tuningParameter) == false)
+        {
+            moves[i].setMoveTuningParameter(moves_tuningInfo[i].tuning_parameter);
+        }
+    }
+    
 }
 
 

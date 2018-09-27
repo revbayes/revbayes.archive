@@ -63,7 +63,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::resizeLikelihoodVectors( void 
     activeLikelihoodOffset      =  num_nodes*nodeOffset;
 
     // only do this if we are in MCMC mode. This will safe memory
-    if ( inMcmcMode == true )
+    if ( in_mcmc_mode == true )
     {
         // we resize the partial likelihood vectors to the new dimensions
         delete [] partialLikelihoods;

@@ -47,7 +47,7 @@ namespace RevLanguage {
         WorkspaceToCoreWrapperObject(void);
         WorkspaceToCoreWrapperObject(rbType *v);
         WorkspaceToCoreWrapperObject(const WorkspaceToCoreWrapperObject &v);
-                
+        
         rbType*                                             value;
     };
     

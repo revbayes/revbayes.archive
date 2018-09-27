@@ -1,12 +1,12 @@
 //
-//  Mntr_CharacterHistoryTimeInStates.cpp
+//  Mntr_StochasticBranchStateTimes.cpp
 //  RevBayes_development_branch
 //
 //  Created by will freyman on 12/13/16.
 //  Copyright (c) 2016 will freyman. All rights reserved.
 //
 
-#include "Mntr_CharacterHistoryTimeInStates.h"
+#include "Mntr_StochasticBranchStateTimes.h"
 
 #include "AbstractCharacterData.h"
 #include "ArgumentRule.h"
@@ -29,7 +29,7 @@
 using namespace RevLanguage;
 
 
-Mntr_CharacterHistoryTimeInStates::Mntr_CharacterHistoryTimeInStates(void) : Monitor()
+Mntr_StochasticBranchStateTimes::Mntr_StochasticBranchStateTimes(void) : Monitor()
 {
     
 }
@@ -41,14 +41,14 @@ Mntr_CharacterHistoryTimeInStates::Mntr_CharacterHistoryTimeInStates(void) : Mon
  *
  * \return A new copy of the process.
  */
-Mntr_CharacterHistoryTimeInStates* Mntr_CharacterHistoryTimeInStates::clone(void) const
+Mntr_StochasticBranchStateTimes* Mntr_StochasticBranchStateTimes::clone(void) const
 {
     
-    return new Mntr_CharacterHistoryTimeInStates(*this);
+    return new Mntr_StochasticBranchStateTimes(*this);
 }
 
 
-void Mntr_CharacterHistoryTimeInStates::constructInternalObject( void )
+void Mntr_StochasticBranchStateTimes::constructInternalObject( void )
 {
     
     const std::string& file_name      = static_cast<const RlString  &>( filename->getRevObject()           ).getValue();
@@ -64,7 +64,7 @@ void Mntr_CharacterHistoryTimeInStates::constructInternalObject( void )
     sse_process = dynamic_cast<RevBayesCore::StateDependentSpeciationExtinctionProcess*>( &cdbdp_sn->getDistribution() );
     sse_process->setSampleCharacterHistory( true );
     
-    RevBayesCore::CharacterHistoryTimeInStatesMonitor *m = new RevBayesCore::CharacterHistoryTimeInStatesMonitor( cdbdp_sn, (unsigned long)print_gen, file_name, sep );
+    RevBayesCore::StochasticBranchStateTimesMonitor *m = new RevBayesCore::StochasticBranchStateTimesMonitor( cdbdp_sn, (unsigned long)print_gen, file_name, sep );
     m->setAppend( app );
     m->setPrintVersion( wv );
     
@@ -75,10 +75,10 @@ void Mntr_CharacterHistoryTimeInStates::constructInternalObject( void )
 
 
 /** Get Rev type of object */
-const std::string& Mntr_CharacterHistoryTimeInStates::getClassType(void)
+const std::string& Mntr_StochasticBranchStateTimes::getClassType(void)
 {
     
-    static std::string revType = "Mntr_CharacterHistoryTimeInStates";
+    static std::string revType = "Mntr_StochasticBranchStateTimes";
     
     return revType;
     
@@ -86,7 +86,7 @@ const std::string& Mntr_CharacterHistoryTimeInStates::getClassType(void)
 
 
 /** Get class type spec describing type of object */
-const TypeSpec& Mntr_CharacterHistoryTimeInStates::getClassTypeSpec(void)
+const TypeSpec& Mntr_StochasticBranchStateTimes::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
@@ -101,11 +101,11 @@ const TypeSpec& Mntr_CharacterHistoryTimeInStates::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Mntr_CharacterHistoryTimeInStates::getMonitorName( void ) const
+std::string Mntr_StochasticBranchStateTimes::getMonitorName( void ) const
 {
     
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "CharacterHistoryTimeInStates";
+    std::string c_name = "StochasticBranchStateTimes";
     
     return c_name;
     
@@ -113,7 +113,7 @@ std::string Mntr_CharacterHistoryTimeInStates::getMonitorName( void ) const
 
 
 /** Return member rules (no members) */
-const MemberRules& Mntr_CharacterHistoryTimeInStates::getParameterRules(void) const
+const MemberRules& Mntr_StochasticBranchStateTimes::getParameterRules(void) const
 {
     
     static MemberRules monitor_rules;
@@ -137,7 +137,7 @@ const MemberRules& Mntr_CharacterHistoryTimeInStates::getParameterRules(void) co
 
 
 /** Get type spec */
-const TypeSpec& Mntr_CharacterHistoryTimeInStates::getTypeSpec( void ) const
+const TypeSpec& Mntr_StochasticBranchStateTimes::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
@@ -148,16 +148,16 @@ const TypeSpec& Mntr_CharacterHistoryTimeInStates::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void Mntr_CharacterHistoryTimeInStates::printValue(std::ostream &o) const
+void Mntr_StochasticBranchStateTimes::printValue(std::ostream &o) const
 {
     
-    o << "Mntr_CharacterHistoryTimeInStates";
+    o << "Mntr_StochasticBranchStateTimes";
     
 }
 
 
 /** Set a member variable */
-void Mntr_CharacterHistoryTimeInStates::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Mntr_StochasticBranchStateTimes::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "" ) {

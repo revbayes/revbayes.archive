@@ -1385,10 +1385,10 @@ void JointAncestralStateTrace::summarizeCharacterMaps(Tree input_tree, std::stri
     }
     
     // open stream for file output
-    RbFileManager f = RbFileManager(filename);
-    f.createDirectoryForFile();
+    RbFileManager fm = RbFileManager(filename);
+    fm.createDirectoryForFile();
     std::fstream out;
-    out.open( filename.c_str(), std::fstream::out);
+    out.open( fm.getFullFileName().c_str(), std::fstream::out);
     
     // write column headers
     out << "iteration" << separator;

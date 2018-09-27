@@ -12,7 +12,7 @@ FreeSymmetricRateMatrixFunction::FreeSymmetricRateMatrixFunction(const TypedDagN
     double num_off_diag_states = 2*tr->getValue().size();
     double tmp_num_states = 0.5 + sqrt(0.25+num_off_diag_states);
     size_t num_states = size_t( round( tmp_num_states ) );
-    value = new RateMatrix_FreeSymmetric( num_states, r  );
+    value = new RateMatrix_FreeSymmetric( num_states, r, method );
     
     // add the rate and frequency parameters as parents
     addParameter( transition_rates );

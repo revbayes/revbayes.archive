@@ -4,9 +4,9 @@
 #include "BranchHistoryDiscrete.h"
 #include "CharacterEventDiscrete.h"
 #include "DeterministicNode.h"
-#include "HomologousDiscreteCharacterData.h"
 #include "DistributionBinomial.h"
 #include "DistributionPoisson.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "PathRejectionSampleProposal.h"
 #include "Proposal.h"
 #include "RandomNumberFactory.h"
@@ -17,6 +17,7 @@
 #include "StochasticNode.h"
 //#include "TransitionProbability.h"
 #include "TreeChangeEventMessage.h"
+#include "GeneralTreeHistoryCtmc.h"
 #include "TopologyNode.h"
 #include "TypedDagNode.h"
 
@@ -55,13 +56,15 @@ namespace RevBayesCore {
         void                                                        cleanProposal(void);
                 double                                              doProposal(void);                                               //!< Perform proposal
         const std::string&                                          getProposalName(void) const;                                    //!< Get the name of the proposal for summary printing
-        void                                                        printParameterSummary(std::ostream &o) const;                   //!< Print the parameter summary
+        double                                                      getProposalTuningParameter(void) const;
+        void                                                        printParameterSummary(std::ostream &o, bool name_only) const;                   //!< Print the parameter summary
         void                                                        prepareProposal(void);                                          //!< Prepare the proposal
         std::set<size_t>                                            chooseCharactersToSample(double p);
         void                                                        setSampledCharacters(const std::set<size_t>& s);
         double                                                      sampleNodeCharacters(void);                                     //!< Sample the characters at the node
         double                                                      sampleCladogenesisCharacters(void);
         double                                                      sampleRootCharacters(void);                                     //!< Sample the characters at the root
+        void                                                        setProposalTuningParameter(double tp);
         void                                                        setRateGenerator(const TypedDagNode<RateGenerator> *d);         //!< Set the rate generator.
         void                                                        setRateGenerator(const TypedDagNode<RateGeneratorSequence> *d); //!< Set the rate generator.
         void                                                        tune(double r);                                                 //!< Tune the proposal to achieve a better acceptance/rejection ratio
@@ -89,6 +92,7 @@ namespace RevBayesCore {
         std::vector<size_t>                                         storedLeftState;
         std::vector<size_t>                                         storedRightState;
         std::vector<size_t>                                         storedSubrootState;
+        std::string                                                 storedCladogeneticEvent;
         
         TopologyNode*                                               node;
         double                                                      storedLnProb;
@@ -130,7 +134,8 @@ leftTpMatrix(2),
 rightTpMatrix(2),
 lambda(1.0), // for now, lambda always == 1.0
 storedLnProb(0.0),
-proposedLnProb(0.0)
+proposedLnProb(0.0),
+storedCladogeneticEvent("")
 {
     
     addNode( ctmc );
@@ -158,6 +163,7 @@ void RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::cleanProp
     storedLeftState.clear();
     storedRightState.clear();
     storedSubrootState.clear();
+    storedCladogeneticEvent = "";
 }
 
 /**
@@ -188,7 +194,7 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::compute
     {
         return 0.0;
     }
-    TreeHistoryCtmc<charType>* c = dynamic_cast< TreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
+    GeneralTreeHistoryCtmc<charType>* c = dynamic_cast< GeneralTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
     if ( c == NULL )
     {
         throw RbException("Failed cast.");
@@ -273,7 +279,7 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::compute
         return 0.0;
     }
     
-    TreeHistoryCtmc<charType>* c = dynamic_cast< TreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
+    GeneralTreeHistoryCtmc<charType>* c = dynamic_cast< GeneralTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
     if ( c == NULL )
     {
         throw RbException("Failed cast.");
@@ -281,6 +287,7 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::compute
     
     std::vector<BranchHistory*> histories = c->getHistories();
     
+    /*
     // states for conditional sampling probs
     const std::vector<CharacterEvent*>& leftParentState  = histories[node->getChild(0).getIndex()]->getParentCharacters();
     const std::vector<CharacterEvent*>& rightParentState = histories[node->getChild(1).getIndex()]->getParentCharacters();
@@ -360,6 +367,24 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::compute
         throw RbException("Unknown cladogenetic event type!");
     }
     
+    std::string clado_type_2 = c->getCladogeneticEvent( node->getIndex() );
+    if (clado_type != clado_type_2) {
+        
+        throw RbException("weird!");
+    }
+    */
+    
+    // states for conditional sampling probs
+    const std::vector<CharacterEvent*>& nodeChildState  = histories[node->getIndex()]->getChildCharacters();
+    
+    // determine the cladogenetic state based on un/shared areas
+    size_t n_n_on = 0;
+    for (size_t i = 0; i < nodeChildState.size(); i++)
+    {
+        size_t sn = static_cast<CharacterEventDiscrete*>(nodeChildState[i])->getState();
+        n_n_on += sn;
+    }
+    std::string clado_type = c->getCladogeneticEvent( node->getIndex() );
     
     // the proposal prob
     std::map<std::string, double> clado_probs;
@@ -378,7 +403,7 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::compute
     {
         // Any combination of bits for one range (with the sister having its complement)
         // excluding the all-zero range and the all-one range (hence, -2)
-        size_t n_events = std::pow(2, n_n_on) - 2;
+        size_t n_events = std::pow(2, (double)n_n_on) - 2;
         p = clado_probs[ "allopatry" ] * (1.0 / n_events);
     }
     else if ( clado_type == "sympatry_subset" )
@@ -558,6 +583,13 @@ const std::string& RevBayesCore::BiogeographicNodeRejectionSampleProposal<charTy
 }
 
 
+template<class charType>
+double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  *
  */
@@ -565,15 +597,14 @@ template<class charType>
 void RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::prepareProposal( void )
 {
     
-    TreeHistoryCtmc<charType>* p = dynamic_cast< TreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
-    if ( p == NULL )
+    GeneralTreeHistoryCtmc<charType>* c = dynamic_cast< GeneralTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
+    if ( c == NULL )
     {
         throw RbException("Failed cast.");
     }
     
-    
     // sample an internal node
-    const Tree& tree = p->getTree();
+    const Tree& tree = c->getTree();
     std::vector<TopologyNode*> nds = tree.getNodes();
     node = NULL;
     do
@@ -612,10 +643,10 @@ void RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::preparePr
     
     const TopologyNode& left_node = node->getChild(0);
     const TopologyNode& right_node = node->getChild(1);
-    const std::vector<CharacterEvent*>& nodeChildState   = p->getHistory(*node).getChildCharacters();
-    const std::vector<CharacterEvent*>& leftParentState  = p->getHistory(left_node).getParentCharacters();
-    const std::vector<CharacterEvent*>& rightParentState = p->getHistory(right_node).getParentCharacters();
-    size_t num_sites = p->getNumberOfSites();
+    const std::vector<CharacterEvent*>& nodeChildState   = c->getHistory(*node).getChildCharacters();
+    const std::vector<CharacterEvent*>& leftParentState  = c->getHistory(left_node).getParentCharacters();
+    const std::vector<CharacterEvent*>& rightParentState = c->getHistory(right_node).getParentCharacters();
+    size_t num_sites = c->getNumberOfSites();
     storedNodeState.resize(num_sites,0);
     storedLeftState.resize(num_sites,0);
     storedRightState.resize(num_sites,0);
@@ -629,10 +660,13 @@ void RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::preparePr
         storedRightState[site_index] = srcS2;
     }
     
+    // store cladogenetic event state
+    storedCladogeneticEvent = c->getCladogeneticEvent( node->getIndex() );
+    
     // store the subroot state if the root node is updated
     if (node->isRoot()) {
         storedSubrootState.resize(num_sites,0);
-        const std::vector<CharacterEvent*>& subrootState = p->getHistory(*node).getParentCharacters();
+        const std::vector<CharacterEvent*>& subrootState = c->getHistory(*node).getParentCharacters();
         for (size_t site_index = 0; site_index < num_sites; ++site_index)
         {
             size_t s = static_cast<CharacterEventDiscrete*>(subrootState[site_index])->getState();
@@ -653,7 +687,7 @@ void RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::preparePr
  * \param[in]     o     The stream to which we print the summary.
  */
 template<class charType>
-void RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::printParameterSummary(std::ostream &o) const
+void RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::printParameterSummary(std::ostream &o, bool name_only) const
 {
     //    o << "lambda = " << lambda;
 }
@@ -739,7 +773,7 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::sampleN
                 }
                 ++s;
             }
-            size_t old_s = static_cast<CharacterEventDiscrete*>(nodeParentState[site_index])->getState();
+//            size_t old_s = static_cast<CharacterEventDiscrete*>(nodeParentState[site_index])->getState();
             static_cast<CharacterEventDiscrete*>(nodeParentState[site_index])->setState(s);
         }
     }
@@ -799,8 +833,8 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::sampleC
 {
     
     // verify tree history object
-    TreeHistoryCtmc<charType>* c = dynamic_cast< TreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
-    if ( ctmc == NULL )
+    GeneralTreeHistoryCtmc<charType>* c = dynamic_cast< GeneralTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
+    if ( c == NULL )
     {
         throw RbException("Failed cast.");
     }
@@ -823,7 +857,7 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::sampleC
     std::vector<CharacterEvent*>& leftParentState  = histories[left_child.getIndex()]->getParentCharacters();
     std::vector<CharacterEvent*>& rightParentState = histories[right_child.getIndex()]->getParentCharacters();
     
-    // initialize by setting both daugther lineages to be identical to the parent state
+    // initialize by setting both daughter lineages to be identical to the parent state
     std::vector<size_t> idx_on;
     std::vector<size_t> idx_off;
     for (size_t i = 0; i < nodeChildState.size(); i++) {
@@ -939,7 +973,7 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::sampleC
             
             n_child1_on -= 1;
         }
-        size_t n_events = std::pow(2, idx_on.size()) - 2;
+        size_t n_events = std::pow((double)(2.0), (double)(idx_on.size())) - 2;
         lnP = std::log( clado_probs["allopatry"] * (1.0 / n_events) );
     }
     else if (clado_type == "jump_dispersal")
@@ -976,6 +1010,8 @@ double RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::sampleC
         
         throw RbException(clado_type + " not a recognized cladogenetic event type!");
     }
+    
+    c->setCladogeneticEvent( clado_type, node->getIndex() );
     
     return lnP;
 }
@@ -1075,6 +1111,13 @@ void RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::swapNodeI
 }
 
 
+template<class charType>
+void RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
+}
+
+
 /**
  * Tune the Proposal to accept the desired acceptance ratio.
  */
@@ -1107,14 +1150,14 @@ template<class charType>
 void RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::undoProposal( void )
 {
     
-    TreeHistoryCtmc<charType>* p = dynamic_cast< TreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
-    if ( p == NULL )
+    GeneralTreeHistoryCtmc<charType>* c = dynamic_cast< GeneralTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
+    if ( c == NULL )
     {
         throw RbException("Failed cast.");
     }
-    size_t num_sites = p->getNumberOfSites();
+    size_t num_sites = c->getNumberOfSites();
     
-    const std::vector<BranchHistory*>& histories = p->getHistories();
+    const std::vector<BranchHistory*>& histories = c->getHistories();
     
     // restore node state
     std::vector<CharacterEvent*>& nodeChildState   = histories[node->getIndex()]->getChildCharacters();
@@ -1145,6 +1188,9 @@ void RevBayesCore::BiogeographicNodeRejectionSampleProposal<charType>::undoPropo
         }
 //        std::cout << "\n";
     }
+    
+    // restore cladogenetic event type
+    c->setCladogeneticEvent( storedCladogeneticEvent, node->getIndex() );
     
     // restore path state
     nodeProposal->undoProposal();

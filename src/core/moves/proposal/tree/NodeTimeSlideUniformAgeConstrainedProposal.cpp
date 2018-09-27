@@ -62,6 +62,13 @@ const std::string& NodeTimeSlideUniformAgeConstrainedProposal::getProposalName( 
 }
 
 
+double NodeTimeSlideUniformAgeConstrainedProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -168,7 +175,7 @@ void NodeTimeSlideUniformAgeConstrainedProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void NodeTimeSlideUniformAgeConstrainedProposal::printParameterSummary(std::ostream &o) const
+void NodeTimeSlideUniformAgeConstrainedProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
 }
@@ -207,6 +214,12 @@ void NodeTimeSlideUniformAgeConstrainedProposal::swapNodeInternal(DagNode *oldN,
     
     variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
+}
+
+
+void NodeTimeSlideUniformAgeConstrainedProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

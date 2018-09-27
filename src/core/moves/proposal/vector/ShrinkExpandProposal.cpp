@@ -67,6 +67,12 @@ const std::string& ShrinkExpandProposal::getProposalName( void ) const
 }
 
 
+double ShrinkExpandProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -140,10 +146,14 @@ void ShrinkExpandProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void ShrinkExpandProposal::printParameterSummary(std::ostream &o) const
+void ShrinkExpandProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
@@ -198,6 +208,12 @@ void ShrinkExpandProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         sd = static_cast<StochasticNode<double> *>(newN);
     }
     
+}
+
+
+void ShrinkExpandProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

@@ -121,25 +121,19 @@ std::vector<std::string> Dist_bimodalLnorm::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_bimodalLnorm::getHelpDescription(void) const
+std::string Dist_bimodalLnorm::getHelpDescription(void) const
 {
-    // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "A bimodal lognormal distribution, that is, with probability p a value is distributed according to the first lognormal distribution and with probability 1-p from the second lognormal distribution. " );
-    
-    return descriptions;
+    // return the description of the function
+    return "A bimodal lognormal distribution, that is, with probability p a value is distributed according to the first lognormal distribution and with probability 1-p from the second lognormal distribution.";
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_bimodalLnorm::getHelpDetails(void) const
+std::string Dist_bimodalLnorm::getHelpDetails(void) const
 {
-    // create a variable for the description of the function
-    std::vector<std::string> details;
-    
-    return details;
+    return "";
 }
 
 

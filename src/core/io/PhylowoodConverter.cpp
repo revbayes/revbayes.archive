@@ -73,10 +73,13 @@ void PhylowoodConverter::convert(void) {
     makeMarginalAreaProbs();
     
     std::string s = buildPhylowoodString();
+    
+    RbFileManager fm = RbFileManager(phwFilename);
+    fm.createDirectoryForFile();
 
     // open the stream to the file
     std::fstream outStream;
-    outStream.open( phwFilename.c_str(), std::fstream::out );
+    outStream.open( fm.getFullFileName().c_str(), std::fstream::out );
     outStream << s;
     outStream.close();
 

@@ -42,7 +42,7 @@ class RbSettings {
     
     private:
                                     RbSettings(void);                                   //!< Default constructor
-                                    RbSettings(const RbSettings& s) {}                  //!< Prevent copy
+                                    RbSettings(const RbSettings&) {}                    //!< Prevent copy
                                    ~RbSettings(void) {}                                 //!< Delete function table
         RbSettings&                 operator=(const RbSettings& s);                     //!< Prevent assignment
 

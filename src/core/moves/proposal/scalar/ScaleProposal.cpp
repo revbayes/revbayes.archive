@@ -58,6 +58,12 @@ const std::string& ScaleProposal::getProposalName( void ) const
 }
 
 
+double ScaleProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /** 
  * Perform the proposal.
  *
@@ -106,10 +112,14 @@ void ScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void ScaleProposal::printParameterSummary(std::ostream &o) const 
+void ScaleProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
@@ -141,6 +151,13 @@ void ScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     variable = static_cast<StochasticNode<double>* >(newN) ;
     
 }
+
+
+void ScaleProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
+}
+
 
 
 /**

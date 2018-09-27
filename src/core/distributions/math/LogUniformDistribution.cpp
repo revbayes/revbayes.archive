@@ -49,13 +49,13 @@ double LogUniformDistribution::computeLnProbability( void )
     double ma = max->getValue();
     if ( v >= mi && v <= ma ) 
     {
-       return 1.0 / ( (log(max->getValue()) - log( min->getValue() )) * (*value) ); 
-    } 
+        double p = 1.0 / ( (log10(max->getValue()) - log10( min->getValue() )) * (*value) );
+        return log(p);
+    }
     else 
     {
         return RbConstants::Double::neginf;
     }
-    
     
 }
 

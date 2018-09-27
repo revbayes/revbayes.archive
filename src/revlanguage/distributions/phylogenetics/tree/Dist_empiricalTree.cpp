@@ -121,18 +121,84 @@ MethodTable Dist_empiricalTree::getDistributionMethods( void ) const
 const MemberRules& Dist_empiricalTree::getParameterRules(void) const
 {
     
-    static MemberRules memberRules;
+    static MemberRules member_rules;
     static bool rules_set = false;
     
     if ( !rules_set )
     {
-        memberRules.push_back( new ArgumentRule( "trace", TraceTree::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "density", Trace::getClassTypeSpec(), "Optional trace of probability density values for each tree.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
+        member_rules.push_back( new ArgumentRule( "trace", TraceTree::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        member_rules.push_back( new ArgumentRule( "density", Trace::getClassTypeSpec(), "Optional trace of probability density values for each tree.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         rules_set = true;
     }
     
-    return memberRules;
+    return member_rules;
+}
+
+
+/**
+ * Get the author(s) of this function so they can receive credit (and blame) for it.
+ */
+std::vector<std::string> Dist_empiricalTree::getHelpAuthor(void) const
+{
+    // create a vector of authors for this function
+    std::vector<std::string> authors;
+    authors.push_back( "Will Freyman" );
+    authors.push_back( "Sebastian Hoehna" );
+    authors.push_back( "Will Pett" );
+    
+    return authors;
+}
+
+
+/**
+ * Get the (brief) description for this function
+ */
+std::string Dist_empiricalTree::getHelpDescription(void) const
+{
+    std::string description = "";
+    description += "Creates a distribution of trees from a trace of trees.";
+    
+    return description;
+}
+
+
+/**
+ * Get an executable and instructive example.
+ * These example should help the users to show how this function works but
+ * are also used to test if this function still works.
+ */
+std::string Dist_empiricalTree::getHelpExample(void) const
+{
+    // create an example as a single string variable.
+    std::string example = "";
+    
+    example += "# Read in tree trace\n";
+    example += "tree_trace = readTreeTrace(\"output/my.trees\", burnin=0.25)\n";
+    example += "\n";
+    example += "# Create a distribution of trees\n";
+    example += "tree ~ dnEmpiricalTree(tree_trace)\n";
+    example += "\n";
+    example += "# Add an MCMC move\n";
+    example += "moves[1] = mvEmpiricalTree(tree)\n";
+    
+    return example;
+}
+
+
+/**
+ * Get the names of similar and suggested other functions
+ */
+std::vector<std::string> Dist_empiricalTree::getHelpSeeAlso(void) const
+{
+    // create an entry for each suggested function
+    std::vector<std::string> see_also;
+    see_also.push_back( "mvEmpiricalTree" );
+    see_also.push_back( "treeTrace" );
+    see_also.push_back( "readTreeTrace" );
+    
+    
+    return see_also;
 }
 
 

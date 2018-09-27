@@ -65,6 +65,12 @@ const std::string& ElementSlideProposal::getProposalName( void ) const
 }
 
 
+double ElementSlideProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -115,10 +121,14 @@ void ElementSlideProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void ElementSlideProposal::printParameterSummary(std::ostream &o) const
+void ElementSlideProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
@@ -158,6 +168,12 @@ void ElementSlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         }
     }
     
+}
+
+
+void ElementSlideProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

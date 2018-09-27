@@ -63,6 +63,12 @@ const std::string& NodeTimeSlidePathTruncatedNormalProposal::getProposalName( vo
 }
 
 
+double NodeTimeSlidePathTruncatedNormalProposal::getProposalTuningParameter( void ) const
+{
+    return sigma;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -184,9 +190,14 @@ void NodeTimeSlidePathTruncatedNormalProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void NodeTimeSlidePathTruncatedNormalProposal::printParameterSummary(std::ostream &o) const
+void NodeTimeSlidePathTruncatedNormalProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
-    o << "sigma = " << sigma;
+
+    o << "sigma = ";
+    if (name_only == false)
+    {
+        o << sigma;
+    }
 }
 
 
@@ -220,6 +231,12 @@ void NodeTimeSlidePathTruncatedNormalProposal::swapNodeInternal(DagNode *oldN, D
     
     variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
+}
+
+
+void NodeTimeSlidePathTruncatedNormalProposal::setProposalTuningParameter(double tp)
+{
+    sigma = tp;
 }
 
 

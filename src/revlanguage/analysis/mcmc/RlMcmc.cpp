@@ -81,6 +81,23 @@ void Mcmc::constructInternalObject( void )
     RevBayesCore::Mcmc *m = new RevBayesCore::Mcmc(mdl, mvs, mntr, ntries);
     m->setScheduleType( sched );
     
+    double                                                  lHeat   = static_cast<const RealPos &>( likelihood_heat->getRevObject() ).getValue();
+    double                                                  pHeat   = static_cast<const RealPos &>( posterior_heat->getRevObject() ).getValue();
+    double                                                  prHeat  = static_cast<const RealPos &>( prior_heat->getRevObject() ).getValue();
+    
+    if (lHeat != 1.0)
+    {
+        m->setLikelihoodHeat(lHeat);
+    }
+    if (pHeat != 1.0)
+    {
+        m->setChainPosteriorHeat(pHeat);
+    }
+    if (prHeat != 1.0)
+    {
+        m->setChainPriorHeat(prHeat);
+    }
+    
     value = new RevBayesCore::MonteCarloAnalysis(m,nreps,ct);
     
 }
@@ -139,39 +156,33 @@ std::vector<std::string> Mcmc::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Mcmc::getHelpDescription(void) const
+std::string Mcmc::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
+    std::string description;
     
-    std::string description1 = "";
-    description1 += "The MCMC analysis object keeps a model and the associated moves and monitors.";
-    description1 += "The object is used to run Markov chain Monte Carlo (MCMC) simulation on";
-    description1 += "the model, using the provided moves, to obtain a sample of the posterior probability";
-    description1 += "distribution. During the analysis, the monitors are responsible for sampling model parameters of interest.";
-    descriptions.push_back( description1 );
+    description += "The MCMC analysis object keeps a model and the associated moves and monitors.";
+    description += " The object is used to run Markov chain Monte Carlo (MCMC) simulation on";
+    description += " the model, using the provided moves, to obtain a sample of the posterior probability";
+    description += " distribution. During the analysis, the monitors are responsible for sampling model parameters of interest.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Mcmc::getHelpDetails(void) const
+std::string Mcmc::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
-    std::string details1 = "";
-    details1 += "The MCMC analysis object produced by a call to this function keeps copies of the model";
-    details1 += "and the associated moves and monitors. The MCMC analysis object is used to run Markov";
-    details1 += "chain Monte Carlo (MCMC) simulation on the model, using the provided moves,";
-    details1 += "to obtain a sample of the posterior probability distribution. During the analysis,";
-    details1 += "the monitors are responsible for sampling model parameters of interest.";
-    details.push_back( details1 );
-    
-    
+    std::string details = "";
+    details += "The MCMC analysis object produced by a call to this function keeps copies of the model";
+    details += " and the associated moves and monitors. The MCMC analysis object is used to run Markov";
+    details += " chain Monte Carlo (MCMC) simulation on the model, using the provided moves,";
+    details += " to obtain a sample of the posterior probability distribution. During the analysis,";
+    details += " the monitors are responsible for sampling model parameters of interest.";
+
     return details;
 }
 
@@ -269,6 +280,10 @@ const MemberRules& Mcmc::getParameterRules(void) const
         const MemberRules &parentRules = MonteCarloAnalysis::getParameterRules();
         memberRules.insert(memberRules.end(), parentRules.begin(), parentRules.end());
         
+        memberRules.push_back( new ArgumentRule("priorHeat", RealPos::getClassTypeSpec(), "The power that the prior will be raised to.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        memberRules.push_back( new ArgumentRule("likelihoodHeat", RealPos::getClassTypeSpec(), "The power that the likelihood will be raised to.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        memberRules.push_back( new ArgumentRule("posteriorHeat", RealPos::getClassTypeSpec(), "The power that the posterior will be raised to.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        
         rules_set = true;
     }
     
@@ -297,7 +312,21 @@ void Mcmc::printValue(std::ostream &o) const
 /** Set a member variable */
 void Mcmc::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
-    
-    MonteCarloAnalysis::setConstParameter(name, var);
+    if ( name == "likelihoodHeat" )
+    {
+        likelihood_heat = var;
+    }
+    else if ( name == "posteriorHeat" )
+    {
+        posterior_heat = var;
+    }
+    else if ( name == "priorHeat" )
+    {
+        prior_heat = var;
+    }
+    else
+    {
+        MonteCarloAnalysis::setConstParameter(name, var);
+    }
     
 }

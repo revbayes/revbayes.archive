@@ -60,6 +60,12 @@ const std::string& ScaleBactrianCauchyProposal::getProposalName( void ) const
 }
 
 
+double ScaleBactrianCauchyProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /** 
  * Perform the proposal.
  *
@@ -119,10 +125,14 @@ void ScaleBactrianCauchyProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void ScaleBactrianCauchyProposal::printParameterSummary(std::ostream &o) const 
+void ScaleBactrianCauchyProposal::printParameterSummary(std::ostream &o, bool name_only) const 
 {
     
-    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
@@ -153,6 +163,12 @@ void ScaleBactrianCauchyProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast<StochasticNode<double>* >(newN) ;
     
+}
+
+
+void ScaleBactrianCauchyProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

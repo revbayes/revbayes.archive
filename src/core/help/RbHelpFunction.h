@@ -40,11 +40,7 @@ namespace RevBayesCore {
     private:
         
         std::vector<RbHelpArgument>                 arguments;
-        std::string                                 author;
-        std::vector<std::string>                    details;
-        std::vector<RbHelpReference>                references;
         std::string                                 return_type;
-        std::vector<std::string>                    seeAlso;
         std::string                                 usage;
         
         

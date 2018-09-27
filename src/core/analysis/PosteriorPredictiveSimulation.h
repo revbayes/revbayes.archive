@@ -31,6 +31,7 @@ namespace RevBayesCore {
         
     public:
         PosteriorPredictiveSimulation(const Model &m, const std::string &dir, const RbVector<ModelTrace> &t);
+        PosteriorPredictiveSimulation(const Model &m, const std::string &dir, const RbVector<ModelTrace> &t, const std::vector<RevBayesCore::AncestralStateTrace> &ast);
 //        PosteriorPredictiveSimulation(const PosteriorPredictiveSimulation &m);
         virtual                                            ~PosteriorPredictiveSimulation(void);                                       //!< Virtual destructor
         
@@ -45,6 +46,8 @@ namespace RevBayesCore {
         Model                                               model;
         std::string                                         directory;
         RbVector<ModelTrace>                                traces;
+        std::vector<RevBayesCore::AncestralStateTrace>      ancestral_state_traces;
+        bool                                                condition_on_tips;
         
         
     };

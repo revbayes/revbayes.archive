@@ -61,12 +61,14 @@ namespace RevBayesCore {
         PathRejectionSampleProposal*                                clone(void) const;                                                              //!< Clone object
         double                                                      doProposal(void);                                                               //!< Perform proposal
         virtual const std::string&                                  getProposalName(void) const;                                                    //!< Get the name of the proposal for summary printing
-        void                                                        printParameterSummary(std::ostream &o) const;                                   //!< Print the parameter summary
+        double                                                      getProposalTuningParameter(void) const;
+        void                                                        printParameterSummary(std::ostream &o, bool name_only) const;                                   //!< Print the parameter summary
         void                                                        prepareProposal(void);                                                          //!< Prepare the proposal
         std::set<size_t>                                            sampleCharacters(double p);
         void                                                        setSampledCharacters(const std::set<size_t>& s);
         void                                                        setRateGenerator(const TypedDagNode<RateGenerator> *d);                         //!< Set the rate generator.
         void                                                        setRateGenerator(const TypedDagNode<RateGeneratorSequence> *d);                 //!< Set the rate generator.
+        void                                                        setProposalTuningParameter(double tp);
         void                                                        tune(double r);                                                                 //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                                                        undoProposal(void);                                                             //!< Reject the proposal
 
@@ -93,6 +95,7 @@ namespace RevBayesCore {
 
         bool                                                        useTail;
         bool                                                        node_assigned;
+        bool                                                        sampled_characters_assigned;
         double                                                      lambda;
         std::set<size_t>                                            sampledCharacters;
         std::set<size_t>                                            allCharacters;
@@ -119,6 +122,7 @@ RevBayesCore::PathRejectionSampleProposal<charType>::PathRejectionSampleProposal
     numCharacters(n->getValue().getNumberOfCharacters()),
     useTail(ut),
     node_assigned(false),
+    sampled_characters_assigned(false),
     lambda(l)
 {
 
@@ -171,6 +175,9 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::cleanProposal( void )
 
     storedHistory.clear();
     sampledCharacters.clear();
+    
+    sampled_characters_assigned = false;
+    node_assigned = false;
 
 }
 
@@ -264,6 +271,13 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
 
 
 
+template<class charType>
+double RevBayesCore::PathRejectionSampleProposal<charType>::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 
 /**
  * Perform the Proposal.
@@ -312,7 +326,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
     for (it_s = sampledCharacters.begin(); it_s != sampledCharacters.end(); it_s++)
     {
         size_t site_index = *it_s;
-        std::set<CharacterEvent*> tmpHistory;
+        std::set<CharacterEvent*,CharacterEventCompare> tmpHistory;
         size_t currState = static_cast<CharacterEventDiscrete*>(parent_states[site_index])->getState();
         size_t endState  = static_cast<CharacterEventDiscrete*>(child_states[site_index])->getState();
         do
@@ -363,7 +377,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
                 }
                 else if (currState != endState)
                 {
-                    for (std::set<CharacterEvent*>::reverse_iterator it_h = tmpHistory.rbegin(); it_h != tmpHistory.rend(); it_h++)
+                    for (std::set<CharacterEvent*,CharacterEventCompare>::reverse_iterator it_h = tmpHistory.rbegin(); it_h != tmpHistory.rend(); it_h++)
                     {
                         delete *it_h;
                     }
@@ -375,7 +389,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
         }
         while (currState != endState);
         
-        for (std::set<CharacterEvent*>::iterator it = tmpHistory.begin(); it != tmpHistory.end(); it++)
+        for (std::set<CharacterEvent*,CharacterEventCompare>::iterator it = tmpHistory.begin(); it != tmpHistory.end(); it++)
         {
             proposed_histories.insert(*it);
         }
@@ -472,7 +486,9 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::prepareProposal( void 
     storedHistory = history;
 
     // determine sampled characters
-    sampledCharacters = sampleCharacters(lambda);
+    if (!sampled_characters_assigned) {
+        sampledCharacters = sampleCharacters(lambda);
+    }
     
     // flag node as dirty
     const_cast<TopologyNode*>(node)->fireTreeChangeEvent(RevBayesCore::TreeChangeEventMessage::CHARACTER_HISTORY);
@@ -493,7 +509,7 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::prepareProposal( void 
  * \param[in]     o     The stream to which we print the summary.
  */
 template<class charType>
-void RevBayesCore::PathRejectionSampleProposal<charType>::printParameterSummary(std::ostream &o) const
+void RevBayesCore::PathRejectionSampleProposal<charType>::printParameterSummary(std::ostream &o, bool name_only) const
 {
 //    o << "lambda = " << lambda;
 }
@@ -545,6 +561,7 @@ template<class charType>
 void RevBayesCore::PathRejectionSampleProposal<charType>::setSampledCharacters(const std::set<size_t>& s)
 {
     sampledCharacters = s;
+    sampled_characters_assigned = true;
 }
 
 
@@ -570,6 +587,13 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::swapNodeInternal(DagNo
         q_map_sequence = static_cast<TypedDagNode<RateGeneratorSequence>* >(newN);
     }
 
+}
+
+
+template<class charType>
+void RevBayesCore::PathRejectionSampleProposal<charType>::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 
@@ -643,6 +667,11 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::undoProposal( void )
     // clear old histories
     proposed_history.clear();
     storedHistory.clear();
+    sampledCharacters.clear();
+    
+    sampled_characters_assigned = false;
+    node_assigned = false;
+
     
     
 }

@@ -157,6 +157,15 @@ void FunctionTable::eraseFunction(const std::string& name)
               std::multimap<std::string, Function *>::iterator> ret_val;
 
     ret_val = equal_range(name);
+    
+    std::multimap<std::string, Function *>::iterator start = ret_val.first;
+    std::multimap<std::string, Function *>::iterator end   = ret_val.second;
+    for ( ; start != end; ++start )
+    {
+        Function *the_function = start->second;
+        delete the_function;
+    }
+    
     erase(ret_val.first, ret_val.second);
     
 }

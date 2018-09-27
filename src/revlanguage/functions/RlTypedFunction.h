@@ -51,7 +51,6 @@ namespace RevLanguage {
         
     protected:
         TypedFunction<valueType>(void);                                                                                                     //!< Basic constructor
-        
     };
     
 }

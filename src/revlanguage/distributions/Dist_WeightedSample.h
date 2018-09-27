@@ -84,7 +84,7 @@ RevBayesCore::WeightedSampleDistribution<typename valType::valueType>* RevLangua
     RevBayesCore::WeightedSampleDistribution<typename valType::valueType>* d = NULL;
     RevBayesCore::TypedDistribution<typename valType::valueType>* g0  = NULL;
     size_t ns = 0;
-    std::vector< RevBayesCore::TypedDistribution<typename valType::valueType>* > g0_vector(0, NULL);
+    std::vector< RevBayesCore::TypedDistribution<typename valType::valueType>* > g0_vector;
     
     // get the parameters
     if (baseDistribution->getRevObject().isType( WorkspaceVector<TypedDistribution<valType> >::getClassTypeSpec() ) ) {

@@ -62,6 +62,12 @@ const std::string& VectorSingleElementScaleProposal::getProposalName( void ) con
 }
 
 
+double VectorSingleElementScaleProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -118,10 +124,14 @@ void VectorSingleElementScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void VectorSingleElementScaleProposal::printParameterSummary(std::ostream &o) const
+void VectorSingleElementScaleProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
@@ -153,6 +163,12 @@ void VectorSingleElementScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *
     
     variable = static_cast<StochasticNode< RbVector<double> >* >(newN) ;
     
+}
+
+
+void VectorSingleElementScaleProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

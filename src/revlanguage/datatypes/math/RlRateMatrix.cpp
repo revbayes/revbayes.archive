@@ -7,6 +7,7 @@
 #include "RealPos.h"
 #include "RlBoolean.h"
 #include "RlMemberFunction.h"
+#include "RlSimplex.h"
 
 using namespace RevLanguage;
 
@@ -97,4 +98,9 @@ void RateMatrix::initMethods(void) {
     transitionProbabilityArgRules->push_back( new ArgumentRule( "startAge", RealPos::getClassTypeSpec(), "The start age of the process.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(1.0) ) );
     transitionProbabilityArgRules->push_back( new ArgumentRule( "endAge", RealPos::getClassTypeSpec(), "The end age of the process.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.0) ) );
     methods.addFunction( new MemberFunction<RateMatrix, ModelVector<ModelVector<RealPos> > >( "getTransitionProbabilities", this, transitionProbabilityArgRules   ) );
+    
+    // member functions
+    ArgumentRules* stationaryFrequenciesArgRules = new ArgumentRules();
+    methods.addFunction( new MemberFunction<RateMatrix, Simplex>( "getStationaryFrequencies", this, stationaryFrequenciesArgRules  ) );
+    
 }

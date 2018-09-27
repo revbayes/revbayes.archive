@@ -113,17 +113,23 @@ RevPtr<RevVariable> Func_characterMapTree::execute( void )
     std::ofstream out_stream;
     if ( map_filename != "" )
     {
+        RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(map_filename);
+        fm.createDirectoryForFile();
+        
         RevBayesCore::Tree t = RevBayesCore::Tree(*tree);
         t.renameNodeParameter("map_character_history", "character_history");
-        out_stream.open(map_filename.c_str(), std::fstream::out);
+        out_stream.open(fm.getFullFileName().c_str(), std::fstream::out);
         out_stream << t.getSimmapNewickRepresentation();
         out_stream.close();
     }
     if ( map_pp_filename != "" )
     {
+        RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(map_pp_filename);
+        fm.createDirectoryForFile();
+        
         RevBayesCore::Tree t = RevBayesCore::Tree(*tree);
         t.renameNodeParameter("map_character_history_posteriors", "character_history");
-        out_stream.open(map_pp_filename.c_str(), std::fstream::out);
+        out_stream.open(fm.getFullFileName().c_str(), std::fstream::out);
         out_stream << t.getSimmapNewickRepresentation();
         out_stream.close();
     }

@@ -410,8 +410,10 @@ void BurninEstimationConvergenceAssessment::readTrace(const std::string &fn, std
     
     bool hasHeaderBeenRead = false;
     
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(fn);
+    
     /* Open file */
-    std::ifstream inFile( fn.c_str() );
+    std::ifstream inFile( fm.getFullFileName().c_str() );
     
     if ( !inFile )
         throw RbException( "Could not open file \"" + fn + "\"" );

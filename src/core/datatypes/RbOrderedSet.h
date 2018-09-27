@@ -27,8 +27,9 @@ namespace RevBayesCore {
         void                                                clear(void);
         iterator                                            end(void);
         const_iterator                                      end(void) const;
-        void                                                erase(const valueType&v);
-        void                                                insert(const valueType&v);
+        void                                                erase(const valueType &v);
+        iterator                                            find(const valueType &v);
+        void                                                insert(const valueType &v);
         size_t                                              size(void) const;
 
 //        RbOrderedSet<valueType>*                            clone(void) const;                                                                      //!< Create an independent clone
@@ -122,6 +123,18 @@ void RevBayesCore::RbOrderedSet<valueType>::erase(const valueType &v)
         values.erase( pos );
     }
     
+}
+
+
+
+
+template <class valueType>
+typename RevBayesCore::RbOrderedSet<valueType>::iterator RevBayesCore::RbOrderedSet<valueType>::find(const valueType &v)
+{
+    
+    typename std::vector<valueType>::iterator pos = std::find(values.begin(), values.end(), v);
+    
+    return pos;
 }
 
 

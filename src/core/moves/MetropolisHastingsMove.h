@@ -35,16 +35,20 @@ namespace RevBayesCore {
         // pure virtual public methods
         virtual MetropolisHastingsMove*                         clone(void) const;
         const std::string&                                      getMoveName(void) const;                                //!< Get the name of the move for summary printing
+        double                                                  getMoveTuningParameter(void) const;
         size_t                                                  getNumberAcceptedCurrentPeriod(void) const;             //!< Get update weight of InferenceMove
         size_t                                                  getNumberAcceptedTotal(void) const;                     //!< Get update weight of InferenceMove
         Proposal&                                               getProposal(void);                                      //!< Get the proposal of the move
-        void                                                    printSummary(std::ostream &o) const;                    //!< Print the move summary
+        void                                                    printSummary(std::ostream &o, bool current_period) const;                    //!< Print the move summary
+        void                                                    setMoveTuningParameter(double tp);
+        void                                                    setNumberAcceptedCurrentPeriod(size_t na);
+        void                                                    setNumberAcceptedTotal(size_t na);
         void                                                    tune(void);                                             //!< Specific tuning of the move
         
     protected:
         
         //protected methods that are overwritten from the base class
-        void                                                    performMcmcMove(double lHeat, double pHeat);            //!< Perform the move.
+        void                                                    performMcmcMove(double prHeat, double lHeat, double pHeat);            //!< Perform the move.
         void                                                    performHillClimbingMove(double lHeat, double pHeat);    //!< Perform the move.
         void                                                    resetMoveCounters(void);                                //!< Reset the counters such as numAccepted.
         virtual void                                            swapNodeInternal(DagNode *oldN, DagNode *newN);         //!< Swap the pointers to the variable on which the move works on.

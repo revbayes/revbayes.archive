@@ -81,6 +81,13 @@ const std::string& GraphFlipCliqueProposal::getProposalName( void ) const
 }
 
 
+double GraphFlipCliqueProposal::getProposalTuningParameter( void ) const
+{
+    // this proposal has no tuning parameter
+    return RbConstants::Double::nan;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -245,7 +252,7 @@ void GraphFlipCliqueProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void GraphFlipCliqueProposal::printParameterSummary(std::ostream &o) const
+void GraphFlipCliqueProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     o << "set_sample_rate = " << set_sample_rate;
@@ -318,6 +325,12 @@ void GraphFlipCliqueProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         matrix = static_cast< StochasticNode<MatrixReal>* >(newN) ;
     }
     
+}
+
+
+void GraphFlipCliqueProposal::setProposalTuningParameter(double tp)
+{
+    // this proposal has no tuning parameter: nothing to do
 }
 
 

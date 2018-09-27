@@ -14,7 +14,8 @@
 
 using namespace RevLanguage;
 
-Move_TreeScale::Move_TreeScale() : Move() {
+Move_TreeScale::Move_TreeScale() : Move()
+{
     
 }
 

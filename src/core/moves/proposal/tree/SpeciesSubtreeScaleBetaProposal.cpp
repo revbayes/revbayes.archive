@@ -90,6 +90,12 @@ const std::string& SpeciesSubtreeScaleBetaProposal::getProposalName( void ) cons
 }
 
 
+double SpeciesSubtreeScaleBetaProposal::getProposalTuningParameter( void ) const
+{
+    return alpha;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -280,10 +286,14 @@ void SpeciesSubtreeScaleBetaProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SpeciesSubtreeScaleBetaProposal::printParameterSummary(std::ostream &o) const
+void SpeciesSubtreeScaleBetaProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
 
-    o << "alpha = " << alpha;
+    o << "alpha = ";
+    if (name_only == false)
+    {
+        o << alpha;
+    }
 
 }
 
@@ -354,6 +364,12 @@ void SpeciesSubtreeScaleBetaProposal::swapNodeInternal(DagNode *oldN, DagNode *n
         }
     }
 
+}
+
+
+void SpeciesSubtreeScaleBetaProposal::setProposalTuningParameter(double tp)
+{
+    alpha = tp;
 }
 
 

@@ -60,6 +60,12 @@ const std::string& CorrelationMatrixProposal::getProposalName( void ) const {
 }
 
 
+double CorrelationMatrixProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -197,9 +203,13 @@ void CorrelationMatrixProposal::prepareProposal( void ) {
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void CorrelationMatrixProposal::printParameterSummary(std::ostream &o) const {
+void CorrelationMatrixProposal::printParameterSummary(std::ostream &o, bool name_only) const {
     
-    o << "delta = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
 }
 
 
@@ -228,6 +238,12 @@ void CorrelationMatrixProposal::undoProposal( void ) {
 void CorrelationMatrixProposal::swapNodeInternal(DagNode *oldN, DagNode *newN) {
     
     variable = static_cast< StochasticNode<MatrixReal>* >(newN) ;
+}
+
+
+void CorrelationMatrixProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

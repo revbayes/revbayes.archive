@@ -46,7 +46,8 @@ void EmpiricalTreeTopologyProposal::cleanProposal( void )
 EmpiricalTreeTopologyProposal* EmpiricalTreeTopologyProposal::clone( void ) const
 {
     
-    return new EmpiricalTreeTopologyProposal( *this );
+//    return new EmpiricalTreeTopologyProposal( *this );
+    return NULL;
 }
 
 
@@ -112,13 +113,41 @@ double EmpiricalTreeTopologyProposal::doProposal( void )
     std::vector<double> proposed_ages = RbStatistics::Dirichlet::rv(a, *rng);
     
     stored_root_age = tree_age;
+    RbOrderedSet<const TopologyNode*> current_lineages;
+    RbOrderedSet<const TopologyNode*> available_parents;
     for (size_t i=n_tips; i<nodes.size(); ++i)
     {
-        stored_ages[i-n_tips] = tau.getNode(i).getAge();
+        const TopologyNode &n = tau.getNode(i);
+        current_lineages.insert( &n );
+        
+        if ( n.isRoot() == false )
+        {
+            const TopologyNode &parent = n.getParent();
+            const TopologyNode *sibling = &parent.getChild(0);
+            if ( sibling == &n )
+            {
+                sibling = &parent.getChild(1);
+            }
+            
+            if ( current_lineages.find(sibling) != current_lineages.end() )
+            {
+                available_parents.insert( &parent );
+            }
+            
+        }
+        stored_ages[i-n_tips] = n.getAge() / tree_age;
     }
 
     double forward_prob = RbStatistics::Dirichlet::lnPdf(a, proposed_ages);
     double backward_prob = RbStatistics::Dirichlet::lnPdf(a, stored_ages);
+    
+    while ( available_parents.size() > 1 )
+    {
+        backward_prob += log( available_parents.size() );
+        
+        // I need to find the minimum age
+        
+    }
     
     std::sort( proposed_ages.begin(), proposed_ages.end() );
     std::set<TopologyNode*> tips;
@@ -141,12 +170,11 @@ double EmpiricalTreeTopologyProposal::doProposal( void )
     size_t age_index = 0;
     while ( age_index < proposed_ages.size() )
     {
-        size_t tip_index =size_t(floor(rng->uniform01() * tips.size()) );
+        size_t tip_index = size_t(floor(rng->uniform01() * tips.size()) );
         std::set<TopologyNode*>::const_iterator it(tips.begin());
         
         // 'advance' the iterator x times
         advance(it,tip_index);
-        
         
     }
     

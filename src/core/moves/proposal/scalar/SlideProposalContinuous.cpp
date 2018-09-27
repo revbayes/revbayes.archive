@@ -61,6 +61,12 @@ const std::string& SlideProposalContinuous::getProposalName( void ) const
 }
 
 
+double SlideProposalContinuous::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -134,10 +140,14 @@ void SlideProposalContinuous::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SlideProposalContinuous::printParameterSummary(std::ostream &o) const
+void SlideProposalContinuous::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "delta = " << lambda;
+    o << "delta = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
@@ -168,6 +178,12 @@ void SlideProposalContinuous::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast< ContinuousStochasticNode* >(newN) ;
     
+}
+
+
+void SlideProposalContinuous::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

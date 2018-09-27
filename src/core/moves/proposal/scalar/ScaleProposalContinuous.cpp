@@ -60,6 +60,12 @@ const std::string& ScaleProposalContinuous::getProposalName( void ) const
 }
 
 
+double ScaleProposalContinuous::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /** 
  * Perform the proposal.
  *
@@ -126,10 +132,14 @@ void ScaleProposalContinuous::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void ScaleProposalContinuous::printParameterSummary(std::ostream &o) const 
+void ScaleProposalContinuous::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
-    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
     
 }
 
@@ -160,6 +170,12 @@ void ScaleProposalContinuous::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast< ContinuousStochasticNode* >(newN) ;
     
+}
+
+
+void ScaleProposalContinuous::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 

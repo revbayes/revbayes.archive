@@ -60,6 +60,12 @@ const std::string& LayeredScaleProposal::getProposalName( void ) const
 }
 
 
+double LayeredScaleProposal::getProposalTuningParameter( void ) const
+{
+    return lambda;
+}
+
+
 /**
  * Perform the proposal.
  *
@@ -140,10 +146,14 @@ void LayeredScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void LayeredScaleProposal::printParameterSummary(std::ostream &o) const
+void LayeredScaleProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
 
-    o << "lambda = " << lambda;
+    o << "lambda = ";
+    if (name_only == false)
+    {
+        o << lambda;
+    }
 
 }
 
@@ -175,6 +185,12 @@ void LayeredScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 
     variable = static_cast<StochasticNode<Tree>* >(newN) ;
 
+}
+
+
+void LayeredScaleProposal::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
 }
 
 
