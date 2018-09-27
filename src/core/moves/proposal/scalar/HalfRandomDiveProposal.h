@@ -1,5 +1,5 @@
-#ifndef LogRandomDiveProposal_H
-#define LogRandomDiveProposal_H
+#ifndef HalfRandomDiveProposal_H
+#define HalfRandomDiveProposal_H
 
 #include <set>
 #include <string>
@@ -22,14 +22,14 @@ namespace RevBayesCore {
      * @since 2009-09-08, version 1.0
      *
      */
-    class LogRandomDiveProposal : public Proposal {
+    class HalfRandomDiveProposal : public Proposal {
         
     public:
-        LogRandomDiveProposal( StochasticNode<double> *n, double l, double p=0.44);                                                                      //!<  constructor
+        HalfRandomDiveProposal( StochasticNode<double> *n, double l, double p=0.44);                                                                      //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                                                //!< Clean up proposal
-        LogRandomDiveProposal*                          clone(void) const;                                                                  //!< Clone object
+        HalfRandomDiveProposal*                          clone(void) const;                                                                  //!< Clone object
         double                                  doProposal(void);                                                                   //!< Perform proposal
         const std::string&                      getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         double                                  getProposalTuningParameter(void) const;

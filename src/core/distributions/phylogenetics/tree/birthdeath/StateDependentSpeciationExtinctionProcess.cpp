@@ -64,6 +64,7 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
     sample_character_history( false ),
     average_speciation( std::vector<double>(5, 0.0) ),
     average_extinction( std::vector<double>(5, 0.0) ),
+    num_shift_events( std::vector<long>(5, 0.0) ),
     time_in_states( std::vector<double>(ext->getValue().size(), 0.0) ),    
     simmap( "" ),
     cladogenesis_matrix( NULL ),
@@ -1047,6 +1048,9 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
     std::vector<double> speciation_rates = calculateTotalSpeciationRatePerState();
     std::vector<double> extinction_rates = mu->getValue();
     
+    // reset the number of rate-shift events
+    num_shift_events[node_index] = 0;
+    
     // sample characters by their probability conditioned on the branch's start state going to end states
     
     // initialize the conditional likelihoods for this branch
@@ -1128,6 +1132,8 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
             transition_times.push_back(time_since_last_transition);
             transition_states.push_back(new_state);
             current_state = new_state;
+            
+            ++num_shift_events[node_index];
         }
         
         // condition branch_conditional_probs on the sampled state
@@ -1197,6 +1203,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
             
             transition_times.push_back(time_since_last_transition);
             transition_states.push_back(new_state);
+            ++num_shift_events[node_index];
         }
         
         // add the length of the final character state
@@ -1343,6 +1350,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
 
             transition_times.push_back(time_since_last_transition);
             transition_states.push_back(a);
+            ++num_shift_events[node_index];
         }
         
         // add the length of the final character state
@@ -1531,6 +1539,12 @@ std::vector<double> StateDependentSpeciationExtinctionProcess::getAverageExtinct
 std::vector<double> StateDependentSpeciationExtinctionProcess::getAverageSpeciationRatePerBranch( void ) const
 {
     return average_speciation;
+}
+
+
+std::vector<long> StateDependentSpeciationExtinctionProcess::getNumberOfShiftEventsPerBranch( void ) const
+{
+    return num_shift_events;
 }
 
 
@@ -3089,5 +3103,6 @@ void StateDependentSpeciationExtinctionProcess::resizeVectors(size_t num_nodes)
     scaling_factors = std::vector<std::vector<double> >(num_nodes, std::vector<double>(2,0.0) );
     average_speciation = std::vector<double>(num_nodes, 0.0);
     average_extinction = std::vector<double>(num_nodes, 0.0);
+    num_shift_events = std::vector<long>(num_nodes, 0.0);
     time_in_states = std::vector<double>(num_states, 0.0);    
 }
