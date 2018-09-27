@@ -120,6 +120,7 @@ void StochasticBranchRateMonitor::printFileHeader()
     std::vector<double> time_in_states = sse->getTimeInStates();
     std::vector<double> speciation = sse->getAverageSpeciationRatePerBranch();
     std::vector<double> extinction = sse->getAverageExtinctionRatePerBranch();
+    std::vector<long>   n_shifts   = sse->getNumberOfShiftEventsPerBranch();
     
 //    for (int i = 0; i < time_in_states.size(); i++)
 //    {
@@ -143,7 +144,7 @@ void StochasticBranchRateMonitor::printFileHeader()
         out_stream << "]";
     }
     
-    for (int i = 0; i < extinction.size(); i++)
+    for (int i = 0; i < n_shifts.size(); i++)
     {
         out_stream << separator;
         out_stream << "num_shifts[";

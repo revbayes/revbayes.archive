@@ -92,6 +92,7 @@
 #include "Move_GMRFUnevenGridHyperpriorGibbs.h"
 #include "Move_MultipleElementScale.h"
 #include "Move_ShrinkExpand.h"
+#include "Move_ShrinkExpandScale.h"
 #include "Move_SingleElementScale.h"
 #include "Move_SingleElementSlide.h"
 #include "Move_EllipticalSliceSamplingLognormalIID.h"
@@ -254,6 +255,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_SingleElementSlide() );
         addTypeWithConstructor( new Move_SingleElementScale() );
         addTypeWithConstructor( new Move_ShrinkExpand() );
+        addTypeWithConstructor( new Move_ShrinkExpandScale() );
         addTypeWithConstructor( new Move_VectorBinarySwitch() );
         addTypeWithConstructor( new Move_VectorScale() );
         addTypeWithConstructor( new Move_VectorSlide() );

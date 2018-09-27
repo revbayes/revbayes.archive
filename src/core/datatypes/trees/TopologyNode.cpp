@@ -1083,17 +1083,6 @@ const TopologyNode* TopologyNode::getMrca(const TopologyNode &n) const
     return getNode( n, false );
 }
 
-
-///**
-// * Is the argument clade contained in the clade descending from this node?
-// */
-//const TopologyNode* TopologyNode::getMrca(const std::vector<Taxon> &t) const
-//{
-//
-//    return getNode( t, false );
-//}
-
-
 /**
  * Is the argument clade contained in the clade descending from this node?
  * By strict we mean that the contained clade has to be monophyletic in the containing clade.
@@ -1139,6 +1128,7 @@ TopologyNode* TopologyNode::getNode(const Clade &c, bool strict)
  */
 TopologyNode* TopologyNode::getNode(const RbBitSet &your_taxa, bool strict)
 {
+    
     size_t n = tree->getNumberOfTips();
     RbBitSet my_taxa   = RbBitSet( n );
     getTaxa( my_taxa );
