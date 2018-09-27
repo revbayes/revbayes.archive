@@ -11,10 +11,17 @@ cc = meson.get_compiler('c')
 add_project_arguments(['-O3','-msse','-msse2','-msse3'], language : 'cpp')
 add_project_arguments(['-O3'], language : 'c')
 
-# So many warnings!
-add_project_arguments(['-Wall','-Wno-sign-compare','-Woverloaded-virtual',
-                       '-Wstrict-aliasing','-Wno-unknown-pragmas'],
-                      language : 'cpp')
+if get_option('buildtype') == 'debug' or get_option('buildtype') == 'debugoptimized'
+  # FIXME: -Woverloaded-virtual is useful, but has too many false-positives with GCC?
+  add_project_arguments(['-Wall','-Wno-sign-compare','-Wno-unknown-pragmas',
+			 # These could be bugs, but there are so many we can't see the really bad ones. So, disable them for now.
+			 '-Wno-reorder',
+			 # Not necessarily a bug
+			 '-Wno-unused-variable','-Wno-unused-but-set-variable',
+			 # These bugs are very hard to track down
+			 '-Wstrict-aliasing'],
+			language : 'cpp')
+endif
 
 # Handle file too large error when cross-compiling to windows
 if host_machine.system() == 'windows'

@@ -42,7 +42,7 @@ namespace RevBayesCore {
     class UltrametricTreeDistribution : public TypedDistribution<Tree>, public MemberObject< RbVector<double> > {
         
     public:
-        UltrametricTreeDistribution(TypedDistribution<Tree>* tp, TypedDistribution<double>* rp, TypedDagNode<double> *ra, const TraceTree &tt);   //!< Constructor
+        UltrametricTreeDistribution(TypedDistribution<Tree>* tp, TypedDistribution<double>* rp, TypedDagNode<double> *ra, const TraceTree &tt, Trace<double>* d = NULL);   //!< Constructor
         UltrametricTreeDistribution(const UltrametricTreeDistribution &d);                                              //!< Copy-constructor
         virtual                                            ~UltrametricTreeDistribution(void);                          //!< Virtual destructor
         
@@ -81,6 +81,7 @@ namespace RevBayesCore {
         TypedDistribution<double>*                          rate_prior;
         const TypedDagNode<double>*                         root_age;
         std::vector<Tree>                                   trees;
+        Trace<double>*                                      density;
         
         std::vector<std::string>                            trees_newick;
         std::map<std::string, std::vector<size_t> >         topology_indices;

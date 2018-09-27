@@ -87,10 +87,10 @@ project(RevBayes)
 
 # Default compiler flags
 #if (WIN32)
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -static -msse -msse2 -msse3")
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -static -msse -msse2 -msse3 -Wall -Wno-sign-compare")
 #    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg -static")
 #else ()
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -msse -msse2 -msse3 -stdlib=libstdc++")
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -msse -msse2 -msse3 -stdlib=libstdc++ -Wall -Wno-sign-compare")
 #    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg")
 #endif ()
 
@@ -99,7 +99,11 @@ project(RevBayes)
 if [ "$debug" = "true" ]
 then
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -Wall -msse -msse2 -msse3")
+# -Woverloaded-virtual has some false-positives with GCC
+# We should ultimiately remove -Wno-reorder -Wno-unused-variable -Wno-unused-but-set-variable
+# But there are so many of them we cant see the really bad warnings.
+# So, disable those warnings for now.
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -Wall -msse -msse2 -msse3 -Wno-sign-compare -Wno-reorder -Wno-unused-variable -Wno-unused-but-set-variable")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -Wall")
 '  >> "$HERE/CMakeLists.txt"
 elif [ "$mac" = "true" ]
