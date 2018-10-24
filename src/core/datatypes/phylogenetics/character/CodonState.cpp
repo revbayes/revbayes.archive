@@ -75,7 +75,7 @@ CodonState::CodonState(size_t n) : DiscreteCharacterState( 61 ),
     state(61)
 {
     
-    setStateByIndex( n );
+//    setStateByIndex( n );
 }
 
 
