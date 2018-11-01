@@ -27,8 +27,9 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
     state_type safe_x = x;
     for (size_t i = 0; i < num_states * 2; ++i)
     {
+        safe_x[i] = ( x[i] > 0.0 && x[i] < 1.0 ? x[i] : (x[i] < 0.0 ? 0.0 : 1.0) );
+//        safe_x[i] = ( x[i] > 1.0 ? 1.0 : x[i] );
         safe_x[i] = ( x[i] < 0.0 ? 0.0 : x[i] );
-        safe_x[i] = ( x[i] > 1.0 ? 1.0 : x[i] );
     }
     
     double age = 0.0;

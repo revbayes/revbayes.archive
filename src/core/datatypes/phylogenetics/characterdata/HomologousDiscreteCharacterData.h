@@ -1242,12 +1242,6 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscreteChara
     }
     else 
     {
-        typename std::map<std::string, AbstractTaxonData* >::iterator it = taxonMap.begin();
-        
-        for ( ; it!=taxonMap.end(); ++it )
-        {
-//            std::cerr << "Taxon:\t\t" << it->first << std::cerr;
-        }
         throw RbException("Cannot find taxon '" + tn + "' in the HomologousDiscreteCharacterData matrix.");
     }
     
