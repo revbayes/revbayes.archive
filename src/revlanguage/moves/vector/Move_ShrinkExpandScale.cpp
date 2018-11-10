@@ -2,7 +2,7 @@
 #include "ArgumentRules.h"
 #include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
-#include "Move_ShrinkExpand.h"
+#include "Move_ShrinkExpandScale.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "Real.h"
@@ -11,12 +11,12 @@
 #include "RlBoolean.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "ShrinkExpandProposal.h"
+#include "ShrinkExpandScaleProposal.h"
 
 
 using namespace RevLanguage;
 
-Move_ShrinkExpand::Move_ShrinkExpand() : Move()
+Move_ShrinkExpandScale::Move_ShrinkExpandScale() : Move()
 {
     
 }
@@ -28,14 +28,14 @@ Move_ShrinkExpand::Move_ShrinkExpand() : Move()
  *
  * \return A new copy of the process.
  */
-Move_ShrinkExpand* Move_ShrinkExpand::clone(void) const
+Move_ShrinkExpandScale* Move_ShrinkExpandScale::clone(void) const
 {
     
-    return new Move_ShrinkExpand(*this);
+    return new Move_ShrinkExpandScale(*this);
 }
 
 
-void Move_ShrinkExpand::constructInternalObject( void )
+void Move_ShrinkExpandScale::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
@@ -44,7 +44,7 @@ void Move_ShrinkExpand::constructInternalObject( void )
     double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* tmp = static_cast<const ModelVector<Real> &>( x->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* tmp = static_cast<const ModelVector<RealPos> &>( x->getRevObject() ).getDagNode();
     std::vector<const RevBayesCore::DagNode*> p = tmp->getParents();
     std::vector< RevBayesCore::StochasticNode<double> *> n;
     for (std::vector<const RevBayesCore::DagNode*>::const_iterator it = p.begin(); it != p.end(); ++it)
@@ -56,7 +56,7 @@ void Move_ShrinkExpand::constructInternalObject( void )
         }
         else
         {
-            throw RbException("Could not create a mvShrinkExpand because the node isn't a vector of stochastic nodes.");
+            throw RbException("Could not create a mvShrinkExpandScale because the node isn't a vector of stochastic nodes.");
         }
     }
     
@@ -71,23 +71,23 @@ void Move_ShrinkExpand::constructInternalObject( void )
     // get the tuning
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-    RevBayesCore::Proposal *prop = new RevBayesCore::ShrinkExpandProposal(n,s,l);
+    RevBayesCore::Proposal *prop = new RevBayesCore::ShrinkExpandScaleProposal(n,s,l);
     value = new RevBayesCore::MetropolisHastingsMove(prop,w,t);
     
 }
 
 
 /** Get Rev type of object */
-const std::string& Move_ShrinkExpand::getClassType(void)
+const std::string& Move_ShrinkExpandScale::getClassType(void)
 {
     
-    static std::string rev_type = "Move_ShrinkExpand";
+    static std::string rev_type = "Move_ShrinkExpandScale";
     
     return rev_type;
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_ShrinkExpand::getClassTypeSpec(void)
+const TypeSpec& Move_ShrinkExpandScale::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -101,17 +101,17 @@ const TypeSpec& Move_ShrinkExpand::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_ShrinkExpand::getMoveName( void ) const
+std::string Move_ShrinkExpandScale::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "ShrinkExpand";
+    std::string c_name = "ShrinkExpandScale";
     
     return c_name;
 }
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_ShrinkExpand::getParameterRules(void) const
+const MemberRules& Move_ShrinkExpandScale::getParameterRules(void) const
 {
     
     static MemberRules move_member_rules;
@@ -120,10 +120,10 @@ const MemberRules& Move_ShrinkExpand::getParameterRules(void) const
     if ( !rules_set )
     {
         
-        move_member_rules.push_back( new ArgumentRule( "x"     , ModelVector<Real>::getClassTypeSpec(), "The variable on which the move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
-        move_member_rules.push_back( new ArgumentRule( "sd"    , RealPos::getClassTypeSpec()          , "The standard deviation parameter if available.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
-        move_member_rules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec()          , "The scaling factor (strength) of the proposal.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(1.0) ) );
-        move_member_rules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec()        , "Should we tune the scaling factor during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
+        move_member_rules.push_back( new ArgumentRule( "x"     , ModelVector<RealPos>::getClassTypeSpec(), "The variable on which the move operates."        , ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
+        move_member_rules.push_back( new ArgumentRule( "sd"    , RealPos::getClassTypeSpec()             , "The standard deviation parameter if available."  , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
+        move_member_rules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec()             , "The scaling factor (strength) of the proposal."  , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(1.0) ) );
+        move_member_rules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec()           , "Should we tune the scaling factor during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inherited_rules = Move::getParameterRules();
@@ -136,7 +136,7 @@ const MemberRules& Move_ShrinkExpand::getParameterRules(void) const
 }
 
 /** Get type spec */
-const TypeSpec& Move_ShrinkExpand::getTypeSpec( void ) const
+const TypeSpec& Move_ShrinkExpandScale::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
@@ -146,10 +146,10 @@ const TypeSpec& Move_ShrinkExpand::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void Move_ShrinkExpand::printValue(std::ostream &o) const
+void Move_ShrinkExpandScale::printValue(std::ostream &o) const
 {
     
-    o << "Move_ShrinkExpand(";
+    o << "Move_ShrinkExpandScale(";
     if (x != NULL)
     {
         o << x->getName();
@@ -164,7 +164,7 @@ void Move_ShrinkExpand::printValue(std::ostream &o) const
 
 
 /** Set a member variable */
-void Move_ShrinkExpand::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Move_ShrinkExpandScale::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "x" )
@@ -183,7 +183,8 @@ void Move_ShrinkExpand::setConstParameter(const std::string& name, const RevPtr<
     {
         tune = var;
     }
-    else {
+    else
+    {
         Move::setConstParameter(name, var);
     }
     

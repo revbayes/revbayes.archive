@@ -100,7 +100,7 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
     }
     
     // set the length of the time slices used by the ODE for numerical integration
-    dt = process_age->getValue() / NUM_TIME_SLICES * 50.0;
+    dt = process_age->getValue() / NUM_TIME_SLICES * 10.0;
 
     value->getTreeChangeEventHandler().addListener( this );
 
@@ -415,7 +415,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
                     max = node_likelihood[num_states+i];
                 }
             }
-            max *= num_states;
+//            max *= num_states;
             
             for (size_t i=0; i<num_states; ++i)
             {
@@ -500,12 +500,12 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
         else
         {
             node_likelihood[num_states + i] = left_likelihoods[num_states + i] * right_likelihoods[num_states + i];
-            node_likelihood[num_states + i] *= speciation_node ? speciation_rates[i] : 1.0;
+            node_likelihood[num_states + i] *= (speciation_node ? speciation_rates[i] : 1.0);
         }
     }
     
     // calculate likelihoods for the root branch
-    if ( use_origin )
+    if ( use_origin == true )
     {
         double begin_age = getRootAge();
         double end_age = getOriginAge();
@@ -3069,25 +3069,22 @@ void StateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(stat
         const std::vector<double> &serial_sampling_rates = psi->getValue();
         ode.setSerialSamplingRate( serial_sampling_rates );
     }
-
+    
+//    double dt = root_age->getValue() / NUM_TIME_SLICES * 10;
     typedef boost::numeric::odeint::runge_kutta_dopri5< state_type > stepper_type;
-    boost::numeric::odeint::integrate_adaptive( make_controlled( 1E-6 , 1E-6 , stepper_type() ) , ode , likelihoods , begin_age , end_age , dt );
+    boost::numeric::odeint::integrate_adaptive( make_controlled( 1E-7, 1E-7, stepper_type() ) , ode , likelihoods , begin_age , end_age , dt );
 
     // catch negative extinction probabilities that can result from
     // rounding errors in the ODE stepper
     for (size_t i = 0; i < 2 * num_states; ++i)
     {
         
-//        if ( likelihoods[i] < 0.0 )
-//            std::cerr << "Rounding error (<0)!:\t\t" << likelihoods[i] << "\n";
-//        if ( likelihoods[i] > 1.0 )
-//            std::cerr << "Rounding error (>1)!:\t\t" << likelihoods[i] << "\n";
-        
         // Sebastian: The likelihoods here are probability densities (not log-transformed).
         // These are densities because they are multiplied by the probability density of the speciation event happening.
         likelihoods[i] = ( likelihoods[i] < 0.0 ? 0.0 : likelihoods[i] );
-//        likelihoods[i] = ( likelihoods[i] > 1.0 ? 1.0 : likelihoods[i] );
+        
     }
+    
 }
 
 
