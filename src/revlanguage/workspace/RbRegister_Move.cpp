@@ -52,6 +52,8 @@
 #include "RlMove.h"
 
 /* Moves on real values */
+#include "Move_Mirror.h"
+#include "Move_MirrorMultiplier.h"
 #include "Move_HSRFHyperpriorsGibbs.h"
 #include "Move_HSRFUnevenGridHyperpriorsGibbs.h"
 #include "Move_SliceSampling.h"
@@ -213,6 +215,8 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Regular moves (in folder "datatypes/inference/moves") (grouped by parameter type) */
 
         /* Moves on real values */
+        addTypeWithConstructor( new Move_Mirror() );
+        addTypeWithConstructor( new Move_MirrorMultiplier() );
         addTypeWithConstructor( new Move_Scale() );
         addTypeWithConstructor( new Move_GammaScale() );
         addTypeWithConstructor( new Move_RandomDive() );
@@ -292,7 +296,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_GraphFlipEdge() );
         addTypeWithConstructor( new Move_GraphFlipClique() );
         addTypeWithConstructor( new Move_GraphShiftEdge() );
-        
+
         /* Moves on continuous character data (matrices of real values) */
         addTypeWithConstructor( new Move_ContinuousCharacterDataSlide() );
 
