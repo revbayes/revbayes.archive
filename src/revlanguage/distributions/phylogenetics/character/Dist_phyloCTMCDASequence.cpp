@@ -69,10 +69,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         rf = static_cast<const Simplex &>( rootFrequencies->getRevObject() ).getDagNode();
     }
     
+    bool internal = static_cast<const RlBoolean &>( storeInternalNodes->getRevObject() ).getDagNode();
+    
     if ( dt == "DNA" )
     {
         RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::DnaState> *dist =
-        new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::DnaState>(tau, 4, n, ambig);
+        new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::DnaState>(tau, 4, n, ambig, internal);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -131,7 +133,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     }
     else if ( dt == "RNA" )
     {
-        RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::RnaState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::RnaState>(tau, 4, n, ambig);
+        RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::RnaState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::RnaState>(tau, 4, n, ambig, internal);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -188,7 +190,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     }
     else if ( dt == "AA" || dt == "Protein" )
     {
-        RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::AminoAcidState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::AminoAcidState>(tau, 20, n, ambig);
+        RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::AminoAcidState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::AminoAcidState>(tau, 20, n, ambig, internal);
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
         
@@ -259,7 +261,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             nChars = rm->getValue().getNumberOfStates();
         }
         
-        RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::PomoState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::PomoState>(tau, nChars, n, ambig);
+        RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::PomoState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::PomoState>(tau, nChars, n, ambig, internal);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -330,7 +332,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             nChars = rm->getValue().getNumberOfStates();
         }
         
-        RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::StandardState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::StandardState>(tau, nChars, n, ambig);
+        RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::StandardState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::StandardState>(tau, nChars, n, ambig, internal);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -413,7 +415,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             // RevBayesCore::g_MAX_NAT_NUM_STATES = nChars;
         }
         
-        RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::NaturalNumbersState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::NaturalNumbersState>(tau, nChars, n, ambig);
+        RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::NaturalNumbersState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::NaturalNumbersState>(tau, nChars, n, ambig, internal);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -584,6 +586,8 @@ const MemberRules& Dist_phyloCTMCDASequence::getParameterRules(void) const
         options.push_back( "NaturalNumbers" );
         options.push_back( "Restriction" );
         distMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options, "The data type, used for simulation and initialization." ) );
+    
+        distMemberRules.push_back( new ArgumentRule( "storeInternalNodes", RlBoolean::getClassTypeSpec(), "Should we store internal node states in the character matrix?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
         distMemberRules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), "Should we treat ambiguous characters as gaps/missing?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
@@ -689,6 +693,10 @@ void Dist_phyloCTMCDASequence::setConstParameter(const std::string& name, const 
     else if ( name == "type" )
     {
         type = var;
+    }
+    else if ( name == "storeInternalNodes" )
+    {
+        storeInternalNodes = var;
     }
     else if ( name == "treatAmbiguousAsGap" )
     {
