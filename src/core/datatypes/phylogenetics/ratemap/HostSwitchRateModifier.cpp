@@ -58,24 +58,37 @@ double HostSwitchRateModifier::computeRateMultiplier(std::vector<CharacterEvent*
     // loss event (independent of other hosts)
     if (from_state > to_state)
     {
+//        size_t num_one = sites_with_states[1].size();
+//        size_t num_two = sites_with_states[2].size();
         
         // repertoire must contain at least a single 2 (actual host)
-        // if the current repertoire contains one 2,
-        // and if our event causes the loss of state 2
-        if (sites_with_states[2].size() == 1 && from_state==2)
-        {
-            // cannot enter the null range (conditions on survival)
-            r = 0.0;
-            return r;
-        }
-        else
-        {
-            r = 1.0;
-            return r;
-        }
+//        if (num_two == 1 && from_state==2 && to_state==1)
+//        {
+//            // rate entering 0/1-repertoire is zero
+//            r = 0.0;
+//            return r;
+//        }
+//        else
+//        if (num_two == 0) {
+//            // rate leaving 0/1-repertoire is zero
+//            r = 0.0;
+//            return r;
+//        }
+//        else
+//        {
+//            r = 1.0;
+//            return r;
+//        }
+        return 1.0;
     }
     else
     {
+        // rate of leaving 0/1-repertoire equals zero
+        size_t num_two = sites_with_states[2].size();
+        if (num_two == 0) {
+            return 0.0;
+        }
+        
         // gain event
         double scaler_value = scale[ to_state - 1 ];
         
