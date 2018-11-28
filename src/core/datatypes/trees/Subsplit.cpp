@@ -147,16 +147,22 @@ bool Subsplit::operator>=(const Subsplit &s) const
 Clade Subsplit::asClade( void ) const
 {
     Clade total;
-    for (size_t i=0; i<clade_y.size(); ++i)
+    if (is_fake)
     {
-      total.addTaxon(clade_y.getTaxon(i));
+      total.addTaxon(clade_y.getTaxon(0));
     }
-
-    for (size_t i=0; i<clade_z.size(); ++i)
+    else
     {
-      total.addTaxon(clade_z.getTaxon(i));
-    }
+      for (size_t i=0; i<clade_y.size(); ++i)
+      {
+        total.addTaxon(clade_y.getTaxon(i));
+      }
 
+      for (size_t i=0; i<clade_z.size(); ++i)
+      {
+        total.addTaxon(clade_z.getTaxon(i));
+      }
+    }
     return total;
 }
 
@@ -178,7 +184,6 @@ Subsplit* Subsplit::clone(void) const
  */
 Clade Subsplit::getY( void ) const
 {
-
     return clade_y;
 }
 
@@ -189,8 +194,14 @@ Clade Subsplit::getY( void ) const
  */
 Clade Subsplit::getZ( void ) const
 {
-
-    return clade_z;
+    if (!is_fake)
+    {
+      return clade_z;
+    }
+    else
+    {
+      throw(RbException("Cannot access subsplit clade Z from a fake subsplit."));
+    }
 }
 
 /**
@@ -202,11 +213,14 @@ bool Subsplit::isCompatible(const Subsplit &s) const
 {
     // A subsplit s is compatible with another subsplit t if the clades in s sum to be one of the clades of t
     Clade c = s.asClade();
-    if ( c == clade_y || c == clade_z )
+    if ( c == clade_y )
     {
         return true;
     }
-
+    else if (!is_fake && c == clade_z) // Don't compare to clade Z if there is no clade Z
+    {
+      return true;
+    }
     return false;
 }
 
@@ -227,7 +241,14 @@ bool Subsplit::isFake() const
  */
 size_t Subsplit::size(void) const
 {
-    return clade_y.size() + clade_z.size();
+    if (is_fake)
+    {
+      return(clade_y.size());
+    }
+    else
+    {
+      return clade_y.size() + clade_z.size();
+    }
 }
 
 
@@ -238,8 +259,16 @@ size_t Subsplit::size(void) const
  */
 std::string Subsplit::toString( void ) const
 {
-    std::string s = clade_y.toString() + clade_z.toString();
+    std::string s;
 
+    if (is_fake)
+    {
+      s = clade_y.toString() + "|" clade_y.toString();
+    }
+    else
+    {
+      s = clade_y.toString() + "|" + clade_z.toString();
+    }
     return s;
 }
 
