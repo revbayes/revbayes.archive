@@ -90,7 +90,7 @@ double HalfRandomDiveProposal::doProposal( void )
     double epsilon  = RbStatistics::Beta::rv(lambda, 1.0, *rng);
     while ( epsilon == 0.0 || epsilon == 1.0 )
     {
-        epsilon  = epsilon  = RbStatistics::Beta::rv(lambda, 1.0, *rng);
+        epsilon  = RbStatistics::Beta::rv(lambda, 1.0, *rng);
     }
     
     double u = rng->uniform01();
