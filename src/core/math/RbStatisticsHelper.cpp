@@ -497,32 +497,32 @@ double RbStatistics::Helper::rndGamma(double s, RandomNumberGenerator& rng) {
 double RbStatistics::Helper::rndGamma1(double s, RandomNumberGenerator& rng)
 {
     
-	double			r, x = 0.0, small = 1e-37, w;
-	static double   a, p, uf, ss = 10.0, d;
-	
-	if (s != ss) {
-		a  = 1.0 - s;
-		p  = a / (a + s * exp(-a));
-		uf = p * pow(small / a, s);
-		d  = a * log(a);
-		ss = s;
+    double r, x = 0.0, small = 1e-37, w;
+    static double   a, p, uf, ss = 10.0, d;
+
+    if (s != ss) {
+        a  = 1.0 - s;
+        p  = a / (a + s * exp(-a));
+        uf = p * pow(small / a, s);
+        d  = a * log(a);
+        ss = s;
     }
-	for (;;) {
-		r = rng.uniform01();
-		if (r > p)        
-			x = a - log((1.0 - r) / (1.0 - p)), w = a * log(x) - d;
-		else if (r>uf)  
-			x = a * pow(r / p, 1.0 / s), w = x;
-		else            
-			return (0.0);
-		r = rng.uniform01();
-		if (1.0 - r <= w && r > 0.0)
+    for (;;) {
+        r = rng.uniform01();
+        if (r > p)
+            x = a - log((1.0 - r) / (1.0 - p)), w = a * log(x) - d;
+        else if (r>uf)
+            x = a * pow(r / p, 1.0 / s), w = x;
+        else
+            return (0.0);
+        r = rng.uniform01();
+        if (1.0 - r <= w && r > 0.0)
             if (r*(w + 1.0) >= 1.0 || -log(r) <= w)  
                 continue;
-		break;
+        break;
     }
     
-	return (x);
+    return (x);
 }
 
 /*!
@@ -533,30 +533,31 @@ double RbStatistics::Helper::rndGamma1(double s, RandomNumberGenerator& rng)
  * \return Returns a gamma-distributed random variable. 
  * \throws Does not throw an error.
  */
-double RbStatistics::Helper::rndGamma2(double s, RandomNumberGenerator& rng) {
+double RbStatistics::Helper::rndGamma2(double s, RandomNumberGenerator& rng)
+{
     
-	double			r, d, f, g, x;
-	static double	b, h, ss = 0.0;
-	
-	if (s != ss) {
-		b  = s - 1.0;
-		h  = sqrt(3.0 * s - 0.75);
-		ss = s;
+    double              r, d, f, g, x;
+    static double       b, h, ss = 0.0;
+
+    if (s != ss) {
+        b  = s - 1.0;
+        h  = sqrt(3.0 * s - 0.75);
+        ss = s;
     }
-	for (;;) {
-		r = rng.uniform01();
-		g = r - r * r;
-		f = (r - 0.5) * h / sqrt(g);
-		x = b + f;
-		if (x <= 0.0) 
-			continue;
-		r = rng.uniform01();
-		d = 64.0 * r * r * g * g * g;
-		if (d * x < x - 2.0 * f * f || log(d) < 2.0 * (b * log(x / b) - f))  
-			break;
+    for (;;) {
+        r = rng.uniform01();
+        g = r - r * r;
+        f = (r - 0.5) * h / sqrt(g);
+        x = b + f;
+        if (x <= 0.0)
+            continue;
+        r = rng.uniform01();
+        d = 64.0 * r * r * g * g * g;
+        if (d * x < x - 2.0 * f * f || log(d) < 2.0 * (b * log(x / b) - f))  
+            break;
     }
     
-	return x;
+    return x;
 }
 
 /*!
