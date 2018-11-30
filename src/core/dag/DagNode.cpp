@@ -21,7 +21,13 @@ DagNode::DagNode( const std::string &n ) : Parallelizable(),
     name( n ),
     prior_only( false ),
     touched_elements(),
+    visit_affected_node( true ),
+    visit_affected_count( 0 ),
+    visit_keep_count( 0 ),
+    visit_restore_count( 0 ),
+    visit_touch_count( 0 ),
     ref_count( 0 )
+
 {
     
 }
@@ -44,6 +50,10 @@ DagNode::DagNode( const DagNode &n ) : Parallelizable( n ),
     name( n.name ),
     prior_only( n.prior_only ),
     touched_elements( n.touched_elements ),
+    visit_affected_node( n.visit_affected_node ),
+    visit_affected_count( n.visit_affected_count ),
+    visit_keep_count( n.visit_keep_count ),
+    visit_restore_count( n.visit_restore_count ),
     ref_count( 0 )
 {
     
@@ -87,6 +97,10 @@ DagNode& DagNode::operator=(const DagNode &d)
         hidden          = d.hidden;
         prior_only       = d.prior_only;
         touched_elements = d.touched_elements;
+        visit_affected_node = d.visit_affected_node;
+        visit_affected_count = d.visit_affected_count;
+        visit_keep_count = d.visit_keep_count;
+        visit_restore_count = d.visit_restore_count;
     }
     
     return *this;
@@ -238,12 +252,33 @@ void DagNode::executeMethod(const std::string &n, const std::vector<const DagNod
 void DagNode::getAffectedNodes(RbOrderedSet<DagNode *> &affected)
 {
     
+    // increment visit count
+//    visit_affected_count += 1;
+    
     // get all my affected children
     for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); ++i )
     {
-        (*i)->getAffected(affected, this);
+        DagNode* child = *i;
+        
+        // visit child only if it has not yet been visited
+        if (child->visit_affected_count == 0) {
+            child->getAffected(affected, this);
+        }
+        
+        // increment visit count for child
+        child->visit_affected_count += 1;
+        
+        // clear visit count for child after visited by all parents
+        if ( child->visit_affected_count >= child->getParents().size() ) {
+            child->visit_affected_count = 0;
+        }
     }
     
+//    size_t n_parents = getParents().size();
+//    if (visit_affected_count >= n_parents)
+//    {
+//        visit_affected_count = 0;
+//    }
 }
 
 
@@ -540,7 +575,24 @@ void DagNode::keepAffected()
     // keep all my children
     for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
     {
-        (*i)->keepMe( this );
+        
+        DagNode* child = *i;
+        
+        // visit child only if it has not yet been visited
+        if (child->visit_keep_count == 0) {
+            child->keepMe( this );
+//            child->getAffected(affected, this);
+        }
+        
+        // increment visit count for child
+        child->visit_keep_count += 1;
+        
+        // clear visit count for child after visited by all parents
+        if ( child->visit_keep_count >= child->getParents().size() ) {
+            child->visit_keep_count = 0;
+        }
+        
+//        (*i)->keepMe( this );
     }
     
 }
@@ -848,7 +900,24 @@ void DagNode::restoreAffected(void)
     // next, restore all my children
     for ( std::vector<DagNode *>::iterator i = children.begin(); i != children.end(); i++ )
     {
-        (*i)->restoreMe( this );
+        
+        DagNode* child = *i;
+        
+        // visit child only if it has not yet been visited
+        if (child->visit_restore_count == 0) {
+            child->restoreMe( this );
+            //            child->getAffected(affected, this);
+        }
+        
+        // increment visit count for child
+        child->visit_restore_count += 1;
+        
+        // clear visit count for child after visited by all parents
+        if ( child->visit_restore_count >= child->getParents().size() ) {
+            child->visit_restore_count = 0;
+        }
+        
+//        (*i)->restoreMe( this );
     }
     
 }
