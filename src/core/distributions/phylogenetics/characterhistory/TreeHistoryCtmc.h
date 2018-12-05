@@ -29,7 +29,7 @@ namespace RevBayesCore {
 
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
-        TreeHistoryCtmc(const TypedDagNode<Tree> *t, size_t nChars, size_t nSites, bool useAmbigChar=false);
+        TreeHistoryCtmc(const TypedDagNode<Tree> *t, size_t nChars, size_t nSites, bool useAmbigChar=false, bool internal=false);
         TreeHistoryCtmc(const TreeHistoryCtmc &n);                                                                              //!< Copy constructor
         virtual                                                            ~TreeHistoryCtmc(void);                                      //!< Virtual destructor
 
@@ -121,6 +121,7 @@ namespace RevBayesCore {
         bool                                                                tipsInitialized;
         bool                                                                branchHeterogeneousClockRates;
         bool                                                                useDirtyNodes;
+        bool                                                                store_internal_nodes;
 
         charType                                                            template_state;                                 //!< Template state used for ancestral state estimation. This makes sure that the state labels are preserved.
 
@@ -146,7 +147,7 @@ namespace RevBayesCore {
 
 
 template<class charType>
-RevBayesCore::TreeHistoryCtmc<charType>::TreeHistoryCtmc(const TypedDagNode<Tree> *t, size_t nChars, size_t nSites, bool useAmbigChar) : TypedDistribution< AbstractHomologousDiscreteCharacterData >(  new HomologousDiscreteCharacterData<charType>() ),
+RevBayesCore::TreeHistoryCtmc<charType>::TreeHistoryCtmc(const TypedDagNode<Tree> *t, size_t nChars, size_t nSites, bool useAmbigChar, bool internal) : TypedDistribution< AbstractHomologousDiscreteCharacterData >(  new HomologousDiscreteCharacterData<charType>() ),
     num_states( nChars ),
     num_sites( nSites ),
     num_site_rates( 1 ),
@@ -163,7 +164,8 @@ RevBayesCore::TreeHistoryCtmc<charType>::TreeHistoryCtmc(const TypedDagNode<Tree
     treatAmbiguousAsGaps( true ),
     tipsInitialized( false ),
     useDirtyNodes(false),
-    rootBranchLengthMultiplier(1)
+    rootBranchLengthMultiplier(1),
+    store_internal_nodes( internal )
 {
     // initialize with default parameters
     homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
@@ -213,7 +215,8 @@ RevBayesCore::TreeHistoryCtmc<charType>::TreeHistoryCtmc(const TreeHistoryCtmc &
     treatAmbiguousAsGaps( n.treatAmbiguousAsGaps ),
     tipsInitialized( n.tipsInitialized ),
     template_state( n.template_state ),
-    rootBranchLengthMultiplier( n.rootBranchLengthMultiplier )
+    rootBranchLengthMultiplier( n.rootBranchLengthMultiplier ),
+    store_internal_nodes( n.store_internal_nodes )
 {
     
     homogeneousClockRate        = n.homogeneousClockRate;
@@ -829,11 +832,24 @@ void RevBayesCore::TreeHistoryCtmc<charType>::simulate(void)
 
     simulate(nd, bh, taxa);
 
-    // add the taxon data to the character data
+    // add the taxon data for tips to the character data
     for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
     {
         this->value->addTaxonData( taxa[i] );
         //        this->value->getTaxonData( tau->getValue().getNodes()[i]->getName() );
+    }
+    // add the taxon data for internal nodes to character data
+    if (store_internal_nodes) {
+        std::vector<TopologyNode*> nodes = tau->getValue().getNodes();
+        for (size_t i = tau->getValue().getNumberOfTips()+1; i < tau->getValue().getNumberOfNodes(); ++i)
+        {
+            std::stringstream ss;
+            size_t node_index = nodes[i]->getIndex();
+            ss << "Index_" << node_index + 1;
+            taxa[node_index].setTaxon( Taxon(ss.str()) );
+            this->value->addTaxonData( taxa[node_index] );
+            //        this->value->getTaxonData( tau->getValue().getNodes()[i]->getName() );
+        }
     }
 
     TypedDistribution< AbstractHomologousDiscreteCharacterData >::setValue(this->value);
