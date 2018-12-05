@@ -299,6 +299,9 @@ std::string RevBayesCore::CharacterHistorySummaryMonitor<charType>::buildIterati
                     curr_state_ss << static_cast<CharacterEventDiscrete*>( start_states[i] )->getState();
                     next_state_ss << static_cast<CharacterEventDiscrete*>( next_states[i] )->getState();
                 }
+//                std::stringstream tmp;
+//                tmp << n->getIndex() << "  " << branch_start_time_ss.str() << "," << branch_end_time_ss.str() << "," << evt->getAge() << " : " << curr_state_ss.str() << " -> " << next_state_ss.str() << "\n";
+//                std::cout << tmp.str();
                 
                 o << ss_prefix.str() << separator;
                 o << curr_state_ss.str() << separator;
@@ -440,6 +443,7 @@ void RevBayesCore::CharacterHistorySummaryMonitor<charType>::printHeader()
     outStream << separator << "parent_index";
     outStream << separator << "child1_index";
     outStream << separator << "child2_index";
+    outStream << std::endl;
 
 }
 
