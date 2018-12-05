@@ -53,6 +53,7 @@
 #include "Mntr_StochasticBranchStateTimes.h"
 #include "Mntr_CharacterHistoryNewickFile.h"
 #include "Mntr_CharacterHistoryNhxFile.h"
+#include "Mntr_CharacterHistorySummary.h"
 
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeMonitorGlobalWorkspace(void)
@@ -74,9 +75,10 @@ void RevLanguage::Workspace::initializeMonitorGlobalWorkspace(void)
         addTypeWithConstructor( new Mntr_Screen()                               );
         addTypeWithConstructor( new Mntr_StochasticBranchRate()                 );
         addTypeWithConstructor( new Mntr_StochasticVariable()                   );
-        addTypeWithConstructor( new Mntr_StochasticBranchStateTimes()         );
+        addTypeWithConstructor( new Mntr_StochasticBranchStateTimes()           );
         addTypeWithConstructor( new Mntr_CharacterHistoryNewickFile()           );
         addTypeWithConstructor( new Mntr_CharacterHistoryNhxFile()              );
+        addTypeWithConstructor( new Mntr_CharacterHistorySummary()              );
 
     }
     catch(RbException& rbException)

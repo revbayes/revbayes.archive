@@ -409,25 +409,25 @@ void RevBayesCore::CharacterHistorySummaryMonitor<charType>::printHeader()
 {
     
     // print one column for the iteration number
-    outStream << "Iter";
+    outStream << "iteration";
     
     if ( posterior )
     {
         // add a separator before every new element
         outStream << separator;
-        outStream << "Posterior";
+        outStream << "posterior";
     }
     
     if ( likelihood ) {
         // add a separator before every new element
         outStream << separator;
-        outStream << "Likelihood";
+        outStream << "likelihood";
     }
     
     if ( prior ) {
         // add a separator before every new element
         outStream << separator;
-        outStream << "Prior";
+        outStream << "prior";
     }
     
     outStream << separator << "node_index";
@@ -440,10 +440,7 @@ void RevBayesCore::CharacterHistorySummaryMonitor<charType>::printHeader()
     outStream << separator << "parent_index";
     outStream << separator << "child1_index";
     outStream << separator << "child2_index";
-//    outStream << separator << "character_index";
-    
-    // end line of stream
-//    outStream << std::endl;
+
 }
 
 template<class charType>
