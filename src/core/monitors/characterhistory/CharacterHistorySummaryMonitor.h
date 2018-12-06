@@ -287,8 +287,8 @@ std::string RevBayesCore::CharacterHistorySummaryMonitor<charType>::buildIterati
         // anagenetic events along branch
         if (has_anagenetic) {
             std::vector<CharacterEvent*> next_states = start_states;
-            std::multiset<CharacterEvent*, CharacterEventCompare>::iterator it;
-            for (it = h.begin(); it != h.end(); it++)
+            std::multiset<CharacterEvent*, CharacterEventCompare>::reverse_iterator it;
+            for (it = h.rbegin(); it != h.rend(); it++)
             {
                 std::stringstream curr_state_ss;
                 std::stringstream next_state_ss;
