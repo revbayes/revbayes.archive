@@ -1,6 +1,9 @@
 project('RevBayes', ['cpp', 'c'],
         version: '1.0.9',
-        default_options: [ 'cpp_std=c++14' ],
+        default_options: [
+	  'buildtype=release',
+	  'cpp_std=c++14'
+	],
         meson_version: '>= 0.47',
         license: 'GPLv2')
 
