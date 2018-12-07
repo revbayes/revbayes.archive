@@ -11,8 +11,10 @@ cpp = meson.get_compiler('cpp')
 cc = meson.get_compiler('c')
 
 
-add_project_arguments(['-O3','-msse','-msse2','-msse3'], language : 'cpp')
-add_project_arguments(['-O3'], language : 'c')
+if get_option('buildtype') == 'release' or get_option('buildtype') == 'plain'
+  add_project_arguments(['-O3','-msse','-msse2','-msse3'], language : 'cpp')
+  add_project_arguments(['-O3'], language : 'c')
+endif
 
 if get_option('buildtype') == 'debug' or get_option('buildtype') == 'debugoptimized'
   # FIXME: -Woverloaded-virtual is useful, but has too many false-positives with GCC?
