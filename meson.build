@@ -18,15 +18,20 @@ endif
 
 if get_option('buildtype') == 'debug' or get_option('buildtype') == 'debugoptimized'
   # FIXME: -Woverloaded-virtual is useful, but has too many false-positives with GCC?
-  add_project_arguments(['-Wall','-Wno-sign-compare','-Wno-unknown-pragmas',
-			 # These could be bugs, but there are so many we can't see the really bad ones. So, disable them for now.
-			 '-Wno-reorder',
-			 # Not necessarily a bug
-			 '-Wno-unused-variable','-Wno-unused-but-set-variable',
-			 # These bugs are very hard to track down
+  add_project_arguments(['-Wall',
+			 # These bugs are very hard to track down:
 			 '-Wstrict-aliasing'],
 			language : 'cpp')
 endif
+
+# Disable some warnings
+add_project_arguments([# These just add noise:
+		       '-Wno-sign-compare','-Wno-unknown-pragmas',
+		       # These could be bugs, but there are so many we can't see the really bad ones. So, disable them for now:
+		       '-Wno-reorder',
+		       # Not necessarily a bug:
+		       '-Wno-unused-variable','-Wno-unused-but-set-variable'],
+		      language : 'cpp')
 
 # Handle file too large error when cross-compiling to windows
 if host_machine.system() == 'windows'
