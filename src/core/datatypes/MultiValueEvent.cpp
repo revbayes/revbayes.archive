@@ -215,8 +215,16 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RevBayesCore::Mult
         for (size_t i=0; i<v.size(); ++i)
         {
             o << v[i];
+            if ( i != (v.size()-1) )
+            {
+                o << ", ";
+            }
         }
         o << "]";
+        if ( j != x.getNumberOfValues()-1 )
+        {
+            o << "\n";
+        }
     }
     
     return o;

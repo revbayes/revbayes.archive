@@ -93,11 +93,16 @@ void MultiValueEventDistribution::executeMethod(const std::string &n, const std:
         rv = value->getValues( val_name );
         
     }
-    //    else if ( n == "getValues" )
-    //    {
-    //
-    //
-    //    }
+    else if ( n == "getRealValues" )
+    {
+        const std::string &val_name = static_cast<const TypedDagNode<std::string> * >( args[0] )->getValue();
+        rv = value->getValues( val_name );
+    }
+    else if ( n == "getRealPosValues" )
+    {
+        const std::string &val_name = static_cast<const TypedDagNode<std::string> * >( args[0] )->getValue();
+        rv = value->getValues( val_name );
+    }
     else
     {
         throw RbException("The multi-value event does not have a member method called '" + n + "'.");
@@ -153,10 +158,13 @@ void MultiValueEventDistribution::simulate()
     for (int j = 0; j < value_priors.size(); ++j)
     {
         
-        std::vector<double>      these_values   = std::vector<double>(value->getNumberOfEvents(), 0.0);
+        long this_num_values = min_events[j] + value->getNumberOfEvents();
+        
+        std::vector<double>      these_values   = std::vector<double>(this_num_values, 0.0);
         const std::string       &this_name      = names[j];
         TypedDistribution<double>   *this_prior = value_priors[j];
-        for (long i = 0; i < value->getNumberOfEvents(); ++i)
+
+        for (long i = 0; i < this_num_values; ++i)
         {
         
             // we also need to multiply with the probability of the value for this table

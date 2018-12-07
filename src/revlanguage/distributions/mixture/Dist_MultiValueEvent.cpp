@@ -5,6 +5,7 @@
 #include "MultiValueEventDistribution.h"
 #include "Natural.h"
 #include "Probability.h"
+#include "RlDistributionMemberFunction.h"
 #include "RlString.h"
 #include "StochasticNode.h"
 #include "WorkspaceVector.h"
@@ -228,6 +229,29 @@ std::string Dist_MultiValueEvent::getHelpTitle(void) const
     std::string title = "MultiValueEvent Distribution";
     
     return title;
+}
+
+
+
+MethodTable Dist_MultiValueEvent::getDistributionMethods( void ) const
+{
+    
+    MethodTable methods = TypedDistribution<MultiValueEvent>::getDistributionMethods();
+    
+    // member functions
+    ArgumentRules* get_real_values_arg_rules = new ArgumentRules();
+    get_real_values_arg_rules->push_back( new ArgumentRule( "name", RlString::getClassTypeSpec(), "The name of the value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new DistributionMemberFunction<Dist_MultiValueEvent, ModelVector<Real> >( "getRealValues", this->variable, get_real_values_arg_rules, true ) );
+
+    ArgumentRules* get_real_pos_values_arg_rules = new ArgumentRules();
+    get_real_pos_values_arg_rules->push_back( new ArgumentRule( "name", RlString::getClassTypeSpec(), "The name of the value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new DistributionMemberFunction<Dist_MultiValueEvent, ModelVector<RealPos> >( "getRealPosValues", this->variable, get_real_pos_values_arg_rules, true ) );
+
+    ArgumentRules* get_num_events_arg_rules = new ArgumentRules();
+    methods.addFunction( new DistributionMemberFunction<Dist_MultiValueEvent, Natural >( "getNumberOfEvents", this->variable, get_num_events_arg_rules, true ) );
+    
+    
+    return methods;
 }
 
 
