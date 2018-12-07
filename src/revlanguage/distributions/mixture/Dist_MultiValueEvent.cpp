@@ -49,7 +49,8 @@ Dist_MultiValueEvent* Dist_MultiValueEvent::clone( void ) const
 RevBayesCore::MultiValueEventDistribution* Dist_MultiValueEvent::createDistribution( void ) const
 {
     // get the parameters
-    const WorkspaceVector<TypedDistribution<Real> >& rl_vp                   = static_cast<const WorkspaceVector<TypedDistribution<Real> > &>( value_priors->getRevObject() );
+//    const WorkspaceVector<TypedDistribution<Real> >& rl_vp                   = static_cast<const WorkspaceVector<TypedDistribution<Real> > &>( value_priors->getRevObject() );
+    const WorkspaceVector<Distribution>& rl_vp                   = static_cast<const WorkspaceVector<Distribution > &>( value_priors->getRevObject() );
     std::vector<RevBayesCore::TypedDistribution<double>* > vp;
     for (size_t i=0; i<rl_vp.size();++i)
     {
@@ -248,7 +249,8 @@ const MemberRules& Dist_MultiValueEvent::getParameterRules(void) const
     {
         
         dist_member_rules.push_back( new ArgumentRule( "eventDistribution", TypedDistribution<Natural>::getClassTypeSpec(), "The prior on the number of events.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        dist_member_rules.push_back( new ArgumentRule( "valueDistribution", WorkspaceVector< TypedDistribution<Real> >::getClassTypeSpec(), "The base distribution for the per category values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+//        dist_member_rules.push_back( new ArgumentRule( "valueDistribution", WorkspaceVector< TypedDistribution<Real> >::getClassTypeSpec(), "The base distribution for the per category values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "valueDistribution", WorkspaceVector< Distribution >::getClassTypeSpec(), "The base distribution for the per category values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         dist_member_rules.push_back( new ArgumentRule( "names", ModelVector<RlString>::getClassTypeSpec(), "The names of the values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         dist_member_rules.push_back( new ArgumentRule( "minNumberEvents", ModelVector<Natural>::getClassTypeSpec(), "The minum number of values per value category.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
