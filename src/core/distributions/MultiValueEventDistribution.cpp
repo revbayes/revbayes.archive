@@ -42,6 +42,86 @@ MultiValueEventDistribution::MultiValueEventDistribution(TypedDistribution<long>
 
 
 
+MultiValueEventDistribution::MultiValueEventDistribution(const MultiValueEventDistribution &d) : TypedDistribution<MultiValueEvent>( d ),
+    event_prior( d.event_prior->clone() ),
+    min_events( d.min_events ),
+    names( d.names ),
+    value_priors()
+{
+    
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    const std::vector<const DagNode*>& even_prior_pars = event_prior->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = even_prior_pars.begin(); it != even_prior_pars.end(); ++it)
+    {
+        this->addParameter( *it );
+    }
+    
+    // add the parameters of the distribution
+    for ( size_t i=0; i<d.value_priors.size(); ++i )
+    {
+        // first we need to clone the base distribution
+        value_priors.push_back( d.value_priors[i]->clone() );
+        
+        const std::vector<const DagNode*>& value_prior_pars = value_priors[i]->getParameters();
+        for (std::vector<const DagNode*>::const_iterator it = value_prior_pars.begin(); it != value_prior_pars.end(); ++it)
+        {
+            this->addParameter( *it );
+        }
+    }
+    
+}
+
+
+
+MultiValueEventDistribution& MultiValueEventDistribution::operator=(const MultiValueEventDistribution &d)
+{
+    
+    if ( this != &d )
+    {
+        TypedDistribution<MultiValueEvent>::operator=( d );
+        
+        delete event_prior;
+        for ( size_t i=0; i<value_priors.size(); ++i )
+        {
+            TypedDistribution<double> *tmp_dist = value_priors[i];
+            delete tmp_dist;
+        }
+        
+        event_prior         = d.event_prior->clone();
+        min_events          = d.min_events;
+        names               = d.names;
+        value_priors.clear();
+        
+        // add the parameters of the distribution
+        for ( size_t i=0; i<d.value_priors.size(); ++i )
+        {
+            // first we need to clone the base distribution
+            value_priors.push_back( d.value_priors[i]->clone() );
+        }
+        
+    }
+    
+    return *this;
+}
+
+
+MultiValueEventDistribution::~MultiValueEventDistribution( void )
+{
+    
+    delete event_prior;
+    for ( size_t i=0; i<value_priors.size(); ++i )
+    {
+        TypedDistribution<double> *tmp_dist = value_priors[i];
+        delete tmp_dist;
+    }
+    
+}
+
+
+
+
 MultiValueEventDistribution* MultiValueEventDistribution::clone( void ) const
 {
     
@@ -194,14 +274,37 @@ void MultiValueEventDistribution::redrawValue( void )
 void MultiValueEventDistribution::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     
-    event_prior->swapParameter(oldP,newP);
+    bool found = false;
+    try {
+        event_prior->swapParameter(oldP,newP);
+        // if the statement succeeded and didn't throw an error, then the distribution had this parameter
+        found = true;
+    }
+    catch ( RbException e )
+    {
+        // do nothing because we actually do not know who had the parameter
+    }
     
     for (int j = 0; j < value_priors.size(); ++j)
     {
         
-        TypedDistribution<double>   *this_prior = value_priors[j];
-        this_prior->swapParameter(oldP,newP);
+        TypedDistribution<double> *this_prior = value_priors[j];
+        try {
+            this_prior->swapParameter(oldP,newP);
+            // if the statement succeeded and didn't throw an error, then the distribution had this parameter
+            found = true;
+        }
+        catch ( RbException e )
+        {
+            // do nothing because we actually do not know who had the parameter
+        }
     
+    }
+    
+    
+    if ( found == false )
+    {
+        throw RbException("Could not find the distribution parameter to be swapped: " + oldP->getName() + " to " + newP->getName()) ;
     }
     
 }
