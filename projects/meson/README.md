@@ -161,6 +161,9 @@ To do a cross-build from linux to windows, we need to
               xz-5.2.4-1 \
               libiconv-1.15-3 \
               libffi-3.2.1-3 \
+              libthai-0.1.28-2 \
+              libdatrie-0.2.12-1 \
+              libwinpthread-git-7.0.0.5273.3e5acf5d-1 \
               ; do
       wget http://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-${PKG}-any.pkg.tar.xz
       tar -Jxf mingw-w64-x86_64-${PKG}-any.pkg.tar.xz
