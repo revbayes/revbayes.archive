@@ -263,7 +263,7 @@ std::string Subsplit::toString( void ) const
 
     if (is_fake)
     {
-      s = clade_y.toString() + "|" clade_y.toString();
+      s = clade_y.toString() + "|" + clade_y.toString();
     }
     else
     {

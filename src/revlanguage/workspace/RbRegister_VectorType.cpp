@@ -60,6 +60,7 @@
 
 /* Tree types (in folder "datatypes/phylogenetics/trees") */
 #include "RlClade.h"
+#include "RlSubsplit.h"
 #include "RlRootedTripletDistribution.h"
 
 
@@ -84,10 +85,10 @@
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeVectorTypeGlobalWorkspace(void)
 {
-    
+
     try
     {
-        
+
         AddWorkspaceVectorType<Taxon,4>::addTypeToWorkspace( *this, new Taxon() );
         AddWorkspaceVectorType<RateGenerator,3>::addTypeToWorkspace( *this, new RateGenerator() );
         AddWorkspaceVectorType<CladogeneticProbabilityMatrix,3>::addTypeToWorkspace( *this, new CladogeneticProbabilityMatrix() );
@@ -103,21 +104,22 @@ void RevLanguage::Workspace::initializeVectorTypeGlobalWorkspace(void)
         AddWorkspaceVectorType<BranchLengthTree,3>::addTypeToWorkspace( *this, new BranchLengthTree() );
         AddWorkspaceVectorType<Tree,3>::addTypeToWorkspace( *this, new Tree() );
         AddWorkspaceVectorType<Clade,3>::addTypeToWorkspace( *this, new Clade() );
+        AddWorkspaceVectorType<Subsplit,3>::addTypeToWorkspace( *this, new Subsplit() );
         //        AddWorkspaceVectorType<Dist_bdp,3>::addTypeToWorkspace( *this, new Dist_bdp() );
-        
-        
+
+
     }
     catch(RbException& rbException)
     {
-        
+
         RBOUT("Caught an exception while initializing types in the workspace\n");
         std::ostringstream msg;
         rbException.print(msg);
         msg << std::endl;
         RBOUT(msg.str());
-        
+
         RBOUT("Please report this bug to the RevBayes Development Core Team");
-        
+
         RBOUT("Press any character to exit the program.");
         getchar();
         exit(1);
