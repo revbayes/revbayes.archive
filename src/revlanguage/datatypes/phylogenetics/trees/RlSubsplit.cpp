@@ -171,11 +171,10 @@ std::string Subsplit::getHelpDescription(void) const
 std::string Subsplit::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::string details = "getHelpDetails still needs implementing";
-    // details += "Subsplits are defined in terms of a taxon set and a shared tree topology. In phylogenetic ";
-    // details += "analyses, clades are generally used (a) to constrain tree topologies to match provided ";
-    // details += "taxon relationships, (b) to identify the most recent common ancestor of a taxon set ";
-    // details += "within a phylogeny, or (c) to apply node age calibrations on particular nodes in the phylogeny.";
+    std::string details = "";
+    details += "Subsplits are defined in terms of clades, and represent the splitting of a clade into ";
+    details += "two sister clades. Internally, these clades are sorted alphabetically. Subsplits are ";
+    details += "primarily for use with the SBN distributions on trees.";
 
     return details;
 }
@@ -189,24 +188,19 @@ std::string Subsplit::getHelpDetails(void) const
 std::string Subsplit::getHelpExample(void) const
 {
     // create an example as a single string variable.
-    std::string example = "getHelpExample still needs implementing";
+    std::string example = "";
 
-    // example += "# read in a tree\n";
-    // example += "phy = readTrees(\"primates.tre\")[1]\n";
-    // example += "# get taxa from the tree\n";
-    // example += "taxa = phy.taxa()\n";
-    // example += "# create a clade for (1,2) using taxon objects\n";
-    // example += "clade_12 = clade( taxa[1], taxa[2] )\n";
-    // example += "# create a clade for (1,2,3)\n";
-    // example += "clade_123 = clade( taxa[3], clade_12 )\n";
-    // example += "# create a clade for (4,5) using taxon names\n";
-    // example += "clade_45 = clade( \"Taxon_4\", \"Taxon_5\" )\n";
-    // example += "# create a negative clade constraint\n";
-    // example += "clade_not_23 = clade( taxa[2], taxa[3], negative=true )\n";
-    // example += "# create an optional clade constraint\n";
-    // example += "clade_67 = clade( taxa[6], taxa[7] )\n";
-    // example += "clade_68 = clade( taxa[6], taxa[8] )\n";
-    // example += "clade_67_or_68 = clade( clade_67, clade_68, optional_match=true )\n";
+    example += "# create two clades\n";
+    example += "clade_1 = clade( 't1', 't2' )\n";
+    example += "clade_2 = clade( 't3', 't4' )\n";
+    example += "# create a subsplit from the clades\n";
+    example += "subsplit_1 = subsplit( clade_1, clade_2 )\n";
+    example += "# note that we can reverse the ordering without changing the subsplit\n";
+    example += "# t1 comes first alphabetically, so the clade with t1 will be first\n";
+    example += "# we can also make fake subsplits\n";
+    example += "# these include a single clade that includes a single taxon\n";
+    example += "clade_3 = clade( 't4' )\n";
+    example += "fake_subsplit = subsplit( clade_3 )\n";
 
     return example;
 }
@@ -234,6 +228,7 @@ std::vector<std::string> Subsplit::getHelpSeeAlso(void) const
     // create an entry for each suggested function
     std::vector<std::string> see_also;
     see_also.push_back( "clade" );
+    see_also.push_back( "dnUnrootedSBN" );
 
     return see_also;
 }

@@ -50,13 +50,17 @@ Subsplit::Subsplit( const Clade &c1, const Clade &c2 ) :
 {
     // Check that X and Y are disjoint
     bool disjoint = true;
-    RbBitSet c1_bit = c1.getBitRepresentation();
-    RbBitSet c2_bit = c2.getBitRepresentation();
-    for (size_t i=0; i < c1_bit.size(); ++i)
+    // TODO: there's probably a way to do this with bitsets to make things more efficient
+    for (size_t i = 0; i < c1.size(); ++i)
     {
-      if ( c1_bit.isSet(i) && c2_bit.isSet(i) ) {
-        disjoint = false;
-        break;
+      Taxon t1 = c1.getTaxon(i);
+      for (size_t j = 0; j < c2.size(); ++j)
+      {
+        if (t1 == c2.getTaxon(j))
+        {
+          disjoint = false;
+          break;
+        }
       }
     }
 
