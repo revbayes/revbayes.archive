@@ -166,6 +166,8 @@
 #include "Move_GibbsDrawCharacterHistory.h"
 
 #include "Move_MultiValueEventBirthDeath.h"
+#include "Move_MultiValueEventScale.h"
+#include "Move_MultiValueEventSlide.h"
 
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
 
@@ -344,6 +346,8 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Tree>( )                  );
         
         addTypeWithConstructor( new Move_MultiValueEventBirthDeath()                    );
+        addTypeWithConstructor( new Move_MultiValueEventScale()                         );
+        addTypeWithConstructor( new Move_MultiValueEventSlide()                         );
 
 
 
