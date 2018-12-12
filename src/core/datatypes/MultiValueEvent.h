@@ -40,6 +40,7 @@ namespace RevBayesCore {
         size_t                              getNumberOfValues(void) const;
         std::vector<double>&                getValues(size_t i);                                                //!< Get the values for this element.
         const std::vector<double>&          getValues(size_t i) const;                                          //!< Get the values for this element.
+        std::vector<double>&                getValues(const std::string &n);                              //!< Get the values for this element.
         const std::vector<double>&          getValues(const std::string &n) const;                              //!< Get the values for this element.
         void                                setNumberOfEvents(long n);
         void                                setValues(const std::vector<double> &v, const std::string &n);                               //!< Set the age.

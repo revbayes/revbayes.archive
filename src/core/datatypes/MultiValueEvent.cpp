@@ -153,6 +153,28 @@ const std::vector<double>& MultiValueEvent::getValues(size_t i) const
 
 
 
+std::vector<double>& MultiValueEvent::getValues(const std::string &n)
+{
+    size_t index = names.size();
+    for (size_t i=0; i<names.size(); ++i)
+    {
+        if ( names[i] == n )
+        {
+            index = i;
+            break;
+        }
+    }
+    
+    if ( index == names.size() )
+    {
+        throw RbException( "Could not find values with name '" + n + "'.");
+    }
+    
+    return values[index];
+}
+
+
+
 const std::vector<double>& MultiValueEvent::getValues(const std::string &n) const
 {
     size_t index = names.size();
