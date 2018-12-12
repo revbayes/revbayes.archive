@@ -11,7 +11,7 @@
 
 using namespace RevBayesCore;
 
-UnrootedSBN::UnrootedSBN(const std::vector<Taxon> &tn, const std::vector<Subsplit> &ss, std::vector<size_t> &rs, const std::vector<double> &rp, const std::vector<std::vector<std::vector<size_t> > > &sc, const std::vector<std::vector<std::vector<double> > > &sp) : TypedDistribution<Tree>( new Tree() ),
+UnrootedSBN::UnrootedSBN(const std::vector<Taxon> &tn, const std::vector<Subsplit> &ss, std::vector<long> &rs, const std::vector<double> &rp, const std::vector<std::vector<std::vector<long> > > &sc, const std::vector<std::vector<std::vector<double> > > &sp) : TypedDistribution<Tree>( new Tree() ),
     num_taxa( tn.size() ),
     taxa( tn ),
 	  subsplits( ss ),
@@ -39,15 +39,6 @@ UnrootedSBN::UnrootedSBN(const std::vector<Taxon> &tn, const std::vector<Subspli
 
     // order taxon names
     std::sort(ordered_taxa.begin(), ordered_taxa.end());
-
-    // // pick an outgroup if this topology is unrooted and no outgroup was specified
-    // if ( outgroup.size() == 0 && rooted == false )
-    // {
-    //
-    //     outgroup.addTaxon( ordered_taxa[0] );
-    //     outgroup_provided = false;
-    //
-    // }
 
     // Setup taxon bitset map
     std::map<Taxon, size_t> taxon_bitset_map;
@@ -101,7 +92,8 @@ UnrootedSBN::UnrootedSBN(const std::vector<Taxon> &tn, const std::vector<Subspli
     //     b.set(k);
     // }
     //
-    // outgroup.setBitRepresentation( b );
+
+
 
     simulateTree();
 

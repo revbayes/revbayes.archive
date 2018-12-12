@@ -13,7 +13,7 @@ namespace RevBayesCore {
     class UnrootedSBN : public TypedDistribution<Tree> {
 
     public:
-        UnrootedSBN(const std::vector<Taxon> &tn, const std::vector<Subsplit> &ss, std::vector<size_t> &rs, const std::vector<double> &rp, const std::vector<std::vector<std::vector<size_t> > > &sc, const std::vector<std::vector<std::vector<double> > > &sp);
+        UnrootedSBN(const std::vector<Taxon> &tn, const std::vector<Subsplit> &ss, std::vector<long> &rs, const std::vector<double> &rp, const std::vector<std::vector<std::vector<long> > > &sc, const std::vector<std::vector<std::vector<double> > > &sp);
 		virtual                                            ~UnrootedSBN(void);                                                                    //!< Virtual destructor
 
         // public member functions
@@ -37,9 +37,9 @@ namespace RevBayesCore {
         std::vector<Taxon>                                  taxa;
         bool                                                rooted;
         std::vector<Subsplit>                               subsplits; // Subsplits list should contain trivial subsplits, so the children of A|B should be A and B (and the child of A should be A)
-        std::vector<size_t>                                 root_splits;
+        std::vector<long>                                   root_splits;
         std::vector<double>                                 root_split_probabilities;
-        std::vector<std::vector<std::vector<size_t> > >     subsplit_children; // This is a vector of vectors of vectors, where subsplit_children[i] is all children of subsplit[i], subsplit_children[i][0] is all subsplits of clade X of i, and subsplit_children[i][1][j] is a specific child of subsplit i's clade Y.
+        std::vector<std::vector<std::vector<long> > >       subsplit_children; // This is a vector of vectors of vectors, where subsplit_children[i] is all children of subsplit[i], subsplit_children[i][0] is all subsplits of clade X of i, and subsplit_children[i][1][j] is a specific child of subsplit i's clade Y.
         std::vector<std::vector<std::vector<double> > >     subsplit_probabilities; // For every parent-child subsplit pair recorded in subsplit_children, this is the probability of that transition
         std::map<Subsplit,size_t>                           subsplit_bitset_map;
         std::map<Subsplit,double>                           root_split_probability_map; // For any root split, this tells us the probability of it
