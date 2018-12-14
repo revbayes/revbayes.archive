@@ -320,7 +320,8 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
         const AbstractCladogenicStateFunction* cf = dynamic_cast<const AbstractCladogenicStateFunction* >( &homogeneousCladogeneticProbabilityMatrix->getFunction() );
         size_t left_index = node.getChild(0).getIndex();
         size_t right_index = node.getChild(1).getIndex();
-        lnL += cf->computeDataAugmentedCladogeneticLnProbability( this->histories, node_index, left_index, right_index );
+        double lnL_clado = cf->computeDataAugmentedCladogeneticLnProbability( this->histories, node_index, left_index, right_index );
+        lnL += lnL_clado;
         
     }
     
