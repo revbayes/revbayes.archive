@@ -19,7 +19,6 @@ namespace RevBayesCore {
         // public methods
         void                                                bootstrap(void);                                                            //!< Bootstrap the current value of the node (applies only to stochastic nodes)
         virtual DeterministicNode<valueType>*               clone(void) const;
-//        virtual void                                        getAffectedNodes(RbOrderedSet<DagNode *>& affected);                                        //!< get affected nodes
         virtual TypedFunction<valueType>&                   getFunction(void);
         virtual const TypedFunction<valueType>&             getFunction(void) const;
         double                                              getLnProbability(void);
@@ -51,6 +50,7 @@ namespace RevBayesCore {
         mutable bool                                        needs_update;
         bool                                                force_update;
     };
+    
 }
 
 #include <cassert>
@@ -208,26 +208,6 @@ void RevBayesCore::DeterministicNode<valueType>::getAffected(RbOrderedSet<DagNod
     this->getAffectedNodes( affected );
     
 }
-
-/**
- * Get all affected nodes this DAGNode.
- * This means we call getAffected() of all children. getAffected() is pure virtual.
- */
-//template<class valueType>
-//void RevBayesCore::DeterministicNode<valueType>::getAffectedNodes(RbOrderedSet<DagNode *> &affected)
-//{
-//    // flag determinstic node to allow visits
-//    this->visit_affected_node = false;
-//    
-//    // call DagNode::getAffectedNodes
-//    DagNode::getAffectedNodes(affected);
-//    
-//    // flag deterministic node to forbid visits
-////    this->visit_affected_node = true;
-//    
-//    // somewhere, reset all visited DeterministicNode objects to be visit_affected_node=true
-//    
-//}
 
 
 template<class valueType>
