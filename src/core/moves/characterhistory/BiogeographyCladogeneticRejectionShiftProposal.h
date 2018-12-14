@@ -448,11 +448,14 @@ double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::
                 }
             }
             
+            // override
+//            clado_type = "s";
+//            p_clado = 1.0;
+            
             // assign new clado state
             c->setCladogeneticEvent( clado_type, node->getIndex() );
-            proposedCladogeneticEvent = "s"; // clado_type;
+            proposedCladogeneticEvent = clado_type;
             
-            p_clado = 1.0;
             // collect forward prob
             p_fwd *= p_clado;
         }
@@ -461,7 +464,7 @@ double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::
             
             // get bwd expansion prob
             double p_clado = cladogeneticSamplingProbabilities[ storedCladogeneticEvent ];
-            p_clado = 1.0;
+//            p_clado = 1.0;
             
             // only one possible cladogenetic event type
             proposedCladogeneticEvent = "s";
@@ -985,8 +988,8 @@ void RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::in
     
     
     // we need to learn this dynamically from the ctmc's clado matrix
-    cladogeneticSamplingProbabilities[ "s" ] = 1.0; //0.5;
-    cladogeneticSamplingProbabilities[ "a" ] = 0.0; //0.5;
+    cladogeneticSamplingProbabilities[ "s" ] = 0.5;
+    cladogeneticSamplingProbabilities[ "a" ] = 0.5;
     cladogeneticSamplingProbabilities[ "j" ] = 0.0;
 }
 
