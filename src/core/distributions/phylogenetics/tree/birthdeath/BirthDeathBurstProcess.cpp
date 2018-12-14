@@ -229,7 +229,7 @@ void BirthDeathBurstProcess::getAffected(RbOrderedSet<DagNode *> &affected, RevB
     
     if ( affecter == time_burst )
     {
-        dag_node->getAffectedNodes( affected );
+        dag_node->initiateGetAffectedNodes( affected );
     }
     
     // delegate to base class

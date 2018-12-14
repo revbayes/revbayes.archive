@@ -50,10 +50,13 @@ namespace RevBayesCore {
         void                                                        addMove(Move *m);                                                                           //!< Add a new move on this node
         void                                                        addTouchedElementIndex(size_t i);                                                           //!< Add the index of an element that has been touch (usually for vector-like values)
         void                                                        clearTouchedElementIndices(void);
+        void                                                        clearAffectedVisitFlag(void);
         DagNode*                                                    cloneDownstreamDag(std::map<const DagNode*, DagNode*> &nodesMap) const;                     //!< Clone the DAG which is downstream to this node (all children)
         size_t                                                      decrementReferenceCount(void) const;                                                        //!< Decrement the reference count for reference counting in smart pointers
         void                                                        executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const; //!< Map the member methods to internal function calls
+        void                                                        findUniqueDescendants(RbOrderedSet<DagNode *>& descendants);
         void                                                        getAffectedNodes(RbOrderedSet<DagNode *>& affected);                                        //!< get affected nodes
+        bool                                                        getAffectedVisitFlag(void) const;
         const std::vector<DagNode*>&                                getChildren(void) const;                                                                    //!< Get the set of children
         DagNodeTypes                                                getDagNodeType(void) const;
         virtual Distribution&                                       getDistribution(void);
@@ -67,6 +70,7 @@ namespace RevBayesCore {
         size_t                                                      getReferenceCount(void) const;                                                              //!< Get the reference count for reference counting in smart pointers
         const std::set<size_t>&                                     getTouchedElementIndices(void) const;                                                       //!< Get the indices of the touches elements. If the set is empty, then all elements might have changed.
         void                                                        incrementReferenceCount(void) const;                                                        //!< Increment the reference count for reference counting in smart pointers
+        void                                                        initiateGetAffectedNodes(RbOrderedSet<DagNode *>& affected);                                        //!< get affected nodes
         bool                                                        isAssignable(void) const;                                                                   //!< Is this DAG node modifiable by user?
         virtual bool                                                isClamped(void) const;                                                                      //!< Is this node clamped? Only stochastic nodes might be clamped.
         virtual bool                                                isConstant(void) const;                                                                     //!< Is this DAG node constant?
@@ -85,6 +89,7 @@ namespace RevBayesCore {
         void                                                        replace(DagNode *n);                                                                        //!< Replace this node with node p.
         void                                                        restore(void);
         virtual void                                                restoreAffected(void);                                                                      //!< Restore value of affected nodes recursively
+        void                                                        setAffectedVisitFlag(bool tf);
         void                                                        setElementVariable(bool tf);                                                                //!< Set if this variable is hidden from printing.
         void                                                        setHidden(bool tf);                                                                         //!< Set if this variable is hidden from printing.
         virtual void                                                setName(const std::string &n);                                                              //!< Set the name of this variable for identification purposes.
@@ -126,6 +131,7 @@ namespace RevBayesCore {
     private:
         
         mutable size_t                                              ref_count;
+        bool                                                        affected_visit_flag;
     };
 
 }

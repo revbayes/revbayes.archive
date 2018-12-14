@@ -187,7 +187,7 @@ public:
   {
       for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
       {
-          (*it)->getAffectedNodes( affectedNodes );
+          (*it)->initiateGetAffectedNodes( affectedNodes );
       }
   }
 };

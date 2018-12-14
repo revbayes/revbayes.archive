@@ -674,7 +674,7 @@ void HeterogeneousRateBirthDeath::getAffected(RbOrderedSet<DagNode *> &affected,
     
     if ( affecter == root_age && this->dag_node != NULL )
     {
-        dag_node->getAffectedNodes( affected );
+        dag_node->initiateGetAffectedNodes( affected );
     }
     
 }

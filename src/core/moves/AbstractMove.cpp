@@ -472,10 +472,11 @@ void AbstractMove::swapNode(DagNode *oldN, DagNode *newN)
     {
         // get the pointer to the current node
         DagNode* the_node = *it;
-        
+    
         // get the affected nodes if we would update this node
         // then we don't need to get the affected nodes every time again
-        the_node->getAffectedNodes( affected_nodes );
+        the_node->initiateGetAffectedNodes( affected_nodes );
+        
     }
     
     // remove all "core" nodes from affectedNodes so their probabilities are not double-counted

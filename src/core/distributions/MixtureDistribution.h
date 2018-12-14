@@ -128,7 +128,7 @@ void RevBayesCore::MixtureDistribution<mixtureType>::getAffected(RbOrderedSet<Da
     // only delegate when the toucher was our parameters
     if ( affecter == parameterValues && this->dag_node != NULL )
     {
-        this->dag_node->getAffectedNodes( affected );
+        this->dag_node->initiateGetAffectedNodes( affected );
     }
     
 }

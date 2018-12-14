@@ -21,7 +21,8 @@ DagNode::DagNode( const std::string &n ) : Parallelizable(),
     name( n ),
     prior_only( false ),
     touched_elements(),
-    ref_count( 0 )
+    ref_count( 0 ),
+    affected_visit_flag( false )
 {
     
 }
@@ -44,7 +45,8 @@ DagNode::DagNode( const DagNode &n ) : Parallelizable( n ),
     name( n.name ),
     prior_only( n.prior_only ),
     touched_elements( n.touched_elements ),
-    ref_count( 0 )
+    ref_count( 0 ),
+    affected_visit_flag( n.affected_visit_flag )
 {
     
 }
@@ -87,6 +89,7 @@ DagNode& DagNode::operator=(const DagNode &d)
         hidden          = d.hidden;
         prior_only       = d.prior_only;
         touched_elements = d.touched_elements;
+        affected_visit_flag = d.affected_visit_flag;
     }
     
     return *this;
@@ -171,6 +174,21 @@ void DagNode::addTouchedElementIndex(size_t i)
 }
 
 
+void DagNode::clearAffectedVisitFlag( void )
+{
+    
+    RbOrderedSet<DagNode*> descendants;
+    findUniqueDescendants(descendants);
+    
+    RbOrderedSet<DagNode*>::iterator it;
+    for (it = descendants.begin(); it != descendants.end(); it++)
+    {
+        affected_visit_flag = false;
+    }
+    
+    return;
+}
+
 void DagNode::clearTouchedElementIndices( void )
 {
     
@@ -230,6 +248,26 @@ void DagNode::executeMethod(const std::string &n, const std::vector<const DagNod
     
 }
 
+/*
+ * finds all descendants without redundant node visitation
+ */
+void DagNode::findUniqueDescendants(RbOrderedSet<DagNode *>& descendants)
+{
+    
+    // add self to descendant list
+    descendants.insert(this);
+
+    // recurse across node's children
+    for (std::vector<DagNode*>::iterator it = children.begin(); it != children.end(); it++)
+    {
+        // if child is not in descedant list, recurse from child's position
+        if ( descendants.find( *it ) == descendants.end() )
+        {
+            (*it)->findUniqueDescendants( descendants );
+        }
+    }
+}
+
 
 /**
  * Get all affected nodes this DAGNode.
@@ -237,13 +275,20 @@ void DagNode::executeMethod(const std::string &n, const std::vector<const DagNod
  */
 void DagNode::getAffectedNodes(RbOrderedSet<DagNode *> &affected)
 {
+    affected_visit_flag = true;
     
     // get all my affected children
     for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); ++i )
     {
-        (*i)->getAffected(affected, this);
+        if ((*i)->getAffectedVisitFlag() == false) {
+            (*i)->getAffected(affected, this);
+        }
     }
-    
+}
+
+bool DagNode::getAffectedVisitFlag(void) const
+{
+    return affected_visit_flag;
 }
 
 
@@ -432,7 +477,7 @@ const std::set<size_t>& DagNode::getTouchedElementIndices( void ) const
 }
 
 
-/** 
+/**
  * Increment the reference count. 
  */
 void DagNode::incrementReferenceCount( void ) const 
@@ -440,6 +485,20 @@ void DagNode::incrementReferenceCount( void ) const
     
     ++ref_count;
 
+}
+
+
+/**
+ * Begins a getAffectedNodes() recursion then clears visited flags
+ */
+void DagNode::initiateGetAffectedNodes(RbOrderedSet<DagNode *> &affected)
+{
+    
+    // begin recursion
+    getAffectedNodes( affected );
+    
+    // clear visit flags
+    clearAffectedVisitFlag();
 }
 
 
@@ -851,6 +910,11 @@ void DagNode::restoreAffected(void)
         (*i)->restoreMe( this );
     }
     
+}
+
+void DagNode::setAffectedVisitFlag(bool tf)
+{
+    affected_visit_flag = tf;
 }
 
 
