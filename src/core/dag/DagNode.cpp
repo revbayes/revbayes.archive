@@ -22,7 +22,10 @@ DagNode::DagNode( const std::string &n ) : Parallelizable(),
     prior_only( false ),
     touched_elements(),
     ref_count( 0 ),
-    affected_visit_flag( false )
+    affected_visit_flag( false ),
+    keep_visit_flag( false ),
+    reinitialize_visit_flag( false ),
+    restore_visit_flag( false )
 {
 
 }
@@ -46,7 +49,10 @@ DagNode::DagNode( const DagNode &n ) : Parallelizable( n ),
     prior_only( n.prior_only ),
     touched_elements( n.touched_elements ),
     ref_count( 0 ),
-    affected_visit_flag( n.affected_visit_flag )
+    affected_visit_flag( n.affected_visit_flag ),
+    keep_visit_flag( n.keep_visit_flag ),
+    reinitialize_visit_flag( n.reinitialize_visit_flag ),
+    restore_visit_flag( n.restore_visit_flag )
 {
 
 }
@@ -90,6 +96,9 @@ DagNode& DagNode::operator=(const DagNode &d)
         prior_only       = d.prior_only;
         touched_elements = d.touched_elements;
         affected_visit_flag = d.affected_visit_flag;
+        keep_visit_flag = d.keep_visit_flag;
+        reinitialize_visit_flag = d.reinitialize_visit_flag;
+        restore_visit_flag = d.restore_visit_flag;
     }
 
     return *this;
@@ -174,7 +183,7 @@ void DagNode::addTouchedElementIndex(size_t i)
 }
 
 
-void DagNode::clearAffectedVisitFlag( void )
+void DagNode::clearVisitFlag( const std::string& flagType )
 {
 
     RbOrderedSet<DagNode*> descendants;
@@ -276,19 +285,14 @@ void DagNode::findUniqueDescendants(RbOrderedSet<DagNode *>& descendants)
 void DagNode::getAffectedNodes(RbOrderedSet<DagNode *> &affected)
 {
     affected_visit_flag = true;
-
+    const std::string &flag_type = "affected";
     // get all my affected children
     for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); ++i )
     {
-        if ((*i)->getAffectedVisitFlag() == false) {
+        if ((*i)->getVisitFlag(flag_type) == false) {
             (*i)->getAffected(affected, this);
         }
     }
-}
-
-bool DagNode::getAffectedVisitFlag(void) const
-{
-    return affected_visit_flag;
 }
 
 
@@ -476,6 +480,33 @@ const std::set<size_t>& DagNode::getTouchedElementIndices( void ) const
     return touched_elements;
 }
 
+bool DagNode::getVisitFlag( const std::string& flagType ) const
+{
+    bool flag;
+
+    if (flagType == "affected")
+    {
+      flag = affected_visit_flag;
+    }
+    else if (flagType == "keep")
+    {
+      flag = keep_visit_flag;
+    }
+    else if (flagType == "reinitialize")
+    {
+      flag = reinitialize_visit_flag;
+    }
+    else if (flagType == "restore")
+    {
+      flag = restore_visit_flag;
+    }
+    else {
+      throw(RbException("Request to get visit flag of unknown type."));
+    }
+
+    return flag;
+}
+
 
 /**
  * Increment the reference count.
@@ -498,7 +529,8 @@ void DagNode::initiateGetAffectedNodes(RbOrderedSet<DagNode *> &affected)
     getAffectedNodes( affected );
 
     // clear visit flags
-    clearAffectedVisitFlag();
+    const std::string &flag_type = "affected";
+    clearVisitFlag(flag_type);
 }
 
 
@@ -912,12 +944,6 @@ void DagNode::restoreAffected(void)
 
 }
 
-void DagNode::setAffectedVisitFlag(bool tf)
-{
-    affected_visit_flag = tf;
-}
-
-
 void DagNode::setElementVariable(bool tf)
 {
     elementVar = tf;
@@ -964,6 +990,29 @@ void DagNode::setPriorOnly(bool tf)
 
 }
 
+void DagNode::setVisitFlag(bool tf, const std::string& flagType)
+{
+    if (flagType == "affected")
+    {
+      affected_visit_flag = tf;
+    }
+    else if (flagType == "keep")
+    {
+      keep_visit_flag = tf;
+    }
+    else if (flagType == "reinitialize")
+    {
+      reinitialize_visit_flag = tf;
+    }
+    else if (flagType == "restore")
+    {
+      restore_visit_flag = tf;
+    }
+    else {
+      throw(RbException("Request to set visit flag of unknown type."));
+    }
+
+}
 
 /**
  * Swap parent node. We delegate this task to derived DAG node classes
