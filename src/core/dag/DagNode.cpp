@@ -940,6 +940,11 @@ void DagNode::restore(void)
 
     // next, restore all my children
     restoreAffected();
+
+    // clear visit flags
+    const std::string &flag_type = "restore";
+    clearVisitFlag(flag_type);
+
 }
 
 
@@ -950,11 +955,18 @@ void DagNode::restore(void)
 void DagNode::restoreAffected(void)
 {
 
-    // next, restore all my children
-    for ( std::vector<DagNode *>::iterator i = children.begin(); i != children.end(); i++ )
+    restore_visit_flag = true;
+    const std::string &flag_type = "restore";
+
+    // keep all my children
+    for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
     {
+      if ((*i)->getVisitFlag(flag_type) == false)
+      {
         (*i)->restoreMe( this );
+      }
     }
+
 
 }
 
