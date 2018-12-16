@@ -1,11 +1,3 @@
-//
-//  PruneTreeFunction.h
-//  revbayes-proj
-//
-//  Created by Michael Landis on 3/2/16.
-//  Copyright © 2016 Michael Landis. All rights reserved.
-//
-
 #ifndef PruneTreeFunction_h
 #define PruneTreeFunction_h
 
@@ -38,7 +30,9 @@ namespace RevBayesCore {
 
         // parameters
         const TypedDagNode<Tree>*                           tau;
-
+        std::vector<Taxon>                                  taxa;
+        bool                                                retain;
+        bool                                                prune_fossils;
     };
     
 }
