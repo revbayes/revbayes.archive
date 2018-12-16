@@ -189,16 +189,38 @@ void DagNode::clearVisitFlag( const std::string& flagType )
     RbOrderedSet<DagNode*> descendants;
     findUniqueDescendants(descendants);
 
-    RbOrderedSet<DagNode*>::iterator it;
-    for (it = descendants.begin(); it != descendants.end(); it++)
+    if (flagType == "affected")
     {
-      (*it)->setVisitFlag(false, flagType);
-      // if (flagType == "affected")
-      // {
-      //   (*it)->affected_visit_flag = false;
-      // }
+      RbOrderedSet<DagNode*>::iterator it;
+      for (it = descendants.begin(); it != descendants.end(); it++)
+      {
+        (*it)->affected_visit_flag = false;
+      }
     }
-
+    else if (flagType == "keep")
+    {
+      RbOrderedSet<DagNode*>::iterator it;
+      for (it = descendants.begin(); it != descendants.end(); it++)
+      {
+        (*it)->keep_visit_flag = false;
+      }
+    }
+    else if (flagType == "reinitialize")
+    {
+      RbOrderedSet<DagNode*>::iterator it;
+      for (it = descendants.begin(); it != descendants.end(); it++)
+      {
+        (*it)->reinitialize_visit_flag = false;
+      }
+    }
+    else if (flagType == "restore")
+    {
+      RbOrderedSet<DagNode*>::iterator it;
+      for (it = descendants.begin(); it != descendants.end(); it++)
+      {
+        (*it)->restore_visit_flag = false;
+      }
+    }
     return;
 }
 
