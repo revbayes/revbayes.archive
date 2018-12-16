@@ -123,27 +123,27 @@ int main(int argc, char* argv[]) {
 
     if (args.count("version"))
     {
-	std::cout<<RbVersion().getVersion()<<std::endl;
-	exit(0);
+        std::cout<<RbVersion().getVersion()<<std::endl;
+        exit(0);
     }
 
     if (args.count("verbose"))
     {
-	int verbosity = args["verbose"].as<int>();
+        int verbosity = args["verbose"].as<int>();
     }
 
     if (args.count("setOption"))
     {
-	vector<string> options = args["setOption"].as<vector<string> >();
-	for(int i=0;i<options.size();i++)
-	{
-	    vector<string> tokens;
-	    StringUtilities::stringSplit(options[i], "=", tokens);
-	    if (tokens.size() != 2)
-		throw RbException("Option '"+options[i]+"' must have the form key=value");
-	    else
-		RbSettings::userSettings().setOption( tokens[0], tokens[1], false );
-	}
+        vector<string> options = args["setOption"].as<vector<string> >();
+        for(int i=0;i<options.size();i++)
+        {
+            vector<string> tokens;
+            StringUtilities::stringSplit(options[i], "=", tokens);
+            if (tokens.size() != 2)
+                    throw RbException("Option '"+options[i]+"' must have the form key=value");
+            else
+                RbSettings::userSettings().setOption( tokens[0], tokens[1], false );
+        }
     }
 
     /*default to interactive mode*/
