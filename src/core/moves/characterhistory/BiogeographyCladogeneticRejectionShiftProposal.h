@@ -69,25 +69,26 @@ namespace RevBayesCore {
         void                                                        undoProposal(void);                                             //!< Reject the proposal
         
     protected:
+        void                                                        swapNodeInternal(DagNode *oldN, DagNode *newN);                 //!< Swap the DAG nodes on which the Proposal is working on
+        
+    private:
         double                                                      assignCharactersToSample(double p);
-        double                                                      computeNodeLnProposal(std::string clado_type);
         double                                                      computeAllopatryLnProposal(void);
-        double                                                      computeSympatryLnProposal(void);
+        double                                                      computeAnagenesisConditionLnProposal();
         double                                                      computeJumpDispersalLnProposal(void);
+        double                                                      computeNodeLnProposal(std::string clado_type);
+        double                                                      computeSwapLnProposal(void);
+        double                                                      computeSympatryLnProposal(void);
         void                                                        computeTransitionProbabilities(void);
         void                                                        initializeCladogeneticEventTypes(void);
-        //        double                                                      sampleCladogenesisCharacters(void);
+        void                                                        printCladogeneticState(void);
         std::string                                                 sampleCladogenesisEventType(void);
         double                                                      sampleRootCharacters(void);                                     //!< Sample the characters at the root
         double                                                      sampleNodeCharacters(void);                                     //!< Sample the characters at the node
         double                                                      sampleAllopatryCharacters(void);
         double                                                      sampleSympatryCharacters(void);
         double                                                      sampleJumpDispersalCharacters(void);
-        //        double                                                      computeCladogenesisLnProposal();
-        double                                                      computeAnagenesisConditionLnProposal();
-        void                                                        swapNodeInternal(DagNode *oldN, DagNode *newN);                 //!< Swap the DAG nodes on which the Proposal is working on
-//        double                                                      sampleExpandContractProposal(void);
-        
+        void                                                        setSwapCharacters(void);
         
         // parameters
         StochasticNode<AbstractHomologousDiscreteCharacterData>*    ctmc;
@@ -128,14 +129,16 @@ namespace RevBayesCore {
         std::vector<size_t>                                         swapCharacters;
         std::vector<size_t>                                         expandCharacters;
         std::vector<size_t>                                         contractCharacters;
+        std::vector<size_t>                                         leftCharacters;
+        std::vector<size_t>                                         rightCharacters;
 
         std::map<std::string, double>                               cladogeneticSamplingProbabilities;
         
-    private:
-        void                                                        setSwapCharacters( void );
-        void                                                        printCladogeneticState();
         std::string                                                 proposal_type;
         double                                                      expand_contract_lnProb;
+        bool                                                        perform_swap;
+        
+        size_t                                                      n_left_fwd, n_left_bwd, n_right_fwd, n_right_bwd;
         
     };
     
@@ -216,91 +219,6 @@ void RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::as
 
 
 template<class charType>
-double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::getProposalTuningParameter(void) const
-{
-    return lambda;
-}
-
-template<class charType>
-void RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::setSwapCharacters( void ) {
-    
-    swapCharacters.clear();
-    
-    if (node->isTip()) {
-        throw RbException("Unexpected tip node encountered!");
-    }
-
-    std::vector<size_t> leftCharacters;
-    std::vector<size_t> rightCharacters;
-    
-    // find swap characters for two easy special cases
-    if (onCharacters.size() == 1) {
-        swapCharacters.push_back( onCharacters[0] );
-        return;
-    } else if (onCharacters.size() == 2) {
-        swapCharacters.push_back( onCharacters[0] );
-        swapCharacters.push_back( onCharacters[1] );
-        std::random_shuffle( swapCharacters.begin(), swapCharacters.end() );
-        return;
-    }
-    
-    // get history object
-    GeneralTreeHistoryCtmc<charType>* c = dynamic_cast< GeneralTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
-    if ( c == NULL )
-    {
-        throw RbException("Failed cast.");
-    }
-    
-    // gather branch history variables
-    const std::vector<BranchHistory*>& histories = c->getHistories();
-    
-    // collect node,left,right states
-    size_t left_index = node->getChild(0).getIndex();
-    size_t right_index = node->getChild(1).getIndex();
-    const std::vector<CharacterEvent*>& leftParentState   = histories[ left_index  ]->getParentCharacters();
-    const std::vector<CharacterEvent*>& rightParentState  = histories[ right_index  ]->getParentCharacters();
-    
-    // learn bud,trunk states
-    for (size_t i = 0; i < leftParentState.size(); i++) {
-        size_t s_left = static_cast< CharacterEventDiscrete* >( leftParentState[i] )->getState();
-        size_t s_right = static_cast< CharacterEventDiscrete* >( rightParentState[i] )->getState();
-        
-        if (s_left == 1) {
-            leftCharacters.push_back( i );
-        }
-        if (s_right == 1) {
-            rightCharacters.push_back( i );
-        }
-    }
-    
-    
-    // get different left/right states
-    size_t s_left = 0;
-    size_t s_right = 0;
-    do {
-        std::random_shuffle( leftCharacters.begin(), leftCharacters.end() );
-        std::random_shuffle( rightCharacters.begin(), rightCharacters.end() );
-        
-        s_left = leftCharacters[0];
-        s_right = rightCharacters[0];
-        
-    } while(s_left == s_right);
-    
-    swapCharacters.push_back( s_left );
-    swapCharacters.push_back( s_right );
-    std::random_shuffle( swapCharacters.begin(), swapCharacters.end() );
-    
-    return;
-}
-
-template<class charType>
-void RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::setProposalTuningParameter(double tp)
-{
-    lambda = tp;
-}
-
-
-template<class charType>
 double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::assignCharactersToSample(double p)
 {
     
@@ -373,9 +291,13 @@ double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::
     }
     
     // add one left- and one right-character to "swap"
-    setSwapCharacters();
-    for (size_t i = 0; i < swapCharacters.size(); i++) {
-        sampledCharacters.insert( swapCharacters[i] );
+    perform_swap = false;
+    if (GLOBAL_RNG->uniform01() < 0.5) {
+        perform_swap = true;
+        setSwapCharacters();
+        for (size_t i = 0; i < swapCharacters.size(); i++) {
+            sampledCharacters.insert( swapCharacters[i] );
+        }
     }
     
     // population expand/contract/sampled characters
@@ -385,13 +307,14 @@ double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::
         // singleton range requires that we resample region
         if ( n_on == 1) {
             expandCharacters.push_back( onCharacters[0] );
+            perform_swap = false;
         }
 
-        // we s
+        // sample an off character to sample
         size_t u = (size_t)( GLOBAL_RNG->uniform01() * offCharacters.size() );
         expandCharacters.push_back( offCharacters[u] );
 
-        
+        // make sure expanded character paths are updated
         for (size_t i = 0; i < expandCharacters.size(); i++) {
             sampledCharacters.insert( expandCharacters[i] );
         }
@@ -399,7 +322,9 @@ double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::
     else if (proposal_type == "contract")
     {
         
+        // do not swap
         if ( n_on == 2 ) {
+            perform_swap = false;
             contractCharacters.push_back( onCharacters[0] );
             contractCharacters.push_back( onCharacters[1] );
         }
@@ -417,6 +342,7 @@ double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::
             contractCharacters.push_back( idx );
         }
         
+        // make sure contracted character paths are updated
         for (size_t i = 0; i < contractCharacters.size(); i++) {
             sampledCharacters.insert( contractCharacters[i] );
         }
@@ -466,7 +392,7 @@ double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::
             double p_clado = cladogeneticSamplingProbabilities[ storedCladogeneticEvent ];
 //            p_clado = 1.0;
             
-            // only one possible cladogenetic event type
+            // only one possible cladogenetic event type for all-1 statetwe
             proposedCladogeneticEvent = "s";
             
             // collect backward prob
@@ -674,6 +600,22 @@ double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::
     
     return lnP;
     
+}
+
+
+template<class charType>
+double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::computeSwapLnProposal(void)
+{
+    double lnP = 0.0;
+    double p_fwd = 0.0;
+    double p_bwd = 0.0;
+    
+//    size_t n_left_fwd, n_right_fwd, n_left_bwd, n_right_bwd;
+    
+    p_fwd = (1.0 / n_left_fwd) * (1.0 / n_right_fwd);
+    p_bwd = (1.0 / n_left_bwd) * (1.0 / n_right_bwd);
+    
+    return lnP;
 }
 
 template<class charType>
@@ -966,6 +908,15 @@ const std::string& RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal
 
 
 
+
+template<class charType>
+double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::getProposalTuningParameter(void) const
+{
+    return lambda;
+}
+
+
+
 template<class charType>
 void RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::initializeCladogeneticEventTypes(void)
 {
@@ -978,8 +929,20 @@ void RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::in
     }
     
     //    DECCladogeneticStateFunction
-    //    const AbstractCladogenicStateFunction* acf = dynamic_cast<const AbstractCladogenicStateFunction* >( &homogeneousCladogeneticProbabilityMatrix->getFunction() );
-    //    const DECCladogeneticStateFunction* dcf = dynamic_cast<const DECCladogeneticStateFunction* >( acf );
+//    const AbstractCladogenicStateFunction* acf = dynamic_cast<const AbstractCladogenicStateFunction* >( &homogeneousCladogeneticProbabilityMatrix->getFunction() );
+//    
+//    const DECCladogeneticStateFunction* dcf = dynamic_cast<const DECCladogeneticStateFunction* >( acf );
+    
+//    std::vector<std::string> event_types = dcf->getEventTypes();
+    
+    const CladogeneticProbabilityMatrix& p = c->getCladogeneticProbabilityMatrix();
+    std::vector<std::string> event_types = p.getEventTypes();
+    
+    for (size_t i = 0; i < event_types.size(); i++) {
+        cladogeneticSamplingProbabilities[ event_types[i] ] = 1.0 / event_types.size();
+    }
+    
+    return;
     //
     //    size_t node_index = nd->getIndex();
     //    size_t left_index = nd->getChild(0).getIndex();
@@ -988,9 +951,9 @@ void RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::in
     
     
     // we need to learn this dynamically from the ctmc's clado matrix
-    cladogeneticSamplingProbabilities[ "s" ] = 0.5;
-    cladogeneticSamplingProbabilities[ "a" ] = 0.5;
-    cladogeneticSamplingProbabilities[ "j" ] = 0.0;
+//    cladogeneticSamplingProbabilities[ "s" ] = 0.5;
+//    cladogeneticSamplingProbabilities[ "a" ] = 0.5;
+//    cladogeneticSamplingProbabilities[ "j" ] = 0.0;
 }
 
 
@@ -1148,8 +1111,6 @@ void RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::pr
 template<class charType>
 double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::sampleAllopatryCharacters()
 {
-    double lnP = 0.0;
-    
     GeneralTreeHistoryCtmc<charType>* c = dynamic_cast< GeneralTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
     if ( c == NULL )
     {
@@ -1167,9 +1128,9 @@ double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::
     // gather branch history variables
     const std::vector<BranchHistory*>& histories = c->getHistories();
     
-    const std::vector<CharacterEvent*>& leftChildState      = histories[ left_index  ]->getChildCharacters();
-    const std::vector<CharacterEvent*>& rightChildState     = histories[ right_index ]->getChildCharacters();
-    const std::vector<CharacterEvent*>& nodeParentState     = histories[ node_index ]->getParentCharacters();
+//    const std::vector<CharacterEvent*>& leftChildState      = histories[ left_index  ]->getChildCharacters();
+//    const std::vector<CharacterEvent*>& rightChildState     = histories[ right_index ]->getChildCharacters();
+//    const std::vector<CharacterEvent*>& nodeParentState     = histories[ node_index ]->getParentCharacters();
     
     std::vector<CharacterEvent*>& leftParentState           = histories[ left_index  ]->getParentCharacters();
     std::vector<CharacterEvent*>& rightParentState          = histories[ right_index ]->getParentCharacters();
@@ -1189,27 +1150,6 @@ double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::
         {
             // get ancestral and trunk states
             size_t site_index = expandCharacters[i];
-            
-            size_t A_i = static_cast<CharacterEventDiscrete*>(nodeParentState[site_index])->getState();
-            size_t L_j = static_cast<CharacterEventDiscrete*>(leftChildState[site_index])->getState();
-            size_t R_j = static_cast<CharacterEventDiscrete*>(rightChildState[site_index])->getState();
-            
-//            // get transition probs
-//            std::vector<double> state_probs(2, 0.0);
-////            state_probs[0] = nodeTpMatrix[A_i][0] * leftTpMatrix[0][L_j] * rightTpMatrix[0][R_j];
-//            state_probs[0] = nodeTpMatrix[A_i][1] * leftTpMatrix[1][L_j] * rightTpMatrix[0][R_j];
-//            state_probs[1] = nodeTpMatrix[A_i][1] * leftTpMatrix[0][L_j] * rightTpMatrix[1][R_j];
-//            double sum = state_probs[0] + state_probs[1];
-//            
-//            // sample the state
-//            double u_state = GLOBAL_RNG->uniform01() * sum;
-//            size_t s = 0;
-//            for (s = 0; s < state_probs.size(); s++) {
-//                u_state -= state_probs[s];
-//                if (u_state <= 0) {
-//                    break;
-//                }
-//            }
             
             if ( GLOBAL_RNG->uniform01() < 0.5 ) {
                 static_cast<CharacterEventDiscrete*>( nodeChildState[site_index]   )->setState( 1 );
@@ -1244,25 +1184,13 @@ double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::
 
     }
     
-    bool swap = true;
-    if (swap)
+    if (perform_swap)
     {
         size_t first_site_index = swapCharacters[0];
         size_t second_site_index = swapCharacters[1];
         
         size_t first_state = static_cast<CharacterEventDiscrete*>( leftParentState[first_site_index] )->getState();
-        size_t not_first_state = ( first_state == 1 ? 0 : 1 ); //static_cast<CharacterEventDiscrete*>( leftParentState[first_site_index] )->getState();
-//        size_t second_state = static_cast<CharacterEventDiscrete*>( rightParentState[second_site_index] )->getState();
-//        size_t not_second_state = ( second_state == 1 ? 0 : 1 ); //static_cast<CharacterEventDiscrete*>( leftParentState[first_site_index] )->getState();
-//        
-//        if (first_state == second_state) {
-//            
-//            ;
-//        }
-//        if (first_site_index == second_site_index) {
-//            
-//            ;
-//        }
+        size_t not_first_state = ( first_state == 1 ? 0 : 1 );
         
         static_cast<CharacterEventDiscrete*>( leftParentState[first_site_index] )->setState( not_first_state );
         static_cast<CharacterEventDiscrete*>( rightParentState[first_site_index] )->setState( first_state );
@@ -1270,14 +1198,8 @@ double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::
         static_cast<CharacterEventDiscrete*>( leftParentState[second_site_index] )->setState( first_state );
         static_cast<CharacterEventDiscrete*>( rightParentState[second_site_index] )->setState( not_first_state );
     }
-
-//    std::cout << "AFTER " << proposal_type << "\n";
-//    printCladogeneticState();
  
     return 0.0;
-    
-    return lnP;
-    
     
 }
 
@@ -1335,7 +1257,7 @@ double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::
 //    std::cout << "BEFORE " << proposal_type << "\n";
 //    printCladogeneticState();
     
-    bool do_swap = true;
+//    bool do_swap = true;
     
     if ( proposal_type == "contract" ) {
 
@@ -1361,7 +1283,7 @@ double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::
             static_cast<CharacterEventDiscrete*>( trunkParentState[site_index] )->setState( 1 );
             static_cast<CharacterEventDiscrete*>( budParentState[site_index] )->setState( 1 );
             
-            do_swap = false;
+//            do_swap = false;
         }
 //        else {
         
@@ -1395,12 +1317,12 @@ double RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::
             static_cast<CharacterEventDiscrete*>( trunkParentState[site_index] )->setState( 1 );
             static_cast<CharacterEventDiscrete*>( budParentState[site_index] )->setState( 1 );
 
-            do_swap = false;
+//            do_swap = false;
         }
     }
     
     
-    if (do_swap)
+    if (perform_swap)
     {
         
         size_t first_site_index = swapCharacters[0];
@@ -1710,6 +1632,11 @@ std::string RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charTy
     return clado_type;
 }
 
+template<class charType>
+void RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::setProposalTuningParameter(double tp)
+{
+    lambda = tp;
+}
 
 template<class charType>
 void RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::setSampledCharacters(const std::set<size_t>& s)
@@ -1751,6 +1678,85 @@ void RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::se
     leftTpMatrix = TransitionProbabilityMatrix(numStates);
     rightTpMatrix = TransitionProbabilityMatrix(numStates);
     
+}
+
+
+
+template<class charType>
+void RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<charType>::setSwapCharacters( void ) {
+    
+    swapCharacters.clear();
+    leftCharacters.clear();
+    rightCharacters.clear();
+    
+    n_left_fwd = 0;
+    n_right_fwd = 0;
+    n_left_bwd = 0;
+    n_right_bwd = 0;
+    
+    if (node->isTip()) {
+        throw RbException("Unexpected tip node encountered!");
+    }
+    
+    // find swap characters for two easy special cases
+    if (onCharacters.size() == 1) {
+        swapCharacters.push_back( onCharacters[0] );
+        return;
+    }
+    else if (onCharacters.size() == 2) {
+        swapCharacters.push_back( onCharacters[0] );
+        swapCharacters.push_back( onCharacters[1] );
+        std::random_shuffle( swapCharacters.begin(), swapCharacters.end() );
+        return;
+    }
+    
+    // get history object
+    GeneralTreeHistoryCtmc<charType>* c = dynamic_cast< GeneralTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
+    if ( c == NULL )
+    {
+        throw RbException("Failed cast.");
+    }
+    
+    // gather branch history variables
+    const std::vector<BranchHistory*>& histories = c->getHistories();
+    
+    // collect node,left,right states
+    size_t left_index = node->getChild(0).getIndex();
+    size_t right_index = node->getChild(1).getIndex();
+    const std::vector<CharacterEvent*>& leftParentState   = histories[ left_index  ]->getParentCharacters();
+    const std::vector<CharacterEvent*>& rightParentState  = histories[ right_index  ]->getParentCharacters();
+    
+    // learn bud,trunk states
+    for (size_t i = 0; i < leftParentState.size(); i++) {
+        size_t s_left = static_cast< CharacterEventDiscrete* >( leftParentState[i] )->getState();
+        size_t s_right = static_cast< CharacterEventDiscrete* >( rightParentState[i] )->getState();
+        
+        if (s_left == 1) {
+            leftCharacters.push_back( i );
+        }
+        if (s_right == 1) {
+            rightCharacters.push_back( i );
+        }
+    }
+    
+    
+    // get different left/right states
+    size_t s_left = 0;
+    size_t s_right = 0;
+    do {
+        std::random_shuffle( leftCharacters.begin(), leftCharacters.end() );
+        std::random_shuffle( rightCharacters.begin(), rightCharacters.end() );
+        
+        s_left = leftCharacters[0];
+        s_right = rightCharacters[0];
+        
+    } while(s_left == s_right);
+    
+    swapCharacters.push_back( s_left );
+    swapCharacters.push_back( s_right );
+    std::random_shuffle( swapCharacters.begin(), swapCharacters.end() );
+    
+    return;
 }
 
 
