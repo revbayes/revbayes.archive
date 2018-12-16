@@ -803,8 +803,11 @@ void DagNode::reInitialized( void )
     reInitializeMe();
     reInitializeAffected();
 
-}
+    // clear visit flags
+    const std::string &flag_type = "reinitialize";
+    clearVisitFlag(flag_type);
 
+}
 
 /**
  * By default we do not need to do anything when re-initializiating.
@@ -812,10 +815,16 @@ void DagNode::reInitialized( void )
 void DagNode::reInitializeAffected( void )
 {
 
+    reinitialize_visit_flag = true;
+    const std::string &flag_type = "reinitialize";
+
     // next, reInitialize all my children
-    for ( std::vector<DagNode *>::iterator i = children.begin(); i != children.end(); i++ )
+    for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
     {
+      if ((*i)->getVisitFlag(flag_type) == false)
+      {
         (*i)->reInitializeMe();
+      }
     }
 
 }
