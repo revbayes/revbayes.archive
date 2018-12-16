@@ -135,6 +135,7 @@ namespace RevBayesCore {
         bool                                                        keep_visit_flag;
         bool                                                        reinitialize_visit_flag;
         bool                                                        restore_visit_flag;
+        bool                                                        clear_visit_flag;
     };
 
 }

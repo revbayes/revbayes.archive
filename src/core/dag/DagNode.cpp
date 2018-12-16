@@ -25,7 +25,8 @@ DagNode::DagNode( const std::string &n ) : Parallelizable(),
     affected_visit_flag( false ),
     keep_visit_flag( false ),
     reinitialize_visit_flag( false ),
-    restore_visit_flag( false )
+    restore_visit_flag( false ),
+    clear_visit_flag( false )
 {
 
 }
@@ -52,7 +53,8 @@ DagNode::DagNode( const DagNode &n ) : Parallelizable( n ),
     affected_visit_flag( n.affected_visit_flag ),
     keep_visit_flag( n.keep_visit_flag ),
     reinitialize_visit_flag( n.reinitialize_visit_flag ),
-    restore_visit_flag( n.restore_visit_flag )
+    restore_visit_flag( n.restore_visit_flag ),
+    clear_visit_flag( n.clear_visit_flag )
 {
 
 }
@@ -99,6 +101,7 @@ DagNode& DagNode::operator=(const DagNode &d)
         keep_visit_flag = d.keep_visit_flag;
         reinitialize_visit_flag = d.reinitialize_visit_flag;
         restore_visit_flag = d.restore_visit_flag;
+        clear_visit_flag = d.clear_visit_flag;
     }
 
     return *this;
@@ -221,6 +224,15 @@ void DagNode::clearVisitFlag( const std::string& flagType )
         (*it)->restore_visit_flag = false;
       }
     }
+
+    // Clear the flags we just flagged to keep descedant searching fast
+    RbOrderedSet<DagNode*>::iterator it;
+    for (it = descendants.begin(); it != descendants.end(); it++)
+    {
+      (*it)->clear_visit_flag = false;
+    }
+
+
     return;
 }
 
@@ -288,6 +300,7 @@ void DagNode::executeMethod(const std::string &n, const std::vector<const DagNod
  */
 void DagNode::findUniqueDescendants(RbOrderedSet<DagNode *>& descendants)
 {
+    clear_visit_flag = true;
 
     // add self to descendant list
     descendants.insert(this);
@@ -296,7 +309,8 @@ void DagNode::findUniqueDescendants(RbOrderedSet<DagNode *>& descendants)
     for (std::vector<DagNode*>::iterator it = children.begin(); it != children.end(); it++)
     {
         // if child is not in descedant list, recurse from child's position
-        if ( descendants.find( *it ) == descendants.end() )
+        // if ( descendants.find( *it ) == descendants.end() )
+        if ( (*it)->clear_visit_flag == false )
         {
             (*it)->findUniqueDescendants( descendants );
         }
