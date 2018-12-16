@@ -192,7 +192,11 @@ void DagNode::clearVisitFlag( const std::string& flagType )
     RbOrderedSet<DagNode*>::iterator it;
     for (it = descendants.begin(); it != descendants.end(); it++)
     {
-        (*it)->affected_visit_flag = false;
+      (*it)->setVisitFlag(false, flagType);
+      // if (flagType == "affected")
+      // {
+      //   (*it)->affected_visit_flag = false;
+      // }
     }
 
     return;
@@ -620,6 +624,11 @@ void DagNode::keep(void)
 
     // next, keep all my children
     keepAffected();
+
+    // clear visit flags
+    const std::string &flag_type = "keep";
+    clearVisitFlag(flag_type);
+
 }
 
 /**
@@ -627,11 +636,16 @@ void DagNode::keep(void)
  */
 void DagNode::keepAffected()
 {
+    keep_visit_flag = true;
+    const std::string &flag_type = "keep";
 
     // keep all my children
     for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
     {
+      if ((*i)->getVisitFlag(flag_type) == false)
+      {
         (*i)->keepMe( this );
+      }
     }
 
 }
