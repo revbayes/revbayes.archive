@@ -55,6 +55,7 @@ namespace RevBayesCore {
         size_t                                                      decrementReferenceCount(void) const;                                                        //!< Decrement the reference count for reference counting in smart pointers
         void                                                        executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const; //!< Map the member methods to internal function calls
         void                                                        findUniqueDescendants(RbOrderedSet<DagNode *>& descendants);
+        void                                                        findUniqueDescendantsWithFlag(RbOrderedSet<DagNode *>& descendants, const std::string& flagType);
         void                                                        getAffectedNodes(RbOrderedSet<DagNode *>& affected);                                        //!< get affected nodes
         const std::vector<DagNode*>&                                getChildren(void) const;                                                                    //!< Get the set of children
         DagNodeTypes                                                getDagNodeType(void) const;

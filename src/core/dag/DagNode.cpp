@@ -190,7 +190,7 @@ void DagNode::clearVisitFlag( const std::string& flagType )
 {
 
     RbOrderedSet<DagNode*> descendants;
-    findUniqueDescendants(descendants);
+    findUniqueDescendantsWithFlag(descendants, flagType);
 
     // Clear the designated flagType from all descedants (including node calling this)
     // Also clear the flags we just flagged to keep descedant searching fast
@@ -323,6 +323,27 @@ void DagNode::findUniqueDescendants(RbOrderedSet<DagNode *>& descendants)
     }
 }
 
+/*
+ * finds all descendants without redundant node visitation
+ */
+void DagNode::findUniqueDescendantsWithFlag(RbOrderedSet<DagNode *>& descendants, const std::string& flagType)
+{
+    clear_visit_flag = true;
+
+    // add self to descendant list
+    descendants.insert(this);
+
+    // recurse across node's children
+    for (std::vector<DagNode*>::iterator it = children.begin(); it != children.end(); it++)
+    {
+        // if child is not in descedant list, recurse from child's position
+        // if ( descendants.find( *it ) == descendants.end() )
+        if ( (*it)->clear_visit_flag == false && (*it)->getVisitFlag(flagType) == true )
+        {
+            (*it)->findUniqueDescendantsWithFlag( descendants, flagType );
+        }
+    }
+}
 
 /**
  * Get all affected nodes this DAGNode.
