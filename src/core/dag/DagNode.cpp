@@ -329,7 +329,7 @@ void DagNode::getAffectedNodes(RbOrderedSet<DagNode *> &affected)
     // get all my affected children
     for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); ++i )
     {
-        if ((*i)->getVisitFlag(flag_type) == false) {
+        if ((*i)->affected_visit_flag == false) {
             (*i)->getAffected(affected, this);
         }
     }
@@ -678,7 +678,7 @@ void DagNode::keepAffected()
     // keep all my children
     for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
     {
-      if ((*i)->getVisitFlag(flag_type) == false)
+      if ((*i)->keep_visit_flag == false)
       {
         (*i)->keepMe( this );
       }
@@ -857,7 +857,7 @@ void DagNode::reInitializeAffected( void )
     // next, reInitialize all my children
     for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
     {
-      if ((*i)->getVisitFlag(flag_type) == false)
+      if ((*i)->reinitialize_visit_flag == false)
       {
         (*i)->reInitializeMe();
       }
@@ -1006,7 +1006,7 @@ void DagNode::restoreAffected(void)
     // keep all my children
     for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
     {
-      if ((*i)->getVisitFlag(flag_type) == false)
+      if ((*i)->restore_visit_flag == false)
       {
         (*i)->restoreMe( this );
       }
