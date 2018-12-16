@@ -192,12 +192,15 @@ void DagNode::clearVisitFlag( const std::string& flagType )
     RbOrderedSet<DagNode*> descendants;
     findUniqueDescendants(descendants);
 
+    // Clear the designated flagType from all descedants (including node calling this)
+    // Also clear the flags we just flagged to keep descedant searching fast
     if (flagType == "affected")
     {
       RbOrderedSet<DagNode*>::iterator it;
       for (it = descendants.begin(); it != descendants.end(); it++)
       {
         (*it)->affected_visit_flag = false;
+        (*it)->clear_visit_flag = false;
       }
     }
     else if (flagType == "keep")
@@ -206,6 +209,7 @@ void DagNode::clearVisitFlag( const std::string& flagType )
       for (it = descendants.begin(); it != descendants.end(); it++)
       {
         (*it)->keep_visit_flag = false;
+        (*it)->clear_visit_flag = false;
       }
     }
     else if (flagType == "reinitialize")
@@ -214,6 +218,7 @@ void DagNode::clearVisitFlag( const std::string& flagType )
       for (it = descendants.begin(); it != descendants.end(); it++)
       {
         (*it)->reinitialize_visit_flag = false;
+        (*it)->clear_visit_flag = false;
       }
     }
     else if (flagType == "restore")
@@ -222,15 +227,16 @@ void DagNode::clearVisitFlag( const std::string& flagType )
       for (it = descendants.begin(); it != descendants.end(); it++)
       {
         (*it)->restore_visit_flag = false;
+        (*it)->clear_visit_flag = false;
       }
     }
 
-    // Clear the flags we just flagged to keep descedant searching fast
-    RbOrderedSet<DagNode*>::iterator it;
-    for (it = descendants.begin(); it != descendants.end(); it++)
-    {
-      (*it)->clear_visit_flag = false;
-    }
+    // // Clear the flags we just flagged to keep descedant searching fast
+    // RbOrderedSet<DagNode*>::iterator it;
+    // for (it = descendants.begin(); it != descendants.end(); it++)
+    // {
+    //   (*it)->clear_visit_flag = false;
+    // }
 
 
     return;
