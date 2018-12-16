@@ -41,6 +41,7 @@ namespace RevBayesCore {
         virtual std::vector<double>                         getRootFrequencies(void) const;
         virtual std::vector<std::string>                    getCladogeneticEvents(void) const;
         virtual std::string                                 getCladogeneticEvent( size_t index ) const;
+        const CladogeneticProbabilityMatrix&                getCladogeneticProbabilityMatrix( void ) const;
         virtual void                                        redrawValue(void);
         virtual void                                        reInitialized(void);
         virtual void                                        simulate(void);
@@ -90,7 +91,6 @@ namespace RevBayesCore {
         
         // cladogenetic histories
         std::vector<std::string>                            cladogeneticEvents;
-
         
     };
     
@@ -496,6 +496,12 @@ template<class charType>
 std::string RevBayesCore::GeneralTreeHistoryCtmc<charType>::getCladogeneticEvent( size_t index ) const
 {
     return cladogeneticEvents[ index ];
+}
+
+template<class charType>
+const RevBayesCore::CladogeneticProbabilityMatrix& RevBayesCore::GeneralTreeHistoryCtmc<charType>::getCladogeneticProbabilityMatrix( void ) const
+{
+    return homogeneousCladogeneticProbabilityMatrix->getValue();
 }
 
 template<class charType>

@@ -56,6 +56,7 @@ DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< S
     
     update();
    
+    value->setEventTypes( eventTypes );
 }
 
 DECCladogeneticStateFunction::~DECCladogeneticStateFunction( void ) {
@@ -916,6 +917,12 @@ const std::map< std::vector<unsigned>, double >& DECCladogeneticStateFunction::g
 {
     return this->getValue().getEventMap(0);
 }
+
+const std::vector<std::string>& DECCladogeneticStateFunction::getEventTypes(void) const
+{
+    return eventTypes;
+}
+
 
 void DECCladogeneticStateFunction::update( void )
 {
