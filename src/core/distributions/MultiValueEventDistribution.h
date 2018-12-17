@@ -27,7 +27,12 @@ namespace RevBayesCore {
     public:
         // constructor(s)
         MultiValueEventDistribution(TypedDistribution<long> *ep, const std::vector< TypedDistribution<double> *> &vp, const std::vector< std::string > &n, const std::vector< long > &min);
+        MultiValueEventDistribution(const MultiValueEventDistribution &d);
         
+        virtual                                            ~MultiValueEventDistribution();
+        
+        MultiValueEventDistribution&                        operator=(const MultiValueEventDistribution &d);
+
         // public member functions
         MultiValueEventDistribution*                        clone(void) const;                                                                                  //!< Create an independent clone
         double                                              computeLnProbability(void);

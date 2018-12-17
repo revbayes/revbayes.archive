@@ -299,9 +299,6 @@ std::string RevBayesCore::CharacterHistorySummaryMonitor<charType>::buildIterati
                     curr_state_ss << static_cast<CharacterEventDiscrete*>( start_states[i] )->getState();
                     next_state_ss << static_cast<CharacterEventDiscrete*>( next_states[i] )->getState();
                 }
-//                std::stringstream tmp;
-//                tmp << n->getIndex() << "  " << branch_start_time_ss.str() << "," << branch_end_time_ss.str() << "," << evt->getAge() << " : " << curr_state_ss.str() << " -> " << next_state_ss.str() << "\n";
-//                std::cout << tmp.str();
                 
                 o << ss_prefix.str() << separator;
                 o << curr_state_ss.str() << separator;
@@ -321,7 +318,9 @@ std::string RevBayesCore::CharacterHistorySummaryMonitor<charType>::buildIterati
                 
                 // get child states
                 TopologyNode* child = &n->getChild(i);
-                const std::vector<CharacterEvent*>& child_states = p->getHistory( *child ).getChildCharacters();
+                const BranchHistory& bh_child = p->getHistory( *child );
+                
+                const std::vector<CharacterEvent*>& child_states = bh_child.getParentCharacters();
                 std::stringstream child_state_ss;
                 
                 // make child state string

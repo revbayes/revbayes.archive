@@ -62,6 +62,7 @@ double PiecewiseConstantCoalescent::computeLnProbabilityTimes( void ) const
     // variable declarations and initialization
     double lnProbTimes = 0;
     
+    const_cast< PiecewiseConstantCoalescent* >( this )->updateIntervals();
     
     // retrieved the speciation times
     std::vector<double> ages;
@@ -74,7 +75,8 @@ double PiecewiseConstantCoalescent::computeLnProbabilityTimes( void ) const
     // sort the vector of times in ascending order
     std::sort(ages.begin(), ages.end());
     
-    const RbVector<double> &popSizes  = Nes->getValue();
+//    const RbVector<double> &popSizes  = Nes->getValue();
+    
     size_t currentInterval = 0;
     
     for (size_t i = 0; i < ages.size(); ++i)
@@ -93,7 +95,7 @@ double PiecewiseConstantCoalescent::computeLnProbabilityTimes( void ) const
         bool valid = false;
         do
         {
-            theta = popSizes[currentInterval];
+            theta = pop_sizes[currentInterval];
             double age = ages[i];
             double max = age;
             if ( currentInterval < interval_starts.size() )
@@ -189,6 +191,7 @@ std::vector<double> PiecewiseConstantCoalescent::simulateCoalescentAges( size_t 
         {
             throw RbException("You have to provide the start times of the coalescent skyline intervals if you chose 'SPECIFIED' as the method of choece.");
         }
+        const_cast< PiecewiseConstantCoalescent* >( this )->updateIntervals();
     }
     else
     {
