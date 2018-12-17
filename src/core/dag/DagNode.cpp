@@ -627,7 +627,7 @@ void DagNode::keep(void)
  */
 void DagNode::keepAffected()
 {
-    visit_flags[2] = false;
+    visit_flags[2] = true;
 
     // keep all my children
     for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
