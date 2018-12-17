@@ -50,12 +50,12 @@ namespace RevBayesCore {
         void                                                        addMove(Move *m);                                                                           //!< Add a new move on this node
         void                                                        addTouchedElementIndex(size_t i);                                                           //!< Add the index of an element that has been touch (usually for vector-like values)
         void                                                        clearTouchedElementIndices(void);
-        void                                                        clearVisitFlag(const std::string &flagType);
+        void                                                        clearVisitFlag(const size_t &flagType);
         DagNode*                                                    cloneDownstreamDag(std::map<const DagNode*, DagNode*> &nodesMap) const;                     //!< Clone the DAG which is downstream to this node (all children)
         size_t                                                      decrementReferenceCount(void) const;                                                        //!< Decrement the reference count for reference counting in smart pointers
         void                                                        executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const; //!< Map the member methods to internal function calls
         void                                                        findUniqueDescendants(RbOrderedSet<DagNode *>& descendants);
-        void                                                        findUniqueDescendantsWithFlag(RbOrderedSet<DagNode *>& descendants, const std::string& flagType);
+        void                                                        findUniqueDescendantsWithFlag(RbOrderedSet<DagNode *>& descendants, const size_t flagType);
         void                                                        getAffectedNodes(RbOrderedSet<DagNode *>& affected);                                        //!< get affected nodes
         const std::vector<DagNode*>&                                getChildren(void) const;                                                                    //!< Get the set of children
         DagNodeTypes                                                getDagNodeType(void) const;
@@ -69,7 +69,7 @@ namespace RevBayesCore {
         virtual std::vector<const DagNode*>                         getParents(void) const;                                                                     //!< Get the set of parents (empty set here)
         size_t                                                      getReferenceCount(void) const;                                                              //!< Get the reference count for reference counting in smart pointers
         const std::set<size_t>&                                     getTouchedElementIndices(void) const;                                                       //!< Get the indices of the touches elements. If the set is empty, then all elements might have changed.
-        bool                                                        getVisitFlag(const std::string& flagType) const;
+        bool                                                        getVisitFlag(const size_t flagType) const;
         void                                                        incrementReferenceCount(void) const;                                                        //!< Increment the reference count for reference counting in smart pointers
         void                                                        initiateGetAffectedNodes(RbOrderedSet<DagNode *>& affected);                                        //!< get affected nodes
         bool                                                        isAssignable(void) const;                                                                   //!< Is this DAG node modifiable by user?
@@ -95,7 +95,7 @@ namespace RevBayesCore {
         virtual void                                                setName(const std::string &n);                                                              //!< Set the name of this variable for identification purposes.
         void                                                        setParentNamePrefix(const std::string &p);
         virtual void                                                setPriorOnly(bool tf);                                                                      //!< Set whether we want to have the probability of the prior only.
-        void                                                        setVisitFlag(bool tf, const std::string& flagType);
+        void                                                        setVisitFlag(bool tf, const size_t flagType);
         virtual void                                                swapParent(const DagNode *oldP, const DagNode *newP);                                       //!< Exchange the parent node which includes setting myself as a child of the new parent and removing myself from my old parents children list
         void                                                        touch(bool touchAll=false);
         virtual void                                                touchAffected(bool touchAll=false);                                                         //!< Touch affected nodes (flag for recalculation)
@@ -132,11 +132,7 @@ namespace RevBayesCore {
     private:
 
         mutable size_t                                              ref_count;
-        bool                                                        affected_visit_flag;
-        bool                                                        keep_visit_flag;
-        bool                                                        reinitialize_visit_flag;
-        bool                                                        restore_visit_flag;
-        bool                                                        clear_visit_flag;
+        std::vector<bool>                                           visit_flags; // in order: affected, find, keep, reinitialize, restore
     };
 
 }

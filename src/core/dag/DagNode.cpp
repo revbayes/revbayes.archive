@@ -22,11 +22,7 @@ DagNode::DagNode( const std::string &n ) : Parallelizable(),
     prior_only( false ),
     touched_elements(),
     ref_count( 0 ),
-    affected_visit_flag( false ),
-    keep_visit_flag( false ),
-    reinitialize_visit_flag( false ),
-    restore_visit_flag( false ),
-    clear_visit_flag( false )
+    visit_flags( std::vector<bool>(5, false) )
 {
 
 }
@@ -50,11 +46,7 @@ DagNode::DagNode( const DagNode &n ) : Parallelizable( n ),
     prior_only( n.prior_only ),
     touched_elements( n.touched_elements ),
     ref_count( 0 ),
-    affected_visit_flag( n.affected_visit_flag ),
-    keep_visit_flag( n.keep_visit_flag ),
-    reinitialize_visit_flag( n.reinitialize_visit_flag ),
-    restore_visit_flag( n.restore_visit_flag ),
-    clear_visit_flag( n.clear_visit_flag )
+    visit_flags( n.visit_flags )
 {
 
 }
@@ -97,11 +89,7 @@ DagNode& DagNode::operator=(const DagNode &d)
         hidden          = d.hidden;
         prior_only       = d.prior_only;
         touched_elements = d.touched_elements;
-        affected_visit_flag = d.affected_visit_flag;
-        keep_visit_flag = d.keep_visit_flag;
-        reinitialize_visit_flag = d.reinitialize_visit_flag;
-        restore_visit_flag = d.restore_visit_flag;
-        clear_visit_flag = d.clear_visit_flag;
+        visit_flags = d.visit_flags;
     }
 
     return *this;
@@ -186,7 +174,7 @@ void DagNode::addTouchedElementIndex(size_t i)
 }
 
 
-void DagNode::clearVisitFlag( const std::string& flagType )
+void DagNode::clearVisitFlag( const size_t& flagType )
 {
 
     RbOrderedSet<DagNode*> descendants;
@@ -194,49 +182,12 @@ void DagNode::clearVisitFlag( const std::string& flagType )
 
     // Clear the designated flagType from all descedants (including node calling this)
     // Also clear the flags we just flagged to keep descedant searching fast
-    if (flagType == "affected")
+    RbOrderedSet<DagNode*>::iterator it;
+    for (it = descendants.begin(); it != descendants.end(); it++)
     {
-      RbOrderedSet<DagNode*>::iterator it;
-      for (it = descendants.begin(); it != descendants.end(); it++)
-      {
-        (*it)->affected_visit_flag = false;
-        (*it)->clear_visit_flag = false;
-      }
+      (*it)->visit_flags[1] = false;
+      (*it)->visit_flags[flagType] = false;
     }
-    else if (flagType == "keep")
-    {
-      RbOrderedSet<DagNode*>::iterator it;
-      for (it = descendants.begin(); it != descendants.end(); it++)
-      {
-        (*it)->keep_visit_flag = false;
-        (*it)->clear_visit_flag = false;
-      }
-    }
-    else if (flagType == "reinitialize")
-    {
-      RbOrderedSet<DagNode*>::iterator it;
-      for (it = descendants.begin(); it != descendants.end(); it++)
-      {
-        (*it)->reinitialize_visit_flag = false;
-        (*it)->clear_visit_flag = false;
-      }
-    }
-    else if (flagType == "restore")
-    {
-      RbOrderedSet<DagNode*>::iterator it;
-      for (it = descendants.begin(); it != descendants.end(); it++)
-      {
-        (*it)->restore_visit_flag = false;
-        (*it)->clear_visit_flag = false;
-      }
-    }
-
-    // // Clear the flags we just flagged to keep descedant searching fast
-    // RbOrderedSet<DagNode*>::iterator it;
-    // for (it = descendants.begin(); it != descendants.end(); it++)
-    // {
-    //   (*it)->clear_visit_flag = false;
-    // }
 
 
     return;
@@ -306,7 +257,7 @@ void DagNode::executeMethod(const std::string &n, const std::vector<const DagNod
  */
 void DagNode::findUniqueDescendants(RbOrderedSet<DagNode *>& descendants)
 {
-    clear_visit_flag = true;
+    visit_flags[1] = true;
 
     // add self to descendant list
     descendants.insert(this);
@@ -316,7 +267,7 @@ void DagNode::findUniqueDescendants(RbOrderedSet<DagNode *>& descendants)
     {
         // if child is not in descedant list, recurse from child's position
         // if ( descendants.find( *it ) == descendants.end() )
-        if ( (*it)->clear_visit_flag == false )
+        if ( (*it)->visit_flags[1] == false )
         {
             (*it)->findUniqueDescendants( descendants );
         }
@@ -326,9 +277,9 @@ void DagNode::findUniqueDescendants(RbOrderedSet<DagNode *>& descendants)
 /*
  * finds all descendants without redundant node visitation
  */
-void DagNode::findUniqueDescendantsWithFlag(RbOrderedSet<DagNode *>& descendants, const std::string& flagType)
+void DagNode::findUniqueDescendantsWithFlag(RbOrderedSet<DagNode *>& descendants, const size_t flagType)
 {
-    clear_visit_flag = true;
+    visit_flags[1] = true;
 
     // add self to descendant list
     descendants.insert(this);
@@ -338,7 +289,7 @@ void DagNode::findUniqueDescendantsWithFlag(RbOrderedSet<DagNode *>& descendants
     {
         // if child is not in descedant list, recurse from child's position
         // if ( descendants.find( *it ) == descendants.end() )
-        if ( (*it)->clear_visit_flag == false && (*it)->getVisitFlag(flagType) == true )
+        if ( (*it)->visit_flags[1] == false && (*it)->visit_flags[flagType] == true )
         {
             (*it)->findUniqueDescendantsWithFlag( descendants, flagType );
         }
@@ -351,12 +302,11 @@ void DagNode::findUniqueDescendantsWithFlag(RbOrderedSet<DagNode *>& descendants
  */
 void DagNode::getAffectedNodes(RbOrderedSet<DagNode *> &affected)
 {
-    affected_visit_flag = true;
-    const std::string &flag_type = "affected";
+    visit_flags[0] = true;
     // get all my affected children
     for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); ++i )
     {
-        if ((*i)->affected_visit_flag == false) {
+        if ((*i)->visit_flags[0] == false) {
             (*i)->getAffected(affected, this);
         }
     }
@@ -547,31 +497,9 @@ const std::set<size_t>& DagNode::getTouchedElementIndices( void ) const
     return touched_elements;
 }
 
-bool DagNode::getVisitFlag( const std::string& flagType ) const
+bool DagNode::getVisitFlag( const size_t flagType ) const
 {
-    bool flag;
-
-    if (flagType == "affected")
-    {
-      flag = affected_visit_flag;
-    }
-    else if (flagType == "keep")
-    {
-      flag = keep_visit_flag;
-    }
-    else if (flagType == "reinitialize")
-    {
-      flag = reinitialize_visit_flag;
-    }
-    else if (flagType == "restore")
-    {
-      flag = restore_visit_flag;
-    }
-    else {
-      throw(RbException("Request to get visit flag of unknown type."));
-    }
-
-    return flag;
+    return visit_flags[flagType];
 }
 
 
@@ -596,7 +524,7 @@ void DagNode::initiateGetAffectedNodes(RbOrderedSet<DagNode *> &affected)
     getAffectedNodes( affected );
 
     // clear visit flags
-    const std::string &flag_type = "affected";
+    const size_t& flag_type = 0;
     clearVisitFlag(flag_type);
 }
 
@@ -689,7 +617,7 @@ void DagNode::keep(void)
     keepAffected();
 
     // clear visit flags
-    const std::string &flag_type = "keep";
+    const size_t &flag_type = 2;
     clearVisitFlag(flag_type);
 
 }
@@ -699,13 +627,12 @@ void DagNode::keep(void)
  */
 void DagNode::keepAffected()
 {
-    keep_visit_flag = true;
-    const std::string &flag_type = "keep";
+    visit_flags[2] = false;
 
     // keep all my children
     for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
     {
-      if ((*i)->keep_visit_flag == false)
+      if ((*i)->visit_flags[2] == false)
       {
         (*i)->keepMe( this );
       }
@@ -867,7 +794,7 @@ void DagNode::reInitialized( void )
     reInitializeAffected();
 
     // clear visit flags
-    const std::string &flag_type = "reinitialize";
+    const size_t &flag_type = 3;
     clearVisitFlag(flag_type);
 
 }
@@ -878,13 +805,12 @@ void DagNode::reInitialized( void )
 void DagNode::reInitializeAffected( void )
 {
 
-    reinitialize_visit_flag = true;
-    const std::string &flag_type = "reinitialize";
+    visit_flags[3] = true;
 
     // next, reInitialize all my children
     for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
     {
-      if ((*i)->reinitialize_visit_flag == false)
+      if ((*i)->visit_flags[3] == false)
       {
         (*i)->reInitializeMe();
       }
@@ -1014,7 +940,7 @@ void DagNode::restore(void)
     restoreAffected();
 
     // clear visit flags
-    const std::string &flag_type = "restore";
+    const size_t &flag_type = 4;
     clearVisitFlag(flag_type);
 
 }
@@ -1027,13 +953,12 @@ void DagNode::restore(void)
 void DagNode::restoreAffected(void)
 {
 
-    restore_visit_flag = true;
-    const std::string &flag_type = "restore";
+    visit_flags[4] = true;
 
     // keep all my children
     for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
     {
-      if ((*i)->restore_visit_flag == false)
+      if ((*i)->visit_flags[4] == false)
       {
         (*i)->restoreMe( this );
       }
@@ -1088,28 +1013,9 @@ void DagNode::setPriorOnly(bool tf)
 
 }
 
-void DagNode::setVisitFlag(bool tf, const std::string& flagType)
+void DagNode::setVisitFlag(bool tf, const size_t flagType)
 {
-    if (flagType == "affected")
-    {
-      affected_visit_flag = tf;
-    }
-    else if (flagType == "keep")
-    {
-      keep_visit_flag = tf;
-    }
-    else if (flagType == "reinitialize")
-    {
-      reinitialize_visit_flag = tf;
-    }
-    else if (flagType == "restore")
-    {
-      restore_visit_flag = tf;
-    }
-    else {
-      throw(RbException("Request to set visit flag of unknown type."));
-    }
-
+    visit_flags[flagType] = tf;
 }
 
 /**
