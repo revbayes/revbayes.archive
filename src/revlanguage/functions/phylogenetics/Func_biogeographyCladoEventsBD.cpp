@@ -59,16 +59,6 @@ RevBayesCore::TypedFunction< RevBayesCore::CladogeneticSpeciationRateMatrix >* F
     RevBayesCore::BiogeographyCladogeneticBirthDeathFunction* f = new RevBayesCore::BiogeographyCladogeneticBirthDeathFunction( sr, ns, cm, cw, c_type );
     f->setRateMultipliers(rm);
     
-//    if (this->args[1].getVariable()->getRevObject() != RevNullObject::getInstance())
-//    {
-//        RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rm = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
-//        if (rm->getValue().size() > 1)
-//        {
-//            throw RbException("Only one hidden rate category currently implemented.");
-//        }
-//        f->setRateMultipliers(rm);
-//    }
-//    
     return f;
 }
 

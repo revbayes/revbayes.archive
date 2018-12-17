@@ -7,7 +7,6 @@
 //
 
 #include "BiogeographyCladogeneticBirthDeathFunction.h"
-#include "BiogeographicCladoEvent.h"
 #include "CladogeneticSpeciationRateMatrix.h"
 #include "MatrixReal.h"
 #include "RbException.h"
@@ -133,8 +132,6 @@ void BiogeographyCladogeneticBirthDeathFunction::buildBits( void )
             eventStringToStateMap[ eventTypes[i] ] = ALLOPATRY;
         else if (eventTypes[i]=="j")
             eventStringToStateMap[ eventTypes[i] ] = JUMP_DISPERSAL;
-//        else if (eventTypes[i]=="f")
-//            eventStringToStateMap[ eventTypes[i] ] = BiogeographicCladoEvent::SYMPATRY_WIDESPREAD;
     }
     
     bitsByNumOn.resize(numCharacters+1);
@@ -186,9 +183,7 @@ void BiogeographyCladogeneticBirthDeathFunction::buildBits( void )
 
 void BiogeographyCladogeneticBirthDeathFunction::buildEventMap( void ) {
     
-//    bool wideAllopatry = true;
-//    bool useVicariance = false;
-    
+    // clear events
     eventMapCounts.clear();
     
     // get L,R states per A state
@@ -200,10 +195,6 @@ void BiogeographyCladogeneticBirthDeathFunction::buildEventMap( void ) {
         unsigned i = *its;
         idx[0] = i;
         eventMapCounts[i] = std::vector<unsigned>(NUM_CLADO_EVENT_TYPES, 0);
-        
-        // only include supported ranges
-        //        if (ranges.find(i) == ranges.end())
-        //            continue;
         
 #ifdef DEBUG_DEC
         std::cout << "State " << i << "\n";
@@ -239,8 +230,6 @@ void BiogeographyCladogeneticBirthDeathFunction::buildEventMap( void ) {
                 continue;
             }
             
-            //            eventMapTypes[ idx ] = BiogeographicCladoEvent::SYMPATRY_NARROW;
-            //            eventMapCounts[ i ][  BiogeographicCladoEvent::SYMPATRY_NARROW ] += 1;
             eventMapTypes[ idx ] = SYMPATRY;
             eventMapCounts[ i ][  SYMPATRY ] += 1;
             eventMap[ idx ] = 0.0;
@@ -357,8 +346,6 @@ void BiogeographyCladogeneticBirthDeathFunction::buildEventMap( void ) {
                     if (sumBits(bl)==1 || sumBits(br)==1)
                     {
                         
-                        //                    unsigned sl = bitsToState(bl);
-                        //                    unsigned sr = bitsToState(br);
                         unsigned sa = bitsToStatesByNumOn[ba];
                         unsigned sl = bitsToStatesByNumOn[bl];
                         unsigned sr = bitsToStatesByNumOn[br];
@@ -638,7 +625,10 @@ void BiogeographyCladogeneticBirthDeathFunction::update( void )
             }
         }
     }
-    printEventMap();
+    
+//    printEventMap();
+    
+    // done!
     value->setEventMap(eventMap);
 }
 

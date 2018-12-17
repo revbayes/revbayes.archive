@@ -90,27 +90,17 @@ namespace RevBayesCore {
         std::vector<std::vector<unsigned> >                         statesToBitsByNumOn;
         std::map< std::vector<unsigned>, unsigned>                  bitsToStatesByNumOn;
         std::set<unsigned>                                          ranges;
-
         
         // event maps
         unsigned                                                    numEventTypes;
         std::map< std::vector<unsigned>, unsigned>                  eventMapTypes;
         std::map< std::vector<unsigned>, double >                   eventMap;
         std::map< unsigned, std::vector<unsigned> >                 eventMapCounts;
-        //        std::vector< std::vector<unsigned> >                        eventMapCounts;
         
-
         // MJL: eventually, deprecate this stuff
-        
         // manages string-based simplex mapping??
         std::vector<std::string>                                    eventTypes;
         std::map<std::string, unsigned>                             eventStringToStateMap;
-        
-        // manage ranges under connectivity graph
-        
-//        std::set<unsigned>                                      afterRanges;
-        
-
         
     };
     
