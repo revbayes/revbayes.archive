@@ -23,6 +23,13 @@ namespace RevBayesCore {
     public:
 
         enum DagNodeTypes { CONSTANT, DETERMINISTIC, STOCHASTIC };
+        
+        // Fixed-name index for visit_flags variables
+        const static unsigned AFFECTED_FLAG                         = 0;
+        const static unsigned FIND_FLAG                             = 1;
+        const static unsigned KEEP_FLAG                             = 2;
+        const static unsigned REINITIALIZE_FLAG                     = 3;
+        const static unsigned RESTORE_FLAG                          = 4;
 
         virtual                                                    ~DagNode(void);                                                                                      //!< Virtual destructor
 
