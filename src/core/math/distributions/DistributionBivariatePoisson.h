@@ -1,8 +1,8 @@
 /**
- * @file DistributionPoisson
- * This file contains the functions of the poisson distribution.
+ * @file DistributionBivariatePoisson
+ * This file contains the functions of the bivariate poisson distribution.
  *
- * @brief Implementation of the poisson distribution.
+ * @brief Implementation of the bivariate poisson distribution.
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -15,8 +15,10 @@
  */
 
 
-#ifndef DistributionPoisson_H
-#define DistributionPoisson_H
+#ifndef DistributionBivariatePoisson_H
+#define DistributionBivariatePoisson_H
+
+#include <vector>
 
 namespace RevBayesCore {
 
@@ -24,13 +26,10 @@ namespace RevBayesCore {
 
     namespace RbStatistics {
 
-        namespace Poisson {
+        namespace BivariatePoisson {
         
-            double                      pdf(double lambda, int x);                                            /*!< Poisson(lambda) probability */
-            double                      lnPdf(double lambda, int x);                                          /*!< Log of the Poisson(lambda) probability */
-            double                      cdf(double lambda, int x);                                            /*!< Poisson(lambda) cumulative probability */
-            double                      quantile(double lambda, double p);                                    /*!< Poisson(lambda) quantile */
-            int                         rv(double lambda, RandomNumberGenerator& rng);                        /*!< Poisson(lambda) random variable */
+          double                      lnPdf(double theta1, double theta2, double theta0, std::vector<long> x);
+          std::vector<long>            rv(double theta1, double theta2, double theta0, RandomNumberGenerator& rng);
         }
     }
 }

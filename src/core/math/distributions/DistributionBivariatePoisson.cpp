@@ -1,8 +1,8 @@
 /**
- * @file DistributionPoisson
- * This file contains the functions of the poisson distribution.
+ * @file DistributionBivariatePoisson
+ * This file contains the functions of the bivariate poisson distribution.
  *
- * @brief Implementation of the poisson distribution.
+ * @brief Implementation of the bivariate poisson distribution.
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -16,9 +16,12 @@
 
 #include <cmath>
 #include <iostream>
+#include <vector>
 
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
+#include "RbMathFunctions.h"
+#include "DistributionBivariatePoisson.h"
 #include "DistributionPoisson.h"
 #include "RbStatisticsHelper.h"
 #include "RbException.h"
@@ -27,144 +30,35 @@
 using namespace RevBayesCore;
 
 
-double RbStatistics::Poisson::pdf(double lambda, int x) {
-    
-    if (x <= 20) {
-        return exp(x * std::log(lambda) - lambda) / RbConstants::N_FACTORIAL[x];
-    } else {
-        return exp(x * std::log(lambda) - lambda - RbMath::lnFactorial(x));
-    }
+
+double RbStatistics::BivariatePoisson::lnPdf(double theta1, double theta2, double theta0, std::vector<long> x) {
+
+  long x1, x2;
+  x1 = x[0];
+  x2 = x[1];
+  double result = - ( theta1 + theta2 + theta0 ) + x1 * std::log( theta1 ) + x2 * std::log( theta2 ) - (RbMath::lnGamma( x1 + 1 ) + RbMath::lnGamma( x2 + 1 ));
+
+
+  double theta_ratio = theta0 / (theta1 * theta2);
+  long min_x1x2 = std::min(x1, x2);
+  double tmp = 0;
+
+  for (int i = 0; i <= min_x1x2; i++) {
+    tmp += RbMath::choose(x1, i) * RbMath::choose(x2, i) * RbMath::gamma(i + 1) * std::pow(theta_ratio, i);
+  }
+
+  return result + std::log(tmp);
 }
 
-/*!
- * This function calculates the natural log of the probability for a
- * Poisson distribution. 
- *
- * \brief Natural log of Poisson probability.
- * \param lambda is the rate parameter of the Poisson. 
- * \param x is the value of the random variable. 
- * \return Returns the natural log of the probability. 
- * \throws Does not throw an error.
- */
-double RbStatistics::Poisson::lnPdf(double lambda, int x) {
-    
-    return ( x * std::log(lambda) - lambda - RbMath::lnFactorial(x) );
-}
 
-/*!
- * This function calculates the cumulative probability for a
- * Poisson distribution. 
- *
- * \brief Poisson cumulative probability.
- * \param lambda is the rate parameter of the Poisson. 
- * \param x is the value of the random variable. 
- * \return Returns the cumulative probability. 
- * \throws Does not throw an error.
- */
-double RbStatistics::Poisson::cdf(double lambda, int x) {
-    
-	if ( x < 0 )
-		return 0.0;
-	double next = exp(-lambda);
-	double cdf = next;
-	for (int i=1; i<=x; i++)
-        {
-		double last = next;
-		next = last * lambda / (double)i;
-		cdf += next;
-        }
-	return cdf;
-}
-
-/*!
- * This function returns the quantile of a Poisson probability 
- * distribution.
- *
- * \brief Poisson(lambda) quantile.
- * \param lambda is the rate parameter of the Poisson. 
- * \param p is the probability up to the quantile. 
- * \return Returns the quantile.
- * \throws Does not throw an error.
- */
-double RbStatistics::Poisson::quantile(double lambda, double p) {
-    
-	/* Starting with x = 0, find the first value for which
-     CDF(X-1) <= CDF <= CDF(X). */
-	double sum = 0.0;
-	int xmax = 100;
-	for (int i=0; i<=xmax; i++)
-        {
-		double sumOld = sum;
-		double newVal = 0.0;
-		if ( i == 0 )
-            {
-			newVal = exp(-lambda);
-			sum = newVal;
-            }
-		else
-            {
-			double last = newVal;
-			newVal = last * lambda / ( double ) ( i );
-			sum += newVal;
-            }
-		if ( sumOld <= p && p <= sum )
-			return i;
-        }
-    
-	return xmax;
-}
-
-/*!
- * This function generates a Poisson-distributed random 
- * variable with parameter lambda.
- *
- * \brief Poisson(lambda) random variable.
- * \param lambda the rate parameter of the Poisson. 
- * \param rng is a pointer to a random number object. 
- * \return This function returns a Poisson-distributed integer.
- * \throws Does not throw an error.
- */
-int RbStatistics::Poisson::rv(double lambda, RandomNumberGenerator& rng)
+std::vector<long> RbStatistics::BivariatePoisson::rv(double theta1, double theta2, double theta0, RandomNumberGenerator& rng)
 {
-    
-	if (lambda < 17.0)
-    {
-		if (lambda < 1.0e-6)
-        {
-                if (lambda == 0.0) 
-				return 0;
-            
-			if (lambda < 0.0)
-            {
-                std::ostringstream s;
-                s << "Parameter negative in poisson function";
-                throw RbException(s.str());
-            }
-            
-			/* For extremely small lambda we calculate the probabilities of x = 1
-             and x = 2 (ignoring higher x). The reason for using this 
-             method is to prevent numerical inaccuracies in other methods. */
-            //			return RbStatistics::Helper::poissonLow(lambda, *rng);
-                
-            return 0;
-        }
-		else 
-        {
-			/* use the inversion method */
-			return RbStatistics::Helper::poissonInver(lambda, rng);
-        }
-    }
-	else 
-    {
-		if (lambda > 2.0e9) 
-        {
-			/* there should be an error here */
-			throw RbException( "Parameter too big in poisson function" );
-        }
-		/* use the ratio-of-uniforms method */
-        return RbStatistics::Helper::poissonRatioUniforms(lambda, rng);
-        
-    }
-    
+  long a, b, c;
+  a = RbStatistics::Poisson::rv(theta1, rng);
+  b = RbStatistics::Poisson::rv(theta2, rng);
+  c = RbStatistics::Poisson::rv(theta0, rng);
+  std::vector<long> x;
+  x.push_back(a + c);
+  x.push_back(b + c);
+  return x;
 }
-

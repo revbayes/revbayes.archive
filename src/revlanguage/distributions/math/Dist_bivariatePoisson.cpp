@@ -1,9 +1,12 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "Dist_poisson.h"
-#include "PoissonDistribution.h"
+#include "Dist_bivariatePoisson.h"
+#include "BivariatePoissonDistribution.h"
 #include "Natural.h"
+#include "ModelVector.h"
 #include "Probability.h"
+#include "Real.h"
+#include "RealPos.h"
 #include "StochasticNode.h"
 
 using namespace RevLanguage;
@@ -11,12 +14,12 @@ using namespace RevLanguage;
 
 /**
  * Default constructor.
- * 
+ *
  * The default constructor does nothing except allocating the object.
  */
-Dist_poisson::Dist_poisson() : TypedDistribution<Natural>() 
+Dist_bivariatePoisson::Dist_bivariatePoisson() : TypedDistribution< ModelVector<Natural> >()
 {
-    
+
 }
 
 
@@ -24,47 +27,49 @@ Dist_poisson::Dist_poisson() : TypedDistribution<Natural>()
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
  *
- * \return A new copy of myself 
+ * \return A new copy of myself
  */
-Dist_poisson* Dist_poisson::clone( void ) const 
+Dist_bivariatePoisson* Dist_bivariatePoisson::clone( void ) const
 {
-    
-    return new Dist_poisson(*this);
+
+    return new Dist_bivariatePoisson(*this);
 }
 
 
 /**
  * Create a new internal distribution object.
  *
- * This function simply dynamically allocates a new internal distribution object that can be 
+ * This function simply dynamically allocates a new internal distribution object that can be
  * associated with the variable. The internal distribution object is created by calling its
- * constructor and passing the distribution-parameters (other DAG nodes) as arguments of the 
+ * constructor and passing the distribution-parameters (other DAG nodes) as arguments of the
  * constructor. The distribution constructor takes care of the proper hook-ups.
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::PoissonDistribution* Dist_poisson::createDistribution( void ) const
+RevBayesCore::BivariatePoissonDistribution* Dist_bivariatePoisson::createDistribution( void ) const
 {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* rate    = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
-    RevBayesCore::PoissonDistribution* d        = new RevBayesCore::PoissonDistribution( rate );
-    
+  RevBayesCore::TypedDagNode<double>* theta1x = static_cast<const RealPos &>( theta1->getRevObject() ).getDagNode();
+  RevBayesCore::TypedDagNode<double>* theta2x = static_cast<const RealPos &>( theta2->getRevObject() ).getDagNode();
+  RevBayesCore::TypedDagNode<double>* theta0x = static_cast<const RealPos &>( theta0->getRevObject() ).getDagNode();
+  RevBayesCore::BivariatePoissonDistribution* d        = new RevBayesCore::BivariatePoissonDistribution( theta1x, theta2x, theta0x );
+
     return d;
 }
 
 
 
 /**
- * Get Rev type of object 
+ * Get Rev type of object
  *
  * \return The class' name.
  */
-const std::string& Dist_poisson::getClassType(void) 
-{ 
-    
-    static std::string rev_type = "Dist_poisson";
-    
-	return rev_type; 
+const std::string& Dist_bivariatePoisson::getClassType(void)
+{
+
+    static std::string rev_type = "Dist_bivariatePoisson";
+
+	return rev_type;
 }
 
 
@@ -73,12 +78,12 @@ const std::string& Dist_poisson::getClassType(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& Dist_poisson::getClassTypeSpec(void) 
-{ 
-    
+const TypeSpec& Dist_bivariatePoisson::getClassTypeSpec(void)
+{
+
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Natural>::getClassTypeSpec() ) );
-    
-	return rev_type_spec; 
+
+	return rev_type_spec;
 }
 
 
@@ -87,11 +92,10 @@ const TypeSpec& Dist_poisson::getClassTypeSpec(void)
  *
  * \return Rev aliases of constructor function.
  */
-std::vector<std::string> Dist_poisson::getDistributionFunctionAliases( void ) const
+std::vector<std::string> Dist_bivariatePoisson::getDistributionFunctionAliases( void ) const
 {
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
-    a_names.push_back( "pois" );
 
     return a_names;
 }
@@ -104,11 +108,11 @@ std::vector<std::string> Dist_poisson::getDistributionFunctionAliases( void ) co
  *
  * \return Rev name of constructor function.
  */
-std::string Dist_poisson::getDistributionFunctionName( void ) const
+std::string Dist_bivariatePoisson::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
-    std::string d_name = "poisson";
-    
+    std::string d_name = "bivariatePoisson";
+
     return d_name;
 }
 
@@ -116,12 +120,13 @@ std::string Dist_poisson::getDistributionFunctionName( void ) const
 /**
  * Get the author(s) of this function so they can receive credit (and blame) for it.
  */
-std::vector<std::string> Dist_poisson::getHelpAuthor(void) const
+std::vector<std::string> Dist_bivariatePoisson::getHelpAuthor(void) const
 {
     // create a vector of authors for this function
     std::vector<std::string> authors;
+    authors.push_back( "Alexander Zarebski" );
     authors.push_back( "Sebastian Hoehna" );
-    
+
     return authors;
 }
 
@@ -129,11 +134,11 @@ std::vector<std::string> Dist_poisson::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::string Dist_poisson::getHelpDescription(void) const
+std::string Dist_bivariatePoisson::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::string description = "A Poisson distribution defines probabilities for natural numbers. It is defined as the number of exponentially distributed events in a given interval.";
-    
+    std::string description = "A Bivariate Poisson distribution defines probabilities for pairs of natural numbers.";
+
     return description;
 }
 
@@ -141,7 +146,7 @@ std::string Dist_poisson::getHelpDescription(void) const
 /**
  * Get the more detailed description of the function
  */
-std::string Dist_poisson::getHelpDetails(void) const
+std::string Dist_bivariatePoisson::getHelpDetails(void) const
 {
     // create a variable for the description of the function
     std::string details;
@@ -154,21 +159,11 @@ std::string Dist_poisson::getHelpDetails(void) const
  * These example should help the users to show how this function works but
  * are also used to test if this function still works.
  */
-std::string Dist_poisson::getHelpExample(void) const
+std::string Dist_bivariatePoisson::getHelpExample(void) const
 {
     // create an example as a single string variable.
     std::string example = "";
-    
-    example += "l ~ dnUniform(0.0,100.0)\n";
-    example += "x ~ dnPoisson(l)\n";
-    example += "x.clamp(10)\n";
-    example += "moves[1] = mvSlide(l, delta=0.1, weight=1.0)\n";
-    example += "monitors[1] = mnScreen(printgen=1000, separator = \"\t\", l)\n";
-    example += "mymodel = model(l)\n";
-    example += "mymcmc = mcmc(mymodel, monitors, moves)\n";
-    example += "mymcmc.burnin(generations=20000,tuningInterval=100)\n";
-    example += "mymcmc.run(generations=200000)\n";
-    
+
     return example;
 }
 
@@ -177,12 +172,13 @@ std::string Dist_poisson::getHelpExample(void) const
  * Get some references/citations for this function
  *
  */
-std::vector<RevBayesCore::RbHelpReference> Dist_poisson::getHelpReferences(void) const
+std::vector<RevBayesCore::RbHelpReference> Dist_bivariatePoisson::getHelpReferences(void) const
 {
     // create an entry for each reference
     std::vector<RevBayesCore::RbHelpReference> references;
-    
-    
+
+    // See work by Dimitris Karlis and John Ntzoufras.
+
     return references;
 }
 
@@ -190,13 +186,13 @@ std::vector<RevBayesCore::RbHelpReference> Dist_poisson::getHelpReferences(void)
 /**
  * Get the names of similar and suggested other functions
  */
-std::vector<std::string> Dist_poisson::getHelpSeeAlso(void) const
+std::vector<std::string> Dist_bivariatePoisson::getHelpSeeAlso(void) const
 {
     // create an entry for each suggested function
     std::vector<std::string> see_also;
-    see_also.push_back( "dnGeom" );
-    
-    
+    see_also.push_back( "dnPoisson" );
+
+
     return see_also;
 }
 
@@ -204,16 +200,16 @@ std::vector<std::string> Dist_poisson::getHelpSeeAlso(void) const
 /**
  * Get the title of this help entry
  */
-std::string Dist_poisson::getHelpTitle(void) const
+std::string Dist_bivariatePoisson::getHelpTitle(void) const
 {
     // create a title variable
-    std::string title = "Poisson Distribution";
-    
+    std::string title = "Bivariate Poisson Distribution";
+
     return title;
 }
 
 
-/** 
+/**
  * Get the member rules used to create the constructor of this object.
  *
  * The member rules of the Poisson distribution are:
@@ -221,20 +217,22 @@ std::string Dist_poisson::getHelpTitle(void) const
  *
  * \return The member rules.
  */
-const MemberRules& Dist_poisson::getParameterRules(void) const 
+const MemberRules& Dist_bivariatePoisson::getParameterRules(void) const
 {
-    
-    static MemberRules distPoisMemberRules;
+
+    static MemberRules distBivPoisMemberRules;
     static bool rules_set = false;
-    
-    if ( !rules_set ) 
+
+    if ( !rules_set )
     {
-        distPoisMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The rate (rate = 1/mean) parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        
+      distBivPoisMemberRules.push_back( new ArgumentRule( "theta1", RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ));
+      distBivPoisMemberRules.push_back( new ArgumentRule( "theta2", RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ));
+      distBivPoisMemberRules.push_back( new ArgumentRule( "theta0", RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ));
+
         rules_set = true;
     }
-    
-    return distPoisMemberRules;
+
+    return distBivPoisMemberRules;
 }
 
 
@@ -243,19 +241,19 @@ const MemberRules& Dist_poisson::getParameterRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& Dist_poisson::getTypeSpec( void ) const 
+const TypeSpec& Dist_bivariatePoisson::getTypeSpec( void ) const
 {
-    
+
     static TypeSpec ts = getClassTypeSpec();
-    
+
     return ts;
 }
 
 
 
-/** 
+/**
  * Set a member variable.
- * 
+ *
  * Sets a member variable with the given name and store the pointer to the variable.
  * The value of the variable might still change but this function needs to be called again if the pointer to
  * the variable changes. The current values will be used to create the distribution object.
@@ -263,16 +261,19 @@ const TypeSpec& Dist_poisson::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_poisson::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
+void Dist_bivariatePoisson::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
-    
-    if ( name == "lambda" )
+
+  if ( name == "theta1" ) {
+    theta1 = var;
+  } else if (name == "theta2") {
+    theta2 = var;
+  } else if (name == "theta0") {
+    theta0 = var;
+  }
+    else
     {
-        lambda = var;
+      TypedDistribution< ModelVector<Natural> >::setConstParameter(name, var);
     }
-    else 
-    {
-        TypedDistribution<Natural>::setConstParameter(name, var);
-    }
-    
+
 }

@@ -1,47 +1,41 @@
-#ifndef Dist_poisson_h
-#define Dist_poisson_h
+#ifndef Dist_bivariatePoisson_h
+#define Dist_bivariatePoisson_h
 
-#include "PoissonDistribution.h"
+#include "BivariatePoissonDistribution.h"
 #include "Natural.h"
+#include "ModelVector.h"
 #include "RlTypedDistribution.h"
 
 namespace RevLanguage {
-    
+
     /**
-     * The RevLanguage wrapper of the Poisson distribution.
-     *
-     * The RevLanguage wrapper of the Poisson distribution simply
-     * manages the interactions through the Rev with our core.
-     * That is, the internal distribution object can be constructed and hooked up
-     * in a model graph.
-     * See the Dist_poisson.h for more details.
-     *
+     * The RevLanguage wrapper of the Bivariate Poisson distribution.
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Nicolas Lartillot)
      * @since 2014-03-18, version 1.0
      *
      */
-    class Dist_poisson : public TypedDistribution<Natural> {
-        
+    class Dist_bivariatePoisson : public TypedDistribution< ModelVector<Natural> > {
+
     public:
-        Dist_poisson( void );                                                                                                                           //!< Default constructor
-        
+        Dist_bivariatePoisson( void );                                                                                                                           //!< Default constructor
+
         // Basic utility functions
-        Dist_poisson*                                   clone(void) const;                                                                              //!< Clone the object
+        Dist_bivariatePoisson*                          clone(void) const;                                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                         //!< Get class type spec
         std::vector<std::string>                        getDistributionFunctionAliases(void) const;                                                     //!< Get the alternative names used for the constructor function in Rev.
         std::string                                     getDistributionFunctionName(void) const;                                                        //!< Get the Rev-name for this distribution.
         const TypeSpec&                                 getTypeSpec(void) const;                                                                        //!< Get the type spec of the instance
         const MemberRules&                              getParameterRules(void) const;                                                                  //!< Get member rules (const)
-        
-        
+
+
         // Distribution functions you have to override
-        RevBayesCore::PoissonDistribution*              createDistribution(void) const;                                                                 //!< Create the internal distribution object
-        
+        RevBayesCore::BivariatePoissonDistribution*     createDistribution(void) const;                                                                 //!< Create the internal distribution object
+
     protected:
-        
+
         std::vector<std::string>                        getHelpAuthor(void) const;                                                              //!< Get the author(s) of this function
         std::string                                     getHelpDescription(void) const;                                                         //!< Get the description for this function
         std::string                                     getHelpDetails(void) const;                                                             //!< Get the more detailed description of the function
@@ -51,13 +45,15 @@ namespace RevLanguage {
         std::string                                     getHelpTitle(void) const;                                                               //!< Get the title of this help entry
 
         void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);               //!< Set member variable
-        
-        
+
+
     private:
-        
-        RevPtr<const RevVariable>                       lambda;                    
+
+        RevPtr<const RevVariable>                       theta1;
+        RevPtr<const RevVariable>                       theta2;
+        RevPtr<const RevVariable>                       theta0;
     };
-    
+
 }
 
 
