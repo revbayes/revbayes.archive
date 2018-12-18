@@ -97,14 +97,6 @@ void BiogeographyCladogeneticBirthDeathFunction::bitCombinations(std::vector<std
     }
 }
 
-unsigned BiogeographyCladogeneticBirthDeathFunction::sumBits(const std::vector<unsigned>& b)
-{
-    unsigned n = 0;
-    for (int i = 0; i < b.size(); i++)
-        n += b[i];
-    return n;
-}
-
 unsigned BiogeographyCladogeneticBirthDeathFunction::bitsToState( const std::vector<unsigned>& b )
 {
     return bitsToStatesByNumOn[b];
@@ -136,6 +128,7 @@ void BiogeographyCladogeneticBirthDeathFunction::buildBits( void )
     
     bitsByNumOn.resize(numCharacters+1);
     statesToBitsByNumOn.resize(numIntStates);
+    statesToBitsetsByNumOn.resize(numIntStates);
     bits = std::vector<std::vector<unsigned> >(numIntStates, std::vector<unsigned>(numCharacters, 0));
     bitsByNumOn[0].push_back(bits[0]);
     for (size_t i = 1; i < numIntStates; i++)
@@ -163,7 +156,19 @@ void BiogeographyCladogeneticBirthDeathFunction::buildBits( void )
     {
         for (size_t j = 0; j < bitsByNumOn[i].size(); j++)
         {
-            statesToBitsByNumOn[k++] = bitsByNumOn[i][j];
+            // assign to presence-absence vector
+            statesToBitsByNumOn[k] = bitsByNumOn[i][j];
+            
+            // assign to set of present areas
+            std::set<unsigned> s;
+            for (size_t m = 0; m < statesToBitsByNumOn[k].size(); m++)
+            {
+                if (statesToBitsByNumOn[k][m] == 1) {
+                    s.insert( m );
+                }
+            }
+            statesToBitsetsByNumOn[k] = s;
+            k++;
         }
     }
     
@@ -175,6 +180,63 @@ void BiogeographyCladogeneticBirthDeathFunction::buildBits( void )
 }
 
 
+void BiogeographyCladogeneticBirthDeathFunction::buildCutsets( void ) {
+    
+    std::map< std::vector<unsigned>, unsigned>::iterator it;
+    
+    for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
+    {
+        // get event
+        std::vector<unsigned> idx = it->first;
+        unsigned event_type = it->second;
+        
+        // get right and left bitsets
+        std::set<unsigned> r1 = statesToBitsetsByNumOn[ idx[1] ];
+        std::set<unsigned> r2 = statesToBitsetsByNumOn[ idx[2] ];
+     
+        // fill vector with edges to cut
+        std::vector< std::vector<unsigned> > cutset;
+        
+//        if (event_type == SYMPATRY) {
+//            // find the sympatric area
+//            const std::set<unsigned>& s1 = ( r1.size() < r2.size() ? r1 : r2 );
+//            const std::set<unsigned>& s2 = ( r1.size() >= r2.size() ? r1 : r2 );
+//            std::set<unsigned>::iterator jt, kt;
+//            for (jt = s1.begin(); jt != s1.end(); jt++)
+//            {
+//                for (kt = s2.begin(); kt != s2.end(); kt++)
+//                {
+//                    std::vector<unsigned> edge;
+//                    edge.push_back( *jt );
+//                    edge.push_back( *kt );
+//                    cutset.push_back( edge );
+//                }
+//            }
+//        }
+//        else if (event_type == ALLOPATRY) {
+            // find the sympatric area
+            const std::set<unsigned>& s1 = r1; //( r1.size() < r2.size() ? r1 : r2 );
+            const std::set<unsigned>& s2 = r2; // ( r1.size() >= r2.size() ? r1 : r2 );
+            std::set<unsigned>::iterator jt, kt;
+            for (jt = s1.begin(); jt != s1.end(); jt++)
+            {
+                for (kt = s2.begin(); kt != s2.end(); kt++)
+                {
+                    if ( *jt != *kt )
+                    {
+                        std::vector<unsigned> edge;
+                        edge.push_back( *jt );
+                        edge.push_back( *kt );
+                        cutset.push_back( edge );
+                    }
+                }
+            }
+//        }
+        eventMapCutsets[ idx ] = cutset;
+    }
+    
+    std::cout << "";
+}
 
 /*
  *  This function populates the eventMap, eventMapTypes, and eventMapCounts
@@ -453,6 +515,8 @@ void BiogeographyCladogeneticBirthDeathFunction::buildEventMap( void ) {
     //
     std::cout << "------\n";
 #endif
+    
+    buildCutsets();
 }
 
 void BiogeographyCladogeneticBirthDeathFunction::buildRanges(std::set<unsigned>& range_set, const TypedDagNode< RbVector<RbVector<double> > >* g, bool all)
@@ -539,6 +603,107 @@ double BiogeographyCladogeneticBirthDeathFunction::computeDataAugmentedCladogene
 }
 
 
+double BiogeographyCladogeneticBirthDeathFunction::computeModularityScore(unsigned state1, unsigned state2, unsigned event_type)
+{
+    // return value
+    double Q = 0.0;
+    
+    // get value for connectivity mtx
+    const RbVector<RbVector<double> >& mtx = connectivityMatrix->getValue();
+    size_t n = mtx.size();
+    
+    // get left/right area sets
+    std::vector< std::set<unsigned> > daughter_ranges;
+    daughter_ranges.push_back( statesToBitsetsByNumOn[ state1 ] );
+    daughter_ranges.push_back( statesToBitsetsByNumOn[ state2 ] );
+    
+    // compute modularity score depending on event type
+    if (event_type == SYMPATRY)
+    {
+        
+        if (daughter_ranges[0].size() == 1 && daughter_ranges[1].size() == 1)
+        {
+            return 0.0;
+        }
+        
+        std::vector<double> z(n, 0.0);
+        
+        // get trunk range (larger range)
+        const std::set<unsigned>& s = ( daughter_ranges[0].size() > daughter_ranges[1].size() ? daughter_ranges[0] : daughter_ranges[1] );
+        
+        // compute z, the sum of ranges for the trunk range
+        std::set<unsigned>::iterator it1, it2;
+        for (it1 = s.begin(); it1 != s.end(); it1++)
+        {
+            for (it2 = s.begin(); it2 != s.end(); it2++)
+            {
+                if ( (*it1) != (*it2) ) {
+                    z[ *it1 ] += mtx[ *it1 ][ *it2 ];
+                }
+            }
+        }
+        
+        double z_sum = 0.0;
+        for (size_t i = 0; i < z.size(); i++) {
+            z_sum += z[i];
+        }
+        
+        for (size_t i = 0; i < n; i++)
+        {
+            for (size_t j = 0; j < n; j++)
+            {
+                if (i != j) {
+                    Q += mtx[i][j] - (z[i] * z[j] / (2 * z_sum));
+                }
+            }
+        }
+        
+    }
+    else if (event_type == ALLOPATRY)
+    {
+        std::vector<double> z(n, 0.0);
+        
+        // compute z, the sum of edges across daughter ranges
+        for (size_t i = 0; i < daughter_ranges.size(); i++) {
+        
+            // get one daughter range
+            const std::set<unsigned>& s = daughter_ranges[i];
+            
+            // sum connectivity scores
+            std::set<unsigned>::iterator it1, it2;
+            for (it1 = s.begin(); it1 != s.end(); it1++)
+            {
+                for (it2 = s.begin(); it2 != s.end(); it2++)
+                {
+                    if ( (*it1) != (*it2) ) {
+                        z[ *it1 ] += mtx[ *it1 ][ *it2 ];
+                    }
+                }
+            }
+        }
+        
+        double z_sum = 0.0;
+        for (size_t i = 0; i < z.size(); i++) {
+            z_sum += z[i];
+        }
+        
+        for (size_t i = 0; i < n; i++)
+        {
+            for (size_t j = 0; j < n; j++)
+            {
+                if (i != j) {
+                    Q += mtx[i][j] - (z[i] * z[j] / (2 * z_sum));
+                }
+            }
+        }
+        
+    }
+    
+    return Q;
+}
+
+
+
 
 std::map< std::vector<unsigned>, double >  BiogeographyCladogeneticBirthDeathFunction::getEventMap(double t)
 {
@@ -564,6 +729,53 @@ void BiogeographyCladogeneticBirthDeathFunction::printEventMap(void)
 }
 
 
+
+void BiogeographyCladogeneticBirthDeathFunction::setRateMultipliers(const TypedDagNode< RbVector< double > >* rm)
+{
+    
+    if (rm != NULL) {
+        hiddenRateMultipliers = rm;
+        addParameter( hiddenRateMultipliers );
+        use_hidden_rate = true;
+        
+        buildEventMap();
+        update();
+    }
+}
+
+
+unsigned BiogeographyCladogeneticBirthDeathFunction::sumBits(const std::vector<unsigned>& b)
+{
+    unsigned n = 0;
+    for (int i = 0; i < b.size(); i++)
+        n += b[i];
+    return n;
+}
+
+
+
+void BiogeographyCladogeneticBirthDeathFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
+    if (oldP == speciationRates)
+    {
+        speciationRates = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+    }
+    if (oldP == hiddenRateMultipliers)
+    {
+        hiddenRateMultipliers = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+    }
+    if (oldP == connectivityMatrix)
+    {
+        connectivityMatrix = static_cast<const TypedDagNode< RbVector<RbVector<double> > >* >( newP );
+    }
+    if (oldP == connectivityWeights)
+    {
+        connectivityWeights = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+    }
+}
+
+
+
 void BiogeographyCladogeneticBirthDeathFunction::update( void )
 {
     // reset the transition matrix
@@ -576,9 +788,12 @@ void BiogeographyCladogeneticBirthDeathFunction::update( void )
         value = new CladogeneticSpeciationRateMatrix( numRanges );
     }
     
+    // update clado event factors
+    updateEventMapFactors();
+    
     // get speciation rates across cladogenetic events
     const std::vector<double>& sr = speciationRates->getValue();
-
+    
     // assign the correct rate to each event
     for (unsigned i = 0; i < numRanges; i++)
     {
@@ -626,44 +841,44 @@ void BiogeographyCladogeneticBirthDeathFunction::update( void )
         }
     }
     
-//    printEventMap();
+    //    printEventMap();
     
     // done!
     value->setEventMap(eventMap);
 }
 
-
-void BiogeographyCladogeneticBirthDeathFunction::setRateMultipliers(const TypedDagNode< RbVector< double > >* rm)
+void BiogeographyCladogeneticBirthDeathFunction::updateEventMapFactors(void)
 {
+    if ( connectivityType == "none" )
+    {
+        ; // do nothing
+    }
+    else if ( connectivityType == "modularity" )
+    {
+        updateEventMapModularityFactors();
+    }
+    else
+    {
+        throw RbException("Unknown connectivityType");
+    }
     
-    if (rm != NULL) {
-        hiddenRateMultipliers = rm;
-        addParameter( hiddenRateMultipliers );
-        use_hidden_rate = true;
+}
+
+void BiogeographyCladogeneticBirthDeathFunction::updateEventMapModularityFactors(void) {
+    
+    // loop over all events and their types
+    std::map< std::vector<unsigned>, unsigned >::iterator it;
+    for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
+    {
+        // get event info
+        std::vector<unsigned> idx = it->first;
+        unsigned event_type = it->second;
         
-        buildEventMap();
-        update();
+        // get event score
+        eventMapFactors[ idx ] = computeModularityScore(idx[1], idx[2], event_type);
+        
+        std::cout << "";
     }
+    
+    return;
 }
-
-
-void BiogeographyCladogeneticBirthDeathFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
-{
-    if (oldP == speciationRates)
-    {
-        speciationRates = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
-    }
-    if (oldP == hiddenRateMultipliers)
-    {
-        hiddenRateMultipliers = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
-    }
-    if (oldP == connectivityMatrix)
-    {
-        connectivityMatrix = static_cast<const TypedDagNode< RbVector<RbVector<double> > >* >( newP );
-    }
-    if (oldP == connectivityWeights)
-    {
-        connectivityWeights = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
-    }
-}
-

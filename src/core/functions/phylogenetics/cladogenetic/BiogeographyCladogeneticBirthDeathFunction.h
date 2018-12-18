@@ -57,14 +57,16 @@ namespace RevBayesCore {
         std::vector<unsigned>                                       bitAllopatryComplement( const std::vector<unsigned>& mask, const std::vector<unsigned>& base );
         void                                                        bitCombinations(std::vector<std::vector<unsigned> >& comb, std::vector<unsigned> array, int i, std::vector<unsigned> accum);
         void                                                        buildBits(void);
+        void                                                        buildCutsets(void);
         void                                                        buildEventMap(void);
         void                                                        buildRanges(std::set<unsigned>& range_set, const TypedDagNode< RbVector<RbVector<double> > >* g, bool all=true);
         void                                                        buildRangesRecursively(std::set<unsigned> s, std::set<std::set<unsigned> >& r, size_t k, const TypedDagNode< RbVector<RbVector<double> > >* g, bool all=true);
         size_t                                                      computeNumStates(size_t numAreas, size_t maxRangeSize);
+        double                                                      computeModularityScore(unsigned s1, unsigned s2, unsigned et);
         void                                                        printEventMap(void);
         unsigned                                                    sumBits(const std::vector<unsigned>& b);
-        void                                                        updateSpeciationRates(void);
-
+        void                                                        updateEventMapFactors(void);
+        void                                                        updateEventMapModularityFactors(void);
         
         // parameters
         const TypedDagNode< RbVector<double> >*                     speciationRates;
@@ -88,14 +90,17 @@ namespace RevBayesCore {
         std::map<std::vector<unsigned>, unsigned>                   inverseBits;
         std::vector<std::vector<std::vector<unsigned> > >           bitsByNumOn;
         std::vector<std::vector<unsigned> >                         statesToBitsByNumOn;
+        std::vector<std::set<unsigned> >                            statesToBitsetsByNumOn;
         std::map< std::vector<unsigned>, unsigned>                  bitsToStatesByNumOn;
         std::set<unsigned>                                          ranges;
         
         // event maps
         unsigned                                                    numEventTypes;
-        std::map< std::vector<unsigned>, unsigned>                  eventMapTypes;
         std::map< std::vector<unsigned>, double >                   eventMap;
+        std::map< std::vector<unsigned>, unsigned>                  eventMapTypes;
         std::map< unsigned, std::vector<unsigned> >                 eventMapCounts;
+        std::map< std::vector<unsigned>, double >                   eventMapFactors;
+        std::map< std::vector<unsigned>, std::vector< std::vector<unsigned> > > eventMapCutsets; // returns the vector of cut edges for a given left/right split
         
         // MJL: eventually, deprecate this stuff
         // manages string-based simplex mapping??
