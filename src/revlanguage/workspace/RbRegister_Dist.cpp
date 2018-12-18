@@ -209,6 +209,7 @@
 #include "Dist_dpp.h"
 #include "Dist_event.h"
 #include "Dist_mixture.h"
+#include "Dist_MultiValueEvent.h"
 #include "Dist_reversibleJumpMixtureConstant.h"
 #include "Dist_upp.h"
 
@@ -499,6 +500,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< ModelVector<Natural>       >( new Dist_event<Natural>()      );
         AddDistribution< ModelVector<Integer>       >( new Dist_event<Integer>()      );
         AddDistribution< ModelVector<Probability>   >( new Dist_event<Probability>()  );
+        AddDistribution< MultiValueEvent            >( new Dist_MultiValueEvent()     );
 		
         // uniform partitions prior
         AddDistribution< ModelVector<RealPos>       >( new Dist_upp<RealPos>() );

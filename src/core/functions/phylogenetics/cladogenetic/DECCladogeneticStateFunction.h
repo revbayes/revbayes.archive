@@ -42,6 +42,7 @@ namespace RevBayesCore {
 
         std::map< std::vector<unsigned>, double >               getEventMap(double t=0.0);
         const std::map< std::vector<unsigned>, double >&        getEventMap(double t=0.0) const;
+        const std::vector<std::string>&                         getEventTypes(void) const;
         void                                                    update(void);
         
     protected:

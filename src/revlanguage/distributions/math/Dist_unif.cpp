@@ -8,7 +8,8 @@
 
 using namespace RevLanguage;
 
-Dist_unif::Dist_unif() : ContinuousDistribution() {
+Dist_unif::Dist_unif() : ContinuousDistribution()
+{
     
 }
 
@@ -206,7 +207,8 @@ const MemberRules& Dist_unif::getParameterRules(void) const
 }
 
 
-const TypeSpec& Dist_unif::getTypeSpec( void ) const {
+const TypeSpec& Dist_unif::getTypeSpec( void ) const
+{
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -215,7 +217,8 @@ const TypeSpec& Dist_unif::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void Dist_unif::printValue(std::ostream& o) const {
+void Dist_unif::printValue(std::ostream& o) const
+{
     
     o << " unif (lower=";
     if ( lower != NULL ) {
@@ -234,7 +237,8 @@ void Dist_unif::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_unif::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Dist_unif::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
     
     if ( name == "lower" ) 
     {

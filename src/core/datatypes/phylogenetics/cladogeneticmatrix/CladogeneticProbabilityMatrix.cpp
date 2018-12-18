@@ -76,6 +76,11 @@ const std::map<std::vector<unsigned>, double>& CladogeneticProbabilityMatrix::ge
     return eventMapProbs;
 }
 
+std::vector<std::string> CladogeneticProbabilityMatrix::getEventTypes(void) const
+{
+    return eventTypes;
+}
+
 size_t CladogeneticProbabilityMatrix::getNumberOfStates( void ) const
 {
     return num_states;
@@ -89,6 +94,11 @@ void CladogeneticProbabilityMatrix::initFromString( const std::string &s )
 void CladogeneticProbabilityMatrix::setEventMap(std::map<std::vector<unsigned>, double> m)
 {
     eventMapProbs = m;
+}
+
+void CladogeneticProbabilityMatrix::setEventTypes( std::vector<std::string> et )
+{
+    eventTypes = et;
 }
 
 //void CladogeneticProbabilityMatrix::setEventMap(std::map<std::vector<unsigned>, double> m, size_t k)
