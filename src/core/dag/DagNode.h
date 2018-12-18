@@ -51,11 +51,14 @@ namespace RevBayesCore {
         void                                                        addTouchedElementIndex(size_t i);                                                           //!< Add the index of an element that has been touch (usually for vector-like values)
         void                                                        clearTouchedElementIndices(void);
         void                                                        clearVisitFlag(const size_t &flagType);
+        void                                                        clearVisitFlagVector(const size_t &flagType, RbOrderedSet<DagNode *>& nodes);
         DagNode*                                                    cloneDownstreamDag(std::map<const DagNode*, DagNode*> &nodesMap) const;                     //!< Clone the DAG which is downstream to this node (all children)
         size_t                                                      decrementReferenceCount(void) const;                                                        //!< Decrement the reference count for reference counting in smart pointers
         void                                                        executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const; //!< Map the member methods to internal function calls
         void                                                        findUniqueDescendants(RbOrderedSet<DagNode *>& descendants);
+        void                                                        findUniqueDescendantsVector(RbOrderedSet<DagNode *>& descendants, RbOrderedSet<DagNode *>& nodes);
         void                                                        findUniqueDescendantsWithFlag(RbOrderedSet<DagNode *>& descendants, const size_t flagType);
+        void                                                        findUniqueDescendantsWithFlagVector(RbOrderedSet<DagNode *>& descendants, const size_t flagType, RbOrderedSet<DagNode *>& nodes);
         void                                                        getAffectedNodes(RbOrderedSet<DagNode *>& affected);                                        //!< get affected nodes
         const std::vector<DagNode*>&                                getChildren(void) const;                                                                    //!< Get the set of children
         DagNodeTypes                                                getDagNodeType(void) const;
@@ -72,6 +75,7 @@ namespace RevBayesCore {
         bool                                                        getVisitFlag(const size_t flagType) const;
         void                                                        incrementReferenceCount(void) const;                                                        //!< Increment the reference count for reference counting in smart pointers
         void                                                        initiateGetAffectedNodes(RbOrderedSet<DagNode *>& affected);                                        //!< get affected nodes
+        void                                                        initiateGetAffectedNodesVector(RbOrderedSet<DagNode *>& affected, RbOrderedSet<DagNode *>& nodes);
         bool                                                        isAssignable(void) const;                                                                   //!< Is this DAG node modifiable by user?
         virtual bool                                                isClamped(void) const;                                                                      //!< Is this node clamped? Only stochastic nodes might be clamped.
         virtual bool                                                isConstant(void) const;                                                                     //!< Is this DAG node constant?
@@ -81,15 +85,18 @@ namespace RevBayesCore {
         virtual bool                                                isStochastic(void) const;                                                                   //!< Is this DAG node stochastic?
         void                                                        keep(void);
         virtual void                                                keepAffected(void);                                                                         //!< Keep value of affected nodes
+        void                                                        keepVector(RbOrderedSet<DagNode *>& nodes);
         virtual void                                                reInitialized(void);                                                                        //!< The DAG was re-initialized so maybe you want to reset some stuff
         virtual void                                                reInitializeAffected(void);                                                                 //!< The DAG was re-initialized so maybe you want to reset some stuff
         virtual void                                                reInitializeMe(void);                                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff
+        void                                                        reInitializeVector(RbOrderedSet<DagNode *>& nodes);
         void                                                        removeChild(DagNode *child) const;                                                          //!< Remove this child node from our set of children.
         void                                                        removeMonitor(Monitor *m);                                                                  //!< Remove this monitor from our set.
         void                                                        removeMove(Move *m);                                                                        //!< Remove this move from our set.
         void                                                        replace(DagNode *n);                                                                        //!< Replace this node with node p.
         void                                                        restore(void);
         virtual void                                                restoreAffected(void);                                                                      //!< Restore value of affected nodes recursively
+        void                                                        restoreVector(RbOrderedSet<DagNode *>& nodes);
         void                                                        setElementVariable(bool tf);                                                                //!< Set if this variable is hidden from printing.
         void                                                        setHidden(bool tf);                                                                         //!< Set if this variable is hidden from printing.
         virtual void                                                setName(const std::string &n);                                                              //!< Set the name of this variable for identification purposes.
