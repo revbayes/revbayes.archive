@@ -193,7 +193,7 @@ void DagNode::clearVisitFlag( const size_t& flagType )
     return;
 }
 
-void DagNode::clearVisitFlagVector( const size_t& flagType, RbOrderedSet<DagNode *>& nodes )
+void DagNode::clearVisitFlagVector( const size_t& flagType, std::vector<DagNode *>& nodes )
 {
 
     RbOrderedSet<DagNode*> descendants;
@@ -295,7 +295,7 @@ void DagNode::findUniqueDescendants(RbOrderedSet<DagNode *>& descendants)
 /*
  * finds all descendants of all nodes in vector without redundant node visitation
  */
-void DagNode::findUniqueDescendantsVector(RbOrderedSet<DagNode *>& descendants, RbOrderedSet<DagNode *>& nodes)
+void DagNode::findUniqueDescendantsVector(RbOrderedSet<DagNode *>& descendants, std::vector<DagNode *>& nodes)
 {
   // Delegate the actual finding to the non-vector version
   // This way we avoid redundant finding of the same nodes, using the un-cleared flags
@@ -330,7 +330,7 @@ void DagNode::findUniqueDescendantsWithFlag(RbOrderedSet<DagNode *>& descendants
 /*
  * finds all descendants without redundant node visitation
  */
-void DagNode::findUniqueDescendantsWithFlagVector(RbOrderedSet<DagNode *>& descendants, const size_t flagType, RbOrderedSet<DagNode *>& nodes)
+void DagNode::findUniqueDescendantsWithFlagVector(RbOrderedSet<DagNode *>& descendants, const size_t flagType, std::vector<DagNode *>& nodes)
 {
   // Delegate the actual finding to the non-vector version
   // This way we avoid redundant finding of the same nodes, using the un-cleared flags
@@ -575,7 +575,7 @@ void DagNode::initiateGetAffectedNodes(RbOrderedSet<DagNode *> &affected)
 /**
  * Begins a getAffectedNodes() recursion then clears visited flags
  */
-void DagNode::initiateGetAffectedNodesVector(RbOrderedSet<DagNode *> &affected, RbOrderedSet<DagNode *>& nodes)
+void DagNode::initiateGetAffectedNodesVector(RbOrderedSet<DagNode *> &affected, std::vector<DagNode *>& nodes)
 {
 
     // begin recursion on each node in the vector
@@ -688,7 +688,7 @@ void DagNode::keep(void)
  * This function delegates the call to keepMe() and calls keepAffected() too.
  * Unlike keep(), this function handles a set of nodes, leaving flags in place and avoiding redundancy
  */
-void DagNode::keepVector(RbOrderedSet<DagNode *>& nodes)
+void DagNode::keepVector(std::vector<DagNode *>& nodes)
 {
 
     for ( std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); i++ )
@@ -886,7 +886,7 @@ void DagNode::reInitialized( void )
 /**
  * Restore this vector of DAGNodes.
  */
-void DagNode::reInitializeVector(RbOrderedSet<DagNode *>& nodes)
+void DagNode::reInitializeVector(std::vector<DagNode *>& nodes)
 {
 
   for ( std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); i++ )
@@ -1073,7 +1073,7 @@ void DagNode::restoreAffected(void)
 /**
  * Restore this vector of DAGNodes.
  */
-void DagNode::restoreVector(RbOrderedSet<DagNode *>& nodes)
+void DagNode::restoreVector(std::vector<DagNode *>& nodes)
 {
 
   for ( std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); i++ )

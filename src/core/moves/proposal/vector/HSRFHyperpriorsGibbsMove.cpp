@@ -21,7 +21,7 @@
 using namespace RevBayesCore;
 
 
-/** 
+/**
  * Constructor
  *
  * Here we simply allocate and initialize the move object.
@@ -35,37 +35,37 @@ HSRFHyperpriorsGibbsMove::HSRFHyperpriorsGibbsMove( StochasticNode<double> *g, s
     normals( n ),
     zeta( z )
 {
-    
-    
+
+
     // tell the base class to add the node
     assert( not global_scale->isClamped() );
-    
+
     HalfCauchyDistribution* dist = dynamic_cast<HalfCauchyDistribution *>( &global_scale->getDistribution() );
-    
+
     if (dist == NULL)
     {
         throw(RbException("HSRFHyperpriorsGibbsMove requires global scale has Half-Cauchy(0,1) Distribution"));
     }
-    
+
     if (dist->getScale()->getValue() != 1.0)
     {
         throw(RbException("HSRFHyperpriorsGibbsMove requiresglobal scale has Half-Cauchy(0,1) Distribution"));
     }
-    
+
     if (dist->getLocation()->getValue() != 0.0)
     {
         throw(RbException("HSRFHyperpriorsGibbsMove requires global scale has Half-Cauchy(0,1) Distribution"));
     }
-    
+
     addNode( global_scale );
-    
+
     // tell the base class to add the node
     for (size_t i=0; i<local_scales.size(); ++i)
     {
         assert( not local_scales[i]->isClamped() );
-        
+
         HalfCauchyDistribution* dist = dynamic_cast<HalfCauchyDistribution *>( &local_scales[i]->getDistribution() );
-        
+
         if (dist == NULL)
         {
             throw(RbException("HSRFHyperpriorsGibbsMove requires all local scales have Half-Cauchy(0,1) Distribution"));
@@ -80,28 +80,28 @@ HSRFHyperpriorsGibbsMove::HSRFHyperpriorsGibbsMove( StochasticNode<double> *g, s
         {
             throw(RbException("HSRFHyperpriorsGibbsMove requires all local scales have Half-Cauchy(0,1) Distribution"));
         }
-        
+
         addNode( local_scales[i] );
     }
-    
+
     // tell the base class to add the node
     for (size_t i=0; i<normals.size(); ++i)
     {
-        
+
         NormalDistribution* dist = dynamic_cast<NormalDistribution *>( &normals[i]->getDistribution() );
-        
+
         if (dist == NULL)
         {
             throw(RbException("HSRFHyperpriorsGibbsMove move only works when children are Normal(0,sigma) Distributions"));
         }
-        
+
         if (dist->getMean()->getValue() != 0.0)
         {
             throw(RbException("HSRFHyperpriorsGibbsMove move only works when children are Normal(0,sigma) Distributions"));
         }
-        
+
         const TypedDagNode<double>* sd = dist->getStDev();
-        
+
         // Make sure that the normal distributions have the correct stdevs for this sampler to be appropriate
         // Somewhere there is a very slight deviance being introduced, hence the addition of rounding in this comparison
         if (round(100000 * sd->getValue()) != round(100000 * zeta * global_scale->getValue() * local_scales[i]->getValue()) ) {
@@ -109,7 +109,7 @@ HSRFHyperpriorsGibbsMove::HSRFHyperpriorsGibbsMove( StochasticNode<double> *g, s
             std::cout << "sd is " << sd->getValue() << std::endl;
             throw(RbException("HSRFHyperpriorsGibbsMove move only works when children are Normal(0,local_scale*global_scale*zeta) Distributions"));
         }
-        
+
         addNode( normals[i] );
     }
 
@@ -128,20 +128,20 @@ HSRFHyperpriorsGibbsMove::~HSRFHyperpriorsGibbsMove( void )
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
  *
- * \return A new copy of the HSRFHyperpriorsGibbsMove. 
+ * \return A new copy of the HSRFHyperpriorsGibbsMove.
  */
-HSRFHyperpriorsGibbsMove* HSRFHyperpriorsGibbsMove::clone( void ) const 
+HSRFHyperpriorsGibbsMove* HSRFHyperpriorsGibbsMove::clone( void ) const
 {
     return new HSRFHyperpriorsGibbsMove( *this );
 }
 
 
 /**
- * Get moves' name of object 
+ * Get moves' name of object
  *
  * \return The moves' name.
  */
-const std::string& HSRFHyperpriorsGibbsMove::getMoveName( void ) const 
+const std::string& HSRFHyperpriorsGibbsMove::getMoveName( void ) const
 {
     static std::string name = "HSRFHyperpriorsGibbs";
 
@@ -155,7 +155,7 @@ void HSRFHyperpriorsGibbsMove::performGibbsMove( void )
 
     // Get random number generator
     RandomNumberGenerator* rng = GLOBAL_RNG;
-    
+
     // get global scale
     double eta_squared = std::pow(global_scale->getValue(),2.0);
 
@@ -163,47 +163,48 @@ void HSRFHyperpriorsGibbsMove::performGibbsMove( void )
     size_t field_size = local_scales.size();
     double n = local_scales.size() + 1; // The field has one more cell than there are local scales
     double eta_squared_rate = 0;
-    
+
     // sample local scales
     double two_zeta_squared = 2.0 * std::pow(zeta,2.0);
     double two_zeta_squared_eta_squared = two_zeta_squared * eta_squared;
-    
+
     for (size_t i = 0; i < field_size; ++i) {
         double lambda_squared_inverse = 1.0 / std::pow(local_scales[i]->getValue(),2.0);
-        
+
         double delta_theta_squared = std::pow(normals[i]->getValue(),2.0);
-        
+
         double psi_inverse = RbStatistics::Helper::rndGamma(1.0, *GLOBAL_RNG) / (1.0 + lambda_squared_inverse); // psi_inverse ~ Gamma(1.0, 1.0 + 1.0/lambda[i]^2)
-        
+
         double lambda_squared = 1/(RbStatistics::Helper::rndGamma(1, *GLOBAL_RNG) / (psi_inverse + delta_theta_squared/two_zeta_squared_eta_squared) ); // lambda_squared[i] ~ Gamma(0.5, psi_inverse[i] + delta_theta^2/(2*eta^2*zeta^2)
-        
+
         local_scales[i]->getValue() = std::sqrt(lambda_squared);
         local_scales[i]->touch();
-        local_scales[i]->keep();
-        
+
         eta_squared_rate += delta_theta_squared/lambda_squared;
     }
-    
+
     // get global scale and sample global scale auxiliary variable
     double xi_inverse = RbStatistics::Helper::rndGamma(1.0, *GLOBAL_RNG) / (1.0 + 1.0/(eta_squared)); // xi_inverse ~ Gamma(1, 1 + 1/eta^2)
-    
+
     // sample global scale
     eta_squared_rate *= 1/two_zeta_squared;
     eta_squared_rate += xi_inverse;
-    
+
     double eta_squared_inverse = RbStatistics::Helper::rndGamma(0.5*n, *GLOBAL_RNG) / eta_squared_rate; // eta_squared ~ InverseGamma(n/2, eta_squared_rate)
-    
+
     global_scale->getValue() = std::sqrt(1/eta_squared_inverse);
     global_scale->touch();
-    global_scale->keep();
 
-    
+    // keep the nodes, vectorized version avoids redundant calls
+    global_scale->keepVector(nodes);
+
+
 }
 
 
 void HSRFHyperpriorsGibbsMove::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
-    
+
     for (size_t i = 0; i < local_scales.size(); ++i)
     {
         if ( local_scales[i] == oldN )
@@ -211,7 +212,7 @@ void HSRFHyperpriorsGibbsMove::swapNodeInternal(DagNode *oldN, DagNode *newN)
             local_scales[i] = static_cast<StochasticNode<double> *>(newN);
         }
     }
-    
+
     for (size_t i = 0; i < normals.size(); ++i)
     {
         if ( normals[i] == oldN )
@@ -219,7 +220,7 @@ void HSRFHyperpriorsGibbsMove::swapNodeInternal(DagNode *oldN, DagNode *newN)
             normals[i] = static_cast<StochasticNode<double> *>(newN);
         }
     }
-    
+
     if (oldN == global_scale)
     {
         global_scale = static_cast<StochasticNode<double>* >(newN) ;
