@@ -1,0 +1,97 @@
+################################################################################
+#
+# RevBayes Script: Bayesian inference of a second-order GMRF model on
+#                   coal mining disaster data
+#
+#
+# authors: James Faulkner and Andrew Magee
+#
+################################################################################
+seed(4247)
+
+# Coal mine example
+
+# events observed over 112 years
+y_obs <- v(4, 5, 4, 1, 0, 4, 3, 4, 0, 6, 3, 3, 4, 0, 2, 6, 3, 3, 5, 4,
+5, 3, 1, 4, 4, 1, 5, 5, 3, 4, 2, 5, 2, 2, 3, 4, 2, 1, 3, 2, 2, 1, 1, 1, 1, 3, 0, 0,
+1, 0, 1, 1, 0, 0, 3, 1, 0, 3, 2, 2, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 2, 1, 0, 0,
+0, 1, 1, 0, 2, 3, 3, 1, 1, 2, 1, 1, 1, 1, 2, 3, 3, 0, 0, 0, 1, 4, 0, 0, 0, 1, 0, 0,
+0, 0, 0, 1, 0, 0, 1, 0, 1)
+
+nyear <- y_obs.size()
+
+log_mu <- ln(mean(y_obs))
+
+
+# set move index
+mi = 0
+
+# global scale
+
+zeta <- 0.1
+
+zgam ~ dnHalfCauchy(0, 1)
+
+zgam.setValue(runif(1, 0.01, 0.1)[1])
+
+moves[++mi] = mvScaleBactrian(zgam,weight=2.0, lambda=1, tune=true, tuneTarget=0.44)
+moves[++mi] = mvRandomDive(zgam,weight=2.0, tune=true, tuneTarget=0.12)
+moves[++mi] = mvRandomDive(zgam,weight=2.0, tune=true, tuneTarget=0.24)
+moves[++mi] = mvRandomDive(zgam,weight=2.0, tune=true, tuneTarget=0.36)
+
+gam := zgam*zeta
+
+
+# Prior on population size at the present (diffuse)
+zlog_theta1 ~ dnNormal(0, 1)
+
+zlog_theta1.setValue(rnorm(1,0,.1)[1])
+
+moves[++mi] = mvSlideBactrian(zlog_theta1,weight=2,sigma=1.0,tune=true, tuneTarget=0.30)
+moves[++mi] = mvRandomDive(zlog_theta1,weight=2,tune=true, tuneTarget=0.12)
+moves[++mi] = mvRandomDive(zlog_theta1,weight=2,tune=true, tuneTarget=0.24)
+moves[++mi] = mvRandomDive(zlog_theta1,weight=2,tune=true, tuneTarget=0.36)
+
+log_theta[1] := 2*zlog_theta1 + log_mu
+theta[1] := exp(log_theta[1])
+
+zdelta_log_theta[1] ~ dnNormal( mean=0, sd=1 )
+
+# note that first delta has adjusted sd
+log_theta[2] := sqrt(1/3)*gam*zdelta_log_theta[1] + log_theta[1]
+theta[2] := exp(log_theta[1])
+
+for (i in 1:(nyear-2)) {
+
+    zdelta_log_theta[i+1] ~ dnNormal( mean=0, sd=gam )
+
+    log_theta[i+2] := zdelta_log_theta[i+1] + 2*log_theta[i+1] - log_theta[i]
+    theta[i+2] := exp(log_theta[i+2])
+}
+moves[++mi] = mvEllipticalSliceSamplingSimple(zdelta_log_theta,weight=5.0)
+
+for (i in 1:nyear ) {
+  y[i] ~ dnPoisson(theta[i])
+  y[i].clamp(y_obs[i])
+}
+
+
+mymodel = model(zgam)
+
+
+### set up the monitors that will output parameter values to file and screen
+mni = 0
+monitors[++mni] = mnModel(filename="output/mcmc_gmrf_order_2.log",printgen=1, separator = TAB)
+monitors[++mni] = mnScreen(printgen=1, theta[1], gam)
+
+### workspace mcmc ###
+mymcmc = mcmc(mymodel, monitors, moves)
+
+### pre-burnin to tune the proposals ###
+mymcmc.burnin(generations=10,tuningInterval=5)
+
+### run the MCMC ###
+mymcmc.run(generations=10)
+
+## quit ##
+q()
