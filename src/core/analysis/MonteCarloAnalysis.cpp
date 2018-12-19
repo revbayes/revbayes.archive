@@ -489,6 +489,24 @@ void MonteCarloAnalysis::resetReplicates( void )
             runs[i]->redrawStartingValues();
         }
         
+        if ( runs[i] != NULL )
+        {
+            const std::vector<DagNode*> &this_nodes = runs[i]->getModel().getDagNodes();
+            
+            // touch all nodes
+            for (size_t j=0; j<this_nodes.size(); ++j)
+            {
+                this_nodes[j]->touch();
+            }
+            
+            // keep all nodes
+            for (size_t j=0; j<this_nodes.size(); ++j)
+            {
+                this_nodes[j]->keep();
+            }
+        
+        }
+        
     }
     
 }
