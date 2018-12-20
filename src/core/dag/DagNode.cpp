@@ -582,7 +582,7 @@ void DagNode::initiateGetAffectedNodesVector(RbOrderedSet<DagNode *> &affected, 
     // the flags aren't cleared yet so we don't pass through nodes twice
     for ( std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); i++ )
     {
-      getAffectedNodes( affected );
+      (*i)->getAffectedNodes( affected );
     }
 
     // clear visit flags
