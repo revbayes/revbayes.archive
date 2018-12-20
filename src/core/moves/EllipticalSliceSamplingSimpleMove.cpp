@@ -167,7 +167,7 @@ public:
       // }
 
       // // keep the nodes, vectorized version avoids redundant calls
-      (*v_nodes.begin())->keepVector(v_nodes);
+      (*(v_nodes.begin()))->keepVector(v_nodes);
 
     return Pr_;
   }
@@ -188,6 +188,7 @@ public:
     :variables(n),
      lHeat(l),
      num_evals(0),
+     affectedNodes(),
      v_nodes(v)
   {
     // for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
@@ -201,7 +202,7 @@ public:
     // }
     //
     // Get all affected nodes of entire vector, vectorized call avoids redundant calls
-    (*v_nodes.begin())->initiateGetAffectedNodesVector(affectedNodes, v_nodes);
+    (*(v_nodes.begin()))->initiateGetAffectedNodesVector(affectedNodes, v_nodes);
   }
 };
 
