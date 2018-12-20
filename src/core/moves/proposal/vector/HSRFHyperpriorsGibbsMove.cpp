@@ -179,7 +179,6 @@ void HSRFHyperpriorsGibbsMove::performGibbsMove( void )
 
         local_scales[i]->getValue() = std::sqrt(lambda_squared);
         local_scales[i]->touch();
-        local_scales[i]->keep();
 
         eta_squared_rate += delta_theta_squared/lambda_squared;
     }
@@ -195,10 +194,9 @@ void HSRFHyperpriorsGibbsMove::performGibbsMove( void )
 
     global_scale->getValue() = std::sqrt(1/eta_squared_inverse);
     global_scale->touch();
-    global_scale->keep();
 
-    // // keep the nodes, vectorized version avoids redundant calls
-    // global_scale->keepVector(nodes);
+    // keep the nodes, vectorized version avoids redundant calls
+    global_scale->keepVector(nodes);
 
 
 }

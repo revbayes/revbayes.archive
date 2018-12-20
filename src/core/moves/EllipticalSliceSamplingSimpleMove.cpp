@@ -107,13 +107,13 @@ double unif()
 
 
 /// This object allow computing the probability of the current point, and also store the variables's range
-class slice_function
+class elliptical_slice_function
 {
   std::vector<StochasticNode<double> *> variables;
-  std::vector<DagNode*> v_nodes; // Copy of variables, as vector of DagNodes, to avoid repeatedly constructing this vector
   double lHeat;
   RbOrderedSet<DagNode*> affectedNodes;
   int num_evals;
+  std::vector<DagNode* > v_nodes; // Copy of variables, as vector of DagNodes, to avoid repeatedly constructing this vector
 
 public:
 
@@ -160,13 +160,7 @@ public:
 
       double Pr_ = (*this)();
 
-      // call accept for each node  --  automatically includes affected nodes
-      // for (size_t i=0; i<variables.size(); ++i)
-      // {
-      //   variables[i]->keep();
-      // }
-
-      // // keep the nodes, vectorized version avoids redundant calls
+      // keep the nodes, vectorized version avoids redundant calls
       (*(v_nodes.begin()))->keepVector(v_nodes);
 
     return Pr_;
@@ -184,23 +178,13 @@ public:
       return vals;
   }
 
-    slice_function(std::vector<StochasticNode<double> *> n, double l, std::vector<DagNode*> &v)
+    elliptical_slice_function(std::vector<StochasticNode<double> *> n, double l, std::vector<DagNode*> &v)
     :variables(n),
      lHeat(l),
      num_evals(0),
      affectedNodes(),
      v_nodes(v)
   {
-    // for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
-    // {
-    //     (*it)->initiateGetAffectedNodes( affectedNodes );
-    // }
-    // // Assemble std::vector<DagNode*> of the variables to enable vectorized calls to keep and initiateGetAffected
-    // for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
-    // {
-    //     v_nodes.push_back(*it);
-    // }
-    //
     // Get all affected nodes of entire vector, vectorized call avoids redundant calls
     (*(v_nodes.begin()))->initiateGetAffectedNodesVector(affectedNodes, v_nodes);
   }
@@ -214,7 +198,7 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double prHeat, double l
         throw(RbException("Elliptical slice sampling moves are invalid with heated priors or posteriors."));
     }
 
-    slice_function lnL(variables, lHeat, this->nodes);
+    elliptical_slice_function lnL(variables, lHeat, this->nodes);
 
     // Current values
     std::vector<double> f = lnL.current_value();
