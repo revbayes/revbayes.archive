@@ -110,7 +110,7 @@ double unif()
 class slice_function
 {
   std::vector<StochasticNode<double> *> variables;
-  std::vector<DagNode*> variables_nodes; // Copy of variables, as vector of DagNodes, to avoid repeatedly constructing this vector
+  // std::vector<DagNode*> variables_nodes; // Copy of variables, as vector of DagNodes, to avoid repeatedly constructing this vector
   double lHeat;
   RbOrderedSet<DagNode*> affectedNodes;
   int num_evals;
@@ -160,8 +160,14 @@ public:
 
       double Pr_ = (*this)();
 
-      // keep the nodes, vectorized version avoids redundant calls
-      (*variables_nodes.begin())->keepVector(variables_nodes);
+      // call accept for each node  --  automatically includes affected nodes
+      for (size_t i=0; i<variables.size(); ++i)
+      {
+        variables[i]->keep();
+      }
+
+      // // keep the nodes, vectorized version avoids redundant calls
+      // (*variables_nodes.begin())->keepVector(variables_nodes);
 
     return Pr_;
   }
@@ -181,17 +187,21 @@ public:
     slice_function(std::vector<StochasticNode<double> *> n, double l)
     :variables(n),
      lHeat(l),
-     num_evals(0),
-     variables_nodes()
+     num_evals(0)
+     // variables_nodes()
   {
-    // Assemble std::vector<DagNode*> of the variables to enable vectorized calls to keep and initiateGetAffected
     for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
     {
-        variables_nodes.push_back(*it);
+        (*it)->initiateGetAffectedNodes( affectedNodes );
     }
-
-    // Get all affected nodes of entire vector, vectorized call avoids redundant calls
-    (*variables_nodes.begin())->initiateGetAffectedNodesVector(affectedNodes, variables_nodes);
+    // // Assemble std::vector<DagNode*> of the variables to enable vectorized calls to keep and initiateGetAffected
+    // for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
+    // {
+    //     variables_nodes.push_back(*it);
+    // }
+    //
+    // // Get all affected nodes of entire vector, vectorized call avoids redundant calls
+    // (*variables_nodes.begin())->initiateGetAffectedNodesVector(affectedNodes, variables_nodes);
   }
 };
 
