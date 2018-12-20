@@ -110,7 +110,7 @@ double unif()
 class slice_function
 {
   std::vector<StochasticNode<double> *> variables;
-  // std::vector<DagNode*> variables_nodes; // Copy of variables, as vector of DagNodes, to avoid repeatedly constructing this vector
+  std::vector<DagNode*> v_nodes; // Copy of variables, as vector of DagNodes, to avoid repeatedly constructing this vector
   double lHeat;
   RbOrderedSet<DagNode*> affectedNodes;
   int num_evals;
@@ -161,13 +161,13 @@ public:
       double Pr_ = (*this)();
 
       // call accept for each node  --  automatically includes affected nodes
-      for (size_t i=0; i<variables.size(); ++i)
-      {
-        variables[i]->keep();
-      }
+      // for (size_t i=0; i<variables.size(); ++i)
+      // {
+      //   variables[i]->keep();
+      // }
 
       // // keep the nodes, vectorized version avoids redundant calls
-      // (*variables_nodes.begin())->keepVector(variables_nodes);
+      (*v_nodes.begin())->keepVector(v_nodes);
 
     return Pr_;
   }
@@ -184,24 +184,24 @@ public:
       return vals;
   }
 
-    slice_function(std::vector<StochasticNode<double> *> n, double l)
+    slice_function(std::vector<StochasticNode<double> *> n, double l, std::vector<DagNode*> &v)
     :variables(n),
      lHeat(l),
-     num_evals(0)
-     // variables_nodes()
+     num_evals(0),
+     v_nodes(v)
   {
-    for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
-    {
-        (*it)->initiateGetAffectedNodes( affectedNodes );
-    }
+    // for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
+    // {
+    //     (*it)->initiateGetAffectedNodes( affectedNodes );
+    // }
     // // Assemble std::vector<DagNode*> of the variables to enable vectorized calls to keep and initiateGetAffected
     // for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
     // {
-    //     variables_nodes.push_back(*it);
+    //     v_nodes.push_back(*it);
     // }
     //
-    // // Get all affected nodes of entire vector, vectorized call avoids redundant calls
-    // (*variables_nodes.begin())->initiateGetAffectedNodesVector(affectedNodes, variables_nodes);
+    // Get all affected nodes of entire vector, vectorized call avoids redundant calls
+    (*v_nodes.begin())->initiateGetAffectedNodesVector(affectedNodes, v_nodes);
   }
 };
 
@@ -213,7 +213,7 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double prHeat, double l
         throw(RbException("Elliptical slice sampling moves are invalid with heated priors or posteriors."));
     }
 
-    slice_function lnL(variables, lHeat);
+    slice_function lnL(variables, lHeat, this->nodes);
 
     // Current values
     std::vector<double> f = lnL.current_value();
