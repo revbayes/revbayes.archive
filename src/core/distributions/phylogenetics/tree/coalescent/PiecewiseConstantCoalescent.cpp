@@ -75,8 +75,6 @@ double PiecewiseConstantCoalescent::computeLnProbabilityTimes( void ) const
     // sort the vector of times in ascending order
     std::sort(ages.begin(), ages.end());
     
-//    const RbVector<double> &popSizes  = Nes->getValue();
-    
     size_t currentInterval = 0;
     
     for (size_t i = 0; i < ages.size(); ++i)
@@ -121,7 +119,6 @@ double PiecewiseConstantCoalescent::computeLnProbabilityTimes( void ) const
     }
     
     return lnProbTimes;
-    
 }
 
 
@@ -354,6 +351,10 @@ void PiecewiseConstantCoalescent::updateIntervals( void )
     }
     else if ( interval_method == EVENTS )
     {
+        // we directly use the population size given from the arguments
+        pop_sizes = Nes->getValue();
+        
+        // next, we recompute the starting times of new intervals
         interval_starts = RbVector<double>(Nes->getValue().size()-1, RbConstants::Double::inf);
         
         if ( this->value != NULL )
