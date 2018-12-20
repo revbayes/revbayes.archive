@@ -11,8 +11,13 @@ namespace RevLanguage {
     /**
      * The RevLanguage wrapper of the Bivariate Poisson distribution.
      *
+     * The RevLanguage wrapper of the bivariate Poisson distribution simply
+     * manages the interactions through the Rev with our core. That is, the
+     * internal distribution object can be constructed and hooked up in a model
+     * graph.
+     *
      * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Nicolas Lartillot)
+     * @author Alexander E. Zarebski
      * @since 2014-03-18, version 1.0
      *
      */

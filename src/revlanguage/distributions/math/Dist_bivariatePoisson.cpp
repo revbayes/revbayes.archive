@@ -164,6 +164,20 @@ std::string Dist_bivariatePoisson::getHelpExample(void) const
     // create an example as a single string variable.
     std::string example = "";
 
+    example += "th1 ~ dnUniform(0.0,10.0)\n";
+    example += "th2 ~ dnUniform(0.0,10.0)\n";
+    example += "th0 ~ dnUniform(0.0,10.0)\n";
+    example += " ~ dnBivariatePoisson(th1, th2, th0)\n";
+    example += "x.clamp([3, 3, 3])\n";
+    example += "oves[1] = mvSlide(th1, delta=0.01, weight=1.0)\n";
+    example += "moves[2] = mvSlide(th2, delta=0.01, weight=1.0)\n";
+    example += "oves[3] = mvSlide(th0, delta=0.01, weight=1.0)\n";
+    example += "monitors[1] = mnScreen(printgen=1000,  th0)\n";
+    example += "ymodel = model(th1)\n";
+    example += "mymcmc = mcmc(mymodel, monitors, moves)\n";
+    example += "ymcmc.burnin(generations=20000,tuningInterval=100)\n";
+    example += "mymcmc.run(generations=200000)\n";
+
     return example;
 }
 
@@ -177,7 +191,9 @@ std::vector<RevBayesCore::RbHelpReference> Dist_bivariatePoisson::getHelpReferen
     // create an entry for each reference
     std::vector<RevBayesCore::RbHelpReference> references;
 
-    // See work by Dimitris Karlis and John Ntzoufras.
+    RevBayesCore::RbHelpReference ref1;
+    ref1.setCitation("Karlis D, Ntzoufras J (2003). Bayesian and Non-Bayesian Analysis of Soccer Data using Bivariate Poisson Regression Models.");
+    references.push_back( ref1 );
 
     return references;
 }

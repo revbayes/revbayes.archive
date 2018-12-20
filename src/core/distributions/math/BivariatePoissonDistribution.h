@@ -10,9 +10,14 @@ namespace RevBayesCore {
     /**
      * @brief Bivariate Poisson distribution class.
      *
+     * The bivariate Poisson distribution represents a family of distributions
+     * defined on pairs of natural numbers. The Poisson distribution has 3
+     * parameters. Instances of this class can be associated to stochastic
+     * variables.
+     *
      * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2013-04-12, version 1.0
+     * @author Alexander E. Zarebski
+     * @since 2018-12-19, version 1.0
      *
      */
   class BivariatePoissonDistribution : public TypedDistribution< RbVector<long> > {

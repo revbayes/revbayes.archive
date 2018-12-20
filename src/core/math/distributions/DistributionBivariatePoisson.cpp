@@ -6,10 +6,10 @@
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author The RevBayes core development team
+ * @author Alexander E. Zarebski
  * @license GPL version 3
  * @version 1.0
- * @since 2011-03-17, version 1.0
+ * @since 2018-12-19, version 1.0
  *
  * $Id$
  */
@@ -30,7 +30,18 @@
 using namespace RevBayesCore;
 
 
-
+/*!
+ * This function calculates the natural log of the probability for a
+ * bivariate Poisson distribution.
+ *
+ * \brief Natural log of bivariate Poisson probability.
+ * \param theta1 is the rate parameter of the first component.
+ * \param theta2 is the rate parameter of the second component.
+ * \param theta0 is the rate parameter of the shared component.
+ * \param x is the value of the random variable.
+ * \return Returns the natural log of the probability.
+ * \throws Does not throw an error.
+ */
 double RbStatistics::BivariatePoisson::lnPdf(double theta1, double theta2, double theta0, std::vector<long> x) {
 
   long x1, x2;
