@@ -54,21 +54,22 @@ Dist_unrootedSBN* Dist_unrootedSBN::clone( void ) const
 RevBayesCore::UnrootedSBN* Dist_unrootedSBN::createDistribution( void ) const {
 
     // get the taxa to simulate either from a vector of rev taxon objects or a vector of names
-    std::vector<RevBayesCore::Taxon>                     t  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Taxon>                     t  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
 
-    std::vector<RevBayesCore::Subsplit>                  s  = static_cast<const ModelVector<Subsplit> &>( subsplits->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Subsplit>                  s  = static_cast<const ModelVector<Subsplit> &>( subsplits->getRevObject() ).getValue();
 
-    const RevBayesCore::RbVector<long>                  &r  = static_cast<const ModelVector<Natural> &>( rootSplits->getRevObject() ).getValue();
+    const RevBayesCore::RbVector<long>                  r  = static_cast<const ModelVector<Natural> &>( rootSplits->getRevObject() ).getValue();
 
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* rp       = static_cast<const ModelVector<RealPos> &>( rootSplitProbabilities->getRevObject() ).getDagNode();
+    const RevBayesCore::RbVector<double> rp       = static_cast<const ModelVector<RealPos> &>( rootSplitProbabilities->getRevObject() ).getValue();
 
     // std::vector<RealPos>                             rp = static_cast<const ModelVector<RealPos> &>( rootSplitProbabilities->getRevObject() ).getValue();
 
-    const RevBayesCore::RbVector<RevBayesCore::RbVector<RevBayesCore::RbVector<long> > >  &c  = static_cast<const ModelVector<ModelVector<ModelVector<Natural> > > &>( subsplitChildren->getRevObject() ).getValue();
+    const RevBayesCore::RbVector<RevBayesCore::RbVector<RevBayesCore::RbVector<long> > >  c  = static_cast<const ModelVector<ModelVector<ModelVector<Natural> > > &>( subsplitChildren->getRevObject() ).getValue();
 
     // std::vector<std::vector<std::vector<RealPos> > > tp = static_cast<const ModelVector< ModelVector<ModelVector<RealPos> > > &>( subsplitProbabilities->getRevObject() ).getValue();
     // RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > > >* rp       = static_cast<const ModelVector< ModelVector<ModelVector<RealPos> > > &>( subsplitProbabilities->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > > >* tp       = static_cast<const ModelVector<ModelVector<ModelVector<RealPos> > > &>( subsplitProbabilities->getRevObject() ).getDagNode();
+
+    const RevBayesCore::RbVector<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > > tp       = static_cast<const ModelVector<ModelVector<ModelVector<RealPos> > > &>( subsplitProbabilities->getRevObject() ).getValue();
 
     RevBayesCore::UnrootedSBN* d = new RevBayesCore::UnrootedSBN( t, s, r, rp, c, tp);
 

@@ -11,7 +11,8 @@
 
 using namespace RevBayesCore;
 
-UnrootedSBN::UnrootedSBN(const std::vector<Taxon> &tn, const std::vector<Subsplit> &ss, std::vector<long> &rs, const std::vector<double> &rp, const std::vector<std::vector<std::vector<long> > > &sc, const std::vector<std::vector<std::vector<double> > > &sp) : TypedDistribution<Tree>( new Tree() ),
+// UnrootedSBN::UnrootedSBN(const std::vector<Taxon> &tn, const std::vector<Subsplit> &ss, const std::vector<long> &rs, const std::vector<double> &rp, const std::vector<std::vector<std::vector<long> > > &sc, const std::vector<std::vector<std::vector<double> > > &sp) : TypedDistribution<Tree>( new Tree() ),
+UnrootedSBN::UnrootedSBN(const std::vector<Taxon> &tn, const std::vector<Subsplit> &ss, const std::vector<long> &rs, const std::vector<double> &rp, const RbVector<RbVector<RbVector<long> > > sc, const RbVector<RbVector<RbVector<double> > > sp) : TypedDistribution<Tree>( new Tree() ),
     num_taxa( tn.size() ),
     taxa( tn ),
 	  subsplits( ss ),
