@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 
+#include "Parallelizable.h"
+
 namespace RevBayesCore {
     
     
@@ -16,7 +18,7 @@ namespace RevBayesCore {
      * @since 2016-10-07, version 1.0
      *
      */
-    class ProgressBar {
+    class ProgressBar : public Parallelizable {
         
     public:
         ProgressBar(size_t m, size_t o);

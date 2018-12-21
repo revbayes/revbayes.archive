@@ -63,7 +63,7 @@ RevBayesCore::ConstantPopulationCoalescent* Dist_Coalescent::createDistribution(
     
     // create the internal distribution object
     RevBayesCore::ConstantPopulationCoalescent*   d = new RevBayesCore::ConstantPopulationCoalescent(t, ta, c);
-    
+
     return d;
 }
 
