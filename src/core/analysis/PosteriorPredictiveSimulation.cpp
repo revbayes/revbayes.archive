@@ -71,25 +71,17 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
     
     std::vector<DagNode*> nodes = model.getDagNodes();
 
-    size_t sim_pid_start = size_t(floor( (double(pid) / num_processes * n_samples * thinning ) ) );
-    size_t sim_pid_end   = std::max( int(sim_pid_start), int(floor( (double(pid+1) / num_processes * n_samples * thinning ) ) - 1) );
+    size_t sim_pid_start = size_t(floor( (double(pid) / num_processes * n_samples ) ) );
+    size_t sim_pid_end   = std::max( int(sim_pid_start), int(floor( (double(pid+1) / num_processes * n_samples ) ) - 1) );
     
     size_t index_sample = sim_pid_start;
-    size_t current_pp_sim = size_t( floor( sim_pid_start / thinning ) );
-    
-    
-    std::cerr << pid << ":\t\t#Samples:\t\t" << n_samples << std::endl;
-    std::cerr << pid << ":\t\tThinning:\t\t" << thinning << std::endl;
-    std::cerr << pid << ":\t\tStart:\t\t" << sim_pid_start << std::endl;
-    std::cerr << pid << ":\t\tEnd:\t\t" << sim_pid_end << std::endl;
-    std::cerr << pid << ":\t\tIndex:\t\t" << index_sample << std::endl;
-    std::cerr << pid << ":\t\tCurrent:\t\t" << current_pp_sim << std::endl;
+    while ( index_sample % thinning > 0 ) ++index_sample;
+    size_t current_pp_sim = size_t( floor( index_sample / thinning ) );
     
     
     for ( ; index_sample <= sim_pid_end; ++current_pp_sim, index_sample += thinning)
     {
         
-        std::cerr << pid << ":\t\tSample for simulation:\t\t" << index_sample << std::endl;
         
         // create a new directory name for this simulation
         std::stringstream s;

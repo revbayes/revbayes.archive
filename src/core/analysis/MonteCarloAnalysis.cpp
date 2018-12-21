@@ -136,9 +136,12 @@ void MonteCarloAnalysis::addMonitor(const Monitor &m)
     
 }
 
-
 /** Run burnin and auto-tune */
+#ifdef RB_MPI
+void MonteCarloAnalysis::burnin(size_t generations, const MPI_Comm &analysis_comm, size_t tuningInterval, bool underPrior, bool verbose)
+#else
 void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool underPrior, bool verbose)
+#endif
 {
     
     // Initialize objects needed by chain
@@ -212,7 +215,6 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
                 // check for autotuning
                 if ( k % tuningInterval == 0 && k != generations )
                 {
-                    
                     runs[i]->tune();
                 }
                 
@@ -424,10 +426,10 @@ void MonteCarloAnalysis::resetReplicates( void )
     bool no_sampler_set = true;
     for (size_t i = 0; i < replicates; ++i)
     {
-        size_t replicate_pid_start = size_t(floor( (double(i)   / replicates ) * num_processes ) ) + active_PID;
-        size_t replicate_pid_end   = std::max( int(replicate_pid_start), int(floor( (double(i+1) / replicates ) * num_processes ) ) - 1 + int(active_PID) );
+        size_t replicate_pid_start = size_t(ceil( (double(i)   / replicates ) * num_processes ) ) + active_PID;
+        size_t replicate_pid_end   = std::max( int(replicate_pid_start), int(ceil( (double(i+1) / replicates ) * num_processes ) ) - 1 + int(active_PID) );
         int number_processes_per_replicate = int(replicate_pid_end) - int(replicate_pid_start) + 1;
-        
+
         if ( pid >= replicate_pid_start && pid <= replicate_pid_end )
         {
             no_sampler_set = false;
@@ -474,8 +476,8 @@ void MonteCarloAnalysis::resetReplicates( void )
         
     }
     
-    
-    size_t replicate_start = size_t(floor( (double(pid-active_PID)   / num_processes ) * replicates ) );
+    size_t replicate_start = size_t(floor( (double(pid-active_PID) / num_processes ) * replicates ) );
+
     RandomNumberGenerator *rng = GLOBAL_RNG;
     for (size_t j=0; j<(2*replicate_start); ++j) rng->uniform01();
     
