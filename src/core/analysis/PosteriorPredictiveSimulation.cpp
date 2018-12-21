@@ -70,14 +70,26 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
 
     
     std::vector<DagNode*> nodes = model.getDagNodes();
-    
-    size_t sim_pid_start = size_t(floor( (double(pid) / num_processes * n_samples ) ) );
-    size_t sim_pid_end   = std::max( int(sim_pid_start), int(floor( (double(pid+1) / num_processes * n_samples ) ) - 1) );
+
+    size_t sim_pid_start = size_t(floor( (double(pid) / num_processes * n_samples * thinning ) ) );
+    size_t sim_pid_end   = std::max( int(sim_pid_start), int(floor( (double(pid+1) / num_processes * n_samples * thinning ) ) - 1) );
     
     size_t index_sample = sim_pid_start;
-    size_t current_pp_sim = sim_pid_start;
+    size_t current_pp_sim = size_t( floor( sim_pid_start / thinning ) );
+    
+    
+    std::cerr << pid << ":\t\t#Samples:\t\t" << n_samples << std::endl;
+    std::cerr << pid << ":\t\tThinning:\t\t" << thinning << std::endl;
+    std::cerr << pid << ":\t\tStart:\t\t" << sim_pid_start << std::endl;
+    std::cerr << pid << ":\t\tEnd:\t\t" << sim_pid_end << std::endl;
+    std::cerr << pid << ":\t\tIndex:\t\t" << index_sample << std::endl;
+    std::cerr << pid << ":\t\tCurrent:\t\t" << current_pp_sim << std::endl;
+    
+    
     for ( ; index_sample <= sim_pid_end; ++current_pp_sim, index_sample += thinning)
     {
+        
+        std::cerr << pid << ":\t\tSample for simulation:\t\t" << index_sample << std::endl;
         
         // create a new directory name for this simulation
         std::stringstream s;
@@ -97,7 +109,7 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
                 if ( the_node->getName() == parameter_name )
                 {
                     // set the value for the variable with the i-th sample
-                    the_node->setValueFromString( traces[j].objectAt( current_pp_sim ) );
+                    the_node->setValueFromString( traces[j].objectAt( index_sample ) );
                 }
             
             }
@@ -140,7 +152,7 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
                             tip_state_trace = &ancestral_state_traces[idx];
                         }
                         const std::vector<std::string>& tip_state_vector = tip_state_trace->getValues();
-                        std::string state_str = tip_state_vector[current_pp_sim];
+                        std::string state_str = tip_state_vector[index_sample];
   
                         // create a taxon data object for each tip
                         DiscreteTaxonData<NaturalNumbersState> this_tip_data = DiscreteTaxonData<NaturalNumbersState>(tips[tip_index]);
