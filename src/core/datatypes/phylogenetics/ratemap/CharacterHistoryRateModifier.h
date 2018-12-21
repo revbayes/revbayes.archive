@@ -16,10 +16,10 @@ namespace RevBayesCore
         CharacterHistoryRateModifier(size_t ns, size_t nc);
         CharacterHistoryRateModifier(const CharacterHistoryRateModifier& g);
         
-        virtual bool                        operator==(const CharacterHistoryRateModifier &rm) const { return this == &rm; }
-        virtual bool                        operator!=(const CharacterHistoryRateModifier &rm) const { return !operator==(rm); }
-        virtual bool                        operator<(const CharacterHistoryRateModifier &rm) const { return this < &rm; }
-        virtual bool                        operator<=(const CharacterHistoryRateModifier &rm) const { return operator<(rm) || operator==(rm); }
+        bool                                operator==(const CharacterHistoryRateModifier &rm) const { return this == &rm; }
+        bool                                operator!=(const CharacterHistoryRateModifier &rm) const { return !operator==(rm); }
+        bool                                operator<(const CharacterHistoryRateModifier &rm) const { return this < &rm; }
+        bool                                operator<=(const CharacterHistoryRateModifier &rm) const { return operator<(rm) || operator==(rm); }
         
         virtual CharacterHistoryRateModifier& assign(const Assignable &m);
         virtual double                      computeRateMultiplier(std::vector<CharacterEvent*> currState, CharacterEventDiscrete* newState, double age=0.0) = 0;

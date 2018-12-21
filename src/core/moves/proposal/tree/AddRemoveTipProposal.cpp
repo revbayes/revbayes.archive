@@ -133,7 +133,7 @@ double AddRemoveTipProposal::doProposal( void )
     double hr = 0;
     double jacobian = 0;
 
-    bool both = (extinct == extant == true);
+    bool both = extinct and extant;
 
     // pick a random tip node to remove
     if (u < 0.5)
@@ -210,7 +210,7 @@ double AddRemoveTipProposal::addTip(TopologyNode *n)
     // unless lnProbTreeShape is incorrect for all birth death processes
     double hr = 0;
 
-    if ( extinct == extant == true )
+    if ( extinct and extant )
     {
         u = rng->uniform01();
     }

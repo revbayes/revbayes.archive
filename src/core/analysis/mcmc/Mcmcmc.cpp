@@ -378,6 +378,10 @@ void Mcmcmc::nextCycle(bool advanceCycle)
         
         if ( chains[i] != NULL )
         {
+            // @todo: #thread
+            // This part should be done on several threads if possible
+            // Sebastian: this call is very slow; a lot of work happens in nextCycle()
+
             // advance chain j by a single cycle
             chains[i]->nextCycle( advanceCycle );
         }

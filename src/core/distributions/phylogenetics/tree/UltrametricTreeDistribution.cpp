@@ -18,10 +18,11 @@
 
 using namespace RevBayesCore;
 
-UltrametricTreeDistribution::UltrametricTreeDistribution( TypedDistribution<Tree>* tp, TypedDistribution<double>* rp, TypedDagNode<double> *ra, const TraceTree &tree_trace) : TypedDistribution<Tree>( new Tree() ),
+UltrametricTreeDistribution::UltrametricTreeDistribution( TypedDistribution<Tree>* tp, TypedDistribution<double>* rp, TypedDagNode<double> *ra, const TraceTree &tree_trace, Trace<double>* dens) : TypedDistribution<Tree>( new Tree() ),
     tree_prior( tp ),
     rate_prior( rp ),
     root_age( ra ),
+    density( dens ),
     num_samples( 0 ),
     sample_block_start( 0 ),
     sample_block_end( num_samples ),
@@ -91,6 +92,7 @@ UltrametricTreeDistribution::UltrametricTreeDistribution( const UltrametricTreeD
     rate_prior( d.rate_prior->clone() ),
     root_age( d.root_age ),
     trees( d.trees ),
+    density( d.density ),
     trees_newick( d.trees_newick ),
     topology_indices( d.topology_indices ),
     tree_branch_lengths( d.tree_branch_lengths ),
@@ -101,7 +103,10 @@ UltrametricTreeDistribution::UltrametricTreeDistribution( const UltrametricTreeD
     sample_block_size( d.sample_block_size ),
     ln_probs( d.ln_probs )
 {
-    
+    if ( d.density != NULL )
+    {
+        density = d.density->clone();
+    }
 }
 
 
@@ -110,6 +115,8 @@ UltrametricTreeDistribution::~UltrametricTreeDistribution()
     
     delete tree_prior;
     delete rate_prior;
+    delete density;
+    
 }
 
 
@@ -126,11 +133,13 @@ UltrametricTreeDistribution& UltrametricTreeDistribution::operator=( const Ultra
         // free memory
         delete tree_prior;
         delete rate_prior;
+        delete density;
         
         tree_prior          = d.tree_prior->clone();
         rate_prior          = d.rate_prior->clone();
         root_age            = d.root_age;
         trees               = d.trees;
+        density             = d.density;
         trees_newick        = d.trees_newick;
         topology_indices    = d.topology_indices;
         tree_branch_lengths = d.tree_branch_lengths;
@@ -140,6 +149,11 @@ UltrametricTreeDistribution& UltrametricTreeDistribution::operator=( const Ultra
         sample_block_end    = d.sample_block_end;
         sample_block_size   = d.sample_block_size;
         ln_probs            = d.ln_probs;
+        
+        if ( d.density != NULL )
+        {
+            density = d.density->clone();
+        }
         
     }
     
@@ -436,6 +450,12 @@ double UltrametricTreeDistribution::computeLnProbability( void )
             }
 
             ln_probs[i] = computeBranchRateLnProbability( *value, my_tree_newick, my_splits, i );
+            
+            if ( density != NULL && RbMath::isFinite( ln_probs[i] ) )
+            {
+                ln_probs[i] -= density->getValues()[i];
+            }
+            
         }
         
     }

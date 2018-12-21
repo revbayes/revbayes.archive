@@ -45,3 +45,14 @@ projects/xcode/revbayes.xcodeproj
 .history
 history.txt
 .ycm_extra_conf.py
+/.dir-locals.el
+/GPATH
+/GRTAGS
+/GTAGS
+validation/output/*
+# generated files
+src/meson.build
+src/core/meson.build
+src/libs/meson.build
+src/revlanguage/meson.build
+src/cmd/meson.build

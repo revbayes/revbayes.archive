@@ -68,6 +68,7 @@ void StochasticBranchRateMonitor::monitorVariables(unsigned long gen)
 //    std::vector<double> time_in_states = sse->getTimeInStates();
     std::vector<double> speciation = sse->getAverageSpeciationRatePerBranch();
     std::vector<double> extinction = sse->getAverageExtinctionRatePerBranch();
+    std::vector<long>   n_shifts   = sse->getNumberOfShiftEventsPerBranch();
 
     // print to monitor file
 //    for (int i = 0; i < time_in_states.size(); i++)
@@ -97,6 +98,15 @@ void StochasticBranchRateMonitor::monitorVariables(unsigned long gen)
         
     }
     
+    for (int i = 0; i < n_shifts.size(); i++)
+    {
+        // add a separator before every new element
+        out_stream << separator;
+        
+        out_stream << n_shifts[i];
+        
+    }
+    
 }
 
 
@@ -110,6 +120,7 @@ void StochasticBranchRateMonitor::printFileHeader()
     std::vector<double> time_in_states = sse->getTimeInStates();
     std::vector<double> speciation = sse->getAverageSpeciationRatePerBranch();
     std::vector<double> extinction = sse->getAverageExtinctionRatePerBranch();
+    std::vector<long>   n_shifts   = sse->getNumberOfShiftEventsPerBranch();
     
 //    for (int i = 0; i < time_in_states.size(); i++)
 //    {
@@ -129,6 +140,14 @@ void StochasticBranchRateMonitor::printFileHeader()
     {
         out_stream << separator;
         out_stream << "avg_mu[";
+        out_stream << i + 1;
+        out_stream << "]";
+    }
+    
+    for (int i = 0; i < n_shifts.size(); i++)
+    {
+        out_stream << separator;
+        out_stream << "num_shifts[";
         out_stream << i + 1;
         out_stream << "]";
     }

@@ -22,11 +22,6 @@ namespace RevBayesCore {
         CladogeneticProbabilityMatrix_Epoch(size_t n);      //!< Construct rate matrix with n states
         virtual                                             ~CladogeneticProbabilityMatrix_Epoch(void);
         
-        virtual bool                                        operator==(const CladogeneticProbabilityMatrix_Epoch &rm) const { return this == &rm; }
-        virtual bool                                        operator!=(const CladogeneticProbabilityMatrix_Epoch &rm) const { return !operator==(rm); }
-        virtual bool                                        operator<(const CladogeneticProbabilityMatrix_Epoch &rm) const { return this < &rm; }
-        virtual bool                                        operator<=(const CladogeneticProbabilityMatrix_Epoch &rm) const { return operator<(rm) || operator==(rm); }
-        
         // pure virtual methods
         virtual CladogeneticProbabilityMatrix_Epoch&        assign(const Assignable &m);
         virtual CladogeneticProbabilityMatrix_Epoch*        clone(void) const;

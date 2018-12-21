@@ -110,24 +110,22 @@ std::vector<std::string> Dist_studentT::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_studentT::getHelpDescription(void) const
+std::string Dist_studentT::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "The student's t probability distribution." );
+    std::string description = "The student's t probability distribution.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_studentT::getHelpDetails(void) const
+std::string Dist_studentT::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
+    std::string details;
     return details;
 }
 

@@ -1,5 +1,5 @@
 #include "DistributionBeta.h"
-#include "LogRandomDiveProposal.h"
+#include "HalfRandomDiveProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -15,7 +15,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-LogRandomDiveProposal::LogRandomDiveProposal( StochasticNode<double> *n, double l, double p) : Proposal(p),
+HalfRandomDiveProposal::HalfRandomDiveProposal( StochasticNode<double> *n, double l, double p) : Proposal(p),
     variable( n ),
     storedValue( 0.0 ),
     lambda( l )
@@ -31,7 +31,7 @@ LogRandomDiveProposal::LogRandomDiveProposal( StochasticNode<double> *n, double 
  * decides whether to accept, reject, etc. the proposed value.
  *
  */
-void LogRandomDiveProposal::cleanProposal( void )
+void HalfRandomDiveProposal::cleanProposal( void )
 {
     ; // do nothing
 }
@@ -42,10 +42,10 @@ void LogRandomDiveProposal::cleanProposal( void )
  *
  * \return A new copy of the proposal.
  */
-LogRandomDiveProposal* LogRandomDiveProposal::clone( void ) const
+HalfRandomDiveProposal* HalfRandomDiveProposal::clone( void ) const
 {
     
-    return new LogRandomDiveProposal( *this );
+    return new HalfRandomDiveProposal( *this );
 }
 
 
@@ -54,15 +54,15 @@ LogRandomDiveProposal* LogRandomDiveProposal::clone( void ) const
  *
  * \return The Proposals' name.
  */
-const std::string& LogRandomDiveProposal::getProposalName( void ) const
+const std::string& HalfRandomDiveProposal::getProposalName( void ) const
 {
-    static std::string name = "LogRandomDive";
+    static std::string name = "HalfRandomDive";
     
     return name;
 }
 
 
-double LogRandomDiveProposal::getProposalTuningParameter( void ) const
+double HalfRandomDiveProposal::getProposalTuningParameter( void ) const
 {
     return lambda;
 }
@@ -71,11 +71,11 @@ double LogRandomDiveProposal::getProposalTuningParameter( void ) const
 /**
  * Perform the proposal.
  *
- * A Random Dive proposal on the log-scale of a variable.
+ * A Random Dive proposal on the that does not cross 0.
  *
  * \return The hastings ratio.
  */
-double LogRandomDiveProposal::doProposal( void )
+double HalfRandomDiveProposal::doProposal( void )
 {
     
     // Get random number generator
@@ -86,14 +86,11 @@ double LogRandomDiveProposal::doProposal( void )
     // copy value
     storedValue = val;
     
-    // log value
-    val = log(val);
-    
-    // Draw from a stretched and translated Beta(lambda,lambda) - {0} distribution that does not include -1 or 1
-    double epsilon  = ( 2 * RbStatistics::Beta::rv(lambda, lambda, *rng) ) - 1.0 ;
-    while ( epsilon == 0.0 || epsilon == 1.0 || epsilon == -1.0 )
+    // Draw from a Beta(lambda,1) - {0} distribution that does not 1
+    double epsilon  = RbStatistics::Beta::rv(lambda, 1.0, *rng);
+    while ( epsilon == 0.0 || epsilon == 1.0 )
     {
-        epsilon  = ( 2 * RbStatistics::Beta::rv(lambda, lambda, *rng) ) - 1.0 ;
+        epsilon  = RbStatistics::Beta::rv(lambda, 1.0, *rng);
     }
     
     double u = rng->uniform01();
@@ -105,12 +102,7 @@ double LogRandomDiveProposal::doProposal( void )
     
     double hr = log(fabs(epsilon));
     
-    double newVal = val * epsilon;
-    
-    hr += newVal;
-    hr -= val;
-    
-    val = exp(newVal);
+    val = val * epsilon;
     
     return hr;
 }
@@ -119,7 +111,7 @@ double LogRandomDiveProposal::doProposal( void )
 /**
  *
  */
-void LogRandomDiveProposal::prepareProposal( void )
+void HalfRandomDiveProposal::prepareProposal( void )
 {
     
 }
@@ -133,7 +125,7 @@ void LogRandomDiveProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void LogRandomDiveProposal::printParameterSummary(std::ostream &o, bool name_only) const
+void HalfRandomDiveProposal::printParameterSummary(std::ostream &o, bool name_only) const
 {
     
     o << "delta = ";
@@ -152,7 +144,7 @@ void LogRandomDiveProposal::printParameterSummary(std::ostream &o, bool name_onl
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void LogRandomDiveProposal::undoProposal( void )
+void HalfRandomDiveProposal::undoProposal( void )
 {
     // swap current value and stored value
     variable->setValue( new double(storedValue) );
@@ -166,7 +158,7 @@ void LogRandomDiveProposal::undoProposal( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new RevVariable.
  */
-void LogRandomDiveProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void HalfRandomDiveProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     variable = static_cast< ContinuousStochasticNode* >(newN) ;
@@ -174,7 +166,7 @@ void LogRandomDiveProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 }
 
 
-void LogRandomDiveProposal::setProposalTuningParameter(double tp)
+void HalfRandomDiveProposal::setProposalTuningParameter(double tp)
 {
     lambda = tp;
 }
@@ -187,20 +179,20 @@ void LogRandomDiveProposal::setProposalTuningParameter(double tp)
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void LogRandomDiveProposal::tune( double rate )
+void HalfRandomDiveProposal::tune( double rate )
 {
     // As the proposal distribution gets more concentrated around 0, the proposals get bolder
     double p = this->targetAcceptanceRate;
     if ( rate > p )
     {
-        lambda *= (1.0 + ((rate-p)/(1.0 - p)) );
+        lambda *= 0.95;
     }
     else
     {
-        lambda /= (2.0 - rate/p);
+        lambda *= 1.05;
     }
     
     lambda = fmin(10000, lambda);
-    
+    lambda = fmax(0.0001, lambda);
 }
 

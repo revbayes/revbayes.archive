@@ -328,21 +328,9 @@ void RevBayesCore::DeterministicNode<valueType>::keepMe( DagNode* affecter )
 template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostream& o, bool verbose ) const
 {
-    
-    if ( verbose == true )
-    {
-        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
-    }
-    
-    o << "_dagType      = Deterministic DAG node" << std::endl;
-    
-    if ( verbose == true )
-    {
-        o << "_refCount     = " << this->getReferenceCount() << std::endl;
-        o << "_function     = <" << function << ">" << std::endl;
-        o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
-    }
-    
+ 
+    o << "_dagType      = Deterministic node (function)" << std::endl;
+    o << "_function     = <" << function << ">" << std::endl;
     
     o << "_parents      = ";
     this->printParents(o, 16, 70, verbose);
@@ -351,6 +339,13 @@ void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostrea
     o << "_children     = ";
     this->printChildren(o, 16, 70, verbose);
     o << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+        o << "_refCount     = " << this->getReferenceCount() << std::endl;
+        o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
+    }
 }
 
 
@@ -486,7 +481,7 @@ void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher, bool
     needs_update = true;
     
     // only if this function did not need an update we delegate the touch affected
-    if ( needed_update == false || was_touched == false || true )
+    if ( needed_update == false || was_touched == false )
     {
         // Dispatch the touch message to downstream nodes
         this->touchAffected( touchAll );

@@ -475,12 +475,14 @@ void MonteCarloAnalysis::resetReplicates( void )
     }
     
     
+    size_t replicate_start = size_t(floor( (double(pid-active_PID)   / num_processes ) * replicates ) );
+    RandomNumberGenerator *rng = GLOBAL_RNG;
+    for (size_t j=0; j<(2*replicate_start); ++j) rng->uniform01();
+    
+    
     // redraw initial states for replicates
     for (size_t i = 0; i < replicates; ++i)
     {
-        RandomNumberGenerator *rng = GLOBAL_RNG;
-        for (size_t j=0; j<10; ++j) rng->uniform01();
-        
         
         if ( i > 0 && runs[i] != NULL )
         {
@@ -604,6 +606,10 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
             
             if ( runs[i] != NULL )
             {
+                
+                // @todo: #thread
+                // This part should be done on several threads if possible
+                // Sebastian: this call is very slow; a lot of work happens in nextCycle()
                 runs[i]->nextCycle(true);
                 
                 // Monitor

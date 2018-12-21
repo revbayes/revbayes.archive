@@ -29,7 +29,7 @@ namespace RevBayesCore {
     class GeneralTreeHistoryCtmc : public TreeHistoryCtmc<charType> {
         
     public:
-        GeneralTreeHistoryCtmc(const TypedDagNode< Tree > *t, size_t nChars, size_t nSites, bool useAmbigChar=false);
+        GeneralTreeHistoryCtmc(const TypedDagNode< Tree > *t, size_t nChars, size_t nSites, bool useAmbigChar=false, bool internal=false);
         GeneralTreeHistoryCtmc(const GeneralTreeHistoryCtmc &n);                                                                         //!< Copy constructor
         virtual                                            ~GeneralTreeHistoryCtmc(void);                                                //!< Virtual destructor
         
@@ -104,7 +104,7 @@ namespace RevBayesCore {
 #include "RbConstants.h"
 
 template<class charType>
-RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const TypedDagNode<Tree> *tau, size_t nChars, size_t nSites, bool useAmbigChar) : TreeHistoryCtmc<charType>( tau, nChars, nSites, useAmbigChar )
+RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const TypedDagNode<Tree> *tau, size_t nChars, size_t nSites, bool useAmbigChar, bool internal) : TreeHistoryCtmc<charType>( tau, nChars, nSites, useAmbigChar, internal )
 {
     
     // initialize with default parameters

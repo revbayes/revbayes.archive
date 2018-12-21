@@ -114,24 +114,22 @@ std::vector<std::string> Func_maximumTree::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_maximumTree::getHelpDescription(void) const
+std::string Func_maximumTree::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Builds the maximum species tree given several ultrametric gene trees." );
+    std::string description = "Builds the maximum species tree given several ultrametric gene trees.";
 
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Func_maximumTree::getHelpDetails(void) const
+std::string Func_maximumTree::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    details.push_back( "The maximum species tree is a consistent estimate of the species tree under the multispecies coalescent model, if the gene trees are correct and the effective population size constant along the species tree." );
+    std::string details =  "The maximum species tree is a consistent estimate of the species tree under the multispecies coalescent model, if the gene trees are correct and the effective population size constant along the species tree." ;
 
     return details;
 }

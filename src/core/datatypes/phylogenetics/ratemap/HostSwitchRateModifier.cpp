@@ -58,20 +58,37 @@ double HostSwitchRateModifier::computeRateMultiplier(std::vector<CharacterEvent*
     // loss event (independent of other hosts)
     if (from_state > to_state)
     {
-        if (sites_with_states[1].size() == 1 && sites_with_states[2].size() == 0)
-        {
-            // cannot enter the null range (conditions on survival)
-            r = 0.0;
-            return r;
-        }
-        else
-        {
-            r = 1.0;
-            return r;
-        }
+//        size_t num_one = sites_with_states[1].size();
+//        size_t num_two = sites_with_states[2].size();
+        
+        // repertoire must contain at least a single 2 (actual host)
+//        if (num_two == 1 && from_state==2 && to_state==1)
+//        {
+//            // rate entering 0/1-repertoire is zero
+//            r = 0.0;
+//            return r;
+//        }
+//        else
+//        if (num_two == 0) {
+//            // rate leaving 0/1-repertoire is zero
+//            r = 0.0;
+//            return r;
+//        }
+//        else
+//        {
+//            r = 1.0;
+//            return r;
+//        }
+        return 1.0;
     }
     else
     {
+        // rate of leaving 0/1-repertoire equals zero
+        size_t num_two = sites_with_states[2].size();
+        if (num_two == 0) {
+            return 0.0;
+        }
+        
         // gain event
         double scaler_value = scale[ to_state - 1 ];
         
@@ -96,7 +113,8 @@ double HostSwitchRateModifier::computeRateMultiplier(std::vector<CharacterEvent*
         }
         
         double delta_mean = delta / n_on;
-        r = std::exp( -scaler_value * delta_mean );
+        r = std::pow( delta_mean, -scaler_value);
+//        r = std::exp( -scaler_value * delta_mean );
     }
     return r;
 }
@@ -152,11 +170,26 @@ void HostSwitchRateModifier::setTree(const RevBayesCore::Tree &t)
     distance = *RevBayesCore::TreeUtilities::getDistanceMatrix ( tau );
     
     double max_distance = 2 * tau.getRoot().getAge();
+    double sum_distance = 0.0;
     for (size_t i = 0; i < distance.size(); i++) {
-        for (size_t j = 0; j < distance[i].size(); j++) {
+        for (size_t j = i; j < distance[i].size(); j++) {
             distance[i][j] /= max_distance;
+            distance[j][i] /= max_distance;
+            sum_distance += distance[i][j];
         }
     }
+    
+    size_t n_tips = distance.size();
+    size_t n_pairs = (n_tips*n_tips-n_tips) / 2;
+    double mean_distance = sum_distance / n_pairs;
+    for (size_t i = 0; i < distance.size(); i++) {
+        for (size_t j = i; j < distance[i].size(); j++) {
+            distance[i][j] /= mean_distance;
+            distance[j][i] /= mean_distance;
+        }
+    }
+    
+
 }
 
 void HostSwitchRateModifier::setScale(const std::vector<double>& s)

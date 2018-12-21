@@ -8,7 +8,7 @@ using namespace RevBayesCore;
 RbBitSet::RbBitSet(void) :
     num_set_bits( 0 )
 {
-    
+
 }
 
 
@@ -16,7 +16,7 @@ RbBitSet::RbBitSet(size_t n, bool def) :
     value(n, def),
     num_set_bits( 0 )
 {
-    
+
 }
 
 
@@ -30,14 +30,14 @@ bool RbBitSet::operator[](size_t i) const
 /** Equals comparison */
 bool RbBitSet::operator==(const RbBitSet& x) const
 {
-    
+
     return x.value == value;
 }
 
 /** Not-Equals comparison */
 bool RbBitSet::operator!=(const RbBitSet& x) const
 {
-    
+
     return operator==(x) == false;
 }
 
@@ -45,7 +45,7 @@ bool RbBitSet::operator!=(const RbBitSet& x) const
 /** Smaller than comparison */
 bool RbBitSet::operator<(const RbBitSet& x) const
 {
-    
+
     return x.value < value;
 }
 
@@ -177,7 +177,7 @@ size_t RbBitSet::getFirstSetBit( void ) const
     {
         ++index;
     }
-    
+
     return index;
 }
 
@@ -201,17 +201,19 @@ void RbBitSet::resize(size_t size)
 
 void RbBitSet::set(size_t i)
 {
-    
+
     if ( i >= value.size() )
     {
-        throw RbException("Index out of bounds in bitset. This will likely cause unexpectad behavior.");
+        std::ostringstream ss;
+        ss << i;
+        throw RbException("Index " + ss.str() +" out of bounds in bitset. This will likely cause unexpected behavior.");
     }
-    
+
     if (value[i] == false)
     {
         ++num_set_bits;
     }
-    
+
     // set the internal value
     value[i] = true;
 }
@@ -230,7 +232,7 @@ void RbBitSet::unset(size_t i)
     {
         --num_set_bits;
     }
-    
+
     // set the internal value
     value[i] = false;
 }
@@ -238,14 +240,14 @@ void RbBitSet::unset(size_t i)
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const RevBayesCore::RbBitSet& x)
 {
-    
+
     o << "[";
     for (size_t i=0; i<x.size(); ++i)
     {
         o << ( x.isSet(i) ? "1" : "0");
     }
     o << "]";
-    
-    
+
+
     return o;
 }

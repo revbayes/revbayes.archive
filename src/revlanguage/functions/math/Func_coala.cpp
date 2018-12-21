@@ -112,22 +112,22 @@ std::vector<std::string> Func_coala::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_coala::getHelpDescription(void) const
+std::string Func_coala::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
+    std::string description;
 
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Func_coala::getHelpDetails(void) const
+std::string Func_coala::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
+    std::string details;
 
     return details;
 }

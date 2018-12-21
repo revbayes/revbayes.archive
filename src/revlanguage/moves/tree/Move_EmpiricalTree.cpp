@@ -71,6 +71,73 @@ const TypeSpec& Move_EmpiricalTree::getClassTypeSpec(void)
 
 
 /**
+ * Get the author(s) of this function so they can receive credit (and blame) for it.
+ */
+std::vector<std::string> Move_EmpiricalTree::getHelpAuthor(void) const
+{
+    // create a vector of authors for this function
+    std::vector<std::string> authors;
+    authors.push_back( "Will Freyman" );
+    authors.push_back( "Sebastian Hoehna" );
+    authors.push_back( "Will Pett" );
+    authors.push_back( "Jiansi Gao" );
+    
+    return authors;
+}
+
+
+/**
+ * Get the (brief) description for this function
+ */
+std::string Move_EmpiricalTree::getHelpDescription(void) const
+{
+    std::string description = "";
+    description += "An MCMC move that operates on empirical tree distributions.";
+    
+    return description;
+}
+
+
+/**
+ * Get an executable and instructive example.
+ * These example should help the users to show how this function works but
+ * are also used to test if this function still works.
+ */
+std::string Move_EmpiricalTree::getHelpExample(void) const
+{
+    // create an example as a single string variable.
+    std::string example = "";
+    
+    example += "# Read in tree trace\n";
+    example += "tree_trace = readTreeTrace(\"output/my.trees\", burnin=0.25)\n";
+    example += "\n";
+    example += "# Create a distribution of trees\n";
+    example += "tree ~ dnEmpiricalTree(tree_trace)\n";
+    example += "\n";
+    example += "# Add an MCMC move\n";
+    example += "moves[1] = mvEmpiricalTree(tree)\n";
+    
+    return example;
+}
+
+
+/**
+ * Get the names of similar and suggested other functions
+ */
+std::vector<std::string> Move_EmpiricalTree::getHelpSeeAlso(void) const
+{
+    // create an entry for each suggested function
+    std::vector<std::string> see_also;
+    see_also.push_back( "mvEmpiricalTree" );
+    see_also.push_back( "treeTrace" );
+    see_also.push_back( "readTreeTrace" );
+    
+    
+    return see_also;
+}
+
+
+/**
  * Get the Rev name for the constructor function.
  *
  * \return Rev name of constructor function.
@@ -94,7 +161,7 @@ const MemberRules& Move_EmpiricalTree::getParameterRules(void) const
     if ( !rules_set )
     {
         move_member_rules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(), "The stochastic tree variable on which this moves operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        move_member_rules.push_back( new ArgumentRule( "metropolisHastings"   , RlBoolean::getClassTypeSpec(), "When propose a new tree from the empirical tree distribution, should we accept or reject this move based on the acceptance ratio (as a regular Metropolis-Hastings move so that we are approximating the joint posterior correctly through a valid MCMC) or should we simply always accept this move (so that we are effectively sampling every tree uniformly and combining the the estimates on each tree without weighting them according to the marginal likelihood of each tree)?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
+        move_member_rules.push_back( new ArgumentRule( "metropolisHastings"   , RlBoolean::getClassTypeSpec(), "If TRUE, use the regular Metropolis-Hastings acceptance ratio. If FALSE, always accept this move and sample every tree uniformly.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
 
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
