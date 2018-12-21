@@ -5,6 +5,7 @@
 #include "DagNode.h"
 #include "MonteCarloAnalysis.h"
 #include "MonteCarloSampler.h"
+#include "ProgressBar.h"
 #include "RlUserInterface.h"
 
 #include <algorithm>
@@ -136,9 +137,12 @@ void MonteCarloAnalysis::addMonitor(const Monitor &m)
     
 }
 
-
 /** Run burnin and auto-tune */
+#ifdef RB_MPI
+void MonteCarloAnalysis::burnin(size_t generations, const MPI_Comm &analysis_comm, size_t tuningInterval, bool underPrior, bool verbose)
+#else
 void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool underPrior, bool verbose)
+#endif
 {
     
     // Initialize objects needed by chain
@@ -164,6 +168,9 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
         
     }
     
+    // start the progress bar
+    ProgressBar progress = ProgressBar(generations, 0);
+
     if ( verbose == true && runs[0] != NULL && process_active == true )
     {
         // Let user know what we are doing
@@ -175,10 +182,7 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
         RBOUT( ss.str() );
         
         // Print progress bar (68 characters wide)
-        std::cout << std::endl;
-        std::cout << "Progress:" << std::endl;
-        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
-        std::cout.flush();
+        progress.start();
     }
     
     
@@ -189,17 +193,7 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
         
         if ( verbose == true && process_active == true)
         {
-            size_t progress = 68 * (double) k / (double) generations;
-            if ( progress > num_stars )
-            {
-                
-                for ( ; num_stars < progress; ++num_stars )
-                {
-                    std::cout << "*";
-                }
-                std::cout.flush();
-                
-            }
+            progress.update(k);
         }
         
         for (size_t i=0; i<replicates; ++i)
@@ -212,7 +206,6 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
                 // check for autotuning
                 if ( k % tuningInterval == 0 && k != generations )
                 {
-                    
                     runs[i]->tune();
                 }
                 
@@ -228,8 +221,7 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
     
     if ( verbose == true && process_active == true )
     {
-        std::cout << std::endl;
-        std::cout.flush();
+        progress.finish();
     }
     
 #ifdef RB_MPI
@@ -424,10 +416,10 @@ void MonteCarloAnalysis::resetReplicates( void )
     bool no_sampler_set = true;
     for (size_t i = 0; i < replicates; ++i)
     {
-        size_t replicate_pid_start = size_t(floor( (double(i)   / replicates ) * num_processes ) ) + active_PID;
-        size_t replicate_pid_end   = std::max( int(replicate_pid_start), int(floor( (double(i+1) / replicates ) * num_processes ) ) - 1 + int(active_PID) );
+        size_t replicate_pid_start = size_t(ceil( (double(i)   / replicates ) * num_processes ) ) + active_PID;
+        size_t replicate_pid_end   = std::max( int(replicate_pid_start), int(ceil( (double(i+1) / replicates ) * num_processes ) ) - 1 + int(active_PID) );
         int number_processes_per_replicate = int(replicate_pid_end) - int(replicate_pid_start) + 1;
-        
+
         if ( pid >= replicate_pid_start && pid <= replicate_pid_end )
         {
             no_sampler_set = false;
@@ -474,8 +466,8 @@ void MonteCarloAnalysis::resetReplicates( void )
         
     }
     
-    
-    size_t replicate_start = size_t(floor( (double(pid-active_PID)   / num_processes ) * replicates ) );
+    size_t replicate_start = size_t(floor( (double(pid-active_PID) / num_processes ) * replicates ) );
+
     RandomNumberGenerator *rng = GLOBAL_RNG;
     for (size_t j=0; j<(2*replicate_start); ++j) rng->uniform01();
     
@@ -487,6 +479,24 @@ void MonteCarloAnalysis::resetReplicates( void )
         if ( i > 0 && runs[i] != NULL )
         {
             runs[i]->redrawStartingValues();
+        }
+        
+        if ( runs[i] != NULL )
+        {
+            const std::vector<DagNode*> &this_nodes = runs[i]->getModel().getDagNodes();
+            
+            // touch all nodes
+            for (size_t j=0; j<this_nodes.size(); ++j)
+            {
+                this_nodes[j]->touch();
+            }
+            
+            // keep all nodes
+            for (size_t j=0; j<this_nodes.size(); ++j)
+            {
+                this_nodes[j]->keep();
+            }
+        
         }
         
     }

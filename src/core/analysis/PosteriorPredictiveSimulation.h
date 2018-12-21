@@ -38,7 +38,7 @@ namespace RevBayesCore {
 //        PosteriorPredictiveSimulation&         operator=(const PosteriorPredictiveSimulation &m);                         //!< Overloaded assignment operator
         
         // public methods
-        PosteriorPredictiveSimulation*         clone(void) const;
+        PosteriorPredictiveSimulation*                      clone(void) const;
         void                                                run(int thinning);
         
     private:

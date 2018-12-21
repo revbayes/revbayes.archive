@@ -115,7 +115,11 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         int tuningInterval = (int)static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
         bool prior = static_cast<const RlBoolean &>( args[2].getVariable()->getRevObject() ).getValue();
 
+#ifdef RB_MPI
+        value->burnin( gen, MPI_COMM_WORLD, tuningInterval, prior );
+#else
         value->burnin( gen, tuningInterval, prior );
+#endif
         
         return NULL;
     }

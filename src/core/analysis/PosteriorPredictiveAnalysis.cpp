@@ -46,58 +46,6 @@ PosteriorPredictiveAnalysis::~PosteriorPredictiveAnalysis(void)
 }
 
 
-///** Run burnin and autotune */
-//void PosteriorPredictiveAnalysis::burnin(size_t generations, size_t tuningInterval)
-//{
-//    
-//    if ( process_active == true )
-//    {
-//        // Let user know what we are doing
-//        std::stringstream ss;
-//        ss << "\n";
-//        ss << "Running burn-in phase of Monte Carlo sampler " << num_runs <<  " each for " << generations << " iterations.\n";
-//        RBOUT( ss.str() );
-//    
-//        // Print progress bar (68 characters wide)
-//        std::cout << std::endl;
-//        std::cout << "Progress:" << std::endl;
-//        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
-//        std::cout.flush();
-//    }
-//    
-//    // compute which block of the data this process needs to compute
-//    size_t run_block_start = size_t(floor( (double(pid)   / num_processes ) * num_runs) );
-//    size_t run_block_end   = size_t(floor( (double(pid+1) / num_processes ) * num_runs) );
-//    //    size_t stone_block_size  = stone_block_end - stone_block_start;
-//    
-//    // Run the chain
-//    size_t numStars = 0;
-//    for (size_t i = run_block_start; i < run_block_end; ++i)
-//    {
-//        if ( process_active == true )
-//        {
-//            size_t progress = 68 * (double) i / (double) (run_block_end - run_block_start);
-//            if ( progress > numStars )
-//            {
-//                for ( ;  numStars < progress; ++numStars )
-//                    std::cout << "*";
-//                std::cout.flush();
-//            }
-//        }
-//        
-//        // run the i-th analyses
-//        runs[i]->burnin(generations, tuningInterval, false);
-//        
-//    }
-//    
-//    if ( process_active == true )
-//    {
-//        std::cout << std::endl;
-//    }
-//    
-//}
-
-
 
 PosteriorPredictiveAnalysis* PosteriorPredictiveAnalysis::clone( void ) const
 {
