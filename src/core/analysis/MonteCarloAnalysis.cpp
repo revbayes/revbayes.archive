@@ -5,6 +5,7 @@
 #include "DagNode.h"
 #include "MonteCarloAnalysis.h"
 #include "MonteCarloSampler.h"
+#include "ProgressBar.h"
 #include "RlUserInterface.h"
 
 #include <algorithm>
@@ -167,6 +168,9 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
         
     }
     
+    // start the progress bar
+    ProgressBar progress = ProgressBar(generations, 0);
+
     if ( verbose == true && runs[0] != NULL && process_active == true )
     {
         // Let user know what we are doing
@@ -178,10 +182,7 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
         RBOUT( ss.str() );
         
         // Print progress bar (68 characters wide)
-        std::cout << std::endl;
-        std::cout << "Progress:" << std::endl;
-        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
-        std::cout.flush();
+        progress.start();
     }
     
     
@@ -192,17 +193,7 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
         
         if ( verbose == true && process_active == true)
         {
-            size_t progress = 68 * (double) k / (double) generations;
-            if ( progress > num_stars )
-            {
-                
-                for ( ; num_stars < progress; ++num_stars )
-                {
-                    std::cout << "*";
-                }
-                std::cout.flush();
-                
-            }
+            progress.update(k);
         }
         
         for (size_t i=0; i<replicates; ++i)
@@ -230,8 +221,7 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
     
     if ( verbose == true && process_active == true )
     {
-        std::cout << std::endl;
-        std::cout.flush();
+        progress.finish();
     }
     
 #ifdef RB_MPI

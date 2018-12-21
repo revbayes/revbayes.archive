@@ -4,6 +4,7 @@
 #include "MaxIterationStoppingRule.h"
 #include "MonteCarloAnalysis.h"
 #include "MonteCarloSampler.h"
+#include "ProgressBar.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -195,6 +196,9 @@ ValidationAnalysis& ValidationAnalysis::operator=(const ValidationAnalysis &a)
 void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
 {
     
+    // start the progress bar
+    ProgressBar progress = ProgressBar(generations, 0);
+    
     if ( process_active == true )
     {
         // Let user know what we are doing
@@ -204,10 +208,7 @@ void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
         RBOUT( ss.str() );
         
         // Print progress bar (68 characters wide)
-        std::cout << std::endl;
-        std::cout << "Progress:" << std::endl;
-        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
-        std::cout.flush();
+        progress.start();
     }
     
     // compute which block of the data this process needs to compute
@@ -227,13 +228,7 @@ void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
 #endif
         if ( process_active == true )
         {
-            size_t progress = 68 * (double) (i+1.0) / (double) (1 + run_block_end - run_block_start);
-            if ( progress > numStars )
-            {
-                for ( ;  numStars < progress; ++numStars )
-                    std::cout << "*";
-                std::cout.flush();
-            }
+            progress.update( i );
             
         }
         
@@ -242,7 +237,7 @@ void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
     
     if ( process_active == true )
     {
-        std::cout << std::endl;
+        progress.finish();
     }
     
 }
