@@ -28,10 +28,11 @@ connectivityMatrix( cm ),
 connectivityWeights( cw ),
 numCharacters( (unsigned)cm->getValue().size() ),
 num_states( 2 ),
-numIntStates( pow(2,cm->getValue().size()) ),
+numIntStates( pow(2,cm->getValue().size())-1 ),
 maxRangeSize(mrs),
 numEventTypes( (unsigned)sr->getValue().size() ),
 use_hidden_rate(false),
+use_cutset_mean(true),
 connectivityType( ct )
 {
     addParameter( speciationRates );
@@ -51,6 +52,9 @@ connectivityType( ct )
     numRanges++; // add one for the null range
     
     buildEventMap();
+    buildEventMapFactors();
+    updateEventMapWeights();
+    
     update();
     
 }
@@ -59,6 +63,14 @@ connectivityType( ct )
 BiogeographyCladogeneticBirthDeathFunction::~BiogeographyCladogeneticBirthDeathFunction( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
+
+/*
+ * This function returns the value of mask, but complementing the 1-valued bits in base
+ * e.g.
+ *      mask=001110100
+ *      base=001100000
+ *      ret =000010100
+ */
 
 std::vector<unsigned> BiogeographyCladogeneticBirthDeathFunction::bitAllopatryComplement( const std::vector<unsigned>& mask, const std::vector<unsigned>& base )
 {
@@ -70,6 +82,11 @@ std::vector<unsigned> BiogeographyCladogeneticBirthDeathFunction::bitAllopatryCo
     }
     return ret;
 }
+
+
+/*
+ *  This recursive function builds all possible 0/1 bit combinations for array
+ */
 
 void BiogeographyCladogeneticBirthDeathFunction::bitCombinations(std::vector<std::vector<unsigned> >& comb, std::vector<unsigned> array, int i, std::vector<unsigned> accum)
 {
@@ -97,10 +114,18 @@ void BiogeographyCladogeneticBirthDeathFunction::bitCombinations(std::vector<std
     }
 }
 
+/*
+ * This function returns the state associated with a bit vector
+ */
+
 unsigned BiogeographyCladogeneticBirthDeathFunction::bitsToState( const std::vector<unsigned>& b )
 {
     return bitsToStatesByNumOn[b];
 }
+
+/*
+ *  This function converts a bit vector into a string (mostly for printing)
+ */
 
 std::string BiogeographyCladogeneticBirthDeathFunction::bitsToString( const std::vector<unsigned>& b )
 {
@@ -111,6 +136,12 @@ std::string BiogeographyCladogeneticBirthDeathFunction::bitsToString( const std:
     }
     return ss.str();
 }
+
+
+/*
+ * This function generates the interchangeable state <-> bits <-> area-set
+ * containers that define the state space.
+ */
 
 void BiogeographyCladogeneticBirthDeathFunction::buildBits( void )
 {
@@ -130,10 +161,10 @@ void BiogeographyCladogeneticBirthDeathFunction::buildBits( void )
     statesToBitsByNumOn.resize(numIntStates);
     statesToBitsetsByNumOn.resize(numIntStates);
     bits = std::vector<std::vector<unsigned> >(numIntStates, std::vector<unsigned>(numCharacters, 0));
-    bitsByNumOn[0].push_back(bits[0]);
-    for (size_t i = 1; i < numIntStates; i++)
+//    bitsByNumOn[0].push_back(bits[0]); // commented out to ignore null range
+    for (size_t i = 0; i < numIntStates; i++)
     {
-        size_t m = i;
+        size_t m = i+1; // offset by one (no null range)
         for (size_t j = 0; j < numCharacters; j++)
         {
             bits[i][j] = m % 2;
@@ -180,6 +211,10 @@ void BiogeographyCladogeneticBirthDeathFunction::buildBits( void )
 }
 
 
+/*
+ * This function builds the allopatric cutset, which is defined
+ * as the set of edges removed in order to create the bipartition
+ */
 void BiogeographyCladogeneticBirthDeathFunction::buildCutsets( void ) {
     
     std::map< std::vector<unsigned>, unsigned>::iterator it;
@@ -191,32 +226,16 @@ void BiogeographyCladogeneticBirthDeathFunction::buildCutsets( void ) {
         unsigned event_type = it->second;
         
         // get right and left bitsets
-        std::set<unsigned> r1 = statesToBitsetsByNumOn[ idx[1] ];
-        std::set<unsigned> r2 = statesToBitsetsByNumOn[ idx[2] ];
+        const std::set<unsigned>& s1 = statesToBitsetsByNumOn[ idx[1] ];
+        const std::set<unsigned>& s2 = statesToBitsetsByNumOn[ idx[2] ];
      
         // fill vector with edges to cut
         std::vector< std::vector<unsigned> > cutset;
-        
-//        if (event_type == SYMPATRY) {
-//            // find the sympatric area
-//            const std::set<unsigned>& s1 = ( r1.size() < r2.size() ? r1 : r2 );
-//            const std::set<unsigned>& s2 = ( r1.size() >= r2.size() ? r1 : r2 );
-//            std::set<unsigned>::iterator jt, kt;
-//            for (jt = s1.begin(); jt != s1.end(); jt++)
-//            {
-//                for (kt = s2.begin(); kt != s2.end(); kt++)
-//                {
-//                    std::vector<unsigned> edge;
-//                    edge.push_back( *jt );
-//                    edge.push_back( *kt );
-//                    cutset.push_back( edge );
-//                }
-//            }
-//        }
-//        else if (event_type == ALLOPATRY) {
-            // find the sympatric area
-            const std::set<unsigned>& s1 = r1; //( r1.size() < r2.size() ? r1 : r2 );
-            const std::set<unsigned>& s2 = r2; // ( r1.size() >= r2.size() ? r1 : r2 );
+
+        // for allopatry events
+        if (event_type == ALLOPATRY)
+        {
+            // find the edges between regions in daughter ranges
             std::set<unsigned>::iterator jt, kt;
             for (jt = s1.begin(); jt != s1.end(); jt++)
             {
@@ -231,12 +250,13 @@ void BiogeographyCladogeneticBirthDeathFunction::buildCutsets( void ) {
                     }
                 }
             }
-//        }
+        }
         eventMapCutsets[ idx ] = cutset;
     }
     
-    std::cout << "";
+    return;
 }
+
 
 /*
  *  This function populates the eventMap, eventMapTypes, and eventMapCounts
@@ -516,8 +536,89 @@ void BiogeographyCladogeneticBirthDeathFunction::buildEventMap( void ) {
     std::cout << "------\n";
 #endif
     
-    buildCutsets();
 }
+
+
+/*
+ * This function precomputes the base factors for the event map. Modified values
+ * of the factors are then applied to the model rates in the update() function.
+ */
+
+void BiogeographyCladogeneticBirthDeathFunction::buildEventMapFactors(void)
+{
+    
+    if (connectivityType == "none")
+    {
+        ; // do nothing
+    }
+    else if (connectivityType == "cutset")
+    {
+        buildCutsets();
+//        buildCutsetFactors();
+    }
+    else if (connectivityType == "modularity")
+    {
+        ; // do nothing
+//        buildModularityFactors();
+    }
+    
+    double cut_sum = 0.0;
+    size_t n_allopatry = 0;
+    
+    // loop over all events and their types
+    std::map< std::vector<unsigned>, unsigned >::iterator it;
+    for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
+    {
+        // get event info
+        std::vector<unsigned> idx = it->first;
+        unsigned event_type = it->second;
+        
+        // get event score
+        double v = 0.0;
+        if (connectivityType == "none") {
+            v = 1.0;
+        }
+        if (connectivityType == "cutset") {
+            v = computeCutsetScore(idx, event_type);
+        }
+        else {
+            v = computeModularityScore(idx, event_type);
+        }
+        eventMapFactors[ idx ] = v;
+        
+//        std::cout << idx[0] << " " << idx[1] << " " << idx[2] << " : " << v << "\n";
+        
+        if (event_type == ALLOPATRY) {
+            cut_sum += v;
+            n_allopatry++;
+        }
+    }
+    
+    // avg by counts
+    if (connectivityType != "none") {
+    
+        // get mean of cut cost across allopatric events
+        double cut_mean_allopatry = cut_sum / n_allopatry;
+        
+        // normalize allopatric events by mean
+        for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
+        {
+            // get event info
+            std::vector<unsigned> idx = it->first;
+            unsigned event_type = it->second;
+            
+            if (event_type == ALLOPATRY) {
+                eventMapFactors[ idx ] = eventMapFactors[ idx ] / cut_mean_allopatry;
+            }
+        }
+    }
+    
+    return;
+}
+
+/*
+ * This function builds all defined ranges in the model
+ */
 
 void BiogeographyCladogeneticBirthDeathFunction::buildRanges(std::set<unsigned>& range_set, const TypedDagNode< RbVector<RbVector<double> > >* g, bool all)
 {
@@ -553,6 +654,11 @@ void BiogeographyCladogeneticBirthDeathFunction::buildRanges(std::set<unsigned>&
     std::cout << "\n";
 #endif
 }
+
+
+/* 
+ * This recursive function accumulates areas to build a range
+ */
 
 void BiogeographyCladogeneticBirthDeathFunction::buildRangesRecursively(std::set<unsigned> s, std::set<std::set<unsigned> >& r, size_t k, const TypedDagNode< RbVector<RbVector<double> > >* g, bool all)
 {
@@ -602,8 +708,47 @@ double BiogeographyCladogeneticBirthDeathFunction::computeDataAugmentedCladogene
     
 }
 
+/*
+ * This function computes the cutset score for a cladogenetic outcome (optionally, divided by number of cut edges)
+ */
 
-double BiogeographyCladogeneticBirthDeathFunction::computeModularityScore(unsigned state1, unsigned state2, unsigned event_type)
+double BiogeographyCladogeneticBirthDeathFunction::computeCutsetScore( std::vector<unsigned> idx, unsigned event_type)
+{
+    double cost = 0.0;
+    
+    // get value for connectivity mtx
+    const RbVector<RbVector<double> >& mtx = connectivityMatrix->getValue();
+    
+    // compute modularity score depending on event type
+    if (event_type == SYMPATRY)
+    {
+        // assume sympatry is independent of connectivity
+        cost = 1.0;
+    }
+    else if (event_type == ALLOPATRY)
+    {
+        const std::vector<std::vector<unsigned> >& cutset = eventMapCutsets[idx];
+        for (size_t i = 0; i < cutset.size(); i++) {
+            size_t v1 = cutset[i][0];
+            size_t v2 = cutset[i][1];
+            cost += mtx[v1][v2];
+            std::cout << "\t" << v1 << " -- " << v2 << " : " << mtx[v1][v2] << "\n";
+        }
+        
+        cost = 1.0 / cost;
+//        std::cout << idx[0] << " " << idx[1] << " " << idx[2] << " : " << cost << "\n";
+//        if (use_cutset_mean) {
+//            cost /= cutset.size();
+//        }
+    }
+    return cost;
+}
+
+/*
+ * This function computes the modularity score for a cladogenetic outcome
+ */
+
+double BiogeographyCladogeneticBirthDeathFunction::computeModularityScore(std::vector<unsigned> idx, unsigned event_type)
 {
     // return value
     double Q = 0.0;
@@ -614,8 +759,8 @@ double BiogeographyCladogeneticBirthDeathFunction::computeModularityScore(unsign
     
     // get left/right area sets
     std::vector< std::set<unsigned> > daughter_ranges;
-    daughter_ranges.push_back( statesToBitsetsByNumOn[ state1 ] );
-    daughter_ranges.push_back( statesToBitsetsByNumOn[ state2 ] );
+    daughter_ranges.push_back( statesToBitsetsByNumOn[ idx[0] ] );
+    daughter_ranges.push_back( statesToBitsetsByNumOn[ idx[1] ] );
     
     // compute modularity score depending on event type
     if (event_type == SYMPATRY)
@@ -665,7 +810,7 @@ double BiogeographyCladogeneticBirthDeathFunction::computeModularityScore(unsign
         
         // compute z, the sum of edges across daughter ranges
         for (size_t i = 0; i < daughter_ranges.size(); i++) {
-        
+            
             // get one daughter range
             const std::set<unsigned>& s = daughter_ranges[i];
             
@@ -702,19 +847,29 @@ double BiogeographyCladogeneticBirthDeathFunction::computeModularityScore(unsign
     return Q;
 }
 
-
-
+/*
+ * Returns the eventMap container
+ */
 
 std::map< std::vector<unsigned>, double >  BiogeographyCladogeneticBirthDeathFunction::getEventMap(double t)
 {
     return eventMap;
 }
 
+/*
+ * Returns the eventMap container (const)
+ */
+
+
 const std::map< std::vector<unsigned>, double >&  BiogeographyCladogeneticBirthDeathFunction::getEventMap(double t) const
 {
     return eventMap;
 }
 
+
+/*
+ * Prints the event map -- for debugging mostly
+ */
 
 void BiogeographyCladogeneticBirthDeathFunction::printEventMap(void)
 {
@@ -729,6 +884,9 @@ void BiogeographyCladogeneticBirthDeathFunction::printEventMap(void)
 }
 
 
+/*
+ * Sets the hidden rate multipliers
+ */
 
 void BiogeographyCladogeneticBirthDeathFunction::setRateMultipliers(const TypedDagNode< RbVector< double > >* rm)
 {
@@ -744,6 +902,10 @@ void BiogeographyCladogeneticBirthDeathFunction::setRateMultipliers(const TypedD
 }
 
 
+/*
+ *  Computes the sum of bits (how many bits are set to 1)
+ */
+
 unsigned BiogeographyCladogeneticBirthDeathFunction::sumBits(const std::vector<unsigned>& b)
 {
     unsigned n = 0;
@@ -753,6 +915,9 @@ unsigned BiogeographyCladogeneticBirthDeathFunction::sumBits(const std::vector<u
 }
 
 
+/*
+ *  Standard swap parameters for moves and monitors
+ */
 
 void BiogeographyCladogeneticBirthDeathFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
@@ -775,6 +940,9 @@ void BiogeographyCladogeneticBirthDeathFunction::swapParameterInternal(const Dag
 }
 
 
+/*
+ *  Update the rates in eventMap container
+ */
 
 void BiogeographyCladogeneticBirthDeathFunction::update( void )
 {
@@ -789,7 +957,7 @@ void BiogeographyCladogeneticBirthDeathFunction::update( void )
     }
     
     // update clado event factors
-    updateEventMapFactors();
+    updateEventMapWeights();
     
     // get speciation rates across cladogenetic events
     const std::vector<double>& sr = speciationRates->getValue();
@@ -824,9 +992,16 @@ void BiogeographyCladogeneticBirthDeathFunction::update( void )
                 speciation_rate = sr[ event_type ];
             }
             
-            // normalize for all possible instances of this event type
-            double v = ( speciation_rate / eventMapCounts[ idx[0] ][ event_type ] );
+            // get speciation rate
+            double v = speciation_rate; // / eventMapCounts[ idx[0] ][ event_type ] );
             
+            // divide by two if asymmetric event
+            double f_asymm = ( idx[1] == idx[2] ? 1.0 : 0.5 );
+            
+            // rescale by connectivity weight
+            double c_weight = eventMapWeights[ idx ];
+            v *= f_asymm * c_weight;
+
             // save the rate in the event map
             eventMap[ idx ] += v;
             if (use_hidden_rate == true)
@@ -845,26 +1020,19 @@ void BiogeographyCladogeneticBirthDeathFunction::update( void )
     
     // done!
     value->setEventMap(eventMap);
-}
-
-void BiogeographyCladogeneticBirthDeathFunction::updateEventMapFactors(void)
-{
-    if ( connectivityType == "none" )
-    {
-        ; // do nothing
-    }
-    else if ( connectivityType == "modularity" )
-    {
-        updateEventMapModularityFactors();
-    }
-    else
-    {
-        throw RbException("Unknown connectivityType");
-    }
+//    printEventMap();
     
+    std::cout << "";
 }
 
-void BiogeographyCladogeneticBirthDeathFunction::updateEventMapModularityFactors(void) {
+/*
+ *  Transform the constant eventMapFactors values with the eventMapWeights values
+ */
+
+void BiogeographyCladogeneticBirthDeathFunction::updateEventMapWeights(void) {
+    
+    // get weight vector
+    const RbVector<double>& weights = connectivityWeights->getValue();
     
     // loop over all events and their types
     std::map< std::vector<unsigned>, unsigned >::iterator it;
@@ -874,11 +1042,15 @@ void BiogeographyCladogeneticBirthDeathFunction::updateEventMapModularityFactors
         std::vector<unsigned> idx = it->first;
         unsigned event_type = it->second;
         
+        // get power
+        double weight = weights[event_type];
+        
         // get event score
-        eventMapFactors[ idx ] = computeModularityScore(idx[1], idx[2], event_type);
+        eventMapWeights[ idx ] = std::pow(eventMapFactors[ idx ], weight);
         
         std::cout << "";
     }
     
     return;
 }
+

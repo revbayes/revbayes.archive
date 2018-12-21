@@ -59,14 +59,17 @@ namespace RevBayesCore {
         void                                                        buildBits(void);
         void                                                        buildCutsets(void);
         void                                                        buildEventMap(void);
+        void                                                        buildEventMapFactors(void);
         void                                                        buildRanges(std::set<unsigned>& range_set, const TypedDagNode< RbVector<RbVector<double> > >* g, bool all=true);
         void                                                        buildRangesRecursively(std::set<unsigned> s, std::set<std::set<unsigned> >& r, size_t k, const TypedDagNode< RbVector<RbVector<double> > >* g, bool all=true);
+        double                                                      computeCutsetScore(std::vector<unsigned> idx, unsigned et);
+        double                                                      computeModularityScore(std::vector<unsigned> idx, unsigned et);
         size_t                                                      computeNumStates(size_t numAreas, size_t maxRangeSize);
-        double                                                      computeModularityScore(unsigned s1, unsigned s2, unsigned et);
         void                                                        printEventMap(void);
         unsigned                                                    sumBits(const std::vector<unsigned>& b);
-        void                                                        updateEventMapFactors(void);
-        void                                                        updateEventMapModularityFactors(void);
+        void                                                        updateEventMapWeights(void);
+        void                                                        updateEventMapCutsetWeights(void);
+        void                                                        updateEventMapModularityWeights(void);
         
         // parameters
         const TypedDagNode< RbVector<double> >*                     speciationRates;
@@ -83,6 +86,7 @@ namespace RevBayesCore {
         
         // model settings
         bool                                                        use_hidden_rate;
+        bool                                                        use_cutset_mean;
         std::string                                                 connectivityType;
         
         // range codes
@@ -100,6 +104,7 @@ namespace RevBayesCore {
         std::map< std::vector<unsigned>, unsigned>                  eventMapTypes;
         std::map< unsigned, std::vector<unsigned> >                 eventMapCounts;
         std::map< std::vector<unsigned>, double >                   eventMapFactors;
+        std::map< std::vector<unsigned>, double >                   eventMapWeights;
         std::map< std::vector<unsigned>, std::vector< std::vector<unsigned> > > eventMapCutsets; // returns the vector of cut edges for a given left/right split
         
         // MJL: eventually, deprecate this stuff
