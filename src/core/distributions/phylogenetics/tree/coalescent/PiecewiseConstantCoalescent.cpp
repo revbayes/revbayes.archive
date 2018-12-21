@@ -104,7 +104,7 @@ double PiecewiseConstantCoalescent::computeLnProbabilityTimes( void ) const
             
             deltaAge = max - prevCoalescentTime;
 //            deltaAge = age - min;
-            valid = currentInterval >= interval_starts.size() || age < interval_starts[currentInterval];
+            valid = currentInterval >= interval_starts.size() || age <= interval_starts[currentInterval];
             if ( !valid )
             {
                 ++currentInterval;
@@ -206,7 +206,7 @@ std::vector<double> PiecewiseConstantCoalescent::simulateCoalescentAges( size_t 
     std::vector<double> coalescent_times = std::vector<double>(n,0.0);
     
     
-    const RbVector<double> &popSizes  = Nes->getValue();
+    const RbVector<double> &pop_sizes  = Nes->getValue();
     size_t current_interval = 0;
     // draw a time for each speciation event condition on the time of the process
     for (size_t i = 0; i < n; ++i)
@@ -224,8 +224,10 @@ std::vector<double> PiecewiseConstantCoalescent::simulateCoalescentAges( size_t 
         bool valid = false;
         do
         {
-            double theta = 1.0 / (2.0*popSizes[current_interval]);
-            double lambda = nPairs * theta / 2.0;
+//            double theta = 1.0 / (2.0*popSizes[current_interval]);
+//            double lambda = nPairs * theta / 2.0;
+            double theta = 1.0 / (pop_sizes[current_interval]);
+            double lambda = nPairs * theta;
             double u = RbStatistics::Exponential::rv( lambda, *rng);
             sim_age = prevCoalescentTime + u;
             valid = current_interval >= interval_starts.size() || sim_age < interval_starts[current_interval];
@@ -373,7 +375,7 @@ void PiecewiseConstantCoalescent::updateIntervals( void )
             size_t num_events_per_interval = size_t( ceil( double(num_taxa-1.0)/Nes->getValue().size()) );
             size_t current_interval = 0;
             size_t current_num_events_in_interval = 0;
-            for (size_t i = 0; i < num_taxa-1; ++i)
+            for (size_t i = 0; i < num_taxa-2; ++i)
             {
                 ++current_num_events_in_interval;
                 if ( current_num_events_in_interval == num_events_per_interval )
