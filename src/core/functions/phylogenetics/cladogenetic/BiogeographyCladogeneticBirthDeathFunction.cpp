@@ -732,7 +732,7 @@ double BiogeographyCladogeneticBirthDeathFunction::computeCutsetScore( std::vect
             size_t v1 = cutset[i][0];
             size_t v2 = cutset[i][1];
             cost += mtx[v1][v2];
-            std::cout << "\t" << v1 << " -- " << v2 << " : " << mtx[v1][v2] << "\n";
+//            std::cout << "\t" << v1 << " -- " << v2 << " : " << mtx[v1][v2] << "\n";
         }
         
         cost = 1.0 / cost;
