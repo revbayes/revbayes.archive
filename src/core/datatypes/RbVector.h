@@ -46,6 +46,37 @@ namespace RevBayesCore {
     };
     
     template<>
+    class RbVector<long> : public RbVectorImpl<long, IsAbstract<long>::Is > {
+        
+    public:
+        // constructor(s)
+        RbVector() : RbVectorImpl<long, IsAbstract<long>::Is  >( ) {}
+        RbVector(size_t n) : RbVectorImpl<long, IsAbstract<long>::Is  >( n ) {}
+        RbVector(size_t n, const long &v) : RbVectorImpl<long, IsAbstract<long>::Is  >( n, v ) {}
+        RbVector(const std::vector<long> &v) : RbVectorImpl<long, IsAbstract<long>::Is  >( v ) {}
+        RbVector(const RbVector<long> &v) : RbVectorImpl<long, IsAbstract<long>::Is  >( v ) {}
+        virtual                                            ~RbVector(void) {}
+        
+        // public member functions
+        RbVector<long>*                                   clone(void) const { return new RbVector<long>( *this ); }                                                                            //!< Create an independent clone
+        void                                                printElement(std::ostream &o, size_t i, std::string /*sep="\t"*/, int l=-1, bool left=true) const { std::stringstream ss; ss << this->operator[](i); std::string s = ss.str(); StringUtilities::fillWithSpaces( s, l, left ); o << s; } //!< Print the i-th element
+        
+        //        StringUtilities::fillWithSpaces( s, columnWidth, false );
+        void                                                sort(bool ascending = true) {
+            if ( ascending == true)
+            {
+                std::sort(this->std::vector<long>::begin(), this->std::vector<long>::end() );
+            }
+            else
+            {
+                std::sort(this->std::vector<long>::rbegin(), this->std::vector<long>::rend() );
+            }
+        }
+        
+        
+    };
+    
+    template<>
     class RbVector<double> : public RbVectorImpl<double, IsAbstract<double>::Is > {
         
     public:
@@ -60,7 +91,13 @@ namespace RevBayesCore {
         
         // public member functions
         RbVector<double>*                                   clone(void) const { return new RbVector<double>( *this ); }                                                                            //!< Create an independent clone
-        void                                                printElement(std::ostream &o, size_t i, std::string /*sep="\t"*/, int l=-1, bool left=true) const { std::stringstream ss; ss << this->operator[](i); std::string s = ss.str(); StringUtilities::fillWithSpaces( s, l, left ); o << s; } //!< Print the i-th element
+        void                                                printElement(std::ostream &o, size_t i, std::string /*sep="\t"*/, int l=-1, bool left=true) const {
+                                                                std::stringstream ss;
+                                                                ss << this->operator[](i);
+                                                                std::string s = ss.str();
+                                                                StringUtilities::fillWithSpaces( s, l, left );
+                                                                o << s;
+                                                            } //!< Print the i-th element
         
 //        StringUtilities::fillWithSpaces( s, columnWidth, false );
         void                                                sort(bool ascending = true) {
@@ -76,16 +113,6 @@ namespace RevBayesCore {
         
         
     };
-    
-    template <>
-    inline void RbVector<long>::printElement(std::ostream& o, size_t idx, std::string /*sep*/, int l, bool left) const
-    {
-        std::stringstream ss;
-        ss << this->operator[](idx);
-        std::string s = ss.str();
-        StringUtilities::fillWithSpaces( s, l, left );
-        o << s;
-    }
     
     template <>
     inline void RbVector<unsigned int>::printElement(std::ostream& o, size_t idx, std::string /*sep*/, int l, bool left) const
