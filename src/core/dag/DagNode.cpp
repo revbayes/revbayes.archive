@@ -22,7 +22,7 @@ DagNode::DagNode( const std::string &n ) : Parallelizable(),
     prior_only( false ),
     touched_elements(),
     ref_count( 0 ),
-    visit_flags( std::vector<bool>(5, false) )
+    visit_flags( std::vector<bool>(6, false) )
 {
 
 }
@@ -1091,6 +1091,29 @@ void DagNode::restoreVector(std::vector<DagNode *>& nodes)
 
 }
 
+/*
+ * finds all descendants without redundant node visitation
+ * for each node, records how many parents are in the current DAG traversal
+ */
+void DagNode::setAllDescendantsNumParentsInCall(RbOrderedSet<DagNode *>& descendants)
+{
+
+    // recurse across node's children
+    for (std::vector<DagNode*>::iterator it = children.begin(); it != children.end(); it++)
+    {
+        // Each child has this node as a parent in the current call
+        (*it)->num_parents_in_call += 1;
+
+        // if child is not in descedant list, recurse from child's position
+        if ( (*it)->visit_flags[5] == false )
+        {
+            (*it)->visit_flags[5] = true;
+            descendants.insert(*it);
+            (*it)->setAllDescendantsNumParentsInCall( descendants );
+        }
+    }
+}
+
 void DagNode::setElementVariable(bool tf)
 {
     elementVar = tf;
@@ -1166,12 +1189,62 @@ void DagNode::swapParent( const DagNode *oldParent, const DagNode *newParent )
  */
 void DagNode::touch(bool touchAll)
 {
+    RbOrderedSet<DagNode*> d1;
+    setAllDescendantsNumParentsInCall(d1);
+
+    // RbOrderedSet<DagNode*> d2;
+    // findUniqueDescendants(d2);
+
+    // size_t d1_not_in_d2 = 0;
+    // for ( std::vector<DagNode*>::iterator i = d1.begin(); i != d1.end(); i++ )
+    // {
+    //     if (d2.find(*i) == d2.end())
+    //     {
+    //       ++d1_not_in_d2;
+    //       std::cout << "set...() found node " << (*i)->getName() << " not found by find...()" << std::endl;
+    //     }
+    // }
+    //
+    // size_t d2_not_in_d1 = 0;
+    // for ( std::vector<DagNode*>::iterator i = d2.begin(); i != d2.end(); i++ )
+    // {
+    //     if (d1.find(*i) == d1.end())
+    //     {
+    //       ++d2_not_in_d1;
+    //       std::cout << "find...() found node " << (*i)->getName() << " not found by set...()" << std::endl;
+    //     }
+    // }
+
+    // std::cout << "Calling touch on " << this->getName() << "; There are " << d1.size() << " descendants found with setAll...() and " << d2.size() << " found with findUnique...()" << std::endl;
+    // std::cout << d1_in_d2 << " of the descendants from setAll...() are found by findUnique...() and " << d2_in_d1 <<  " from find...() found by set...()" << std::endl;
+
+    // if ( d1_not_in_d2 != 0 ) {
+    //   std::cout << "setAllDescendantsNumParentsInCall() found nodes not found by findUniqueDescendants()" << std::endl;
+    // }
+    //
+    // if ( d2_not_in_d1 != d2.size() ) {
+    //   std::cout << "findUniqueDescendants() found nodes not found by setAllDescendantsNumParentsInCall()" << std::endl;
+    // }
 
     // first touch myself
     touchMe( this, touchAll );
 
     // next, touch all my children
     touchAffected( touchAll );
+
+    RbOrderedSet<DagNode*>::iterator it;
+    // for (it = d2.begin(); it != d2.end(); it++)
+    // {
+    //   (*it)->visit_flags[FIND_FLAG] = false;
+    // }
+
+    for (it = d1.begin(); it != d1.end(); it++)
+    {
+      (*it)->visit_flags[5] = false;
+      (*it)->num_parents_in_call = 0;
+      (*it)->num_visits = 0;
+    }
+
 }
 
 
@@ -1184,7 +1257,11 @@ void DagNode::touchAffected(bool touchAll)
     // touch all my children
     for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
     {
+      (*i)->num_visits += 1;
+      if ( (*i)->num_visits == (*i)->num_parents_in_call )
+      {
         (*i)->touchMe( this, touchAll );
+      }
     }
 
 }
