@@ -19,6 +19,8 @@ DagNode::DagNode( const std::string &n ) : Parallelizable(),
     monitors(),
     moves(),
     name( n ),
+    num_parents_in_call( 0 ),
+    num_visits( 0 ),
     prior_only( false ),
     touched_elements(),
     ref_count( 0 ),
@@ -43,6 +45,8 @@ DagNode::DagNode( const DagNode &n ) : Parallelizable( n ),
     monitors( ),
     moves( ),
     name( n.name ),
+    num_visits( n.num_visits ),
+    num_parents_in_call( n.num_parents_in_call ),
     prior_only( n.prior_only ),
     touched_elements( n.touched_elements ),
     ref_count( 0 ),
@@ -84,12 +88,14 @@ DagNode& DagNode::operator=(const DagNode &d)
 
     if ( &d != this )
     {
-        name             = d.name;
-        elementVar       = d.elementVar;
-        hidden           = d.hidden;
-        prior_only       = d.prior_only;
-        touched_elements = d.touched_elements;
-        visit_flags      = d.visit_flags;
+        name                = d.name;
+        elementVar          = d.elementVar;
+        hidden              = d.hidden;
+        num_visits          = d.num_visits;
+        num_parents_in_call = d.num_parents_in_call;
+        prior_only          = d.prior_only;
+        touched_elements    = d.touched_elements;
+        visit_flags         = d.visit_flags;
     }
 
     return *this;
@@ -434,6 +440,11 @@ const std::string& DagNode::getName( void ) const
     return name;
 }
 
+size_t DagNode::getNumParentsInCall( void )
+{
+
+    return num_parents_in_call;
+}
 
 /**
  * Get the number of children for this DAG node.
@@ -1133,6 +1144,12 @@ void DagNode::setName(std::string const &n)
 
 }
 
+void DagNode::setNumParentsInCall(size_t n)
+{
+    // set the internal value
+    num_parents_in_call = n;
+
+}
 
 void DagNode::setParentNamePrefix(const std::string &p)
 {
@@ -1189,42 +1206,8 @@ void DagNode::swapParent( const DagNode *oldParent, const DagNode *newParent )
  */
 void DagNode::touch(bool touchAll)
 {
-    RbOrderedSet<DagNode*> d1;
-    setAllDescendantsNumParentsInCall(d1);
-
-    // RbOrderedSet<DagNode*> d2;
-    // findUniqueDescendants(d2);
-
-    // size_t d1_not_in_d2 = 0;
-    // for ( std::vector<DagNode*>::iterator i = d1.begin(); i != d1.end(); i++ )
-    // {
-    //     if (d2.find(*i) == d2.end())
-    //     {
-    //       ++d1_not_in_d2;
-    //       std::cout << "set...() found node " << (*i)->getName() << " not found by find...()" << std::endl;
-    //     }
-    // }
-    //
-    // size_t d2_not_in_d1 = 0;
-    // for ( std::vector<DagNode*>::iterator i = d2.begin(); i != d2.end(); i++ )
-    // {
-    //     if (d1.find(*i) == d1.end())
-    //     {
-    //       ++d2_not_in_d1;
-    //       std::cout << "find...() found node " << (*i)->getName() << " not found by set...()" << std::endl;
-    //     }
-    // }
-
-    // std::cout << "Calling touch on " << this->getName() << "; There are " << d1.size() << " descendants found with setAll...() and " << d2.size() << " found with findUnique...()" << std::endl;
-    // std::cout << d1_in_d2 << " of the descendants from setAll...() are found by findUnique...() and " << d2_in_d1 <<  " from find...() found by set...()" << std::endl;
-
-    // if ( d1_not_in_d2 != 0 ) {
-    //   std::cout << "setAllDescendantsNumParentsInCall() found nodes not found by findUniqueDescendants()" << std::endl;
-    // }
-    //
-    // if ( d2_not_in_d1 != d2.size() ) {
-    //   std::cout << "findUniqueDescendants() found nodes not found by setAllDescendantsNumParentsInCall()" << std::endl;
-    // }
+    RbOrderedSet<DagNode*> descendants;
+    setAllDescendantsNumParentsInCall(descendants);
 
     // first touch myself
     touchMe( this, touchAll );
@@ -1232,13 +1215,7 @@ void DagNode::touch(bool touchAll)
     // next, touch all my children
     touchAffected( touchAll );
 
-    RbOrderedSet<DagNode*>::iterator it;
-    // for (it = d2.begin(); it != d2.end(); it++)
-    // {
-    //   (*it)->visit_flags[FIND_FLAG] = false;
-    // }
-
-    for (it = d1.begin(); it != d1.end(); it++)
+    for (RbOrderedSet<DagNode*>::iterator it = descendants.begin(); it != descendants.end(); it++)
     {
       (*it)->visit_flags[5] = false;
       (*it)->num_parents_in_call = 0;
