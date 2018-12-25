@@ -26,6 +26,7 @@ namespace RevBayesCore {
         valueType&                                          getValue(void);
         const valueType&                                    getValue(void) const;
         bool                                                isConstant(void) const;                                                     //!< Is this DAG node constant?
+        bool                                                isDeterministic(void) const;                                                     //!< Is this DAG node constant?
         virtual void                                        printStructureInfo(std::ostream &o, bool verbose=false) const;              //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         void                                                redraw(void);
         void                                                reInitializeMe(void);                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
@@ -299,6 +300,11 @@ bool RevBayesCore::DeterministicNode<valueType>::isConstant( void ) const
     return true;
 }
 
+template<class valueType>
+bool RevBayesCore::DeterministicNode<valueType>::isDeterministic( void ) const
+{
+    return true;
+}
 
 /**
  * Keep the current value of the node.

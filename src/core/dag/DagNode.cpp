@@ -646,6 +646,11 @@ bool DagNode::isConstant( void ) const
     return false;
 }
 
+bool DagNode::isDeterministic( void ) const
+{
+    return false;
+}
+
 bool DagNode::isElementVariable( void ) const
 {
 
@@ -1235,7 +1240,7 @@ void DagNode::touchAffected(bool touchAll)
     for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
     {
       (*i)->num_visits += 1;
-      if ( (*i)->num_visits == (*i)->num_parents_in_call )
+      if ( (*i)->num_visits == (*i)->num_parents_in_call || this->isDeterministic() )
       {
         (*i)->touchMe( this, touchAll );
       }
