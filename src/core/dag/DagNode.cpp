@@ -24,7 +24,9 @@ DagNode::DagNode( const std::string &n ) : Parallelizable(),
     prior_only( false ),
     touched_elements(),
     ref_count( 0 ),
-    visit_flags( std::vector<bool>(6, false) )
+    visit_flags( std::vector<bool>(6, false) ),
+    parents_in_call_indices(),
+    n_visits_per_parent()
 {
 
 }
@@ -50,7 +52,9 @@ DagNode::DagNode( const DagNode &n ) : Parallelizable( n ),
     prior_only( n.prior_only ),
     touched_elements( n.touched_elements ),
     ref_count( 0 ),
-    visit_flags( n.visit_flags )
+    visit_flags( n.visit_flags ),
+    parents_in_call_indices( n.parents_in_call_indices ),
+    n_visits_per_parent( n.n_visits_per_parent )
 {
 
 }
@@ -96,6 +100,8 @@ DagNode& DagNode::operator=(const DagNode &d)
         prior_only          = d.prior_only;
         touched_elements    = d.touched_elements;
         visit_flags         = d.visit_flags;
+        parents_in_call_indices = d.parents_in_call_indices;
+        n_visits_per_parent = d.n_visits_per_parent;
     }
 
     return *this;
@@ -1130,6 +1136,37 @@ void DagNode::setAllDescendantsNumParentsInCall(RbOrderedSet<DagNode *>& descend
     }
 }
 
+/*
+ * finds all descendants without redundant node visitation
+ * for each node, records how many parents are in the current DAG traversal
+ */
+void DagNode::setAllDescendantsParentsInCall(RbOrderedSet<DagNode *>& descendants)
+{
+
+    // recurse across node's children
+    for (std::vector<DagNode*>::iterator it = children.begin(); it != children.end(); it++)
+    {
+        // Each child has this node as a parent in the current call
+        (*it)->num_parents_in_call += 1;
+        (*it)->n_visits_per_parent.push_back(0);
+
+        // If this child doesn't have the current node as a parent, add to the map with current index
+        if ( (*it)->parents_in_call_indices.count(this) == 0 )
+        {
+          size_t len = (*it)->parents_in_call_indices.size();
+          (*it)->parents_in_call_indices[this] = len;
+        }
+
+        // if child is not in descedant list, recurse from child's position
+        if ( (*it)->visit_flags[5] == false )
+        {
+            (*it)->visit_flags[5] = true;
+            descendants.insert(*it);
+            (*it)->setAllDescendantsParentsInCall( descendants );
+        }
+    }
+}
+
 void DagNode::setElementVariable(bool tf)
 {
     elementVar = tf;
@@ -1212,7 +1249,7 @@ void DagNode::swapParent( const DagNode *oldParent, const DagNode *newParent )
 void DagNode::touch(bool touchAll)
 {
     RbOrderedSet<DagNode*> descendants;
-    setAllDescendantsNumParentsInCall(descendants);
+    setAllDescendantsParentsInCall(descendants);
 
     // first touch myself
     touchMe( this, touchAll );
@@ -1225,6 +1262,9 @@ void DagNode::touch(bool touchAll)
       (*it)->visit_flags[5] = false;
       (*it)->num_parents_in_call = 0;
       (*it)->num_visits = 0;
+
+      (*it)->parents_in_call_indices.clear();
+      (*it)->n_visits_per_parent.clear();
     }
 
 }
@@ -1240,8 +1280,17 @@ void DagNode::touchAffected(bool touchAll)
     for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
     {
       (*i)->num_visits += 1;
-      if ( (*i)->num_visits == (*i)->num_parents_in_call || this->isDeterministic() )
+
+      size_t parent_child_visit_index = (*i)->parents_in_call_indices[this];
+
+      (*i)->n_visits_per_parent[parent_child_visit_index] += 1;
+
+      // if ( (*i)->num_visits <= (*i)->num_parents_in_call )
+      // {
+
+      if ( (*i)->n_visits_per_parent[parent_child_visit_index] == 1 )
       {
+// std::cout << "Parent " << this->getName() << " is passing call to child " << (*i)->getName() << std::endl;
         (*i)->touchMe( this, touchAll );
       }
     }

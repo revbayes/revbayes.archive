@@ -108,6 +108,7 @@ namespace RevBayesCore {
         virtual void                                                restoreAffected(void);                                                                      //!< Restore value of affected nodes recursively
         void                                                        restoreVector(std::vector<DagNode *>& nodes);
         void                                                        setAllDescendantsNumParentsInCall(RbOrderedSet<DagNode*> &descendants);
+        void                                                        setAllDescendantsParentsInCall(RbOrderedSet<DagNode*> &descendants);
         void                                                        setElementVariable(bool tf);                                                                //!< Set if this variable is hidden from printing.
         void                                                        setHidden(bool tf);                                                                         //!< Set if this variable is hidden from printing.
         virtual void                                                setName(const std::string &n);                                                              //!< Set the name of this variable for identification purposes.
@@ -154,6 +155,8 @@ namespace RevBayesCore {
         int                                                         num_parents_in_call;
         int                                                         num_visits;
         std::vector<bool>                                           visit_flags; // in order: affected, find, keep, reinitialize, restore
+        std::map<DagNode*,size_t>                                   parents_in_call_indices;
+        std::vector<int>                                            n_visits_per_parent;
     };
 
 }
