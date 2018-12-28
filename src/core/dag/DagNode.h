@@ -30,6 +30,7 @@ namespace RevBayesCore {
         const static unsigned KEEP_FLAG                             = 2;
         const static unsigned REINITIALIZE_FLAG                     = 3;
         const static unsigned RESTORE_FLAG                          = 4;
+        const static unsigned SET_ALL_FLAG                          = 5;
 
         virtual                                                    ~DagNode(void);                                                                                      //!< Virtual destructor
 
@@ -157,6 +158,7 @@ namespace RevBayesCore {
         std::vector<bool>                                           visit_flags; // in order: affected, find, keep, reinitialize, restore
         std::map<DagNode*,size_t>                                   parents_in_call_indices;
         std::vector<int>                                            n_visits_per_parent;
+        std::vector<int>                                            max_visits_per_parent;
     };
 
 }
