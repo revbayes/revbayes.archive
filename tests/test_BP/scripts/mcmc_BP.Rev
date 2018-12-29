@@ -30,11 +30,13 @@ monitors = VectorMonitors()
 monitors.append(mnModel(filename="output/bivariate_poisson_test.log", printgen=10, separator = TAB))
 
 mymcmc = mcmc(mymodel, monitors, moves)
+mymcmc.burnin(generations=5000,tuningInterval=250)
+mymcmc.run(generations=10000)
 
-validation = validationAnalysis(mymcmc, 1000)
-validation.burnin(generations=10000,tuningInterval=1000)
-validation.run(generations=30000)
-validation.summarize()
+# validation = validationAnalysis(mymcmc, 1000)
+# validation.burnin(generations=10000,tuningInterval=1000)
+# validation.run(generations=30000)
+# validation.summarize()
 
 
 # you may want to quit RevBayes now
