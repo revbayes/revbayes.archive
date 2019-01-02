@@ -20,6 +20,7 @@ DagNode::DagNode( const std::string &n ) : Parallelizable(),
     moves(),
     name( n ),
     num_parents_in_call( 0 ),
+    num_grandparents_in_call( 0 ),
     num_visits( 0 ),
     prior_only( false ),
     touched_elements(),
@@ -50,6 +51,7 @@ DagNode::DagNode( const DagNode &n ) : Parallelizable( n ),
     name( n.name ),
     num_visits( n.num_visits ),
     num_parents_in_call( n.num_parents_in_call ),
+    num_grandparents_in_call( n.num_grandparents_in_call ),
     prior_only( n.prior_only ),
     touched_elements( n.touched_elements ),
     ref_count( 0 ),
@@ -99,6 +101,7 @@ DagNode& DagNode::operator=(const DagNode &d)
         hidden                  = d.hidden;
         num_visits              = d.num_visits;
         num_parents_in_call     = d.num_parents_in_call;
+        num_grandparents_in_call= d.num_grandparents_in_call;
         prior_only              = d.prior_only;
         touched_elements        = d.touched_elements;
         visit_flags             = d.visit_flags;
@@ -1256,9 +1259,17 @@ void DagNode::swapParent( const DagNode *oldParent, const DagNode *newParent )
  */
 void DagNode::touch(bool touchAll)
 {
-// std::cout << ">>>>>>>>>>>> touching node " << getName() << " <<<<<<<<<<<<<<" << std::endl;
     RbOrderedSet<DagNode*> descendants;
-    setAllDescendantsParentsInCall(descendants);
+    setAllDescendantsNumParentsInCall(descendants);
+
+    for (RbOrderedSet<DagNode*>::iterator it = descendants.begin(); it != descendants.end(); it++)
+    {
+      std::vector<const DagNode*> parents = (*it)->getParents();
+      for (std::vector<const DagNode*>::iterator jt = parents.begin(); jt != parents.end(); jt++)
+      {
+        (*it)->num_grandparents_in_call += (*jt)->num_parents_in_call == 0 ? 1 : (*jt)->num_parents_in_call;
+      }
+    }
 
     // first touch myself
     touchMe( this, touchAll );
@@ -1268,18 +1279,10 @@ void DagNode::touch(bool touchAll)
 
     for (RbOrderedSet<DagNode*>::iterator it = descendants.begin(); it != descendants.end(); it++)
     {
-      // std::cout << "At node " << (*it)->getName() << " with (*it)->n_visits_per_parent.size() = " << (*it)->n_visits_per_parent.size() << "/(*it)->num_parents_in_call = " << (*it)->num_parents_in_call << " parents in the call\n";
-      // for (size_t i = 0; i < (*it)->n_visits_per_parent.size(); ++i) {
-      //   std::cout << "   Visited by parent " << i << " " << (*it)->n_visits_per_parent[i] << " times out of " << (*it)->max_visits_per_parent[i] << "\n";
-      // }
-
       (*it)->visit_flags[SET_ALL_FLAG] = false;
       (*it)->num_parents_in_call = 0;
+      (*it)->num_grandparents_in_call = 0;
       (*it)->num_visits = 0;
-
-      (*it)->parents_in_call_indices.clear();
-      (*it)->n_visits_per_parent.clear();
-      (*it)->max_visits_per_parent.clear();
     }
 
 }
@@ -1294,25 +1297,9 @@ void DagNode::touchAffected(bool touchAll)
     // touch all my children
     for ( std::vector<DagNode*>::iterator it = children.begin(); it != children.end(); it++ )
     {
-      (*it)->num_visits += 1;
-
-      size_t parent_child_visit_index = (*it)->parents_in_call_indices[this];
-
-      // Has this node been visited by all its parents?
-      bool seen_all = true;
-      for (size_t i=0; i<n_visits_per_parent.size(); ++i) {
-        if (n_visits_per_parent[i] == 0) {
-          seen_all = false;
-          break;
-        }
-      }
-      // std::cout << "Parent " << this->getName() << " is thinking about passing call to child " << (*it)->getName() << " with " << (*it)->n_visits_per_parent.size() << " parents in the call" << std::endl;
-      // std::cout << "    seen_all = " << seen_all << "; (*it)->n_visits_per_parent[parent_child_visit_index] = " << (*it)->n_visits_per_parent[parent_child_visit_index] << std::endl;
-      if ( seen_all && (*it)->n_visits_per_parent[parent_child_visit_index] == 0 )
+      if ( (*it)->num_visits < (*it)->num_grandparents_in_call )
       {
-        (*it)->n_visits_per_parent[parent_child_visit_index] += 1;
-
-      // std::cout << "   Parent " << this->getName() << " is passing call to child " << (*it)->getName() << std::endl;
+        (*it)->num_visits += 1;
         (*it)->touchMe( this, touchAll );
       }
     }

@@ -154,6 +154,7 @@ namespace RevBayesCore {
 
         mutable size_t                                              ref_count;
         int                                                         num_parents_in_call;
+        int                                                         num_grandparents_in_call;
         int                                                         num_visits;
         std::vector<bool>                                           visit_flags; // in order: affected, find, keep, reinitialize, restore
         std::map<DagNode*,size_t>                                   parents_in_call_indices;
