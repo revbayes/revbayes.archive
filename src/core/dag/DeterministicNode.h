@@ -487,11 +487,18 @@ void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher, bool
     needs_update = true;
 
     // only if this function did not need an update we delegate the touch affected
-    if ( needed_update == false || was_touched == false || true )
-    {
-        // Dispatch the touch message to downstream nodes
-        this->touchAffected( touchAll );
-    }
+    // TODO: the logic used to evaluate this is faulty, removing the || true breaks
+    //       MCMC for models with deterministic nodes with many parents that get
+    //       updated simultaneously, after first two parents visit the node,
+    //       the next updates bounce and evaluation breaks
+    // For now, disabling the checking since all calls are passed
+    // if ( needed_update == false || was_touched == false || true )
+    // {
+    //     // Dispatch the touch message to downstream nodes
+    //     this->touchAffected( touchAll );
+    // }
+    // Dispatch the touch message to downstream nodes
+    this->touchAffected( touchAll );
 
 }
 

@@ -77,12 +77,12 @@ namespace RevBayesCore {
         const std::vector<Move*>&                                   getMoves(void) const;                                                                       //!< Get the set of moves
         const std::string&                                          getName(void) const;                                                                        //!< Get the of the node
         size_t                                                      getNumberOfChildren(void) const;                                                            //!< Get the number of children for this node
-        size_t                                                      getNumParentsInCall(void);
+        size_t                                                      getMaxNumTouchVisits(void);
         virtual std::vector<const DagNode*>                         getParents(void) const;                                                                     //!< Get the set of parents (empty set here)
         size_t                                                      getReferenceCount(void) const;                                                              //!< Get the reference count for reference counting in smart pointers
         const std::set<size_t>&                                     getTouchedElementIndices(void) const;                                                       //!< Get the indices of the touches elements. If the set is empty, then all elements might have changed.
         bool                                                        getVisitFlag(const size_t flagType) const;
-        void                                                        incrementNumParentsInCall(void);
+        void                                                        incrementMaxNumTouchVisits(void);
         void                                                        incrementReferenceCount(void) const;                                                        //!< Increment the reference count for reference counting in smart pointers
         void                                                        initiateGetAffectedNodes(RbOrderedSet<DagNode *>& affected);                                        //!< get affected nodes
         void                                                        initiateGetAffectedNodesVector(RbOrderedSet<DagNode *>& affected, std::vector<DagNode *>& nodes);
@@ -108,12 +108,11 @@ namespace RevBayesCore {
         void                                                        restore(void);
         virtual void                                                restoreAffected(void);                                                                      //!< Restore value of affected nodes recursively
         void                                                        restoreVector(std::vector<DagNode *>& nodes);
-        void                                                        setAllDescendantsNumParentsInCall(RbOrderedSet<DagNode*> &descendants);
-        void                                                        setAllDescendantsParentsInCall(RbOrderedSet<DagNode*> &descendants);
+        void                                                        setAllDescendantsMaxNumTouchVisits(RbOrderedSet<DagNode*> &descendants);
         void                                                        setElementVariable(bool tf);                                                                //!< Set if this variable is hidden from printing.
         void                                                        setHidden(bool tf);                                                                         //!< Set if this variable is hidden from printing.
         virtual void                                                setName(const std::string &n);                                                              //!< Set the name of this variable for identification purposes.
-        void                                                        setNumParentsInCall(size_t);
+        void                                                        setMaxNumTouchVisits(size_t);
         void                                                        setParentNamePrefix(const std::string &p);
         virtual void                                                setPriorOnly(bool tf);                                                                      //!< Set whether we want to have the probability of the prior only.
         void                                                        setVisitFlag(bool tf, const size_t flagType);
@@ -153,13 +152,9 @@ namespace RevBayesCore {
     private:
 
         mutable size_t                                              ref_count;
-        int                                                         num_parents_in_call;
-        int                                                         num_grandparents_in_call;
+        int                                                         max_num_touch_visits;
         int                                                         num_visits;
         std::vector<bool>                                           visit_flags; // in order: affected, find, keep, reinitialize, restore
-        std::map<DagNode*,size_t>                                   parents_in_call_indices;
-        std::vector<int>                                            n_visits_per_parent;
-        std::vector<int>                                            max_visits_per_parent;
     };
 
 }
