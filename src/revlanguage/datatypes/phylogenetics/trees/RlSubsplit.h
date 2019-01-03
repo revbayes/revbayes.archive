@@ -3,6 +3,7 @@
 #define RlSubsplit_H
 
 #include "Clade.h"
+#include "Taxon.h"
 #include "Subsplit.h"
 #include "ModelObject.h"
 
@@ -63,8 +64,8 @@ namespace RevLanguage {
             std::string                                     getHelpTitle(void) const;                                                               //!< Get the title of this help entry
 
 
-            std::vector<RevPtr<const RevVariable> > clades;
-
+            std::vector<RevPtr<const RevVariable> >         clades;
+            RevPtr<const RevVariable>                       taxa;
     };
 
 }

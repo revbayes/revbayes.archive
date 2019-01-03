@@ -70,12 +70,33 @@ void Subsplit::constructInternalObject( void )
         }
     }
 
+    // Make taxa useful
+    // std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject());
+    const ModelVector<Taxon> &rb_taxa = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject());
+
+    std::vector<RevBayesCore::Taxon> t;
+
+    for (size_t i = 0; i<static_cast<const ModelVector<Taxon> &>( taxa->getRevObject()).size(); ++i)
+    {
+        t.push_back(rb_taxa[i]);
+    }
+
+    // ModelVector<RlString> rlvector = ModelVector<RlString>();
+    // for (size_t i = 0; i<static_cast<const ModelVector<Taxon> &>( var->getRevObject()).size(); ++i)
+    // {
+    //     std::string name = static_cast<const ModelVector<Taxon> &>( var->getRevObject())[i].getSpeciesName();
+    //     const RlString rlName  = RlString (name);
+    //     rlvector.push_back(rlName);
+    // }
+    // const RevPtr<const RevVariable>  rvptr = new const RevVariable(new ModelVector<RlString> (rlvector) );
+    // taxa.push_back( rvptr );
+
     // make sure subsplit has valid number of constituent clades
     if ( clades.size() == 1 )
     {
       // Fake subsplit
       const RevBayesCore::Clade &c = static_cast<const Clade &>( clades[0]->getRevObject() ).getValue();
-      RevBayesCore::Subsplit *s = new RevBayesCore::Subsplit(c);
+      RevBayesCore::Subsplit *s = new RevBayesCore::Subsplit(c, t);
       dag_node = new RevBayesCore::ConstantNode<RevBayesCore::Subsplit>("",s);
     }
     else if ( clades.size() == 2 )
@@ -83,7 +104,7 @@ void Subsplit::constructInternalObject( void )
       // Real subsplit, core functions will handle ordering
       const RevBayesCore::Clade &c1 = static_cast<const Clade &>( clades[0]->getRevObject() ).getValue();
       const RevBayesCore::Clade &c2 = static_cast<const Clade &>( clades[1]->getRevObject() ).getValue();
-      RevBayesCore::Subsplit *s = new RevBayesCore::Subsplit(c1,c2);
+      RevBayesCore::Subsplit *s = new RevBayesCore::Subsplit(c1, c2, t);
       dag_node = new RevBayesCore::ConstantNode<RevBayesCore::Subsplit>("",s);
     }
     else
@@ -189,10 +210,13 @@ std::string Subsplit::getHelpExample(void) const
 {
     // create an example as a single string variable.
     std::string example = "";
-
+    example += "# create taxa\n";
+    example += "for (i in 1:4) {\n";
+    example += "taxa[i] = taxon(\"t\" + i)\n";
+    example += "}\n";
     example += "# create two clades\n";
-    example += "clade_1 = clade( 't1', 't2' )\n";
-    example += "clade_2 = clade( 't3', 't4' )\n";
+    example += "clade_1 = clade( taxa[1], taxa[2] )\n";
+    example += "clade_2 = clade( taxa[3], taxa[4] )\n";
     example += "# create a subsplit from the clades\n";
     example += "subsplit_1 = subsplit( clade_1, clade_2 )\n";
     example += "# note that we can reverse the ordering without changing the subsplit\n";
@@ -200,7 +224,7 @@ std::string Subsplit::getHelpExample(void) const
     example += "# we can also make fake subsplits\n";
     example += "# these include a single clade that includes a single taxon\n";
     example += "clade_3 = clade( 't4' )\n";
-    example += "fake_subsplit = subsplit( clade_3 )\n";
+    example += "fake_subsplit = subsplit( clade_3, taxa )\n";
 
     return example;
 }
@@ -257,6 +281,7 @@ const MemberRules& Subsplit::getParameterRules(void) const
     {
 
         memberRules.push_back( new Ellipsis( "Clades as clade objects.", Clade::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("taxa", ModelVector<Taxon>::getClassTypeSpec(), "Taxon names as a vector of taxons.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 
         rules_set = true;
     }
@@ -321,6 +346,11 @@ void Subsplit::setConstParameter(const std::string& name, const RevPtr<const Rev
     if ( name == "" && var->getRevObject().getTypeSpec() == Clade::getClassTypeSpec() )
     {
         clades.push_back( var );
+    }
+    else if ( name == "taxa" )
+    {
+
+      taxa = var;
     }
     else
     {

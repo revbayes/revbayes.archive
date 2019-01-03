@@ -26,8 +26,9 @@ namespace RevBayesCore {
 
     public:
                                                     Subsplit(void);                                                            //! Default constructor: empty Subsplit
-                                                    Subsplit(const Clade &c1 );                                                //!< Default constructor: fake Subsplit
-                                                    Subsplit(const Clade &c1, const Clade &c2 );                               //!< Default constructor: real Subsplit
+                                                    Subsplit(const Clade &c1, const std::vector<Taxon> &n );                                                //!< Default constructor: fake Subsplit
+                                                    Subsplit(const Clade &c1, const Clade &c2, const std::vector<Taxon> &n );                               //!< Default constructor: real Subsplit
+                                                    Subsplit(const std::pair<RbBitSet,RbBitSet> &b, const std::vector<Taxon> &n );                               //!< Default constructor: real Subsplit
 
         virtual                                    ~Subsplit(void) {}
 
@@ -45,8 +46,12 @@ namespace RevBayesCore {
 
         // public methods
         Clade                                       asClade(void) const;                                        //!< Get clades Y and Z as a single clade
+        RbBitSet                                    asCladeBitset(void) const;                                  //!< Convert this value into a bitset representation for a clade.
+        std::pair<RbBitSet,RbBitSet>                getBitset(void) const;                                      //!< Get the paired bitset representation of this subsplit as a clade
         Clade                                       getY(void) const;                                           //!< Get clade Y
+        RbBitSet                                    getYBitset(void) const;                                     //!< Get clade Y as bitset
         Clade                                       getZ(void) const;                                           //!< Get clade Z
+        RbBitSet                                    getZBitset(void) const;                                     //!< Get clade Y as bitset
         bool                                        isCompatible(const Subsplit &s) const;                      //!< Is argument subsplit compatible with this one?
         bool                                        isFake() const;                                             //!< Is this a fake subsplit (aka a single tip)?
         size_t                                      size(void) const;                                           //!< Get the number of taxa.
@@ -60,7 +65,7 @@ namespace RevBayesCore {
         Clade                                       clade_y;
         Clade                                       clade_z;
         bool                                        is_fake;
-
+        std::pair<RbBitSet,RbBitSet>                bitset;
     };
 
     // Global functions using the class
