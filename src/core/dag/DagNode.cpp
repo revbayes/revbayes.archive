@@ -1205,7 +1205,7 @@ void DagNode::swapParent( const DagNode *oldParent, const DagNode *newParent )
  *
  * This function should be called if the value of the variable has changed or if you want this node to be reevaluated.
  * The function will automatically call the touchMe() which is implemented differently in the different DAG node types.
- *
+ *::touch
  * Since the DAG node was touched and possibly changed, we tell affected DAG nodes that they too have been touched
  * and need to update their value.
  */
@@ -1244,4 +1244,39 @@ void DagNode::touchAffected(bool touchAll)
           (*it)->touchMe( this, touchAll );
       }
     }
+}
+
+/**
+ * Touch the DAG node.
+ *
+ * This function should be called if the value of the variable has changed or if you want this node to be reevaluated.
+ * The function will automatically call the touchMe() which is implemented differently in the different DAG node types.
+ *::touch
+ * Since the DAG node was touched and possibly changed, we tell affected DAG nodes that they too have been touched
+ * and need to update their value.
+ */
+void DagNode::touchVector(std::vector<DagNode *>& nodes, bool touchAll)
+{
+
+  RbOrderedSet<DagNode*> descendants;
+  for ( std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); i++ )
+  {
+    (*i)->setAllDescendantsMaxNumTouchVisits(descendants);
+  }
+
+  for ( std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); i++ )
+  {
+    // first touch myself
+    (*i)->touchMe( (*i), touchAll );
+
+    // next, touch all my children
+    (*i)->touchAffected( touchAll );
+  }
+
+  for (RbOrderedSet<DagNode*>::iterator it = descendants.begin(); it != descendants.end(); it++)
+  {
+    (*it)->visit_flags[SET_ALL_FLAG] = false;
+    (*it)->max_num_touch_visits = 1;
+    (*it)->num_visits = 0;
+  }
 }
