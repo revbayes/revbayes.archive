@@ -75,11 +75,13 @@ const ArgumentRules& Func_biogeographyCladoEventsBD::getArgumentRules( void ) co
         
         argumentRules.push_back( new ArgumentRule( "speciation_rates", ModelVector<RealPos>::getClassTypeSpec() , "The speciation rates for different cladogenetic event types.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "rate_multipliers", ModelVector<RealPos>::getClassTypeSpec() , "The rate multipliers for hidden rate classes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        argumentRules.push_back( new ArgumentRule( "connectivity_matrix", ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), "The connectivity matrix.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "connectivity_matrix", ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), "The connectivity matrix.", ArgumentRule::BY_VALUE, ArgumentRule::CONSTANT, NULL ) );
         argumentRules.push_back( new ArgumentRule( "connectivity_weights", ModelVector<RealPos>::getClassTypeSpec() , "The speciation rates for different cladogenetic event types.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         std::vector<std::string> options;
-        options.push_back( "modularity" );
+        options.push_back( "none" );
+//        options.push_back( "modularity" );
+        options.push_back( "cutset" );
         argumentRules.push_back( new OptionRule( "connectivity_type", new RlString("modularity"), options, "How modularity of cladogenetic outcomes." ) );
         argumentRules.push_back( new ArgumentRule( "max_range_size", Natural::getClassTypeSpec(), "The maximum range size.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
