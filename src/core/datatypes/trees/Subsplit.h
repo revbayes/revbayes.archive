@@ -28,7 +28,9 @@ namespace RevBayesCore {
                                                     Subsplit(void);                                                            //! Default constructor: empty Subsplit
                                                     Subsplit(const Clade &c1, const std::vector<Taxon> &n );                                                //!< Default constructor: fake Subsplit
                                                     Subsplit(const Clade &c1, const Clade &c2, const std::vector<Taxon> &n );                               //!< Default constructor: real Subsplit
-                                                    Subsplit(const std::pair<RbBitSet,RbBitSet> &b, const std::vector<Taxon> &n );                               //!< Default constructor: real Subsplit
+                                                    Subsplit(const std::pair<RbBitSet,RbBitSet> &b, const std::vector<Taxon> &n );                               //!< constructor: real Subsplit from subsplit
+                                                    Subsplit(const RbBitSet &b1, const RbBitSet &b2 );                               //!< constructor: subsplit from two splits/bitset clades, no taxa (for internal use)
+                                                    Subsplit(const std::pair<RbBitSet,RbBitSet> &b );                               //!< constructor: subsplit from subsplit, no taxa (for internal use)
 
         virtual                                    ~Subsplit(void) {}
 
@@ -62,10 +64,11 @@ namespace RevBayesCore {
     private:
 
         // members
-        Clade                                       clade_y;
-        Clade                                       clade_z;
-        bool                                        is_fake;
+        // Clade                                       clade_y;
+        // Clade                                       clade_z;
         std::pair<RbBitSet,RbBitSet>                bitset;
+        bool                                        is_fake;
+        std::vector<Taxon>                          taxa;
     };
 
     // Global functions using the class
