@@ -371,10 +371,7 @@ Subsplit::Subsplit( const RbBitSet &b1, const RbBitSet &b2 ) :
  */
 bool Subsplit::operator==(const Subsplit &s) const
 {
-  RbBitSet s1 = asCladeBitset();
-  RbBitSet s2 = s.asCladeBitset();
-
-  return s1 == s2;
+  return ( s.bitset.first == bitset.first && s.bitset.second == bitset.second);
 }
 
 
@@ -383,10 +380,8 @@ bool Subsplit::operator==(const Subsplit &s) const
  */
 bool Subsplit::operator!=(const Subsplit &s) const
 {
-  RbBitSet s1 = asCladeBitset();
-  RbBitSet s2 = s.asCladeBitset();
 
-  return s1 != s2;
+  return !(s == *this);
 }
 
 /**
