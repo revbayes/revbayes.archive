@@ -81,11 +81,12 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
 
             if( batch_mode == true )
             {
+                RevLanguage::Workspace::userWorkspace().clear();
+                RevLanguage::Workspace::globalWorkspace().clear();
+                
 #ifdef RB_MPI
                 MPI_Finalize();
 #endif
-                RevLanguage::Workspace::userWorkspace().clear();
-                RevLanguage::Workspace::globalWorkspace().clear();
 
                 exit(1);
             }
