@@ -56,7 +56,7 @@ PosteriorPredictiveAnalysis* PosteriorPredictiveAnalysis::clone( void ) const
 
 void PosteriorPredictiveAnalysis::runAll(size_t gen)
 {
-
+    
     // print some information to the screen but only if we are the active process
     if ( process_active == true )
     {
@@ -99,7 +99,7 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
 
     // set the processors for this analysis
     size_t active_proc = floor( pid / double(processors_per_likelihood) ) * processors_per_likelihood;
-    template_sampler.setActivePID( active_proc, processors_per_likelihood );
+    template_sampler.setActivePID( active_proc, processors_per_likelihood );    
     
 #ifdef RB_MPI
     MPI_Comm analysis_comm;

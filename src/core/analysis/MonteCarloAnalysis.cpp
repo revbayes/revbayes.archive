@@ -412,35 +412,42 @@ void MonteCarloAnalysis::resetReplicates( void )
         throw RbException("Bug: No template sampler found!");
     }
     
-    std::vector< size_t > replicate_indices = std::vector<size_t>(num_processes,0);
+    std::vector< size_t > replicate_indices_start = std::vector<size_t>(num_processes,0);
+    std::vector< size_t > replicate_indices_end   = std::vector<size_t>(num_processes,0);
+    
     for (size_t i=0; i<num_processes; ++i)
     {
-        replicate_indices[i] = size_t(floor( (double(i-active_PID) / num_processes ) * replicates ) );
+        size_t this_replicate_start = size_t(floor( (double(i-active_PID) / num_processes ) * replicates ) );
+        size_t this_replicate_end   = size_t(floor( (double(i+1-active_PID) / num_processes ) * replicates ) );
+
+        replicate_indices_start[i] = this_replicate_start;
+        replicate_indices_end[i]   = size_t( fmin( fmax(this_replicate_start+1,this_replicate_end), replicates ) );
+
     }
     
     // create replicate Monte Carlo samplers
     bool no_sampler_set = true;
     for (size_t i = 0; i < replicates; ++i)
     {
-        size_t replicate_pid_start = num_processes - 1;
+        size_t replicate_pid_start = num_processes;
         size_t replicate_pid_end = 0;
         for (size_t j=0; j<num_processes; ++j)
         {
-            if ( j < replicate_pid_start && i >= replicate_indices[j] )
+
+            if ( i >= replicate_indices_start[j] && i < replicate_indices_end[j] && replicate_pid_start > j )
             {
                 replicate_pid_start = j;
             }
-            if ( i < replicate_indices[j] )
+            if ( i >= replicate_indices_start[j] && i < replicate_indices_end[j] && replicate_pid_end < j )
             {
-                ++replicate_pid_end;
+                replicate_pid_end = j;
             }
         }
-//        size_t replicate_pid_start = size_t(ceil( (double(i)   / replicates ) * num_processes ) ) + active_PID;
-//        size_t replicate_pid_end   = std::max( int(replicate_pid_start), int(ceil( (double(i+1) / replicates ) * num_processes ) ) - 1 + int(active_PID) );
-        int number_processes_per_replicate = int(replicate_pid_end) - int(replicate_pid_start) + 1;
+        
+        replicate_pid_start += active_PID;
+        replicate_pid_end   += active_PID;
 
-        std::cerr << "Start:\t\t" << replicate_pid_start << std::endl;
-        std::cerr << "End:\t\t" << replicate_pid_end << std::endl;
+        int number_processes_per_replicate = int(replicate_pid_end) - int(replicate_pid_start) + 1;
 
         if ( pid >= replicate_pid_start && pid <= replicate_pid_end )
         {
@@ -488,8 +495,8 @@ void MonteCarloAnalysis::resetReplicates( void )
         
     }
     
-    size_t replicate_start = size_t(floor( (double(pid-active_PID) / num_processes ) * replicates ) );
-
+    size_t replicate_start = size_t(floor( (double(pid-active_PID) / num_processes ) * replicates ) ) + active_PID;
+    
     RandomNumberGenerator *rng = GLOBAL_RNG;
     for (size_t j=0; j<(2*replicate_start); ++j) rng->uniform01();
     
