@@ -215,6 +215,39 @@ void BiogeographyCladogeneticBirthDeathFunction::buildBits( void )
  * This function builds the allopatric cutset, which is defined
  * as the set of edges removed in order to create the bipartition
  */
+void BiogeographyCladogeneticBirthDeathFunction::buildBuddingRegions( void ) {
+    
+    std::map< std::vector<unsigned>, unsigned>::iterator it;
+    
+    for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
+    {
+        // get event
+        std::vector<unsigned> idx = it->first;
+        unsigned event_type = it->second;
+        
+        // for allopatry events
+        if (event_type == SYMPATRY)
+        {
+            
+            // get right and left bitsets
+            const std::set<unsigned>& s1 = statesToBitsetsByNumOn[ idx[1] ];
+            const std::set<unsigned>& s2 = statesToBitsetsByNumOn[ idx[2] ];
+            
+            // get bud area where new species emerges
+            unsigned bud_area = ( s1.size() > 1 ? *s2.begin() : *s1.begin() );
+            
+            eventMapBuddingRegions[ idx ] = bud_area;
+        }
+//        eventMapCutsets[ idx ] = cutset;
+    }
+    
+    return;
+}
+
+/*
+ * This function builds the allopatric cutset, which is defined
+ * as the set of edges removed in order to create the bipartition
+ */
 void BiogeographyCladogeneticBirthDeathFunction::buildCutsets( void ) {
     
     std::map< std::vector<unsigned>, unsigned>::iterator it;
@@ -561,9 +594,9 @@ void BiogeographyCladogeneticBirthDeathFunction::buildEventMapFactors(void)
         ; // do nothing
 //        buildModularityFactors();
     }
+    buildBuddingRegions();
     
-    double cut_sum = 0.0;
-    size_t n_allopatry = 0;
+    std::vector<double> max_value( NUM_CLADO_EVENT_TYPES, 0.0 );
     
     // loop over all events and their types
     std::map< std::vector<unsigned>, unsigned >::iterator it;
@@ -574,43 +607,36 @@ void BiogeographyCladogeneticBirthDeathFunction::buildEventMapFactors(void)
         unsigned event_type = it->second;
         
         // get event score
-        double v = 0.0;
+        double v = 1.0;
+        
         if (connectivityType == "none") {
-            v = 1.0;
+            ; // do nothing
         }
-        if (connectivityType == "cutset") {
+        else if (connectivityType == "cutset") {
             v = computeCutsetScore(idx, event_type);
         }
         else {
             v = computeModularityScore(idx, event_type);
         }
         eventMapFactors[ idx ] = v;
+
         
-//        std::cout << idx[0] << " " << idx[1] << " " << idx[2] << " : " << v << "\n";
-        
-        if (event_type == ALLOPATRY) {
-            cut_sum += v;
-            n_allopatry++;
-        }
-    }
-    
-    // avg by counts
-    if (connectivityType != "none") {
-    
-        // get mean of cut cost across allopatric events
-        double cut_mean_allopatry = cut_sum / n_allopatry;
-        
-        // normalize allopatric events by mean
-        for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
+        if ( v > max_value[event_type] )
         {
-            // get event info
-            std::vector<unsigned> idx = it->first;
-            unsigned event_type = it->second;
-            
-            if (event_type == ALLOPATRY) {
-                eventMapFactors[ idx ] = eventMapFactors[ idx ] / cut_mean_allopatry;
-            }
+            max_value[event_type] = v;
         }
+
+    }
+
+    
+    // normalize event factors by max factor of event type
+    for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
+    {
+        // get event info
+        std::vector<unsigned> idx = it->first;
+        unsigned event_type = it->second;
+
+        eventMapFactors[ idx ] = eventMapFactors[ idx ] / max_value[ event_type ];
     }
     
     return;
@@ -722,11 +748,13 @@ double BiogeographyCladogeneticBirthDeathFunction::computeCutsetScore( std::vect
     // compute modularity score depending on event type
     if (event_type == SYMPATRY)
     {
-        // assume sympatry is independent of connectivity
-        cost = 1.0;
+        // sympatry depends on matrix diagonal value
+        unsigned i = eventMapBuddingRegions[idx];
+        cost = mtx[i][i];
     }
     else if (event_type == ALLOPATRY)
     {
+        // allopatry depends on inverse sum of cutset cost of edge weights
         const std::vector<std::vector<unsigned> >& cutset = eventMapCutsets[idx];
         for (size_t i = 0; i < cutset.size(); i++) {
             size_t v1 = cutset[i][0];
@@ -735,11 +763,9 @@ double BiogeographyCladogeneticBirthDeathFunction::computeCutsetScore( std::vect
 //            std::cout << "\t" << v1 << " -- " << v2 << " : " << mtx[v1][v2] << "\n";
         }
         
+        // take the inverse sum of costs
         cost = 1.0 / cost;
 //        std::cout << idx[0] << " " << idx[1] << " " << idx[2] << " : " << cost << "\n";
-//        if (use_cutset_mean) {
-//            cost /= cutset.size();
-//        }
     }
     return cost;
 }

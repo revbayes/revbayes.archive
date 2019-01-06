@@ -57,6 +57,7 @@ namespace RevBayesCore {
         std::vector<unsigned>                                       bitAllopatryComplement( const std::vector<unsigned>& mask, const std::vector<unsigned>& base );
         void                                                        bitCombinations(std::vector<std::vector<unsigned> >& comb, std::vector<unsigned> array, int i, std::vector<unsigned> accum);
         void                                                        buildBits(void);
+        void                                                        buildBuddingRegions(void);
         void                                                        buildCutsets(void);
         void                                                        buildEventMap(void);
         void                                                        buildEventMapFactors(void);
@@ -106,6 +107,8 @@ namespace RevBayesCore {
         std::map< std::vector<unsigned>, double >                   eventMapFactors;
         std::map< std::vector<unsigned>, double >                   eventMapWeights;
         std::map< std::vector<unsigned>, std::vector< std::vector<unsigned> > > eventMapCutsets; // returns the vector of cut edges for a given left/right split
+        std::map< std::vector<unsigned>, unsigned >                 eventMapBuddingRegions; // returns the vector of cut edges for a given left/right split
+        
         
         // MJL: eventually, deprecate this stuff
         // manages string-based simplex mapping??
