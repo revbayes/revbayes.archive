@@ -4,6 +4,7 @@
 //#include "BiogeographicTreeHistoryCtmc.h"
 #include "BiogeographyNodeRejectionSampleProposal.h"
 #include "BiogeographyNodeRejectionShiftProposal.h"
+#include "BiogeographyCladogeneticRejectionShiftProposal.h"
 #include "BiogeographyCladogeneticRejectionSampleProposal.h"
 //#include "BiogeographyPathRejectionSampleProposal.h"
 #include "NodeRejectionSampleProposal.h"
@@ -224,7 +225,7 @@ void RevLanguage::Move_CharacterHistory::constructInternalObject( void )
         }
         else if (gt == "cladogenetic" && pt == "rejection_shift")
         {
-            RevBayesCore::BiogeographicNodeRejectionShiftProposal<RevBayesCore::StandardState> *tmp_p = new RevBayesCore::BiogeographicNodeRejectionShiftProposal<RevBayesCore::StandardState>(ctmc_sn, l, r);
+            RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<RevBayesCore::StandardState> *tmp_p = new RevBayesCore::BiogeographicCladogeneticRejectionShiftProposal<RevBayesCore::StandardState>(ctmc_sn, l, r);
             //            tmp_p->setRateGenerator( qmap_tdn );
             if (use_site) {
                 tmp_p->setRateGenerator( qmap_site_tdn );

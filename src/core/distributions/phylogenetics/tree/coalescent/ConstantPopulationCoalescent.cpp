@@ -120,7 +120,8 @@ std::vector<double> ConstantPopulationCoalescent::simulateCoalescentAges( size_t
     // allocate the vector for the times
     std::vector<double> coalescentTimes = std::vector<double>(n,0.0);
     
-    double theta = 1.0 / (2.0*Ne->getValue());
+//    double theta = 1.0 / (2.0*Ne->getValue());
+    double theta = 1.0 / (Ne->getValue());
     // draw a time for each speciation event condition on the time of the process
 	for (size_t i = 0; i < n; ++i)
     {
@@ -132,7 +133,7 @@ std::vector<double> ConstantPopulationCoalescent::simulateCoalescentAges( size_t
         
         size_t j = num_taxa - i;
         double nPairs = j * (j-1) / 2.0;
-        double lambda = nPairs * theta / 2.0;
+        double lambda = nPairs * theta;
         double u = RbStatistics::Exponential::rv( lambda, *rng);
 		coalescentTimes[i] = prevCoalescentTime + u;
 	}

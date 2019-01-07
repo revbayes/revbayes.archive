@@ -168,7 +168,7 @@ public:
      prHeat(pr),
      num_evals(0)
   {
-    variable->getAffectedNodes( affectedNodes );
+    variable->initiateGetAffectedNodes( affectedNodes );
 
     has_lower_bound = pos_only;
   }

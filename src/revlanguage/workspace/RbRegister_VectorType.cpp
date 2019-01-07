@@ -71,7 +71,7 @@
 #include "RlCharacterHistoryRateModifier.h"
 #include "RlTaxon.h"
 
-
+#include "Dist_unif.h"
 
 /// Types ///
 
@@ -107,6 +107,11 @@ void RevLanguage::Workspace::initializeVectorTypeGlobalWorkspace(void)
         AddWorkspaceVectorType<Subsplit,3>::addTypeToWorkspace( *this, new Subsplit() );
         //        AddWorkspaceVectorType<Dist_bdp,3>::addTypeToWorkspace( *this, new Dist_bdp() );
 
+//        AddWorkspaceVectorType<Dist_unif,1>::addTypeToWorkspace( *this, new Dist_unif() );
+//        this->addFunction(new Func_workspaceVector<Dist_unif>() );
+        this->addFunction(new Func_workspaceVector<Distribution>() );
+//        this->addFunction(new Func_workspaceVector<ContinuousDistribution>() );
+//        AddWorkspaceVectorType<Distribution,1>::addTypeToWorkspace( *this, new Distribution() );
 
     }
     catch(RbException& rbException)
