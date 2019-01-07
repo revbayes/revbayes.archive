@@ -26,8 +26,9 @@
 using namespace RevBayesCore;
 
 
-/** Construct rate matrix with n states */
+/** Construct empty SBN parameters */
 SBNParameters::SBNParameters( void ) :
+  edge_length_distributions(),
   num_taxa(),
   taxa(),
   root_splits(),
@@ -36,48 +37,79 @@ SBNParameters::SBNParameters( void ) :
   // Nothing to do
 }
 
-// /** Construct rate matrix with n states */
-// SBNParameters::SBNParameters( const SBNParameters &tpm ) :
-//     num_states( tpm.num_states ),
-//     nElements( tpm.nElements )
-// {
-//
-//     theMatrix = new double[ nElements ];
-//     for ( size_t i = 0; i < nElements; ++i)
-//     {
-//         theMatrix[i] = tpm.theMatrix[i];
-//     }
-//
-// }
-//
-//
-// SBNParameters::~SBNParameters()
-// {
-//
-//     delete [] theMatrix;
-//
-// }
-//
-//
-// /** Construct rate matrix with n states */
-// SBNParameters& SBNParameters::operator=( const SBNParameters &sbn ) const
-// {
-//
-//     if ( this != &tpm )
-//     {
-//         nElements = tpm.nElements;
-//         num_states = tpm.num_states;
-//
-//         delete [] theMatrix;
-//         theMatrix = new double[ nElements ];
-//         for ( size_t i = 0; i < nElements; ++i)
-//         {
-//             theMatrix[i] = tpm.theMatrix[i];
-//         }
-//     }
-//
-//     return *this;
-// }
+/** Construct empty SBN parameters from taxa */
+SBNParameters::SBNParameters( std::vector<Taxon> taxa ) :
+  edge_length_distributions(),
+  num_taxa( taxa.size() ),
+  taxa( taxa ),
+  root_splits(),
+  subsplit_cpds()
+{
+  // Nothing to do
+}
+
+/** Construct rate matrix with n states */
+SBNParameters::SBNParameters( const SBNParameters &sbn ) :
+  edge_length_distributions(sbn.edge_length_distributions),
+  num_taxa(sbn.num_taxa),
+  taxa(sbn.taxa),
+  root_splits(sbn.root_splits),
+  subsplit_cpds(sbn.subsplit_cpds)
+{
+
+}
+
+SBNParameters::~SBNParameters()
+{
+
+}
+
+
+/** Construct rate matrix with n states */
+SBNParameters& SBNParameters::operator=( const SBNParameters &sbn )
+{
+
+    if ( this != &sbn )
+    {
+      edge_length_distributions = sbn.edge_length_distributions;
+      num_taxa                  = sbn.num_taxa;
+      taxa                      = sbn.taxa;
+      root_splits               = sbn.root_splits;
+      subsplit_cpds             = sbn.subsplit_cpds;
+    }
+
+    return *this;
+}
+
+std::map<std::pair<Subsplit,Subsplit>,TypedDistribution<double>* >& SBNParameters::getEdgeLengthDistributions(void)
+{
+  return edge_length_distributions;
+}
+
+const size_t SBNParameters::getNumTaxa(void) const
+{
+  return num_taxa;
+}
+
+std::vector<std::pair<Subsplit,double> >& SBNParameters::getRootSplits(void)
+{
+  return root_splits;
+}
+
+std::map<Subsplit,std::vector<std::pair<Subsplit,double> > >& SBNParameters::getSubsplitCPDs(void)
+{
+  return subsplit_cpds;
+}
+
+std::vector<Taxon>& SBNParameters::getTaxa(void)
+{
+  return taxa;
+}
+
+const std::vector<Taxon>& SBNParameters::getTaxa(void) const
+{
+  return taxa;
+}
 
 double SBNParameters::computeRootSplitProbability( Subsplit root_split ) const
 {
@@ -192,42 +224,30 @@ Subsplit SBNParameters::drawSubsplitForZ( Subsplit s ) const
   return my_children[index].first;
 }
 
-//
-//
-// // std::ostream& RevBayesCore::operator<<(std::ostream& o, const SBNParameters& x) {
-// //
-// //     std::streamsize previousPrecision = o.precision();
-// //     std::ios_base::fmtflags previousFlags = o.flags();
-// //
-// //     o << "[ ";
-// //     o << std::fixed;
-// //     o << std::setprecision(4);
-// //
-// //     // print the RbMatrix with each column of equal width and each column centered on the decimal
-// //     for (size_t i=0; i < x.getNumberOfStates(); i++)
-// //     {
-// //         if (i == 0)
-// //             o << "[ ";
-// //         else
-// //             o << "  ";
-// //
-// //         for (size_t j = 0; j < x.getNumberOfStates(); ++j)
-// //         {
-// //             if (j != 0)
-// //                 o << ", ";
-// //             o << x[i][j];
-// //         }
-// //         o <<  " ]";
-// //
-// //         if (i == x.size()-1)
-// //             o << " ]";
-// //         else
-// //             o << " ,\n";
-// //
-// //     }
-// //
-// //     o.setf(previousFlags);
-// //     o.precision(previousPrecision);
-// //
-// //     return o;
-// // }
+
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const SBNParameters& x) {
+
+    // std::streamsize previousPrecision = o.precision();
+    // std::ios_base::fmtflags previousFlags = o.flags();
+
+    std::vector<Taxon> taxa = x.getTaxa();
+    o << "SBN on taxon vector [ ";
+    // o << std::fixed;
+    // o << std::setprecision(4);
+
+    o << taxa[0].getName();
+    o << ", ";
+    // print the RbMatrix with each column of equal width and each column centered on the decimal
+    for (size_t i=1; i < x.getNumTaxa(); i++)
+    {
+      o << " ,";
+      o << taxa[i].getName();
+    }
+
+    o << " ]";
+    // o.setf(previousFlags);
+    // o.precision(previousPrecision);
+
+    return o;
+}
