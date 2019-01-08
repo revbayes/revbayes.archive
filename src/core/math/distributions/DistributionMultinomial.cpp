@@ -38,7 +38,7 @@ double RbStatistics::Multinomial::pdf(const std::vector<double> &p, const std::v
     double lnP = RbStatistics::Multinomial::lnPdf(p, x);
     if (lnP < -300.0)
         return 0.0;
-	return lnP;
+    return lnP;
 }
 
 
@@ -57,7 +57,7 @@ double RbStatistics::Multinomial::pdf(const std::vector<double> &p, const std::v
     double lnP = RbStatistics::Multinomial::lnPdf(p, x);
     if (lnP < -300.0)
         return 0.0;
-	return std::exp(lnP);
+    return std::exp(lnP);
 }
 
 
@@ -77,7 +77,7 @@ double RbStatistics::Multinomial::pdf(const std::vector<double> &p, const std::v
     double lnP = RbStatistics::Multinomial::lnPdf(p, x);
     if (lnP < -300.0)
         return 0.0;
-	return std::exp(lnP);
+    return std::exp(lnP);
 }
 
 
@@ -111,7 +111,7 @@ double RbStatistics::Multinomial::lnPdf(const std::vector<double> &p, const std:
     }
     
     lnP += RbMath::lnGamma(sum + 1.0);
-	return lnP;
+    return lnP;
 }
 
 /*!
@@ -142,7 +142,7 @@ double RbStatistics::Multinomial::lnPdf(const std::vector<double> &p, const std:
         sum += x[i];
     }
     lnP += RbMath::lnGamma((double)sum + 1.0);
-	return lnP;
+    return lnP;
 }
 
 /*!
@@ -175,7 +175,7 @@ double RbStatistics::Multinomial::lnPdf(const std::vector<double> &p, const std:
     }
     
     lnP += RbMath::lnGamma((double)sum + 1.0);
-	return lnP;
+    return lnP;
 }
 
 
@@ -209,5 +209,5 @@ std::vector<long> RbStatistics::Multinomial::rv(const std::vector<double> &p, si
         }
     }
     
-	return x;
+    return x;
 }
