@@ -14,6 +14,7 @@
  * $Id$
  */
 
+#include <boost/foreach.hpp>
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -179,7 +180,7 @@ Subsplit SBNParameters::drawSubsplitForY( Subsplit s ) const
   {
     // This is a subsplit of Y if one of its splits has the same first set bit as Y
     // my_children[i].first is a Subsplit, with its bitset.first being the bitset representation of its clade Y
-    if ( my_children[i].first.getBitset().first.getFirstSetBit() == fsb || my_children[i].first.getBitset().second.getFirstSetBit() )
+    if ( my_children[i].first.getBitset().first.getFirstSetBit() == fsb || my_children[i].first.getBitset().second.getFirstSetBit() == fsb )
     {
       if (u < my_children[i].second)
       {
@@ -205,12 +206,12 @@ Subsplit SBNParameters::drawSubsplitForZ( Subsplit s ) const
   double u = GLOBAL_RNG->uniform01();
   size_t index;
 
-  // This is like drawing a root split, but we must ensure we only draw from subsplits of Y
+  // This is like drawing a root split, but we must ensure we only draw from subsplits of Z
   for (size_t i=0; i<my_children.size(); ++i)
   {
     // This is a subsplit of Y if one of its splits has the same first set bit as Y
     // my_children[i].first is a Subsplit, with its bitset.first being the bitset representation of its clade Y
-    if ( my_children[i].first.getBitset().first.getFirstSetBit() == fsb || my_children[i].first.getBitset().second.getFirstSetBit() )
+    if ( my_children[i].first.getBitset().first.getFirstSetBit() == fsb || my_children[i].first.getBitset().second.getFirstSetBit() == fsb )
     {
       if (u < my_children[i].second)
       {
@@ -224,6 +225,123 @@ Subsplit SBNParameters::drawSubsplitForZ( Subsplit s ) const
   return my_children[index].first;
 }
 
+void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
+{
+  // For counting subsplits, we could use integers but unrooted trees get fractional counts, so we'll be consistent
+  std::map<Subsplit,double> root_split_counts;
+  std::map<std::pair<Subsplit,Subsplit>,double> parent_child_counts;
+
+  // TODO: add branch length processing
+  // std::map<std::pair<Subsplit,Subsplit>,double> branch_length_observations;
+
+  // Loop over all trees
+  // for each, get all root splits and subsplit parent-child relationships
+  // then consolidate into our master list
+  for (size_t i=0; i<trees.size(); ++i)
+  {
+    Subsplit this_root_split = trees[i].getRootSubsplit();
+    if ( root_split_counts.count(this_root_split) == 0 )
+    {
+      root_split_counts[this_root_split] = 1.0;
+    }
+    else
+    {
+      root_split_counts[this_root_split] += 1.0;
+    }
+
+    std::vector<std::pair<Subsplit,Subsplit> > these_parent_child_subsplits = trees[i].getAllSubsplitParentChildPairs();
+    for (size_t j=0; j<these_parent_child_subsplits.size(); ++j)
+    {
+      if ( parent_child_counts.count(these_parent_child_subsplits[i]) == 0 )
+      {
+        parent_child_counts[these_parent_child_subsplits[i]] = 1.0;
+      }
+      else
+      {
+        parent_child_counts[these_parent_child_subsplits[i]] += 1.0;
+      }
+    }
+
+  }
+
+  // Put root splits in correct format and place
+  std::pair<Subsplit,double> this_root;
+  BOOST_FOREACH(this_root, root_split_counts) {
+    root_splits.push_back(this_root);
+  }
+
+  // Normalize root splits
+  for (size_t i=0; i<root_splits.size(); ++i)
+  {
+    root_splits[i].second /= trees.size();
+  }
+
+  // Put parent-child splits in correct format and place
+  std::pair<std::pair<Subsplit,Subsplit>,double> this_parent_child;
+  BOOST_FOREACH(this_parent_child, parent_child_counts) {
+    // Subsplit this_parent = this_parent_child.first.first;
+    // Subsplit this_child = this_parent_child.first.second;
+    // double this_prob = this_parent_child.second;
+
+    std::pair<Subsplit,double> this_cpd;
+    // this_cpd.first = this_child;
+    // this_cpd.second = this_prob;
+    this_cpd.first = this_parent_child.first.second;
+    this_cpd.second = this_parent_child.second;
+
+    (subsplit_cpds[this_parent_child.first.first]).push_back(this_cpd);
+
+  }
+
+  // Normalize CPDs
+  std::pair<Subsplit,std::vector<std::pair<Subsplit,double> > > this_cpd;
+  BOOST_FOREACH(this_cpd, subsplit_cpds) { // Loop over parent subsplits
+    Subsplit x = this_cpd.first; // The parent subsplit
+    std::vector<std::pair<Subsplit,double> > my_children = this_cpd.second; // The children of this parent
+
+    double sum_y = 0.0; // sum of counts for child of subsplit X's clade Y
+    double sum_z = 0.0; // sum of counts for child of subsplit X's clade Z
+
+    // Find a distinguishing feature of clade Y in subsplit s
+    // Since Y and Z are disjoint, we can use the first set bits in Y and Z
+    // Unlike in drawing subsplits, here we make sure that children are compatible with their parents
+    //   this way, when drawing, we are safe, since the subsplit is guaranteed to be fair game
+    size_t fsb_y = x.getBitset().first.getFirstSetBit();
+    size_t fsb_z = x.getBitset().second.getFirstSetBit();
+
+    for (size_t i=0; i<my_children.size(); ++i) // Loop over the children of this parent, get sum for normalizing
+    {
+      // This is a subsplit of X's clade Y if one of its splits has the same first set bit as Y
+      // my_children[i].first is a Subsplit, with its bitset.first being the bitset representation of its clade Y
+      if ( my_children[i].first.getBitset().first.getFirstSetBit() == fsb_y || my_children[i].first.getBitset().second.getFirstSetBit() == fsb_y )
+      {
+        sum_y +=  my_children[i].second;
+      }
+      else if ( my_children[i].first.getBitset().first.getFirstSetBit() == fsb_z || my_children[i].first.getBitset().second.getFirstSetBit() == fsb_z )
+      {
+        sum_z +=  my_children[i].second;
+      }
+      else {
+        throw(RbException("Found incompatible subsplit when learning SBN."));
+      }
+    }
+
+    for (size_t i=0; i<my_children.size(); ++i) // Loop over the children of this parent, normalize
+    {
+      // This is a subsplit of X's clade Y if one of its splits has the same first set bit as Y
+      // my_children[i].first is a Subsplit, with its bitset.first being the bitset representation of its clade Y
+      if ( my_children[i].first.getBitset().first.getFirstSetBit() == fsb_y || my_children[i].first.getBitset().second.getFirstSetBit() == fsb_y )
+      {
+        (subsplit_cpds[x][i]).second /= sum_y;
+      }
+      else
+      {
+        (subsplit_cpds[x][i]).second /= sum_z;
+      }
+    }
+  }
+
+}
 
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const SBNParameters& x) {

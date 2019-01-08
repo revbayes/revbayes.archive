@@ -212,15 +212,15 @@ bool Tree::containsClade(const TopologyNode &n, bool unrooted) const
 {
     RbBitSet your_taxa = RbBitSet( getNumberOfTips() );
     n.getTaxa( your_taxa );
-    
+
     bool contains = root->containsClade( your_taxa, true );
-    
+
     if ( contains == false && unrooted == true )
     {
         your_taxa.flip();
         contains = root->containsClade( your_taxa, true );;
     }
-    
+
     return contains;
 }
 
@@ -269,7 +269,7 @@ void Tree::dropTipNode( size_t index )
         grand_parent.addChild( sibling );
         sibling->setParent( &grand_parent );
 
-        // update character history 
+        // update character history
         if (parent.getTimeInStates().size() > 0 && sibling->getTimeInStates().size() > 0)
         {
             std::vector<double> sibling_state_times = sibling->getTimeInStates();
@@ -302,18 +302,18 @@ void Tree::dropTipNode( size_t index )
             root->removeChild(&node);
         }
     }
-    
+
     nodes.clear();
-    
+
     // bootstrap all nodes from the root and add the in a pre-order traversal
     fillNodesByPhylogeneticTraversal(root);
     for (unsigned int i = 0; i < nodes.size(); ++i)
     {
         nodes[i]->setIndex(i);
     }
-    
+
     num_nodes = nodes.size();
-    
+
     // count the number of tips
     num_tips = 0;
     for (size_t i = 0; i < num_nodes; ++i)
@@ -326,7 +326,7 @@ void Tree::dropTipNode( size_t index )
         }
         num_tips += ( nodes[i]->isTip() ? 1 : 0);
     }
-    
+
 }
 
 
@@ -528,15 +528,15 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     {
         Clade clade = static_cast<const TypedDagNode<Clade> *>( args[0] )->getValue();
         clade.resetTaxonBitset( getTaxonBitSetMap() );
-        
+
         bool contained = root->containsClade(clade, true);
-        
+
         rv = Boolean( contained );
     }
     else if ( n == "hasSameTopology" )
     {
         const Tree& t = static_cast<const TypedDagNode<Tree> *>( args[0] )->getValue();
-        
+
         rv = Boolean( hasSameTopology(t) );
     }
     else
@@ -591,6 +591,34 @@ const std::vector<std::vector<double> > Tree::getAdjacencyMatrix(void) const
     return adjacency;
 }
 
+std::vector<std::pair<Subsplit,Subsplit> > Tree::getAllSubsplitParentChildPairs(void) const
+{
+  std::vector<std::pair<Subsplit,Subsplit> > all_pairs;
+
+  for ( size_t i=0; i<nodes.size(); ++i )
+  {
+      if ( nodes[i]->isTip() == false )
+      {
+        // This node as a subsplit
+        Subsplit this_parent_split = getNodeSubsplit(i);
+
+        // Get children
+        std::vector<int> children_indices = nodes[i]->getChildrenIndices();
+        if ( children_indices.size() != 2 )
+        {
+          throw(RbException("Attempt to turn non-bifurcating tree into subsplits."));
+        }
+        for (size_t j=0; j<children_indices.size(); ++j)
+        {
+          Subsplit this_child_split = getNodeSubsplit(j);
+          std::pair<Subsplit,Subsplit> this_pair;
+          this_pair.first = this_parent_split;
+          this_pair.second = this_child_split;
+          all_pairs.push_back(this_pair);
+        }
+      }
+  }
+}
 
 std::vector<Taxon> Tree::getFossilTaxa() const
 {
@@ -625,27 +653,27 @@ const TopologyNode& Tree::getInteriorNode( size_t indx ) const
 
 TopologyNode& Tree::getMrca(const Clade &c)
 {
-    
+
     return *(root->getMrca( c ));
 }
 
 
 const TopologyNode& Tree::getMrca(const Clade &c) const
 {
-    
+
     return *(root->getMrca( c ));
 }
 
 const TopologyNode& Tree::getMrca(const Clade &c, bool strict) const
 {
-    
+
     return *(root->getMrca( c,strict ));
 }
 
 
 const TopologyNode& Tree::getMrca(const TopologyNode &n) const
 {
-    
+
     return *(root->getMrca( n ));
 }
 
@@ -709,7 +737,30 @@ std::vector<RbBitSet> Tree::getNodesAsBitset(void) const
     return bs;
 }
 
+Subsplit Tree::getNodeSubsplit(size_t idx) const
+{
 
+    if ( idx >= nodes.size() )
+    {
+        throw RbException("Index out of bounds in getNodeSubsplit.");
+    }
+
+    Subsplit this_split;
+
+    if ( nodes[idx]->isTip() == false )
+    {
+      // Real subsplit
+      const std::vector<TopologyNode*>& children = nodes[idx]->getChildren();
+      this_split = Subsplit(children[0]->getClade(),children[1]->getClade(),getTaxa());
+    }
+    else
+    {
+      // Fake subsplit
+      this_split = Subsplit(nodes[idx]->getClade(),getTaxa());
+    }
+
+    return this_split;
+}
 
 
 /**
@@ -807,6 +858,11 @@ const TopologyNode& Tree::getRoot(void) const
     return *root;
 }
 
+Subsplit Tree::getRootSubsplit(void) const
+{
+  const std::vector<TopologyNode*>& root_children = root->getChildren();
+  Subsplit root_split = Subsplit(root_children[0]->getClade(),root_children[1]->getClade(),getTaxa());
+}
 
 /**
  * Get the tree and character history in newick format
@@ -1059,10 +1115,10 @@ bool Tree::hasSameTopology(const Tree &t) const
 
     std::string a = getPlainNewickRepresentation();
     std::string b = t.getPlainNewickRepresentation();
-    
+
 //    std::cerr << std::endl << a << std::endl;
 //    std::cerr << std::endl << b << std::endl;
-    
+
     return a == b;
 }
 
@@ -1107,7 +1163,7 @@ void Tree::initFromString(const std::string &s)
 }
 
 
-bool Tree::isBinary(void) const 
+bool Tree::isBinary(void) const
 {
     for (size_t i = 0; i < getNumberOfInteriorNodes(); ++i)
     {
@@ -1367,7 +1423,7 @@ bool Tree::recursivelyPruneTaxa( TopologyNode* n, const RbBitSet& prune_map )
 
 void Tree::removeDuplicateTaxa( void )
 {
-    
+
     bool removed_replicate = true;
     while ( removed_replicate == true )
     {
@@ -1384,18 +1440,18 @@ void Tree::removeDuplicateTaxa( void )
                     dropTipNode( j );
                     break;
                 }
-                
+
             }
 
             if ( removed_replicate == true )
             {
                 break;
             }
-            
+
         }
 
     }
-    
+
 }
 
 
@@ -1609,7 +1665,7 @@ void Tree::setTaxonIndices(const TaxonMap &tm)
  */
 void Tree::setTaxonName(const std::string& current_name, const std::string& newName)
 {
-    
+
     TopologyNode& node = getTipNodeWithName( current_name );
     Taxon& t = node.getTaxon();
     t.setName( newName );
@@ -1626,15 +1682,15 @@ void Tree::setTaxonName(const std::string& current_name, const std::string& newN
  */
 void Tree::setTaxonObject(const std::string& current_name, const Taxon& new_taxon)
 {
-    
+
     const std::string &new_name = new_taxon.getName();
-    
+
     TopologyNode& node = getTipNodeWithName( current_name );
     node.setTaxon( new_taxon );
-    
+
     taxon_bitset_map.erase( current_name );
     taxon_bitset_map.insert( std::pair<std::string, size_t>( new_name, node.getIndex() ) );
-    
+
 }
 
 

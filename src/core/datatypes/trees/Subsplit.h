@@ -45,7 +45,7 @@ namespace RevBayesCore {
 
         // Basic utility functions
         Subsplit*                                      clone(void) const;                                          //!< Clone object
-
+//TODO: add functions, one for telling if a subsplit is a subsplit of Y, one for Z
         // public methods
         Clade                                       asClade(void) const;                                        //!< Get clades Y and Z as a single clade
         RbBitSet                                    asCladeBitset(void) const;                                  //!< Convert this value into a bitset representation for a clade.
@@ -68,6 +68,8 @@ namespace RevBayesCore {
         // Clade                                       clade_z;
         std::pair<RbBitSet,RbBitSet>                bitset;
         bool                                        is_fake;
+//TODO: remove taxa from core subsplit, make attribute solely of RevLanguage subsplit
+//         this will require making things like getX and getY take taxa as arguments
         std::vector<Taxon>                          taxa;
     };
 

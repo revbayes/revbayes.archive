@@ -55,9 +55,9 @@ namespace RevBayesCore {
         Subsplit                            drawSubsplitForZ( Subsplit s ) const;
 
         // Functions for learning SBNs
-        SBNParameters                       learnRootedUnconstrainedSBN( std::vector<Tree> ) const;
-        SBNParameters                       learnTimeCalibratedSBN( std::vector<Tree> ) const;
-        SBNParameters                       learnUnrootedSBN( std::vector<Tree>, double alpha=RbConstants::Double::nan ) const;
+        void                                learnRootedUnconstrainedSBN( std::vector<Tree>& trees );
+        void                                learnTimeCalibratedSBN( std::vector<Tree>& trees );
+        void                                learnUnrootedSBN( std::vector<Tree> &trees, double &alpha );
 
       private:
         // members
