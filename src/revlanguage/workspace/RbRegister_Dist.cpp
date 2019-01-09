@@ -159,6 +159,7 @@
 #include "Dist_bimodalLnorm.h"
 #include "Dist_bimodalNorm.h"
 #include "Dist_binomial.h"
+#include "Dist_bivariatePoisson.h"
 #include "Dist_categorical.h"
 #include "Dist_Cauchy.h"
 #include "Dist_chisq.h"
@@ -363,6 +364,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // binomial distribution
         AddDistribution< Natural                    >( new Dist_binomial() );
+
+        // bivariate poisson distribution
+        AddDistribution< ModelVector<Natural>       >( new Dist_bivariatePoisson() );
 
         // negative binomial distribution
         AddDistribution< Natural                    >( new Dist_nbinomial() );
