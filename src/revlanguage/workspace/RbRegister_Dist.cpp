@@ -152,7 +152,7 @@
 #include "Dist_uniformTimeTree.h"
 #include "Dist_uniformTopology.h"
 #include "Dist_uniformTopologyBranchLength.h"
-#include "Dist_unrootedSBN.h"
+#include "Dist_unconstrainedSBN.h"
 
 /* Distributions on simple variables (in folder "distributions/math") */
 #include "Dist_bernoulli.h"
@@ -345,7 +345,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< BranchLengthTree           >( new Dist_uniformTopology() );
 
         // uniform topology distribution
-        // AddDistribution< BranchLengthTree           >( new Dist_unrootedSBN() );
+        // AddDistribution< BranchLengthTree           >( new Dist_UnconstrainedSBN() );
 
         // uniform topology with branch lengths distribution
         AddDistribution< BranchLengthTree           >( new Dist_uniformTopologyBranchLength() );

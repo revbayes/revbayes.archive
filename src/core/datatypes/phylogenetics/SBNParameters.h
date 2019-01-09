@@ -57,7 +57,8 @@ namespace RevBayesCore {
         // Functions for learning SBNs
         void                                learnRootedUnconstrainedSBN( std::vector<Tree>& trees );
         void                                learnTimeCalibratedSBN( std::vector<Tree>& trees );
-        void                                learnUnrootedSBN( std::vector<Tree> &trees, double &alpha );
+        void                                learnUnconstrainedSBNSA( std::vector<Tree> &trees, double &alpha );
+        void                                learnUnconstrainedSBNEM( std::vector<Tree> &trees, double &alpha );
 
       private:
         // members

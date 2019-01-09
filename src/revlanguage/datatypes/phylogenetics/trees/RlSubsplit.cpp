@@ -252,7 +252,7 @@ std::vector<std::string> Subsplit::getHelpSeeAlso(void) const
     // create an entry for each suggested function
     std::vector<std::string> see_also;
     see_also.push_back( "clade" );
-    see_also.push_back( "dnUnrootedSBN" );
+    see_also.push_back( "dnUnconstrainedSBN" );
 
     return see_also;
 }
