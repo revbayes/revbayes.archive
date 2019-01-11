@@ -123,11 +123,23 @@ double UnconstrainedSBN::computeLnProbabilityGivenRoot( void )
 }
 
 
+double UnconstrainedSBN::logSum( double x1, double x2 )
+{
+    double offset = std::max(x1,x2);
+
+    x1 -= offset;
+    x2 -= offset;
+
+    double exp_x1 = exp(x1);
+    double exp_x2 = exp(x2);
+
+    return log(exp_x1 + exp_x2) + offset;
+}
+
 void UnconstrainedSBN::redrawValue( void )
 {
     simulateTree();
 }
-
 
 void UnconstrainedSBN::setValue(RevBayesCore::Tree *v, bool force)
 {
