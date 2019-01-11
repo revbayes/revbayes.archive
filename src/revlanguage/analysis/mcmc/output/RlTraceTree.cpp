@@ -281,9 +281,7 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
     else if ( name == "learnUnconstrainedSBN" )
     {
         found = true;
-
-        SBNParameters sbn = this->value->learnUnconstrainedSBN();
-
+        RevBayesCore::SBNParameters sbn = this->value->learnUnconstrainedSBN();
         return new RevVariable( new SBNParameters( sbn ) );
 
     }

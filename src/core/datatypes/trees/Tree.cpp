@@ -3,6 +3,7 @@
 #include "RbConstants.h"
 #include "RbException.h"
 #include "RbMathLogic.h"
+#include "RbVectorUtilities.h"
 #include "RbOptions.h"
 #include "Tree.h"
 #include "Taxon.h"
@@ -610,7 +611,7 @@ std::vector<std::pair<Subsplit,Subsplit> > Tree::getAllSubsplitParentChildPairs(
         }
         for (size_t j=0; j<children_indices.size(); ++j)
         {
-          Subsplit this_child_split = getNodeSubsplit(j);
+          Subsplit this_child_split = getNodeSubsplit(children_indices[j]);
           std::pair<Subsplit,Subsplit> this_pair;
           this_pair.first = this_parent_split;
           this_pair.second = this_child_split;
@@ -618,6 +619,7 @@ std::vector<std::pair<Subsplit,Subsplit> > Tree::getAllSubsplitParentChildPairs(
         }
       }
   }
+  return all_pairs;
 }
 
 std::vector<Taxon> Tree::getFossilTaxa() const
@@ -747,16 +749,20 @@ Subsplit Tree::getNodeSubsplit(size_t idx) const
 
     Subsplit this_split;
 
+    // TODO: consider passing in an ordered taxon vector to prevent unneeded sorting
+    std::vector<Taxon> ordered_taxa = getTaxa();
+    VectorUtilities::sort(ordered_taxa);
+
     if ( nodes[idx]->isTip() == false )
     {
       // Real subsplit
       const std::vector<TopologyNode*>& children = nodes[idx]->getChildren();
-      this_split = Subsplit(children[0]->getClade(),children[1]->getClade(),getTaxa());
+      this_split = Subsplit(children[0]->getClade(),children[1]->getClade(),ordered_taxa);
     }
     else
     {
       // Fake subsplit
-      this_split = Subsplit(nodes[idx]->getClade(),getTaxa());
+      this_split = Subsplit(nodes[idx]->getClade(),ordered_taxa);
     }
 
     return this_split;
@@ -860,8 +866,12 @@ const TopologyNode& Tree::getRoot(void) const
 
 Subsplit Tree::getRootSubsplit(void) const
 {
+  std::vector<Taxon> ordered_taxa = getTaxa();
+  VectorUtilities::sort(ordered_taxa);
+
   const std::vector<TopologyNode*>& root_children = root->getChildren();
-  Subsplit root_split = Subsplit(root_children[0]->getClade(),root_children[1]->getClade(),getTaxa());
+  Subsplit root_split = Subsplit(root_children[0]->getClade(),root_children[1]->getClade(),ordered_taxa);
+  return root_split;
 }
 
 /**

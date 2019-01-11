@@ -35,6 +35,7 @@ namespace RevBayesCore {
         virtual                                    ~Subsplit(void) {}
 
         // overloaded operators
+        Subsplit&                                   operator=(const Subsplit &t);
         bool                                        operator==(const Subsplit &t) const;
         bool                                        operator!=(const Subsplit &t) const;
         bool                                        operator<(const Subsplit &t) const;

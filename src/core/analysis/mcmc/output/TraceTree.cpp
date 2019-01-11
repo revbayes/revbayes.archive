@@ -1284,7 +1284,7 @@ bool TraceTree::isClock(void)
     return clock;
 }
 
-SBNParameters* TraceTree::learnUnconstrainedSBN(void)
+SBNParameters TraceTree::learnUnconstrainedSBN(void)
 {
 
   NewickConverter converter;
@@ -1312,7 +1312,8 @@ SBNParameters* TraceTree::learnUnconstrainedSBN(void)
   {
     throw(RbException("Learning of unrooted trees not supported."));
   }
-    return &sbn;
+
+    return sbn;
 }
 
 Tree* TraceTree::mapTree( AnnotationReport report, bool verbose )

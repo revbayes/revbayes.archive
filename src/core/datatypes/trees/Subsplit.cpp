@@ -41,10 +41,12 @@ Subsplit::Subsplit( const Clade &c1, const std::vector<Taxon> &n ) :
     // We default to putting the taxon in Clade Y for fake subsplits
     // clade_y = c1;
 
+    //TODO: vector is unnecessary, and simply being used to ensure that the taxon for the subsplit is found in the listed taxa
+    //      replacing the vector setup with a single Taxon and a boolean for found/not found would be more elegant
+
     // bitset representation
     std::vector<Taxon> unset_taxa_1 = c1.getTaxa();
     RbBitSet clade_1_bitset = RbBitSet(n.size(),false);
-
     for (size_t i=0; i<n.size(); ++i)
     {
       for (std::vector<Taxon>::iterator jt=unset_taxa_1.begin(); jt!=unset_taxa_1.end(); jt++)
@@ -365,6 +367,20 @@ Subsplit::Subsplit( const RbBitSet &b1, const RbBitSet &b2 ) :
   }
 }
 
+Subsplit& Subsplit::operator=(const Subsplit &s)
+{
+  if (this != &s)
+  {
+    // bitset.first  = s.getYBitset();
+    // bitset.second  = s.getZBitset();
+    bitset  = s.bitset;
+    is_fake = s.is_fake;
+    taxa    = s.taxa;
+  }
+
+  return *this;
+
+}
 /**
  * Overloaded equals operator.
  * Only if both clades in both subsplits are equal are two Subsplits are equal.
@@ -503,6 +519,12 @@ Clade Subsplit::getY( void ) const
     return y;
 }
 
+RbBitSet Subsplit::getYBitset( void ) const
+{
+
+    return bitset.first;
+}
+
 /**
  * Get clade Z.
  *
@@ -524,6 +546,13 @@ Clade Subsplit::getZ( void ) const
       throw(RbException("Cannot access subsplit clade Z from a fake subsplit."));
     }
 }
+
+RbBitSet Subsplit::getZBitset( void ) const
+{
+
+    return bitset.second;
+}
+
 
 /**
  * Is subsplit compatible with this one?

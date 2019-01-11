@@ -170,7 +170,7 @@ Subsplit SBNParameters::drawSubsplitForY( Subsplit s ) const
 
   // Find a distinguishing feature of clade Y in subsplit s
   // Since Y and Z are disjoint, we can use the first set bit in Y
-  size_t fsb = s.getBitset().first.getFirstSetBit();
+  size_t fsb = s.getYBitset().getFirstSetBit();
 
   double u = GLOBAL_RNG->uniform01();
   size_t index;
@@ -180,7 +180,7 @@ Subsplit SBNParameters::drawSubsplitForY( Subsplit s ) const
   {
     // This is a subsplit of Y if one of its splits has the same first set bit as Y
     // my_children[i].first is a Subsplit, with its bitset.first being the bitset representation of its clade Y
-    if ( my_children[i].first.getBitset().first.getFirstSetBit() == fsb || my_children[i].first.getBitset().second.getFirstSetBit() == fsb )
+    if ( my_children[i].first.getYBitset().getFirstSetBit() == fsb || my_children[i].first.getZBitset().getFirstSetBit() == fsb )
     {
       if (u < my_children[i].second)
       {
@@ -201,7 +201,7 @@ Subsplit SBNParameters::drawSubsplitForZ( Subsplit s ) const
 
   // Find a distinguishing feature of clade Y in subsplit s
   // Since Y and Z are disjoint, we can use the first set bit in Z
-  size_t fsb = s.getBitset().second.getFirstSetBit();
+  size_t fsb = s.getZBitset().getFirstSetBit();
 
   double u = GLOBAL_RNG->uniform01();
   size_t index;
@@ -211,7 +211,7 @@ Subsplit SBNParameters::drawSubsplitForZ( Subsplit s ) const
   {
     // This is a subsplit of Y if one of its splits has the same first set bit as Y
     // my_children[i].first is a Subsplit, with its bitset.first being the bitset representation of its clade Y
-    if ( my_children[i].first.getBitset().first.getFirstSetBit() == fsb || my_children[i].first.getBitset().second.getFirstSetBit() == fsb )
+    if ( my_children[i].first.getYBitset().getFirstSetBit() == fsb || my_children[i].first.getZBitset().getFirstSetBit() == fsb )
     {
       if (u < my_children[i].second)
       {
@@ -239,7 +239,8 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
   // then consolidate into our master list
   for (size_t i=0; i<trees.size(); ++i)
   {
-    Subsplit this_root_split = trees[i].getRootSubsplit();
+    Subsplit this_root_split;
+    this_root_split = trees[i].getRootSubsplit();
     if ( root_split_counts.count(this_root_split) == 0 )
     {
       root_split_counts[this_root_split] = 1.0;
@@ -295,7 +296,9 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
 
   // Normalize CPDs
   std::pair<Subsplit,std::vector<std::pair<Subsplit,double> > > this_cpd;
-  BOOST_FOREACH(this_cpd, subsplit_cpds) { // Loop over parent subsplits
+
+  // Loop over parent subsplits
+  BOOST_FOREACH(this_cpd, subsplit_cpds) {
     Subsplit x = this_cpd.first; // The parent subsplit
     std::vector<std::pair<Subsplit,double> > my_children = this_cpd.second; // The children of this parent
 
@@ -306,18 +309,18 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
     // Since Y and Z are disjoint, we can use the first set bits in Y and Z
     // Unlike in drawing subsplits, here we make sure that children are compatible with their parents
     //   this way, when drawing, we are safe, since the subsplit is guaranteed to be fair game
-    size_t fsb_y = x.getBitset().first.getFirstSetBit();
-    size_t fsb_z = x.getBitset().second.getFirstSetBit();
+    size_t fsb_y = x.getYBitset().getFirstSetBit();
+    size_t fsb_z = x.getZBitset().getFirstSetBit();
 
     for (size_t i=0; i<my_children.size(); ++i) // Loop over the children of this parent, get sum for normalizing
     {
       // This is a subsplit of X's clade Y if one of its splits has the same first set bit as Y
       // my_children[i].first is a Subsplit, with its bitset.first being the bitset representation of its clade Y
-      if ( my_children[i].first.getBitset().first.getFirstSetBit() == fsb_y || my_children[i].first.getBitset().second.getFirstSetBit() == fsb_y )
+      if ( my_children[i].first.getYBitset().getFirstSetBit() == fsb_y || my_children[i].first.getZBitset().getFirstSetBit() == fsb_y )
       {
         sum_y +=  my_children[i].second;
       }
-      else if ( my_children[i].first.getBitset().first.getFirstSetBit() == fsb_z || my_children[i].first.getBitset().second.getFirstSetBit() == fsb_z )
+      else if ( my_children[i].first.getYBitset().getFirstSetBit() == fsb_z || my_children[i].first.getZBitset().getFirstSetBit() == fsb_z )
       {
         sum_z +=  my_children[i].second;
       }
@@ -330,7 +333,7 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
     {
       // This is a subsplit of X's clade Y if one of its splits has the same first set bit as Y
       // my_children[i].first is a Subsplit, with its bitset.first being the bitset representation of its clade Y
-      if ( my_children[i].first.getBitset().first.getFirstSetBit() == fsb_y || my_children[i].first.getBitset().second.getFirstSetBit() == fsb_y )
+      if ( my_children[i].first.getYBitset().getFirstSetBit() == fsb_y || my_children[i].first.getZBitset().getFirstSetBit() == fsb_y )
       {
         (subsplit_cpds[x][i]).second /= sum_y;
       }
