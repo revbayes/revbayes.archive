@@ -2,6 +2,7 @@
 #define TraceTree_H
 
 #include "Clade.h"
+#include "SBNParameters.h"
 #include "Trace.h"
 #include "Tree.h"
 
@@ -40,7 +41,7 @@ namespace RevBayesCore {
         };
 
     public:
-        
+
         /*
          * This struct determines which annotations are reported in the summary tree
          */
@@ -56,7 +57,7 @@ namespace RevBayesCore {
             double node_ages_HPD;
             bool sampled_ancestor_probs;
             bool force_positive_branch_lengths;
-            
+
             AnnotationReport();
         };
 
@@ -66,7 +67,7 @@ namespace RevBayesCore {
          */
         TraceTree( bool c = true );
         virtual ~TraceTree(){}
-        
+
         TraceTree*                                 clone(void) const;
         void                                       annotateTree(Tree &inputTree, AnnotationReport report, bool verbose );
         double                                     cladeProbability(const Clade &c, bool verbose);
@@ -80,6 +81,7 @@ namespace RevBayesCore {
         bool                                       isClock(void);
         bool                                       isCoveredInInterval(const std::string &v, double size, bool verbose);
         bool                                       isCoveredInInterval(const Tree &t, double size, bool verbose);
+        SBNParameters*                             learnUnconstrainedSBN(void);
         Tree*                                      mapTree(AnnotationReport report, bool verbose);
         Tree*                                      mccTree(AnnotationReport report, bool verbose);
         Tree*                                      mrTree(AnnotationReport report, double cutoff, bool verbose);
