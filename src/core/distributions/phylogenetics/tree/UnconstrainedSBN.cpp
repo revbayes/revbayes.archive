@@ -16,7 +16,7 @@ UnconstrainedSBN::UnconstrainedSBN(const SBNParameters parameters, bool rooted) 
 	  rooted( rooted ),
     taxa( parameters.getTaxa() )
 {
-
+std::cout << "Making dnUnconstrainedSBN for SBN with parameters: " << parameters << std::endl;
     // Class SBNParameters handles parameterization of these edge_length_distributions
     // Here we simply use those parameters
     // Parameters are set either by calling a learn___() function or reading in an SBN
@@ -162,15 +162,14 @@ void UnconstrainedSBN::simulateTree( void )
     // internally we treat unrooted topologies the same as rooted
     psi->setRooted( rooted );
 
-    // // create the tip nodes
-    // std::vector<TopologyNode*> nodes;
-    // for (size_t i=0; i<num_taxa; ++i)
-    // {
-    //
-    //     // create the i-th taxon
-    //     TopologyNode* node = new TopologyNode( taxa[i], i );
-    //     nodes.push_back(node);
-    // }
+    // create the tip nodes
+    std::vector<TopologyNode*> tip_nodes;
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+        // create the i-th taxon
+        TopologyNode* node = new TopologyNode( taxa[i], i );
+        tip_nodes.push_back(node);
+    }
 
     // List of active tree nodes/subsplits
     // We pair them such that each tree node corresponds to the subsplit it defines
@@ -205,7 +204,8 @@ void UnconstrainedSBN::simulateTree( void )
       {
         // This is a tip, we don't add it to the active pile
         Clade tip = Y_child.asClade();
-        Y_child_node = new TopologyNode( tip_index++ );
+        Y_child_node = tip_nodes[Y_child.getYBitset().getFirstSetBit()];
+        // Y_child_node = new TopologyNode( tip_index++ );
         // Y_child_node = new TopologyNode();
         Y_child_node->setTaxon(tip.getTaxa()[0]);
         // Y_child_node->setNodeType(true, false, false);
@@ -226,7 +226,8 @@ void UnconstrainedSBN::simulateTree( void )
       {
         // This is a tip, we don't add it to the active pile
         Clade tip = Z_child.asClade();
-        Z_child_node = new TopologyNode( tip_index++ );
+        Z_child_node = tip_nodes[Z_child.getYBitset().getFirstSetBit()];
+        // Z_child_node = new TopologyNode( tip_index++ );
         // Z_child_node = new TopologyNode();
         // Z_child_node->setNodeType(true, false, false);
         Z_child_node->setTaxon(tip.getTaxa()[0]);
