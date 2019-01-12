@@ -176,11 +176,13 @@ void UnconstrainedSBN::simulateTree( void )
     // We pair them such that each tree node corresponds to the subsplit it defines
     std::vector<std::pair<Subsplit,TopologyNode*> > active;
 
-    size_t index = taxa.size() - 1;
+    size_t index = taxa.size()+1;
+    size_t tip_index = 0;
 
     // Root split
     double u = rng->uniform01();
-    TopologyNode* root = new TopologyNode( 0 );
+    // TopologyNode* root = new TopologyNode( taxa.size() );
+    TopologyNode* root = new TopologyNode();
     root->setNodeType(false, true, false);
     Subsplit root_split = parameters.drawRootSplit();
     active.push_back(std::make_pair(root_split,root));
@@ -195,46 +197,59 @@ void UnconstrainedSBN::simulateTree( void )
       Subsplit this_parent_subsplit = this_parent.first;
       TopologyNode* this_parent_node = this_parent.second;
 
+      TopologyNode* Y_child_node;
+      TopologyNode* Z_child_node;
       // Choose subsplit of Y
       Subsplit Y_child = parameters.drawSubsplitForY(this_parent_subsplit);
       if ( Y_child.isFake() )
       {
         // This is a tip, we don't add it to the active pile
         Clade tip = Y_child.asClade();
-        TopologyNode* Y_child_node = new TopologyNode( tip.getTaxon(0), ++index );
-        Y_child_node->setNodeType(true, false, false);
-
+        Y_child_node = new TopologyNode( tip_index++ );
+        // Y_child_node = new TopologyNode();
+        Y_child_node->setTaxon(tip.getTaxa()[0]);
+        // Y_child_node->setNodeType(true, false, false);
+        Y_child_node->setName(tip.getTaxa()[0].getName());
       }
       else
       {
         // This is an internal node
-        TopologyNode* Y_child_node = new TopologyNode( ++index );
-        Y_child_node->setNodeType(false, false, true);
+        // Y_child_node = new TopologyNode( index++ );
+        Y_child_node = new TopologyNode();
+        // Y_child_node->setNodeType(false, false, true);
         active.push_back(std::make_pair(Y_child,Y_child_node));
       }
 
       // Choose subsplit of Z
-      Subsplit Z_child = parameters.drawSubsplitForY(this_parent_subsplit);
+      Subsplit Z_child = parameters.drawSubsplitForZ(this_parent_subsplit);
       if ( Z_child.isFake() )
       {
         // This is a tip, we don't add it to the active pile
         Clade tip = Z_child.asClade();
-        TopologyNode* Z_child_node = new TopologyNode( tip.getTaxon(0), ++index );
-        Z_child_node->setNodeType(true, false, false);
-
+        Z_child_node = new TopologyNode( tip_index++ );
+        // Z_child_node = new TopologyNode();
+        // Z_child_node->setNodeType(true, false, false);
+        Z_child_node->setTaxon(tip.getTaxa()[0]);
+        Z_child_node->setName(tip.getTaxa()[0].getName());
       }
       else
       {
         // This is an internal node
-        TopologyNode* Z_child_node = new TopologyNode( ++index );
-        Z_child_node->setNodeType(false, false, true);
+        // Z_child_node = new TopologyNode( index++ );
+        Z_child_node = new TopologyNode();
+        // Z_child_node->setNodeType(false, false, true);
         active.push_back(std::make_pair(Z_child,Z_child_node));
       }
 
+      this_parent_node->addChild(Y_child_node);
+      this_parent_node->addChild(Z_child_node);
+      Y_child_node->setParent(this_parent_node);
+      Z_child_node->setParent(this_parent_node);
+
     }
 
+    psi->setRoot(root, true);
 
-    // TODO: Do we need to do this here??
     // re-couple tip node names with tip indices
     // this is necessary because otherwise tip names get scrambled across replicates
     for (size_t i=0; i<taxa.size(); i++)
@@ -245,7 +260,7 @@ void UnconstrainedSBN::simulateTree( void )
     psi->orderNodesByIndex();
 
     // initialize the topology by setting the root
-    psi->setRoot(root, true);
+    // psi->setRoot(root, true);
 
     // finally store the new value
     delete value;

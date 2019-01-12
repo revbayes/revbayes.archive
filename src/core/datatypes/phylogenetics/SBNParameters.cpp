@@ -253,18 +253,17 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
     std::vector<std::pair<Subsplit,Subsplit> > these_parent_child_subsplits = trees[i].getAllSubsplitParentChildPairs();
     for (size_t j=0; j<these_parent_child_subsplits.size(); ++j)
     {
-      if ( parent_child_counts.count(these_parent_child_subsplits[i]) == 0 )
+      if ( parent_child_counts.count(these_parent_child_subsplits[j]) == 0 )
       {
-        parent_child_counts[these_parent_child_subsplits[i]] = 1.0;
+        parent_child_counts[these_parent_child_subsplits[j]] = 1.0;
       }
       else
       {
-        parent_child_counts[these_parent_child_subsplits[i]] += 1.0;
+        parent_child_counts[these_parent_child_subsplits[j]] += 1.0;
       }
     }
 
   }
-
   // Put root splits in correct format and place
   std::pair<Subsplit,double> this_root;
   BOOST_FOREACH(this_root, root_split_counts) {
@@ -283,7 +282,6 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
     // Subsplit this_parent = this_parent_child.first.first;
     // Subsplit this_child = this_parent_child.first.second;
     // double this_prob = this_parent_child.second;
-
     std::pair<Subsplit,double> this_cpd;
     // this_cpd.first = this_child;
     // this_cpd.second = this_prob;
@@ -358,11 +356,11 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const SBNParameters& x) 
     // o << std::setprecision(4);
 
     o << taxa[0].getName();
-    o << ", ";
+
     // print the RbMatrix with each column of equal width and each column centered on the decimal
     for (size_t i=1; i < x.getNumTaxa(); i++)
     {
-      o << " ,";
+      o << ", ";
       o << taxa[i].getName();
     }
 
