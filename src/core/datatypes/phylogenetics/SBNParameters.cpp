@@ -316,8 +316,16 @@ void SBNParameters::makeCPDs(std::map<std::pair<Subsplit,Subsplit>,double>& pare
     // (subsplit_cpds[this_parent]).push_back(this_cpd);
     // std::cout << "Added child to CPD, CPD size now: " << (subsplit_cpds[this_parent]).size() << std::endl;
 
+    std::cout << "About to add child to CPD" << std::endl;
+    std::cout << "      parent: " << this_parent << std::endl;
+    std::cout << "      child: " << this_child << std::endl;
+    std::cout << "    subsplit_cpds.count(this_parent) = " << subsplit_cpds.count(this_parent) << std::endl;
     std::vector<std::pair<Subsplit,double> >& this_cpd_vector = subsplit_cpds[this_parent];
+    // std::cout << "    (subsplit_cpds[this_parent]).size() = " << (subsplit_cpds[this_parent]).size() << std::endl;
+    std::cout << "    this_cpd_vector.size() = " << this_cpd_vector.size() << std::endl;
     this_cpd_vector.push_back(this_cpd);
+    // std::cout << "  Added child to CPD, (subsplit_cpds[this_parent]).size() = " << (subsplit_cpds[this_parent]).size() << std::endl;
+    std::cout << "  Added child to CPD, this_cpd_vector.size() = " << this_cpd_vector.size() << std::endl;
   }
 
   // Normalize CPDs
@@ -441,7 +449,7 @@ bool SBNParameters::isValidCPD(std::vector<std::pair<Subsplit,double> >& cpd, Su
     RbBitSet child_z = child.getZBitset();
 
     // Make sure child is compatible with parent
-    if ( !(parent.isCompatible(child)) );
+    if ( !(parent.isCompatible(child)) )
     {
       std::cout << "Found incompatible parent-child subsplit pair." << std::endl;
       std::cout << "  parent: " << parent << std::endl;

@@ -615,11 +615,14 @@ size_t Subsplit::size(void) const
  */
 bool Subsplit::splitsAreDisjoint() const
 {
-    for (size_t i=0; i < bitset.first.size(); ++i)
+    if ( !is_fake ) // A fake split cannot and need not be disjoint
     {
-      if (bitset.first[i] && bitset.second[i])
+      for (size_t i=0; i < bitset.first.size(); ++i)
       {
-        return false;
+        if (bitset.first[i] && bitset.second[i])
+        {
+          return false;
+        }
       }
     }
 
