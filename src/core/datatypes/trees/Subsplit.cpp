@@ -562,7 +562,7 @@ RbBitSet Subsplit::getZBitset( void ) const
 bool Subsplit::isCompatible(const Subsplit &s) const
 {
     // A subsplit s is compatible with another subsplit t if the clades in s sum to be one of the clades of t
-    if (s.size() != bitset.first.size())
+    if ( s.bitset.first.size() != bitset.first.size() )
     {
       throw(RbException("Cannot compare subsplits with unequal taxon sizes."));
     }
