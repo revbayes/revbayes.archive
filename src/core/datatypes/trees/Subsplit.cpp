@@ -556,22 +556,24 @@ RbBitSet Subsplit::getZBitset( void ) const
 
 /**
  * Is subsplit compatible with this one?
- *
+ * A subsplit s is compatible with another subsplit t if the clades in s sum to be one of the clades of t
+ * This requires that s has all the taxa in t's Y or Z splits, no more and no fewer
  * \return    true/false
  */
 bool Subsplit::isCompatible(const Subsplit &s) const
 {
-    // A subsplit s is compatible with another subsplit t if the clades in s sum to be one of the clades of t
     if ( s.bitset.first.size() != bitset.first.size() )
     {
       throw(RbException("Cannot compare subsplits with unequal taxon sizes."));
     }
 
+    // Check if s is equal to t's Y split
     RbBitSet s_total = s.asCladeBitset();
     if ( s_total == bitset.first )
     {
         return true;
     }
+    // Check if s is equal to t's Z split
     else if (!is_fake && s_total == bitset.second) // Don't compare to clade Z if there is no clade Z
     {
       return true;
@@ -604,6 +606,24 @@ size_t Subsplit::size(void) const
     {
       return bitset.first.getNumberSetBits() + bitset.second.getNumberSetBits();
     }
+}
+
+/**
+ * Are the two splits in a subsplit disjoint (nonoverlapping)?
+ *
+ * \return    true/false
+ */
+bool Subsplit::splitsAreDisjoint() const
+{
+    for (size_t i=0; i < bitset.first.size(); ++i)
+    {
+      if (bitset.first[i] && bitset.second[i])
+      {
+        return false;
+      }
+    }
+
+    return true;
 }
 
 

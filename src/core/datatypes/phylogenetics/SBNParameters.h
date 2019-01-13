@@ -60,7 +60,7 @@ namespace RevBayesCore {
         void                                incrementRootSplitCounts(std::map<Subsplit,double>& root_split_counts, Tree& tree, double &weight);
         bool                                isValidCPD(std::vector<std::pair<Subsplit,double> >& cpd, Subsplit& parent) const;
         bool                                isValidRootDistribution(void) const;
-        void                                normalizeCPDForSubsplit(std::vector<std::pair<Subsplit,double> >& cpd);
+        void                                normalizeCPDForSubsplit(std::vector<std::pair<Subsplit,double> >& cpd, Subsplit& parent);
         void                                makeCPDs(std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts);
         void                                makeRootSplits(std::map<Subsplit,double>& root_split_counts);
         void                                learnRootedUnconstrainedSBN( std::vector<Tree>& trees );

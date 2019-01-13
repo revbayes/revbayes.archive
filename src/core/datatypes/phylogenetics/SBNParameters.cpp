@@ -234,7 +234,7 @@ Subsplit SBNParameters::drawSubsplitForZ( Subsplit s ) const
    This requires checking that, for each candidate subsplit,
      1) The CPDs sum to 1 for both splitting Y and Z
      2) All candidate subsplits are compatible with their parents
-     3) All candidate subsplits leave no taxa out
+     3) All subsplits are pairs of disjoint splits
    There are equivalent conditions on the root split
 */
 bool SBNParameters::isValid(void) const
@@ -291,68 +291,58 @@ void SBNParameters::makeCPDs(std::map<std::pair<Subsplit,Subsplit>,double>& pare
 
   // Put parent-child splits in correct format and place
   std::pair<std::pair<Subsplit,Subsplit>,double> this_parent_child;
+
   BOOST_FOREACH(this_parent_child, parent_child_counts) {
-    // Subsplit this_parent = this_parent_child.first.first;
-    // Subsplit this_child = this_parent_child.first.second;
-    // double this_prob = this_parent_child.second;
+    Subsplit this_parent = this_parent_child.first.first;
+    Subsplit this_child = this_parent_child.first.second;
+    double this_prob = this_parent_child.second;
+
+    if ( !(this_parent.isCompatible(this_child)) )
+    {
+      std::cout << "Invalid s|t" << std::endl;
+      std::cout << "  s = " << this_child << std::endl;
+      std::cout << "  t = " << this_parent << std::endl;
+      throw(RbException("Found impossible parent-child subsplit pair in makeCPDs."));
+    }
+
     std::pair<Subsplit,double> this_cpd;
-    // this_cpd.first = this_child;
-    // this_cpd.second = this_prob;
-    this_cpd.first = this_parent_child.first.second;
-    this_cpd.second = this_parent_child.second;
+    this_cpd.first = this_child;
+    this_cpd.second = this_prob;
 
-    (subsplit_cpds[this_parent_child.first.first]).push_back(this_cpd);
 
+    // std::cout << "About to add child to CPD, CPD size currently: " << (subsplit_cpds[this_parent]).size() << std::endl;
+    // std::cout << "  parent: " << this_parent << std::endl;
+    // std::cout << "  child: " << this_child << std::endl;
+    // (subsplit_cpds[this_parent]).push_back(this_cpd);
+    // std::cout << "Added child to CPD, CPD size now: " << (subsplit_cpds[this_parent]).size() << std::endl;
+
+    std::vector<std::pair<Subsplit,double> >& this_cpd_vector = subsplit_cpds[this_parent];
+    this_cpd_vector.push_back(this_cpd);
   }
 
   // Normalize CPDs
-  std::pair<Subsplit,std::vector<std::pair<Subsplit,double> > > this_cpd;
+  std::pair<Subsplit,std::vector<std::pair<Subsplit,double> > > parent_cpd_pair;
 
   // Loop over parent subsplits
-  BOOST_FOREACH(this_cpd, subsplit_cpds) {
-    Subsplit x = this_cpd.first; // The parent subsplit
-    std::vector<std::pair<Subsplit,double> > my_children = this_cpd.second; // The children of this parent
+  BOOST_FOREACH(parent_cpd_pair, subsplit_cpds) {
+    Subsplit parent = parent_cpd_pair.first; // The parent subsplit
+    std::vector<std::pair<Subsplit,double> > my_children = parent_cpd_pair.second; // The children of this parent
 
-    double sum_y = 0.0; // sum of counts for child of subsplit X's clade Y
-    double sum_z = 0.0; // sum of counts for child of subsplit X's clade Z
 
-    // Find a distinguishing feature of clade Y in subsplit s
-    // Since Y and Z are disjoint, we can use the first set bits in Y and Z
-    // Unlike in drawing subsplits, here we make sure that children are compatible with their parents
-    //   this way, when drawing, we are safe, since the subsplit is guaranteed to be fair game
-    size_t fsb_y = x.getYBitset().getFirstSetBit();
-    size_t fsb_z = x.getZBitset().getFirstSetBit();
 
-    for (size_t i=0; i<my_children.size(); ++i) // Loop over the children of this parent, get sum for normalizing
+    for (size_t i=0; i<my_children.size(); ++i)
     {
-      // This is a subsplit of X's clade Y if one of its splits has the same first set bit as Y
-      // my_children[i].first is a Subsplit, with its bitset.first being the bitset representation of its clade Y
-      if ( my_children[i].first.getYBitset().getFirstSetBit() == fsb_y || my_children[i].first.getZBitset().getFirstSetBit() == fsb_y )
+      if ( !(parent.isCompatible(my_children[i].first)) )
       {
-        sum_y +=  my_children[i].second;
-      }
-      else if ( my_children[i].first.getYBitset().getFirstSetBit() == fsb_z || my_children[i].first.getZBitset().getFirstSetBit() == fsb_z )
-      {
-        sum_z +=  my_children[i].second;
-      }
-      else {
-        throw(RbException("Found incompatible subsplit when learning SBN."));
+        std::cout << "Found incompatible parent-child subsplit pair." << std::endl;
+        std::cout << "  parent: " << parent << std::endl;
+        std::cout << "  child:  " << my_children[i].first << std::endl;
+        throw(RbException("Found incompatible subsplit in makeCPDs."));
       }
     }
 
-    for (size_t i=0; i<my_children.size(); ++i) // Loop over the children of this parent, normalize
-    {
-      // This is a subsplit of X's clade Y if one of its splits has the same first set bit as Y
-      // my_children[i].first is a Subsplit, with its bitset.first being the bitset representation of its clade Y
-      if ( my_children[i].first.getYBitset().getFirstSetBit() == fsb_y || my_children[i].first.getZBitset().getFirstSetBit() == fsb_y )
-      {
-        (subsplit_cpds[x][i]).second /= sum_y;
-      }
-      else
-      {
-        (subsplit_cpds[x][i]).second /= sum_z;
-      }
-    }
+    normalizeCPDForSubsplit(my_children, parent);
+
   }
 
 }
@@ -383,8 +373,55 @@ void SBNParameters::makeRootSplits(std::map<Subsplit,double>& root_split_counts)
 
 }
 
-void SBNParameters::normalizeCPDForSubsplit(std::vector<std::pair<Subsplit,double> >& cpd)
+void SBNParameters::normalizeCPDForSubsplit(std::vector<std::pair<Subsplit,double> >& cpd, Subsplit& parent)
 {
+
+  double sum_y = 0.0; // sum of counts for child of parent subsplit's clade Y
+  double sum_z = 0.0; // sum of counts for child of parent subsplit's clade Z
+
+  // Find a distinguishing feature of clade Y in subsplit s
+  // Since Y and Z are disjoint, we can use the first set bits in Y and Z
+  size_t fsb_y = parent.getYBitset().getFirstSetBit();
+  size_t fsb_z = parent.getZBitset().getFirstSetBit();
+
+  for (size_t i=0; i<cpd.size(); ++i) // Loop over the children of this parent, get sum for normalizing
+  {
+    if ( !(parent.isCompatible(cpd[i].first)) )
+    {
+      std::cout << "Found incompatible parent-child subsplit pair." << std::endl;
+      std::cout << "  parent: " << parent << std::endl;
+      std::cout << "  child:  " << cpd[i].first << std::endl;
+      throw(RbException("Found incompatible subsplit in normalizeCPDForSubsplit."));
+    }
+
+    // This is a subsplit of parent's clade Y if one of its splits has the same first set bit as Y
+    // cpd[i].first is a Subsplit, with its bitset.first being the bitset representation of its clade Y
+    if ( cpd[i].first.getYBitset().getFirstSetBit() == fsb_y || cpd[i].first.getZBitset().getFirstSetBit() == fsb_y )
+    {
+      sum_y +=  cpd[i].second;
+    }
+    else if ( cpd[i].first.getYBitset().getFirstSetBit() == fsb_z || cpd[i].first.getZBitset().getFirstSetBit() == fsb_z )
+    {
+      sum_z +=  cpd[i].second;
+    }
+    else {
+      throw(RbException("Found incompatible subsplit when learning SBN."));
+    }
+  }
+
+  for (size_t i=0; i<cpd.size(); ++i) // Loop over the children of this parent, normalize
+  {
+    // This is a subsplit of X's clade Y if one of its splits has the same first set bit as Y
+    // cpd[i].first is a Subsplit, with its bitset.first being the bitset representation of its clade Y
+    if ( cpd[i].first.getYBitset().getFirstSetBit() == fsb_y || cpd[i].first.getZBitset().getFirstSetBit() == fsb_y )
+    {
+      (subsplit_cpds[parent][i]).second /= sum_y;
+    }
+    else
+    {
+      (subsplit_cpds[parent][i]).second /= sum_z;
+    }
+  }
 
 }
 
@@ -413,13 +450,10 @@ bool SBNParameters::isValidCPD(std::vector<std::pair<Subsplit,double> >& cpd, Su
     }
 
     // Make sure children's splits are disjoint
-    for (size_t j=0; j < child_y.size(); ++j)
+    if ( !child.splitsAreDisjoint() )
     {
-      if (child_y[j] && child_z[j])
-      {
-        std::cout << "Found impossible subsplit: " << child << std::endl;
-        return false;
-      }
+      std::cout << "Found impossible subsplit: " << child << std::endl;
+      return false;
     }
 
     // Determine if the child is of parent's split Y or Z, add probability to appropriate sum
@@ -435,7 +469,7 @@ bool SBNParameters::isValidCPD(std::vector<std::pair<Subsplit,double> >& cpd, Su
 
   if ( !(sum_y == 1.0 && sum_z == 1.0) )
   {
-    std::cout << "Unnormalized CPD for parent subsplit " << parent << std::endl;
+    std::cout << "Unnormalized or improperly normalized CPD for parent subsplit " << parent << std::endl;
     return false;
   }
 
@@ -457,18 +491,16 @@ bool SBNParameters::isValidRootDistribution(void) const
       return false;
     }
     // Check they're disjoint
-    for (size_t j=0; j < root_y.size(); ++j)
+    if ( !root_splits[i].first.splitsAreDisjoint() )
     {
-      if (root_y[j] && root_z[j])
-      {
-        std::cout << "Found impossible root split: " << root_splits[i].first << std::endl;
+      std::cout << "Found impossible root split: " << root_splits[i].first << std::endl;
         return false;
-      }
     }
   }
+
   if ( sum_root != 1.0 )
   {
-    std::cout << "Root splits are unnormalized" << std::endl;
+    std::cout << "Root splits are unnormalized or improperly normalized" << std::endl;
     return false;
   }
 
@@ -603,7 +635,6 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
   // Turn parent-child subsplit counts into CPDs
   makeCPDs(parent_child_counts);
 
-  std::cout << "About to check SBN validity" << std::endl;
   if ( !isValid() )
   {
     throw(RbException("learnRootedUnconstrainedSBN produced an invalid SBNParameters object."));

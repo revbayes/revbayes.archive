@@ -58,6 +58,7 @@ namespace RevBayesCore {
         bool                                        isCompatible(const Subsplit &s) const;                      //!< Is argument subsplit compatible with this one?
         bool                                        isFake() const;                                             //!< Is this a fake subsplit (aka a single tip)?
         size_t                                      size(void) const;                                           //!< Get the number of taxa.
+        bool                                        splitsAreDisjoint(void) const;
         std::string                                 toString(void) const;                                       //!< Convert this value into a string.
 
         // public TopologyNode functions
