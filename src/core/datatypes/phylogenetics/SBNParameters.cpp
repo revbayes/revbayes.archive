@@ -112,6 +112,7 @@ const std::vector<Taxon>& SBNParameters::getTaxa(void) const
   return taxa;
 }
 
+/* Computes the probability of seeing a particular root split given an SBN */
 double SBNParameters::computeRootSplitProbability( Subsplit root_split ) const
 {
   double prob = RbConstants::Double::nan;
@@ -125,6 +126,7 @@ double SBNParameters::computeRootSplitProbability( Subsplit root_split ) const
   return prob;
 }
 
+/* Computes the probability of seeing a particular parent-child subsplit pair given an SBN */
 double SBNParameters::computeSubsplitTransitionProbability( const Subsplit parent, const Subsplit child ) const
 {
 
@@ -144,6 +146,7 @@ double SBNParameters::computeSubsplitTransitionProbability( const Subsplit paren
 
 }
 
+/* Draw a root split from an SBN */
 Subsplit SBNParameters::drawRootSplit( void ) const
 {
 
@@ -162,6 +165,7 @@ Subsplit SBNParameters::drawRootSplit( void ) const
   return root_splits[index].first;
 }
 
+/* Draws a subsplit for subsplit S's clade Y*/
 Subsplit SBNParameters::drawSubsplitForY( Subsplit s ) const
 {
 
@@ -194,6 +198,7 @@ Subsplit SBNParameters::drawSubsplitForY( Subsplit s ) const
   return my_children[index].first;
 }
 
+/* Draws a subsplit for subsplit S's clade Z*/
 Subsplit SBNParameters::drawSubsplitForZ( Subsplit s ) const
 {
   // Find all potential children of s
@@ -225,56 +230,64 @@ Subsplit SBNParameters::drawSubsplitForZ( Subsplit s ) const
   return my_children[index].first;
 }
 
-void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
+/* Checks the validity of an SBNParameters object.
+   This requires checking that, for each candidate subsplit,
+     1) The CPDs sum to 1 for both splitting Y and Z
+     2) All candidate subsplits are compatible with their parents
+     3) All candidate subsplits leave no taxa out
+   There are equivalent conditions on the root split
+*/
+bool SBNParameters::isValid(void) const
 {
-  // For counting subsplits, we could use integers but unrooted trees get fractional counts, so we'll be consistent
-  std::map<Subsplit,double> root_split_counts;
-  std::map<std::pair<Subsplit,Subsplit>,double> parent_child_counts;
-
-  // TODO: add branch length processing
-  // std::map<std::pair<Subsplit,Subsplit>,double> branch_length_observations;
-
-  // Loop over all trees
-  // for each, get all root splits and subsplit parent-child relationships
-  // then consolidate into our master list
-  for (size_t i=0; i<trees.size(); ++i)
+  if ( !isValidRootDistribution() )
   {
-    Subsplit this_root_split;
-    this_root_split = trees[i].getRootSubsplit();
-    if ( root_split_counts.count(this_root_split) == 0 )
+    return false;
+  }
+
+  std::pair<Subsplit,std::vector<std::pair<Subsplit,double> > > this_cpd;
+  // Loop over parent subsplits
+  BOOST_FOREACH(this_cpd, subsplit_cpds) {
+    if ( !(isValidCPD(this_cpd.second, this_cpd.first)) )
     {
-      root_split_counts[this_root_split] = 1.0;
+      return false;
+    }
+  }
+
+  return true;
+}
+
+void SBNParameters::incrementParentChildCounts(std::map<std::pair<Subsplit,Subsplit>,double> &parent_child_counts, Tree& tree, double &weight)
+{
+  std::vector<std::pair<Subsplit,Subsplit> > these_parent_child_subsplits = tree.getAllSubsplitParentChildPairs();
+  for (size_t j=0; j<these_parent_child_subsplits.size(); ++j)
+  {
+    if ( parent_child_counts.count(these_parent_child_subsplits[j]) == 0 )
+    {
+      parent_child_counts[these_parent_child_subsplits[j]] = weight;
     }
     else
     {
-      root_split_counts[this_root_split] += 1.0;
+      parent_child_counts[these_parent_child_subsplits[j]] += weight;
     }
-
-    std::vector<std::pair<Subsplit,Subsplit> > these_parent_child_subsplits = trees[i].getAllSubsplitParentChildPairs();
-    for (size_t j=0; j<these_parent_child_subsplits.size(); ++j)
-    {
-      if ( parent_child_counts.count(these_parent_child_subsplits[j]) == 0 )
-      {
-        parent_child_counts[these_parent_child_subsplits[j]] = 1.0;
-      }
-      else
-      {
-        parent_child_counts[these_parent_child_subsplits[j]] += 1.0;
-      }
-    }
-
   }
-  // Put root splits in correct format and place
-  std::pair<Subsplit,double> this_root;
-  BOOST_FOREACH(this_root, root_split_counts) {
-    root_splits.push_back(this_root);
-  }
+}
 
-  // Normalize root splits
-  for (size_t i=0; i<root_splits.size(); ++i)
+void SBNParameters::incrementRootSplitCounts(std::map<Subsplit,double>& root_split_counts, Tree& tree, double &weight)
+{
+  Subsplit this_root_split;
+  this_root_split = tree.getRootSubsplit();
+  if ( root_split_counts.count(this_root_split) == 0 )
   {
-    root_splits[i].second /= trees.size();
+    root_split_counts[this_root_split] = weight;
   }
+  else
+  {
+    root_split_counts[this_root_split] += weight;
+  }
+}
+
+void SBNParameters::makeCPDs(std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts)
+{
 
   // Put parent-child splits in correct format and place
   std::pair<std::pair<Subsplit,Subsplit>,double> this_parent_child;
@@ -340,6 +353,260 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
         (subsplit_cpds[x][i]).second /= sum_z;
       }
     }
+  }
+
+}
+
+/*
+  This function first puts the root split counts into a root splits probability map,
+    then it normalizes them into a probability distribution
+*/
+void SBNParameters::makeRootSplits(std::map<Subsplit,double>& root_split_counts)
+{
+  // Put root splits in correct format and place
+  std::pair<Subsplit,double> this_root;
+  BOOST_FOREACH(this_root, root_split_counts) {
+    root_splits.push_back(this_root);
+  }
+
+  // Normalize root splits
+  double sum_root = 0.0;
+  for (size_t i=0; i<root_splits.size(); ++i)
+  {
+    sum_root += root_splits[i].second;
+  }
+
+  for (size_t i=0; i<root_splits.size(); ++i)
+  {
+    root_splits[i].second /= sum_root;
+  }
+
+}
+
+void SBNParameters::normalizeCPDForSubsplit(std::vector<std::pair<Subsplit,double> >& cpd)
+{
+
+}
+
+bool SBNParameters::isValidCPD(std::vector<std::pair<Subsplit,double> >& cpd, Subsplit& parent) const
+{
+  double sum_y = 0.0;
+  double sum_z = 0.0;
+
+  size_t fsb_y = parent.getYBitset().getFirstSetBit();
+  size_t fsb_z = parent.getZBitset().getFirstSetBit();
+
+  for (size_t i=0; i<cpd.size(); ++i)
+  {
+    Subsplit child = cpd[i].first;
+    size_t child_fsb = child.asCladeBitset().getFirstSetBit();
+    RbBitSet child_y = child.getYBitset();
+    RbBitSet child_z = child.getZBitset();
+
+    // Make sure child is compatible with parent
+    if ( !(parent.isCompatible(child)) );
+    {
+      std::cout << "Found incompatible parent-child subsplit pair." << std::endl;
+      std::cout << "  parent: " << parent << std::endl;
+      std::cout << "  child:  " << child << std::endl;
+      return false;
+    }
+
+    // Make sure children's splits are disjoint
+    for (size_t j=0; j < child_y.size(); ++j)
+    {
+      if (child_y[j] && child_z[j])
+      {
+        std::cout << "Found impossible subsplit: " << child << std::endl;
+        return false;
+      }
+    }
+
+    // Determine if the child is of parent's split Y or Z, add probability to appropriate sum
+    if ( child_fsb == fsb_y )
+    {
+      sum_y += cpd[i].second;
+    }
+    else
+    {
+      sum_z += cpd[i].second;
+    }
+  }
+
+  if ( !(sum_y == 1.0 && sum_z == 1.0) )
+  {
+    std::cout << "Unnormalized CPD for parent subsplit " << parent << std::endl;
+    return false;
+  }
+
+  return true;
+}
+
+bool SBNParameters::isValidRootDistribution(void) const
+{
+  double sum_root = 0.0;
+  for (size_t i=0; i<root_splits.size(); ++i)
+  {
+    sum_root += root_splits[i].second;
+    RbBitSet root_y = root_splits[i].first.getYBitset();
+    RbBitSet root_z = root_splits[i].first.getZBitset();
+
+    // Check that in sum_root they have all tips
+    if ( !(root_y.getNumberSetBits() + root_z.getNumberSetBits() == root_y.size()) )
+    {
+      return false;
+    }
+    // Check they're disjoint
+    for (size_t j=0; j < root_y.size(); ++j)
+    {
+      if (root_y[j] && root_z[j])
+      {
+        std::cout << "Found impossible root split: " << root_splits[i].first << std::endl;
+        return false;
+      }
+    }
+  }
+  if ( sum_root != 1.0 )
+  {
+    std::cout << "Root splits are unnormalized" << std::endl;
+    return false;
+  }
+
+  return true;
+}
+
+void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
+{
+  // For counting subsplits, we could use integers but unrooted trees get fractional counts, so we'll be consistent
+  std::map<Subsplit,double> root_split_counts;
+  std::map<std::pair<Subsplit,Subsplit>,double> parent_child_counts;
+
+  // The weight to assign when counting subsplits, for rooted trees the weight is 1
+  // For unrooted trees, the weight will be less than 1, and may vary (in the EM algorithm)
+  double weight = 1.0;
+
+  // TODO: add branch length processing
+  // std::map<std::pair<Subsplit,Subsplit>,double> branch_length_observations;
+
+  // Loop over all trees
+  // for each, get all root splits and subsplit parent-child relationships
+  // then consolidate into our master list
+  for (size_t i=0; i<trees.size(); ++i)
+  {
+    // Subsplit this_root_split;
+    // this_root_split = trees[i].getRootSubsplit();
+    // if ( root_split_counts.count(this_root_split) == 0 )
+    // {
+    //   root_split_counts[this_root_split] = 1.0;
+    // }
+    // else
+    // {
+    //   root_split_counts[this_root_split] += 1.0;
+    // }
+    //
+    // std::vector<std::pair<Subsplit,Subsplit> > these_parent_child_subsplits = trees[i].getAllSubsplitParentChildPairs();
+    // for (size_t j=0; j<these_parent_child_subsplits.size(); ++j)
+    // {
+    //   if ( parent_child_counts.count(these_parent_child_subsplits[j]) == 0 )
+    //   {
+    //     parent_child_counts[these_parent_child_subsplits[j]] = 1.0;
+    //   }
+    //   else
+    //   {
+    //     parent_child_counts[these_parent_child_subsplits[j]] += 1.0;
+    //   }
+    // }
+    incrementRootSplitCounts(root_split_counts, trees[i], weight);
+    incrementParentChildCounts(parent_child_counts, trees[i], weight);
+  }
+
+  // // Put root splits in correct format and place
+  // std::pair<Subsplit,double> this_root;
+  // BOOST_FOREACH(this_root, root_split_counts) {
+  //   root_splits.push_back(this_root);
+  // }
+  //
+  // // Normalize root splits
+  // for (size_t i=0; i<root_splits.size(); ++i)
+  // {
+  //   root_splits[i].second /= trees.size();
+  // }
+  // // Put parent-child splits in correct format and place
+  // std::pair<std::pair<Subsplit,Subsplit>,double> this_parent_child;
+  // BOOST_FOREACH(this_parent_child, parent_child_counts) {
+  //   // Subsplit this_parent = this_parent_child.first.first;
+  //   // Subsplit this_child = this_parent_child.first.second;
+  //   // double this_prob = this_parent_child.second;
+  //   std::pair<Subsplit,double> this_cpd;
+  //   // this_cpd.first = this_child;
+  //   // this_cpd.second = this_prob;
+  //   this_cpd.first = this_parent_child.first.second;
+  //   this_cpd.second = this_parent_child.second;
+  //
+  //   (subsplit_cpds[this_parent_child.first.first]).push_back(this_cpd);
+  //
+  // }
+  //
+  // // Normalize CPDs
+  // std::pair<Subsplit,std::vector<std::pair<Subsplit,double> > > this_cpd;
+  //
+  // // Loop over parent subsplits
+  // BOOST_FOREACH(this_cpd, subsplit_cpds) {
+  //   Subsplit x = this_cpd.first; // The parent subsplit
+  //   std::vector<std::pair<Subsplit,double> > my_children = this_cpd.second; // The children of this parent
+  //
+  //   double sum_y = 0.0; // sum of counts for child of subsplit X's clade Y
+  //   double sum_z = 0.0; // sum of counts for child of subsplit X's clade Z
+  //
+  //   // Find a distinguishing feature of clade Y in subsplit s
+  //   // Since Y and Z are disjoint, we can use the first set bits in Y and Z
+  //   // Unlike in drawing subsplits, here we make sure that children are compatible with their parents
+  //   //   this way, when drawing, we are safe, since the subsplit is guaranteed to be fair game
+  //   size_t fsb_y = x.getYBitset().getFirstSetBit();
+  //   size_t fsb_z = x.getZBitset().getFirstSetBit();
+  //
+  //   for (size_t i=0; i<my_children.size(); ++i) // Loop over the children of this parent, get sum for normalizing
+  //   {
+  //     // This is a subsplit of X's clade Y if one of its splits has the same first set bit as Y
+  //     // my_children[i].first is a Subsplit, with its bitset.first being the bitset representation of its clade Y
+  //     if ( my_children[i].first.getYBitset().getFirstSetBit() == fsb_y || my_children[i].first.getZBitset().getFirstSetBit() == fsb_y )
+  //     {
+  //       sum_y +=  my_children[i].second;
+  //     }
+  //     else if ( my_children[i].first.getYBitset().getFirstSetBit() == fsb_z || my_children[i].first.getZBitset().getFirstSetBit() == fsb_z )
+  //     {
+  //       sum_z +=  my_children[i].second;
+  //     }
+  //     else {
+  //       throw(RbException("Found incompatible subsplit when learning SBN."));
+  //     }
+  //   }
+  //
+  //   for (size_t i=0; i<my_children.size(); ++i) // Loop over the children of this parent, normalize
+  //   {
+  //     // This is a subsplit of X's clade Y if one of its splits has the same first set bit as Y
+  //     // my_children[i].first is a Subsplit, with its bitset.first being the bitset representation of its clade Y
+  //     if ( my_children[i].first.getYBitset().getFirstSetBit() == fsb_y || my_children[i].first.getZBitset().getFirstSetBit() == fsb_y )
+  //     {
+  //       (subsplit_cpds[x][i]).second /= sum_y;
+  //     }
+  //     else
+  //     {
+  //       (subsplit_cpds[x][i]).second /= sum_z;
+  //     }
+  //   }
+  // }
+
+  // Turn root split counts into a distribution on the root split
+  makeRootSplits(root_split_counts);
+
+  // Turn parent-child subsplit counts into CPDs
+  makeCPDs(parent_child_counts);
+
+  std::cout << "About to check SBN validity" << std::endl;
+  if ( !isValid() )
+  {
+    throw(RbException("learnRootedUnconstrainedSBN produced an invalid SBNParameters object."));
   }
 
 }

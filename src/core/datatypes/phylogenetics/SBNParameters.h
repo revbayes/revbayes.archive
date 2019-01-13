@@ -53,8 +53,16 @@ namespace RevBayesCore {
         Subsplit                            drawRootSplit( void ) const;
         Subsplit                            drawSubsplitForY( Subsplit s ) const;
         Subsplit                            drawSubsplitForZ( Subsplit s ) const;
+        bool                                isValid(void) const;
 
         // Functions for learning SBNs
+        void                                incrementParentChildCounts(std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts, Tree& tree, double &weight);
+        void                                incrementRootSplitCounts(std::map<Subsplit,double>& root_split_counts, Tree& tree, double &weight);
+        bool                                isValidCPD(std::vector<std::pair<Subsplit,double> >& cpd, Subsplit& parent) const;
+        bool                                isValidRootDistribution(void) const;
+        void                                normalizeCPDForSubsplit(std::vector<std::pair<Subsplit,double> >& cpd);
+        void                                makeCPDs(std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts);
+        void                                makeRootSplits(std::map<Subsplit,double>& root_split_counts);
         void                                learnRootedUnconstrainedSBN( std::vector<Tree>& trees );
         void                                learnTimeCalibratedSBN( std::vector<Tree>& trees );
         void                                learnUnconstrainedSBNSA( std::vector<Tree> &trees, double &alpha );

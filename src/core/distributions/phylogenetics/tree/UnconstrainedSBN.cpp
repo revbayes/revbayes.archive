@@ -16,7 +16,7 @@ UnconstrainedSBN::UnconstrainedSBN(const SBNParameters parameters, bool rooted) 
 	  rooted( rooted ),
     taxa( parameters.getTaxa() )
 {
-std::cout << "Making dnUnconstrainedSBN for SBN with parameters: " << parameters << std::endl;
+
     // Class SBNParameters handles parameterization of these edge_length_distributions
     // Here we simply use those parameters
     // Parameters are set either by calling a learn___() function or reading in an SBN
@@ -175,12 +175,8 @@ void UnconstrainedSBN::simulateTree( void )
     // We pair them such that each tree node corresponds to the subsplit it defines
     std::vector<std::pair<Subsplit,TopologyNode*> > active;
 
-    size_t index = taxa.size()+1;
-    size_t tip_index = 0;
-
     // Root split
     double u = rng->uniform01();
-    // TopologyNode* root = new TopologyNode( taxa.size() );
     TopologyNode* root = new TopologyNode();
     root->setNodeType(false, true, false);
     Subsplit root_split = parameters.drawRootSplit();
@@ -198,6 +194,7 @@ void UnconstrainedSBN::simulateTree( void )
 
       TopologyNode* Y_child_node;
       TopologyNode* Z_child_node;
+
       // Choose subsplit of Y
       Subsplit Y_child = parameters.drawSubsplitForY(this_parent_subsplit);
       if ( Y_child.isFake() )
@@ -205,18 +202,11 @@ void UnconstrainedSBN::simulateTree( void )
         // This is a tip, we don't add it to the active pile
         Clade tip = Y_child.asClade();
         Y_child_node = tip_nodes[Y_child.getYBitset().getFirstSetBit()];
-        // Y_child_node = new TopologyNode( tip_index++ );
-        // Y_child_node = new TopologyNode();
-        Y_child_node->setTaxon(tip.getTaxa()[0]);
-        // Y_child_node->setNodeType(true, false, false);
-        Y_child_node->setName(tip.getTaxa()[0].getName());
       }
       else
       {
         // This is an internal node
-        // Y_child_node = new TopologyNode( index++ );
         Y_child_node = new TopologyNode();
-        // Y_child_node->setNodeType(false, false, true);
         active.push_back(std::make_pair(Y_child,Y_child_node));
       }
 
@@ -227,21 +217,17 @@ void UnconstrainedSBN::simulateTree( void )
         // This is a tip, we don't add it to the active pile
         Clade tip = Z_child.asClade();
         Z_child_node = tip_nodes[Z_child.getYBitset().getFirstSetBit()];
-        // Z_child_node = new TopologyNode( tip_index++ );
-        // Z_child_node = new TopologyNode();
-        // Z_child_node->setNodeType(true, false, false);
-        Z_child_node->setTaxon(tip.getTaxa()[0]);
-        Z_child_node->setName(tip.getTaxa()[0].getName());
       }
       else
       {
         // This is an internal node
-        // Z_child_node = new TopologyNode( index++ );
         Z_child_node = new TopologyNode();
-        // Z_child_node->setNodeType(false, false, true);
         active.push_back(std::make_pair(Z_child,Z_child_node));
       }
-
+std::cout << "Splitting subsplit X into Y and Z" << std::endl;
+std::cout << "  X = " << this_parent_subsplit << std::endl;
+std::cout << "  Y = " << Y_child << std::endl;
+std::cout << "  Z = " << Z_child << std::endl;
       this_parent_node->addChild(Y_child_node);
       this_parent_node->addChild(Z_child_node);
       Y_child_node->setParent(this_parent_node);
@@ -251,6 +237,7 @@ void UnconstrainedSBN::simulateTree( void )
 
     psi->setRoot(root, true);
 
+    // TODO: with the selection of taxa for tips using bitsets, taxon names are paired to indices, the following may be extraneous
     // re-couple tip node names with tip indices
     // this is necessary because otherwise tip names get scrambled across replicates
     for (size_t i=0; i<taxa.size(); i++)
