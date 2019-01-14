@@ -55,6 +55,8 @@ namespace RevBayesCore {
         RbBitSet                                    getYBitset(void) const;                                     //!< Get clade Y as bitset
         Clade                                       getZ(void) const;                                           //!< Get clade Z
         RbBitSet                                    getZBitset(void) const;                                     //!< Get clade Y as bitset
+        bool                                        isChildOfY(const Subsplit &s) const;                      //!< Is argument subsplit compatible with this one?
+        bool                                        isChildOfZ(const Subsplit &s) const;                      //!< Is argument subsplit compatible with this one?
         bool                                        isCompatible(const Subsplit &s) const;                      //!< Is argument subsplit compatible with this one?
         bool                                        isFake() const;                                             //!< Is this a fake subsplit (aka a single tip)?
         size_t                                      size(void) const;                                           //!< Get the number of taxa.

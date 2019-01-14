@@ -401,14 +401,23 @@ bool Subsplit::operator!=(const Subsplit &s) const
 }
 
 /**
- * Less than operator, we outsource this to a bitset comparison.
+ * Less than operator.
  */
 bool Subsplit::operator<(const Subsplit &s) const
 {
-  RbBitSet s1 = asCladeBitset();
-  RbBitSet s2 = s.asCladeBitset();
+  if ( bitset.first < s.getYBitset() )
+  {
+    return true;
+  }
+  else if ( bitset.first == s.getYBitset() )
+  {
+    if ( bitset.second < s.getZBitset() )
+    {
+      return true;
+    }
+  }
 
-  return s1 < s2;
+  return false;
 }
 
 /**
@@ -553,6 +562,23 @@ RbBitSet Subsplit::getZBitset( void ) const
     return bitset.second;
 }
 
+/**
+ * Is subsplit s a child of this subsplit's clade Y?
+ * \return    true/false
+ */
+bool Subsplit::isChildOfY(const Subsplit &s) const
+{
+    return false;
+}
+
+/**
+ * Is subsplit s a child of this subsplit's clade Y?
+ * \return    true/false
+ */
+bool Subsplit::isChildOfZ(const Subsplit &s) const
+{
+    return false;
+}
 
 /**
  * Is subsplit compatible with this one?
@@ -638,48 +664,34 @@ bool Subsplit::splitsAreDisjoint() const
 std::string Subsplit::toString( void ) const
 {
     std::string s;
-    if ( taxa.size() > 0 )
+    if (is_fake)
     {
-      if (is_fake)
+      std::string y = "[";
+      for (size_t i=0; i<bitset.first.size(); ++i)
       {
-        s = getY().toString() + "|" + getY().toString();
+          y += ( bitset.first.isSet(i) ? "1" : "0");
       }
-      else
-      {
-        s = getY().toString() + "|" + getZ().toString();
-      }
+      y += "]";
+
+      s = y + "|" + y;
     }
     else
     {
-      if (is_fake)
+      std::string y = "[";
+      for (size_t i=0; i<bitset.first.size(); ++i)
       {
-        std::string y = "[";
-        for (size_t i=0; i<bitset.first.size(); ++i)
-        {
-            y += ( bitset.first.isSet(i) ? "1" : "0");
-        }
-        y += "]";
-
-        s = y + "|" + y;
+          y += ( bitset.first.isSet(i) ? "1" : "0");
       }
-      else
+      y += "]";
+
+      std::string z = "[";
+      for (size_t i=0; i<bitset.second.size(); ++i)
       {
-        std::string y = "[";
-        for (size_t i=0; i<bitset.first.size(); ++i)
-        {
-            y += ( bitset.first.isSet(i) ? "1" : "0");
-        }
-        y += "]";
-
-        std::string z = "[";
-        for (size_t i=0; i<bitset.second.size(); ++i)
-        {
-            z += ( bitset.second.isSet(i) ? "1" : "0");
-        }
-        z += "]";
-
-        s = y + "|" + z;
+          z += ( bitset.second.isSet(i) ? "1" : "0");
       }
+      z += "]";
+
+      s = y + "|" + z;
     }
     return s;
 }
