@@ -115,7 +115,7 @@ const std::vector<Taxon>& SBNParameters::getTaxa(void) const
 /* Computes the probability of seeing a particular root split given an SBN */
 double SBNParameters::computeRootSplitProbability( Subsplit root_split ) const
 {
-  double prob = RbConstants::Double::nan;
+  double prob = RbConstants::Double::neginf;
   for (size_t i=0; i<root_splits.size(); ++i)
   {
     if ( root_split == root_splits[i].first)
@@ -133,7 +133,7 @@ double SBNParameters::computeSubsplitTransitionProbability( const Subsplit paren
   // Find all potential children of parent
   std::vector<std::pair<Subsplit,double> > all_children = subsplit_cpds.at(parent);
 
-  double prob = RbConstants::Double::nan;
+  double prob = RbConstants::Double::neginf;
 
   for (size_t i=0; i<all_children.size(); ++i)
   {
@@ -455,9 +455,11 @@ bool SBNParameters::isValidCPD(std::vector<std::pair<Subsplit,double> >& cpd, Su
     }
   }
 
-  if ( !(sum_y == 1.0 && sum_z == 1.0) )
+  double tol = 0.0001;
+  if ( fabs(sum_y - 1.0) > tol || fabs(sum_z - 1.0) > tol )
   {
     std::cout << "Unnormalized or improperly normalized CPD for parent subsplit " << parent << std::endl;
+    std::cout << "Sum of CPDs for descendants of Y is " << std::fixed << std::setprecision(90) << sum_y << ". Sum of CPDs for descendants of Z is " << sum_z << std::endl;
     return false;
   }
 
@@ -486,7 +488,8 @@ bool SBNParameters::isValidRootDistribution(void) const
     }
   }
 
-  if ( sum_root != 1.0 )
+  double tol = 0.0001;
+  if ( fabs(sum_root - 1.0) > tol )
   {
     std::cout << "Root splits are unnormalized or improperly normalized" << std::endl;
     return false;

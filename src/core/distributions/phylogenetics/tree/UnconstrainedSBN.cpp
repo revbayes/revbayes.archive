@@ -96,6 +96,10 @@ double UnconstrainedSBN::computeLnProbabilityGivenRoot( void )
       lnProbability += parameters.computeSubsplitTransitionProbability(parent_child_pair.first, parent_child_pair.second);
     }
 
+    if ( !(value->isBinary()) )
+    {
+      return RbConstants::Double::nan;
+    }
     return lnProbability;
 }
 
