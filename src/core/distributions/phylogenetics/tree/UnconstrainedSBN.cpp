@@ -1,3 +1,4 @@
+#include <boost/foreach.hpp>
 #include "UnconstrainedSBN.h"
 #include "Clade.h"
 #include "RandomNumberFactory.h"
@@ -78,45 +79,21 @@ double UnconstrainedSBN::computeLnProbabilityGivenRoot( void )
 
     if ( root_children.size() != 2 )
     {
-      return( RbConstants::Double::neginf );
+      return( RbConstants::Double::nan );
     }
 
     Subsplit root_split = Subsplit(root_children[0]->getClade(),root_children[1]->getClade(),taxa);
 
     lnProbability += parameters.computeRootSplitProbability(root_split);
 
-    // loop over all internal nodes, calculate probabilities
+    // get all parent-child subsplit pairs, calculate their probabilities
     // TODO: We could do this more efficiently by travesing the tree, since we would not have to find the subsplit every node belongs to every time
-    for (size_t i=0; i < value->getNumberOfInteriorNodes(); ++i)
-    {
-      const TopologyNode &this_node = value->getNode(i);
-      if (!this_node.isRoot())
-      {
-        // Turn this node into a subsplit
-        const std::vector<TopologyNode*>& these_children = this_node.getChildren();
+    std::vector<std::pair<Subsplit,Subsplit> > parent_child_subsplits = value->getAllSubsplitParentChildPairs();
 
-        if ( these_children.size() != 2 )
-        {
-          return( RbConstants::Double::nan );
-        }
+    std::pair<Subsplit,Subsplit> parent_child_pair;
 
-        Subsplit this_split = Subsplit(these_children[0]->getClade(),these_children[1]->getClade(), taxa);
-
-        // Turn parent node into subsplit
-        const TopologyNode &this_node_parent = this_node.getParent();
-
-        const std::vector<TopologyNode*>& parent_children = this_node_parent.getChildren();
-
-        if ( parent_children.size() != 2 )
-        {
-          return( RbConstants::Double::nan );
-        }
-
-        Subsplit parent_split = Subsplit(parent_children[0]->getClade(),parent_children[1]->getClade(),taxa);
-
-        lnProbability += parameters.computeSubsplitTransitionProbability(parent_split, this_split);
-
-      }
+    BOOST_FOREACH(parent_child_pair, parent_child_subsplits) {
+      lnProbability += parameters.computeSubsplitTransitionProbability(parent_child_pair.first, parent_child_pair.second);
     }
 
     return lnProbability;
@@ -224,10 +201,10 @@ void UnconstrainedSBN::simulateTree( void )
         Z_child_node = new TopologyNode();
         active.push_back(std::make_pair(Z_child,Z_child_node));
       }
-std::cout << "Splitting subsplit X into Y and Z" << std::endl;
-std::cout << "  X = " << this_parent_subsplit << std::endl;
-std::cout << "  Y = " << Y_child << std::endl;
-std::cout << "  Z = " << Z_child << std::endl;
+// std::cout << "Splitting subsplit X into Y and Z" << std::endl;
+// std::cout << "  X = " << this_parent_subsplit << std::endl;
+// std::cout << "  Y = " << Y_child << std::endl;
+// std::cout << "  Z = " << Z_child << std::endl;
       this_parent_node->addChild(Y_child_node);
       this_parent_node->addChild(Z_child_node);
       Y_child_node->setParent(this_parent_node);

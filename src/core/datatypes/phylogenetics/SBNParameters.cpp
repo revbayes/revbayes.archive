@@ -123,7 +123,7 @@ double SBNParameters::computeRootSplitProbability( Subsplit root_split ) const
       prob = root_splits[i].second;
     }
   }
-  return prob;
+  return log(prob);
 }
 
 /* Computes the probability of seeing a particular parent-child subsplit pair given an SBN */
@@ -142,7 +142,7 @@ double SBNParameters::computeSubsplitTransitionProbability( const Subsplit paren
       prob = all_children[i].second;
     }
   }
-  return prob;
+  return log(prob);
 
 }
 
