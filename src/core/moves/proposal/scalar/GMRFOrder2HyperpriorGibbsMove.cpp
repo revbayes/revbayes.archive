@@ -100,8 +100,8 @@ GMRFOrder2HyperpriorGibbsMove::GMRFOrder2HyperpriorGibbsMove( StochasticNode<dou
 
     // Make sure that the normal distributions have the correct stdevs for this sampler to be appropriate
     // Somewhere there is a very slight deviance being introduced, hence the addition of rounding in this comparison
-    if (round(100000 * sd->getValue()) != round(100000 * 0.5 * zeta * global_scale->getValue())) {
-        throw(RbException("GMRFOrder2HyperpriorGibbsMove move only works when children[0] is a Normal(0,0.5*global_scale*zeta) Distributions"));
+    if (round(100000 * sd->getValue()) != round(100000 * RbConstants::SQRT1_2 * zeta * global_scale->getValue())) {
+        throw(RbException("GMRFOrder2HyperpriorGibbsMove move only works when children[0] is a Normal(0,sqrt(0.5)*global_scale*zeta) Distribution"));
     }
 
     addNode( normals[0] );

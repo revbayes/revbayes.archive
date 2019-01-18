@@ -1,6 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "HSRFHyperpriorsGibbsMove.h"
+#include "HSRFOrder2HyperpriorsGibbsMove.h"
 #include "ModelVector.h"
 #include "Move_HSRFHyperpriorsGibbs.h"
 #include "Natural.h"

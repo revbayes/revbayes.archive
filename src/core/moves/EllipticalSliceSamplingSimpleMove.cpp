@@ -154,9 +154,10 @@ public:
 
           // first we touch all the nodes
           // that will set the flags for recomputation
-          variables[i]->touch();
+          // variables[i]->touch();
       }
 
+      variables[0]->touchVector(v_nodes);
 
       double Pr_ = (*this)();
 

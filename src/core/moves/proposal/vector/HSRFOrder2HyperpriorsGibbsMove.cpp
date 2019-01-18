@@ -129,10 +129,10 @@ HSRFOrder2HyperpriorsGibbsMove::HSRFOrder2HyperpriorsGibbsMove( StochasticNode<d
 
     // Make sure that the normal distributions have the correct stdevs for this sampler to be appropriate
     // Somewhere there is a very slight deviance being introduced, hence the addition of rounding in this comparison
-    if (round(100000 * sd->getValue()) != round(100000 * 0.5 * zeta * global_scale->getValue() * local_scales[0]->getValue()) ) {
+    if (round(100000 * sd->getValue()) != round(100000 * RbConstants::SQRT1_2 * zeta * global_scale->getValue() * local_scales[0]->getValue()) ) {
         std::cout << "zeta, global_scale, and local_scale[0] are " << zeta << "," << global_scale->getValue() << "," << local_scales[0]->getValue()<< std::endl;
         std::cout << "sd is " << sd->getValue() << std::endl;
-        throw(RbException("HSRFOrder2HyperpriorsGibbsMove move only works when children[0] is Normal(0,0.5*local_scale*global_scale*zeta) Distributions"));
+        throw(RbException("HSRFOrder2HyperpriorsGibbsMove move only works when children[0] is a Normal(0,sqrt(0.5)*local_scale*global_scale*zeta) Distribution"));
     }
 
     addNode( normals[0] );
@@ -217,7 +217,7 @@ void HSRFOrder2HyperpriorsGibbsMove::performGibbsMove( void )
         lambda_squared = 1/(RbStatistics::Helper::rndGamma(1, *GLOBAL_RNG) / (psi_inverse + delta_theta_squared/two_zeta_squared_eta_squared) ); // lambda_squared[i] ~ Gamma(0.5, psi_inverse[i] + delta_theta^2/(2*eta^2*zeta^2)
 
         local_scales[i]->getValue() = std::sqrt(lambda_squared);
-        local_scales[i]->touch();
+        // local_scales[i]->touch();
 
         eta_squared_rate += delta_theta_squared/lambda_squared;
     }
@@ -232,9 +232,10 @@ void HSRFOrder2HyperpriorsGibbsMove::performGibbsMove( void )
     double eta_squared_inverse = RbStatistics::Helper::rndGamma(0.5*n, *GLOBAL_RNG) / eta_squared_rate; // eta_squared ~ InverseGamma(n/2, eta_squared_rate)
 
     global_scale->getValue() = std::sqrt(1/eta_squared_inverse);
-    global_scale->touch();
+    // global_scale->touch();
 
-    // keep the nodes, vectorized version avoids redundant calls
+    // touch and keep the nodes, vectorized version avoids redundant calls
+    global_scale->touchVector(nodes);
     global_scale->keepVector(nodes);
 
 
