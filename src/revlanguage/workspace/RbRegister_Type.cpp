@@ -77,7 +77,6 @@
 
 /* Tree types (in folder "datatypes/phylogenetics/trees") */
 #include "RlClade.h"
-#include "RlSubsplit.h"
 #include "RlRootedTripletDistribution.h"
 
 
@@ -133,7 +132,6 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
     {
 
         addTypeWithConstructor( new Clade() );
-        addTypeWithConstructor( new Subsplit() );
         addTypeWithConstructor( new Taxon() );
 
         addFunction( new Func_VectorMoves()  );

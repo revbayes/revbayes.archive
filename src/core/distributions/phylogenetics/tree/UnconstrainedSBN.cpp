@@ -82,13 +82,13 @@ double UnconstrainedSBN::computeLnProbabilityGivenRoot( void )
       return( RbConstants::Double::nan );
     }
 
-    Subsplit root_split = Subsplit(root_children[0]->getClade(),root_children[1]->getClade(),taxa);
+    Subsplit root_split = value->getRootSubsplit(taxa);
 
     lnProbability += parameters.computeRootSplitProbability(root_split);
 
     // get all parent-child subsplit pairs, calculate their probabilities
     // TODO: We could do this more efficiently by travesing the tree, since we would not have to find the subsplit every node belongs to every time
-    std::vector<std::pair<Subsplit,Subsplit> > parent_child_subsplits = value->getAllSubsplitParentChildPairs();
+    std::vector<std::pair<Subsplit,Subsplit> > parent_child_subsplits = value->getAllSubsplitParentChildPairs(taxa);
 
     std::pair<Subsplit,Subsplit> parent_child_pair;
 
@@ -181,7 +181,6 @@ void UnconstrainedSBN::simulateTree( void )
       if ( Y_child.isFake() )
       {
         // This is a tip, we don't add it to the active pile
-        Clade tip = Y_child.asClade();
         Y_child_node = tip_nodes[Y_child.getYBitset().getFirstSetBit()];
       }
       else
@@ -196,7 +195,6 @@ void UnconstrainedSBN::simulateTree( void )
       if ( Z_child.isFake() )
       {
         // This is a tip, we don't add it to the active pile
-        Clade tip = Z_child.asClade();
         Z_child_node = tip_nodes[Z_child.getYBitset().getFirstSetBit()];
       }
       else

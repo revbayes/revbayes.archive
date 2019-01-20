@@ -75,7 +75,8 @@ namespace RevBayesCore {
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, long &rv) const;       //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, Boolean &rv) const;    //!< Map the member methods to internal function calls
-        std::vector<std::pair<Subsplit,Subsplit> >          getAllSubsplitParentChildPairs(void) const;                                                                              //!< Get all the taxa in the tree
+        std::vector<std::pair<Subsplit,Subsplit> >          getAllSubsplitParentChildPairs(const std::vector<Taxon>& ordered_taxa) const;                                                                              //!< Get all the taxa in the tree
+        std::vector<std::pair<Subsplit,Subsplit> >          getAllSubsplitParentChildPairsRecursively(const std::vector<Taxon>& ordered_taxa) const;                                                                              //!< Get all the taxa in the tree
         std::vector<Taxon>                                  getFossilTaxa() const;                                                                              //!< Get all the taxa in the tree
         const TopologyNode&                                 getMrca(const TopologyNode &n) const;
         TopologyNode&                                       getMrca(const Clade &c);
@@ -86,7 +87,7 @@ namespace RevBayesCore {
         const TopologyNode&                                 getNode(size_t idx) const;                                                                          //!< Get the node at index
         const std::vector<TopologyNode*>&                   getNodes(void) const;                                                                               //!< Get a pointer to the nodes in the Tree
         std::vector<RbBitSet>                               getNodesAsBitset(void) const;                                                                               //!< Get a pointer to the nodes in the Tree
-        Subsplit                                            getNodeSubsplit(size_t idx) const;                                                                          //!< Get the node at index
+        Subsplit                                            getNodeSubsplit(const size_t idx, const std::vector<Taxon>& ordered_taxa) const;                                                                          //!< Get the node at index
         size_t                                              getNumberOfInteriorNodes(void) const;                                                               //!< Get the number of nodes in the Tree
         size_t                                              getNumberOfNodes(void) const;                                                                       //!< Get the number of nodes in the Tree
         size_t                                              getNumberOfExtantTips(void) const;                                                                  //!< Get the number of extant tip nodes in the Tree
@@ -99,7 +100,7 @@ namespace RevBayesCore {
         std::string                                         getPlainNewickRepresentation() const;                                                               //!< Get the newick representation of this Tree
         TopologyNode&                                       getRoot(void);                                                                                      //!< Get a pointer to the root node of the Tree
         const TopologyNode&                                 getRoot(void) const;                                                                                //!< Get a pointer to the root node of the Tree
-        Subsplit                                            getRootSubsplit(void) const;
+        Subsplit                                            getRootSubsplit(const std::vector<Taxon>& ordered_taxa) const;
         std::string                                         getSimmapNewickRepresentation() const;                                                              //!< Get the SIMMAP and phytools compatible newick representation of this Tree
         std::vector<std::string>                            getSpeciesNames() const;                                                                            //!< Get all the species represented in the tree
         std::vector<Taxon>                                  getTaxa() const;                                                                                    //!< Get all the taxa in the tree

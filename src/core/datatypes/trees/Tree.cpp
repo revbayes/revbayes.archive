@@ -592,7 +592,7 @@ const std::vector<std::vector<double> > Tree::getAdjacencyMatrix(void) const
     return adjacency;
 }
 
-std::vector<std::pair<Subsplit,Subsplit> > Tree::getAllSubsplitParentChildPairs(void) const
+std::vector<std::pair<Subsplit,Subsplit> > Tree::getAllSubsplitParentChildPairs(const std::vector<Taxon>& ordered_taxa) const
 {
   std::vector<std::pair<Subsplit,Subsplit> > all_pairs;
 
@@ -601,7 +601,7 @@ std::vector<std::pair<Subsplit,Subsplit> > Tree::getAllSubsplitParentChildPairs(
       if ( nodes[i]->isTip() == false )
       {
         // This node as a subsplit
-        Subsplit this_parent_split = getNodeSubsplit(i);
+        Subsplit this_parent_split = getNodeSubsplit(i,ordered_taxa);
 
         // Get children
         std::vector<int> children_indices = nodes[i]->getChildrenIndices();
@@ -611,7 +611,7 @@ std::vector<std::pair<Subsplit,Subsplit> > Tree::getAllSubsplitParentChildPairs(
         }
         for (size_t j=0; j<children_indices.size(); ++j)
         {
-          Subsplit this_child_split = getNodeSubsplit(children_indices[j]);
+          Subsplit this_child_split = getNodeSubsplit(children_indices[j],ordered_taxa);
           std::pair<Subsplit,Subsplit> this_pair;
           this_pair.first = this_parent_split;
           this_pair.second = this_child_split;
@@ -619,6 +619,12 @@ std::vector<std::pair<Subsplit,Subsplit> > Tree::getAllSubsplitParentChildPairs(
         }
       }
   }
+  return all_pairs;
+}
+
+std::vector<std::pair<Subsplit,Subsplit> > Tree::getAllSubsplitParentChildPairsRecursively(const std::vector<Taxon>& ordered_taxa) const
+{
+  std::vector<std::pair<Subsplit,Subsplit> > all_pairs;
   return all_pairs;
 }
 
@@ -739,7 +745,7 @@ std::vector<RbBitSet> Tree::getNodesAsBitset(void) const
     return bs;
 }
 
-Subsplit Tree::getNodeSubsplit(size_t idx) const
+Subsplit Tree::getNodeSubsplit(size_t idx, const std::vector<Taxon>& ordered_taxa) const
 {
 
     if ( idx >= nodes.size() )
@@ -749,20 +755,30 @@ Subsplit Tree::getNodeSubsplit(size_t idx) const
 
     Subsplit this_split;
 
-    // TODO: consider passing in an ordered taxon vector to prevent unneeded sorting
-    std::vector<Taxon> ordered_taxa = getTaxa();
-    VectorUtilities::sort(ordered_taxa);
+    // // TODO: consider passing in an ordered taxon vector to prevent unneeded sorting
+    // std::vector<Taxon> ordered_taxa = getTaxa();
+    // VectorUtilities::sort(ordered_taxa);
 
     if ( nodes[idx]->isTip() == false )
     {
       // Real subsplit
       const std::vector<TopologyNode*>& children = nodes[idx]->getChildren();
-      this_split = Subsplit(children[0]->getClade(),children[1]->getClade(),ordered_taxa);
+
+      std::vector<Taxon> child_0_taxa;
+      children[0]->getTaxa(child_0_taxa);
+
+      std::vector<Taxon> child_1_taxa;
+      children[1]->getTaxa(child_1_taxa);
+
+      this_split = Subsplit(child_0_taxa,child_1_taxa,ordered_taxa);
     }
     else
     {
       // Fake subsplit
-      this_split = Subsplit(nodes[idx]->getClade(),ordered_taxa);
+      std::vector<Taxon> my_taxa;
+      nodes[idx]->getTaxa(my_taxa);
+
+      this_split = Subsplit(my_taxa,ordered_taxa);
     }
 
     return this_split;
@@ -864,13 +880,20 @@ const TopologyNode& Tree::getRoot(void) const
     return *root;
 }
 
-Subsplit Tree::getRootSubsplit(void) const
+Subsplit Tree::getRootSubsplit(const std::vector<Taxon>& ordered_taxa) const
 {
-  std::vector<Taxon> ordered_taxa = getTaxa();
-  VectorUtilities::sort(ordered_taxa);
+  // std::vector<Taxon> ordered_taxa = getTaxa();
+  // VectorUtilities::sort(ordered_taxa);
 
   const std::vector<TopologyNode*>& root_children = root->getChildren();
-  Subsplit root_split = Subsplit(root_children[0]->getClade(),root_children[1]->getClade(),ordered_taxa);
+
+  std::vector<Taxon> child_0_taxa;
+  root_children[0]->getTaxa(child_0_taxa);
+
+  std::vector<Taxon> child_1_taxa;
+  root_children[1]->getTaxa(child_1_taxa);
+
+  Subsplit root_split = Subsplit(child_0_taxa,child_1_taxa,ordered_taxa);
   return root_split;
 }
 

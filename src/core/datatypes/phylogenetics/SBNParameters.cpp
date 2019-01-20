@@ -258,7 +258,7 @@ bool SBNParameters::isValid(void) const
 
 void SBNParameters::incrementParentChildCounts(std::map<std::pair<Subsplit,Subsplit>,double> &parent_child_counts, Tree& tree, double &weight)
 {
-  std::vector<std::pair<Subsplit,Subsplit> > these_parent_child_subsplits = tree.getAllSubsplitParentChildPairs();
+  std::vector<std::pair<Subsplit,Subsplit> > these_parent_child_subsplits = tree.getAllSubsplitParentChildPairs(taxa);
   for (size_t j=0; j<these_parent_child_subsplits.size(); ++j)
   {
     if ( parent_child_counts.count(these_parent_child_subsplits[j]) == 0 )
@@ -275,7 +275,7 @@ void SBNParameters::incrementParentChildCounts(std::map<std::pair<Subsplit,Subsp
 void SBNParameters::incrementRootSplitCounts(std::map<Subsplit,double>& root_split_counts, Tree& tree, double &weight)
 {
   Subsplit this_root_split;
-  this_root_split = tree.getRootSubsplit();
+  this_root_split = tree.getRootSubsplit(taxa);
   if ( root_split_counts.count(this_root_split) == 0 )
   {
     root_split_counts[this_root_split] = weight;

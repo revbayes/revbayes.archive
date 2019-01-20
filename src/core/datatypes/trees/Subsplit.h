@@ -25,12 +25,14 @@ namespace RevBayesCore {
     class Subsplit  {
 
     public:
+      // TODO: initializations are bonkers
+      //       1) clades from trees requires getting taxa then making clades, use vector<Taxon>
+      //       2) we never use any of the bitset initializers
+      //       3) storing taxa is wasteful
+      //       4) update RevLanguage subsplit to handle this, or get rid of it?? eh, it's probably cheaper to keep'er
                                                     Subsplit(void);                                                            //! Default constructor: empty Subsplit
-                                                    Subsplit(const Clade &c1, const std::vector<Taxon> &n );                                                //!< Default constructor: fake Subsplit
-                                                    Subsplit(const Clade &c1, const Clade &c2, const std::vector<Taxon> &n );                               //!< Default constructor: real Subsplit
-                                                    Subsplit(const std::pair<RbBitSet,RbBitSet> &b, const std::vector<Taxon> &n );                               //!< constructor: real Subsplit from subsplit
-                                                    Subsplit(const RbBitSet &b1, const RbBitSet &b2 );                               //!< constructor: subsplit from two splits/bitset clades, no taxa (for internal use)
-                                                    Subsplit(const std::pair<RbBitSet,RbBitSet> &b );                               //!< constructor: subsplit from subsplit, no taxa (for internal use)
+                                                    Subsplit(const std::vector<Taxon> &c1, const std::vector<Taxon> &n );                                                //!< Default constructor: fake Subsplit
+                                                    Subsplit(const std::vector<Taxon> &c1, const std::vector<Taxon> &c2, const std::vector<Taxon> &n );                               //!< Default constructor: real Subsplit
 
         virtual                                    ~Subsplit(void) {}
 
@@ -46,14 +48,14 @@ namespace RevBayesCore {
 
         // Basic utility functions
         Subsplit*                                      clone(void) const;                                          //!< Clone object
-//TODO: add functions, one for telling if a subsplit is a subsplit of Y, one for Z
+
         // public methods
-        Clade                                       asClade(void) const;                                        //!< Get clades Y and Z as a single clade
+        Clade                                       asClade(const std::vector<Taxon> &taxa) const;                                        //!< Get clades Y and Z as a single clade
         RbBitSet                                    asCladeBitset(void) const;                                  //!< Convert this value into a bitset representation for a clade.
         std::pair<RbBitSet,RbBitSet>                getBitset(void) const;                                      //!< Get the paired bitset representation of this subsplit as a clade
-        Clade                                       getY(void) const;                                           //!< Get clade Y
+        Clade                                       getY(const std::vector<Taxon>& taxa) const;                                           //!< Get clade Y
         RbBitSet                                    getYBitset(void) const;                                     //!< Get clade Y as bitset
-        Clade                                       getZ(void) const;                                           //!< Get clade Z
+        Clade                                       getZ(const std::vector<Taxon>& taxa) const;                                           //!< Get clade Z
         RbBitSet                                    getZBitset(void) const;                                     //!< Get clade Y as bitset
         bool                                        isChildOfY(const Subsplit &s) const;                      //!< Is argument subsplit compatible with this one?
         bool                                        isChildOfZ(const Subsplit &s) const;                      //!< Is argument subsplit compatible with this one?
@@ -68,13 +70,8 @@ namespace RevBayesCore {
     private:
 
         // members
-        // Clade                                       clade_y;
-        // Clade                                       clade_z;
         std::pair<RbBitSet,RbBitSet>                bitset;
         bool                                        is_fake;
-//TODO: remove taxa from core subsplit, make attribute solely of RevLanguage subsplit
-//         this will require making things like getX and getY take taxa as arguments
-        std::vector<Taxon>                          taxa;
     };
 
     // Global functions using the class

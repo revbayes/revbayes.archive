@@ -70,7 +70,6 @@
 /* Tree types (in folder "datatypes/evolution/trees") */
 #include "RlClade.h"
 #include "RlRootedTripletDistribution.h"
-#include "RlSubsplit.h"
 
 
 /* Taxon types (in folder "datatypes/evolution") */
