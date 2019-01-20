@@ -594,37 +594,13 @@ const std::vector<std::vector<double> > Tree::getAdjacencyMatrix(void) const
 
 std::vector<std::pair<Subsplit,Subsplit> > Tree::getAllSubsplitParentChildPairs(const std::vector<Taxon>& ordered_taxa) const
 {
+
   std::vector<std::pair<Subsplit,Subsplit> > all_pairs;
 
-  for ( size_t i=0; i<nodes.size(); ++i )
-  {
-      if ( nodes[i]->isTip() == false )
-      {
-        // This node as a subsplit
-        Subsplit this_parent_split = getNodeSubsplit(i,ordered_taxa);
+  Subsplit root_split = getRootSubsplit(ordered_taxa);
 
-        // Get children
-        std::vector<int> children_indices = nodes[i]->getChildrenIndices();
-        if ( children_indices.size() != 2 )
-        {
-          throw(RbException("Attempt to turn non-bifurcating tree into subsplits."));
-        }
-        for (size_t j=0; j<children_indices.size(); ++j)
-        {
-          Subsplit this_child_split = getNodeSubsplit(children_indices[j],ordered_taxa);
-          std::pair<Subsplit,Subsplit> this_pair;
-          this_pair.first = this_parent_split;
-          this_pair.second = this_child_split;
-          all_pairs.push_back(this_pair);
-        }
-      }
-  }
-  return all_pairs;
-}
+  root->getSubsplitParentChildPairsRecursively(all_pairs,root_split,ordered_taxa);
 
-std::vector<std::pair<Subsplit,Subsplit> > Tree::getAllSubsplitParentChildPairsRecursively(const std::vector<Taxon>& ordered_taxa) const
-{
-  std::vector<std::pair<Subsplit,Subsplit> > all_pairs;
   return all_pairs;
 }
 
@@ -744,46 +720,6 @@ std::vector<RbBitSet> Tree::getNodesAsBitset(void) const
 
     return bs;
 }
-
-Subsplit Tree::getNodeSubsplit(size_t idx, const std::vector<Taxon>& ordered_taxa) const
-{
-
-    if ( idx >= nodes.size() )
-    {
-        throw RbException("Index out of bounds in getNodeSubsplit.");
-    }
-
-    Subsplit this_split;
-
-    // // TODO: consider passing in an ordered taxon vector to prevent unneeded sorting
-    // std::vector<Taxon> ordered_taxa = getTaxa();
-    // VectorUtilities::sort(ordered_taxa);
-
-    if ( nodes[idx]->isTip() == false )
-    {
-      // Real subsplit
-      const std::vector<TopologyNode*>& children = nodes[idx]->getChildren();
-
-      std::vector<Taxon> child_0_taxa;
-      children[0]->getTaxa(child_0_taxa);
-
-      std::vector<Taxon> child_1_taxa;
-      children[1]->getTaxa(child_1_taxa);
-
-      this_split = Subsplit(child_0_taxa,child_1_taxa,ordered_taxa);
-    }
-    else
-    {
-      // Fake subsplit
-      std::vector<Taxon> my_taxa;
-      nodes[idx]->getTaxa(my_taxa);
-
-      this_split = Subsplit(my_taxa,ordered_taxa);
-    }
-
-    return this_split;
-}
-
 
 /**
  * Calculate the number of interior nodes in the BranchLengthTree by deducing the number of

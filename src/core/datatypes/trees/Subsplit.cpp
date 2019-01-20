@@ -25,47 +25,37 @@ Subsplit::Subsplit( void ) :
 Subsplit::Subsplit( const std::vector<Taxon> &c1, const std::vector<Taxon> &n ) :
     bitset(),
     is_fake( true )
-{
-    // Check that clade contains only single taxon
-    if ( c1.size() > 1 )
     {
-      throw(RbException("Cannot create fake subsplit from clade of multiple species."));
-    }
+        // TODO: having a single taxon instead of a vector of size 1 may be faster
 
-    // We default to putting the taxon in Clade Y for fake subsplits
-    // clade_y = c1;
-
-    //TODO: vector is unnecessary, and simply being used to ensure that the taxon for the subsplit is found in the listed taxa
-    //      replacing the vector setup with a single Taxon and a boolean for found/not found would be more elegant
-
-    // bitset representation
-    std::vector<Taxon> unset_taxa_1 = c1;
-    RbBitSet clade_1_bitset = RbBitSet(n.size(),false);
-    for (size_t i=0; i<n.size(); ++i)
-    {
-      for (std::vector<Taxon>::iterator jt=unset_taxa_1.begin(); jt!=unset_taxa_1.end(); jt++)
-      {
-        if (n[i] == (*jt))
+        // Check that clade contains only single taxon
+        if ( c1.size() > 1 )
         {
-          clade_1_bitset.set(i);
-          unset_taxa_1.erase(jt);
-          break;
+          throw(RbException("Cannot create fake subsplit from clade of multiple species."));
         }
-      }
-      if ( unset_taxa_1.size() == 0 )
-      {
-        break;
-      }
-    }
 
-    if (unset_taxa_1.size() != 0)
-    {
-      throw(RbException("Attempt to create subsplit with taxon not in vector of taxa."));
-    }
+        bool found = false;
 
-    bitset.first = clade_1_bitset;
-    bitset.second = clade_1_bitset;
-}
+        // bitset representation
+        RbBitSet clade_1_bitset = RbBitSet(n.size(),false);
+        for (size_t i=0; i<n.size(); ++i)
+        {
+          if (n[i] == c1[0])
+          {
+            clade_1_bitset.set(i);
+            found = true;
+            break;
+          }
+        }
+
+        if (!found)
+        {
+          throw(RbException("Attempt to create subsplit with taxon not in vector of taxa."));
+        }
+
+        bitset.first = clade_1_bitset;
+        bitset.second = clade_1_bitset;
+    }
 
 
 /**
@@ -79,28 +69,28 @@ Subsplit::Subsplit( const std::vector<Taxon> &c1, const std::vector<Taxon> &c2, 
     // bitset representations and check that X and Y are disjoint
     bool disjoint = true;
 
-    std::vector<Taxon> unset_taxa_1 = c1;
-    std::vector<Taxon> unset_taxa_2 = c2;
+    std::vector<Taxon> c1_unset = c1;
+    std::vector<Taxon> c2_unset = c2;
     RbBitSet clade_1_bitset = RbBitSet(n.size(),false);
     RbBitSet clade_2_bitset = RbBitSet(n.size(),false);
 
     for (size_t i=0; i<n.size(); ++i)
     {
-      for (std::vector<Taxon>::iterator jt=unset_taxa_1.begin(); jt!=unset_taxa_1.end(); jt++)
+      for (std::vector<Taxon>::iterator jt=c1_unset.begin(); jt!=c1_unset.end(); jt++)
       {
         if (n[i] == (*jt))
         {
           clade_1_bitset.set(i);
-          unset_taxa_1.erase(jt);
+          c1_unset.erase(jt);
           break;
         }
       }
-      for (std::vector<Taxon>::iterator jt=unset_taxa_2.begin(); jt!=unset_taxa_2.end(); jt++)
+      for (std::vector<Taxon>::iterator jt=c2_unset.begin(); jt!=c2_unset.end(); jt++)
       {
         if (n[i] == (*jt))
         {
           clade_2_bitset.set(i);
-          unset_taxa_2.erase(jt);
+          c2_unset.erase(jt);
           break;
         }
       }
@@ -108,13 +98,13 @@ Subsplit::Subsplit( const std::vector<Taxon> &c1, const std::vector<Taxon> &c2, 
       {
         disjoint = false;
       }
-      if (unset_taxa_1.size() == 0 && unset_taxa_2.size() == 0)
+      if (c1_unset.size() == 0 && c2_unset.size() == 0)
       {
         break;
       }
     }
 
-    if ( unset_taxa_1.size() != 0 || unset_taxa_2.size() != 0 )
+    if ( c1_unset.size() != 0 || c2_unset.size() != 0 )
     {
       throw(RbException("Attempt to create subsplit with taxon not in vector of taxa."));
     }
@@ -127,17 +117,19 @@ Subsplit::Subsplit( const std::vector<Taxon> &c1, const std::vector<Taxon> &c2, 
     // Order clades
     if ( clade_1_bitset < clade_2_bitset )
     {
-      // clade_y = c1;
-      // clade_z = c2;
       bitset.first = clade_1_bitset;
       bitset.second = clade_2_bitset;
     }
     else
     {
-      // clade_y = c2;
-      // clade_z = c1;
       bitset.first = clade_2_bitset;
       bitset.second = clade_1_bitset;
+    }
+
+    // Check if we made a fake subsplit
+    if ( clade_1_bitset.getNumberSetBits() == 1 && clade_2_bitset.getNumberSetBits() == 1 && clade_1_bitset.getFirstSetBit() == clade_2_bitset.getFirstSetBit() )
+    {
+      is_fake = true;
     }
 }
 

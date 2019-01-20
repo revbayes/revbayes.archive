@@ -25,11 +25,6 @@ namespace RevBayesCore {
     class Subsplit  {
 
     public:
-      // TODO: initializations are bonkers
-      //       1) clades from trees requires getting taxa then making clades, use vector<Taxon>
-      //       2) we never use any of the bitset initializers
-      //       3) storing taxa is wasteful
-      //       4) update RevLanguage subsplit to handle this, or get rid of it?? eh, it's probably cheaper to keep'er
                                                     Subsplit(void);                                                            //! Default constructor: empty Subsplit
                                                     Subsplit(const std::vector<Taxon> &c1, const std::vector<Taxon> &n );                                                //!< Default constructor: fake Subsplit
                                                     Subsplit(const std::vector<Taxon> &c1, const std::vector<Taxon> &c2, const std::vector<Taxon> &n );                               //!< Default constructor: real Subsplit
