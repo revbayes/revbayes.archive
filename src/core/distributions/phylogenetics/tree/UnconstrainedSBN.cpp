@@ -1,11 +1,13 @@
 #include <boost/foreach.hpp>
-#include "UnconstrainedSBN.h"
 #include "Clade.h"
+#include "DistributionGamma.h"
+#include "DistributionLognormal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "RbException.h"
 #include "TopologyNode.h"
+#include "UnconstrainedSBN.h"
 
 #include <algorithm>
 #include <cmath>
@@ -96,6 +98,29 @@ double UnconstrainedSBN::computeLnProbabilityGivenRoot( void )
       lnProbability += parameters.computeSubsplitTransitionProbability(parent_child_pair.first, parent_child_pair.second);
     }
 
+
+    std::map<std::pair<Subsplit,Subsplit>,std::pair<double,double> > edge_length_params = parameters.getEdgeLengthDistributionParameters();
+
+    // Get branch lengths
+    const std::vector<TopologyNode*> tree_nodes = value->getNodes();
+    for (size_t i=0; i<tree_nodes.size(); ++i)
+    {
+      if (!tree_nodes[i]->isRoot())
+      {
+        Subsplit this_split = tree_nodes[i]->getSubsplit(taxa);
+        Subsplit this_parent = tree_nodes[i]->getParent().getSubsplit(taxa);
+
+        std::pair<Subsplit,Subsplit> this_parent_child;
+        this_parent_child.first = this_parent;
+        this_parent_child.second = this_split;
+
+        std::pair<double,double> these_params = edge_length_params[this_parent_child];
+
+        lnProbability += RbStatistics::Lognormal::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
+
+      }
+    }
+
     if ( !(value->isBinary()) )
     {
       return RbConstants::Double::nan;
@@ -142,6 +167,9 @@ void UnconstrainedSBN::simulateTree( void )
 
     // internally we treat unrooted topologies the same as rooted
     psi->setRooted( rooted );
+
+    // For drawing branch lengths
+    std::map<std::pair<Subsplit,Subsplit>,std::pair<double,double> > edge_length_params = parameters.getEdgeLengthDistributionParameters();
 
     // create the tip nodes
     std::vector<TopologyNode*> tip_nodes;
@@ -190,6 +218,16 @@ void UnconstrainedSBN::simulateTree( void )
         active.push_back(std::make_pair(Y_child,Y_child_node));
       }
 
+      // Add branchlength to Y
+      std::pair<Subsplit,Subsplit> this_parent_child;
+      this_parent_child.first = this_parent_subsplit;
+      this_parent_child.second = Y_child;
+
+      std::pair<double,double> these_params = edge_length_params[this_parent_child];
+
+      double brlen  = RbStatistics::Lognormal::rv(these_params.first, these_params.second, *rng);
+      Y_child_node->setBranchLength(brlen,false);
+
       // Choose subsplit of Z
       Subsplit Z_child = parameters.drawSubsplitForZ(this_parent_subsplit);
       if ( Z_child.isFake() )
@@ -203,10 +241,16 @@ void UnconstrainedSBN::simulateTree( void )
         Z_child_node = new TopologyNode();
         active.push_back(std::make_pair(Z_child,Z_child_node));
       }
-// std::cout << "Splitting subsplit X into Y and Z" << std::endl;
-// std::cout << "  X = " << this_parent_subsplit << std::endl;
-// std::cout << "  Y = " << Y_child << std::endl;
-// std::cout << "  Z = " << Z_child << std::endl;
+
+      // Add branchlength to Z
+      this_parent_child.first = this_parent_subsplit;
+      this_parent_child.second = Z_child;
+
+      these_params = edge_length_params[this_parent_child];
+      brlen = RbStatistics::Lognormal::rv(these_params.first, these_params.second, *rng);
+      Z_child_node->setBranchLength(brlen,false);
+
+      // Attach nodes to eachother
       this_parent_node->addChild(Y_child_node);
       this_parent_node->addChild(Z_child_node);
       Y_child_node->setParent(this_parent_node);

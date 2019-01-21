@@ -15,6 +15,8 @@
  */
 
 #include <boost/foreach.hpp>
+#include "DistributionGamma.h"
+#include "DistributionLognormal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -29,7 +31,7 @@ using namespace RevBayesCore;
 
 /** Construct empty SBN parameters */
 SBNParameters::SBNParameters( void ) :
-  edge_length_distributions(),
+  edge_length_distribution_parameters(),
   num_taxa(),
   taxa(),
   root_splits(),
@@ -40,7 +42,7 @@ SBNParameters::SBNParameters( void ) :
 
 /** Construct empty SBN parameters from taxa */
 SBNParameters::SBNParameters( std::vector<Taxon> taxa ) :
-  edge_length_distributions(),
+  edge_length_distribution_parameters(),
   num_taxa( taxa.size() ),
   taxa( taxa ),
   root_splits(),
@@ -51,7 +53,7 @@ SBNParameters::SBNParameters( std::vector<Taxon> taxa ) :
 
 /** Construct rate matrix with n states */
 SBNParameters::SBNParameters( const SBNParameters &sbn ) :
-  edge_length_distributions(sbn.edge_length_distributions),
+  edge_length_distribution_parameters(sbn.edge_length_distribution_parameters),
   num_taxa(sbn.num_taxa),
   taxa(sbn.taxa),
   root_splits(sbn.root_splits),
@@ -72,7 +74,7 @@ SBNParameters& SBNParameters::operator=( const SBNParameters &sbn )
 
     if ( this != &sbn )
     {
-      edge_length_distributions = sbn.edge_length_distributions;
+      edge_length_distribution_parameters = sbn.edge_length_distribution_parameters;
       num_taxa                  = sbn.num_taxa;
       taxa                      = sbn.taxa;
       root_splits               = sbn.root_splits;
@@ -82,9 +84,9 @@ SBNParameters& SBNParameters::operator=( const SBNParameters &sbn )
     return *this;
 }
 
-std::map<std::pair<Subsplit,Subsplit>,TypedDistribution<double>* >& SBNParameters::getEdgeLengthDistributions(void)
+std::map<std::pair<Subsplit,Subsplit>,std::pair<double,double> >& SBNParameters::getEdgeLengthDistributionParameters(void)
 {
-  return edge_length_distributions;
+  return edge_length_distribution_parameters;
 }
 
 const size_t SBNParameters::getNumTaxa(void) const
@@ -500,6 +502,12 @@ bool SBNParameters::isValidRootDistribution(void) const
 
 void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
 {
+  // TODO: Reformat branch length processing and tree processing.
+  //       We're going to want to read each tree once and leave it as a root split and a vector of subsplits (probably as a pair<root,all_subsplits>).
+  //         We're also going to want makeCPDs and makeRootSplits to take these in, as well as a weight (the weight is either the variational distribution q_k^n or 1/(2n-3)) for normalizing.
+  //         Each tree-read pass should also return not just the subsplits but the branch lengths observed for each subsplit.
+  //       If we're going to consider online work, this will need a lot of other work
+
   // For counting subsplits, we could use integers but unrooted trees get fractional counts, so we'll be consistent
   std::map<Subsplit,double> root_split_counts;
   std::map<std::pair<Subsplit,Subsplit>,double> parent_child_counts;
@@ -508,8 +516,7 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
   // For unrooted trees, the weight will be less than 1, and may vary (in the EM algorithm)
   double weight = 1.0;
 
-  // TODO: add branch length processing
-  // std::map<std::pair<Subsplit,Subsplit>,double> branch_length_observations;
+  std::map<std::pair<Subsplit,Subsplit>,std::vector<double> > branch_length_observations;
 
   // Loop over all trees
   // for each, get all root splits and subsplit parent-child relationships
@@ -518,6 +525,26 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
   {
     incrementRootSplitCounts(root_split_counts, trees[i], weight);
     incrementParentChildCounts(parent_child_counts, trees[i], weight);
+
+    // Get branch lengths
+    const std::vector<TopologyNode*> tree_nodes = trees[i].getNodes();
+    for (size_t i=0; i<tree_nodes.size(); ++i)
+    {
+      if (!tree_nodes[i]->isRoot())
+      {
+        Subsplit this_split = tree_nodes[i]->getSubsplit(taxa);
+        Subsplit this_parent = tree_nodes[i]->getParent().getSubsplit(taxa);
+
+        std::pair<Subsplit,Subsplit> this_parent_child;
+        this_parent_child.first = this_parent;
+        this_parent_child.second = this_split;
+
+        (branch_length_observations[this_parent_child]).push_back(tree_nodes[i]->getBranchLength());
+
+      }
+    }
+
+
   }
 
   // Turn root split counts into a distribution on the root split
@@ -525,6 +552,47 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
 
   // Turn parent-child subsplit counts into CPDs
   makeCPDs(parent_child_counts);
+
+  // Turn branch length observations into lognormal distributions
+  std::pair<std::pair<Subsplit,Subsplit>,std::vector<double>> parent_child_edge_set;
+  BOOST_FOREACH(parent_child_edge_set, branch_length_observations) {
+    if (parent_child_edge_set.second.size() > 2)
+    {
+      // Get mean/sd of log of observations
+      double log_mean;
+      for (size_t i=0; i<parent_child_edge_set.second.size(); ++i)
+      {
+        log_mean += log(parent_child_edge_set.second[i]);
+      }
+      log_mean /= parent_child_edge_set.second.size();
+
+      double log_sd;
+      for (size_t i=0; i<parent_child_edge_set.second.size(); ++i)
+      {
+        log_sd += pow(log(parent_child_edge_set.second[i])-log_mean,2.0);
+      }
+      log_sd /= parent_child_edge_set.second.size();
+      log_sd = sqrt(log_sd);
+
+      // Approximate edge-length distribution using lognormal, use MLE parameters
+      std::pair<double,double> these_params;
+      these_params.first = log_mean;
+      these_params.second = log_sd;
+
+      edge_length_distribution_parameters[parent_child_edge_set.first] = these_params;
+
+    }
+    else
+    {
+      // Basically no information on edge length distribution
+      // Approximate edge-length distribution using a lognormal that looks like the standard MrBayes prior
+      std::pair<double,double> these_params;
+      these_params.first = -2.8;
+      these_params.second = 1.0;
+
+      edge_length_distribution_parameters[parent_child_edge_set.first] = these_params;
+    }
+  }
 
   if ( !isValid() )
   {

@@ -40,7 +40,7 @@ namespace RevBayesCore {
         SBNParameters&        operator=(const SBNParameters& sbn);
 
         // Access to members
-        std::map<std::pair<Subsplit,Subsplit>,TypedDistribution<double>* >& getEdgeLengthDistributions(void); // For each subsplit parent-child relationship, the edge length distribution
+        std::map<std::pair<Subsplit,Subsplit>,std::pair<double,double> >&   getEdgeLengthDistributionParameters(void); // For each subsplit parent-child relationship, the parameters of the edge length distribution
         const size_t                                                        getNumTaxa(void) const; // The number of taxa in the tree the SBN describes
         std::vector<std::pair<Subsplit,double> >&                           getRootSplits(void); // The root splits in the tree and their probabilities
         std::map<Subsplit,std::vector<std::pair<Subsplit,double> > >&       getSubsplitCPDs(void); // For each subsplit, its children and their probabilities
@@ -74,7 +74,7 @@ namespace RevBayesCore {
         std::vector<Taxon>                             taxa; // The taxa in the tree the SBN describes
         std::vector<std::pair<Subsplit,double> >       root_splits; // The root splits in the tree and their probabilities
         std::map<Subsplit,std::vector<std::pair<Subsplit,double> > >        subsplit_cpds; // For each subsplit, its children and their probabilities
-        std::map<std::pair<Subsplit,Subsplit>,TypedDistribution<double>* >  edge_length_distributions; // For each subsplit parent-child relationship, the edge length distribution
+        std::map<std::pair<Subsplit,Subsplit>,std::pair<double,double> >    edge_length_distribution_parameters; // For each subsplit parent-child relationship, the parameters of th edge length distribution
     };
 
     // Global functions using the class
