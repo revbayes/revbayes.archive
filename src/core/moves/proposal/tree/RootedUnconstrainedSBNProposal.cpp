@@ -25,9 +25,12 @@ RootedUnconstrainedSBNProposal::RootedUnconstrainedSBNProposal( StochasticNode<T
     // tell the base class to add the node
     addNode( tree );
 
+    // tell the base class to add the node
+    // also ensure stored_branch_lengths is correct size
     for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
     {
         addNode( *it );
+        stored_branch_lengths.push_back(-10.0);
     }
 
 }
@@ -86,32 +89,51 @@ double RootedUnconstrainedSBNProposal::getProposalTuningParameter( void ) const
  */
 double RootedUnconstrainedSBNProposal::doProposal( void )
 {
+std::cout << "hello from the move" << std::endl;
 
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 
     // Compute q(x|x') = q(x)
     stored_tree = tree->getValue();
+std::cout << "stored tree" << std::endl;
 
     Tree &tau = tree->getValue();
 
-    SBNDistribution.setValue(&tau,false);
+std::cout << "dealt with trees" << std::endl;
+    SBNDistribution.setValue(&(tree->getValue()),false);
+std::cout << "SBNDistribution.setValue(&tau,false);" << std::endl;
 
     double lnHastingsratio = SBNDistribution.computeLnProbability();
+std::cout << "Computed lnProbability as " << SBNDistribution.computeLnProbability() << std::endl;
 
     // Store branch lengths
-    for (size_t i=0; i<length; ++i)
+    for (size_t index=0; index<length; ++index)
     {
-      stored_branch_lengths[i] = variables[i]->getValue();
+      stored_branch_lengths[index] = variables[index]->getValue();
     }
+std::cout << "stored branches" << std::endl;
 
     // Get new tree, compute q(x'|x) = q(x')
     SBNDistribution.redrawValue();
+std::cout << "redrew tree" << std::endl;
 
     lnHastingsratio -= SBNDistribution.computeLnProbability();
+std::cout << "computed new tree lnProbability as " << SBNDistribution.computeLnProbability() << std::endl;
 
     // Set new tree
-    tau = SBNDistribution.getValue();
+    Tree tmp = SBNDistribution.getValue();
+std::cout << "Tree tmp = SBNDistribution.getValue();" << std::endl;
+    tree->getValue() = tmp;
+std::cout << "tree->getValue() = tmp;" << std::endl;
+    std::cout << "new tree is " << tree->getValue() << std::endl;
+
+    tmp.setRoot(&(tmp.getRoot()),false);
+    std::cout << "setting root on new tree" << std::endl;
+
+    // tau = SBNDistribution.getValue();
+std::cout << "reset tau" << std::endl;
+std::cout << "" << std::endl;
 
     // update branch lengths
     std::vector<TopologyNode*> tree_nodes = tau.getNodes();
@@ -181,7 +203,10 @@ void RootedUnconstrainedSBNProposal::undoProposal( void )
 void RootedUnconstrainedSBNProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
 
-    tree = static_cast<StochasticNode<Tree>* >(newN) ;
+    if ( tree == oldN )
+    {
+        tree = static_cast<StochasticNode<Tree>* >(newN) ;
+    }
 
     for (size_t i = 0; i < variables.size(); ++i)
     {

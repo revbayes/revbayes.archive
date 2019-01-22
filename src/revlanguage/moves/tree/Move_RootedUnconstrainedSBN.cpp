@@ -46,7 +46,7 @@ void Move_RootedUnconstrainedSBN::constructInternalObject( void )
 
     const RevBayesCore::SBNParameters &sbn = static_cast<const SBNParameters &>(parameters->getRevObject()).getValue();
 
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* tmp2 = static_cast<const ModelVector<Real> &>( branchLengths->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* tmp2 = static_cast<const ModelVector<RealPos> &>( branchLengths->getRevObject() ).getDagNode();
     std::vector<const RevBayesCore::DagNode*> p = tmp2->getParents();
     std::vector< RevBayesCore::StochasticNode<double> *> n;
     for (std::vector<const RevBayesCore::DagNode*>::const_iterator it = p.begin(); it != p.end(); ++it)
@@ -111,9 +111,9 @@ const MemberRules& Move_RootedUnconstrainedSBN::getParameterRules(void) const
     if ( !rules_set )
     {
 
-        RUSBNMemberRules.push_back( new ArgumentRule( "tree",          BranchLengthTree::getClassTypeSpec(),  "The tree variable this move operates on.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        RUSBNMemberRules.push_back( new ArgumentRule( "branchLengths", ModelVector<Real>::getClassTypeSpec(), "The tree's branch lengths.",               ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
-        RUSBNMemberRules.push_back( new ArgumentRule( "parameters",    SBNParameters::getClassTypeSpec() ,    "The parameters of the SBN",                ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        RUSBNMemberRules.push_back( new ArgumentRule( "tree",          BranchLengthTree::getClassTypeSpec(),     "The tree variable this move operates on.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        RUSBNMemberRules.push_back( new ArgumentRule( "branchLengths", ModelVector<RealPos>::getClassTypeSpec(), "The tree's branch lengths.",               ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
+        RUSBNMemberRules.push_back( new ArgumentRule( "parameters",    SBNParameters::getClassTypeSpec() ,       "The parameters of the SBN",                ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
@@ -164,6 +164,10 @@ void Move_RootedUnconstrainedSBN::setConstParameter(const std::string& name, con
     else if ( name == "branchLengths" )
     {
         branchLengths = var;
+    }
+    else if ( name == "parameters" )
+    {
+        parameters = var;
     }
     else
     {

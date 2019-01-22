@@ -258,6 +258,7 @@ void UnconstrainedSBN::simulateTree( void )
 
     }
 
+    // initialize the topology by setting the root
     psi->setRoot(root, true);
 
     // TODO: with the selection of taxa for tips using bitsets, taxon names are paired to indices, the following may be extraneous
@@ -270,10 +271,7 @@ void UnconstrainedSBN::simulateTree( void )
 
     psi->orderNodesByIndex();
 
-    // initialize the topology by setting the root
-    // psi->setRoot(root, true);
-
-    // finally store the new value
+  // finally store the new value
     delete value;
     value = psi;
 
