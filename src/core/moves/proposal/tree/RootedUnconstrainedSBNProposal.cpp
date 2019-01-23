@@ -124,23 +124,29 @@ std::cout << "computed new tree lnProbability as " << SBNDistribution.computeLnP
     // Set new tree
     Tree tmp = SBNDistribution.getValue();
 std::cout << "Tree tmp = SBNDistribution.getValue();" << std::endl;
-    tree->getValue() = tmp;
-std::cout << "tree->getValue() = tmp;" << std::endl;
-    std::cout << "new tree is " << tree->getValue() << std::endl;
-
-    tmp.setRoot(&(tmp.getRoot()),false);
-    std::cout << "setting root on new tree" << std::endl;
-
-    // tau = SBNDistribution.getValue();
-std::cout << "reset tau" << std::endl;
-std::cout << "" << std::endl;
+std::cout << "  tmp.getNumberOfTips() = " << tmp.getNumberOfTips() << std::endl;
+std::cout << "  tmp.getNumberOfNodes() = " << tmp.getNumberOfNodes() << std::endl;
+std::cout << "  tmp.isBinary() = " << tmp.isBinary() << std::endl;
+std::cout << "  tmp.isBroken() = " << tmp.isBroken() << std::endl;
 
     // update branch lengths
-    std::vector<TopologyNode*> tree_nodes = tau.getNodes();
-    for (size_t i=0; i<length; ++i)
+    std::vector<TopologyNode*> tree_nodes = tmp.getNodes();
+    size_t i=0;
+    for (std::vector<TopologyNode*>::iterator it = tree_nodes.begin(); it != tree_nodes.end(); ++it)
     {
-      variables[i]->getValue() = tree_nodes[i]->getBranchLength();
+      if ( !(tree_nodes[i]->isRoot()) )
+      {
+        variables[i]->getValue() = (*it)->getBranchLength();
+        ++i;
+      }
     }
+
+    // Update tree
+    tree->getValue() = tmp;
+std::cout << "tree->getValue() = tmp;" << std::endl;
+std::cout << "new tree is " << tree->getValue() << std::endl;
+
+    // tau = SBNDistribution.getValue();
 
     return lnHastingsratio;
 
