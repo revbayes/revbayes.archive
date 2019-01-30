@@ -101,7 +101,7 @@ std::cout << "stored tree" << std::endl;
     Tree &tau = tree->getValue();
 
 std::cout << "dealt with trees" << std::endl;
-    SBNDistribution.setValue(&(tree->getValue()),false);
+    SBNDistribution.setValue( tree->getValue().clone() ,false);
 std::cout << "SBNDistribution.setValue(&tau,false);" << std::endl;
 
     double lnHastingsratio = SBNDistribution.computeLnProbability();
@@ -126,8 +126,8 @@ std::cout << "computed new tree lnProbability as " << SBNDistribution.computeLnP
 std::cout << "Tree tmp = SBNDistribution.getValue();" << std::endl;
 std::cout << "  tmp.getNumberOfTips() = " << tmp.getNumberOfTips() << std::endl;
 std::cout << "  tmp.getNumberOfNodes() = " << tmp.getNumberOfNodes() << std::endl;
-std::cout << "  tmp.isBinary() = " << tmp.isBinary() << std::endl;
-std::cout << "  tmp.isBroken() = " << tmp.isBroken() << std::endl;
+    std::cout << "  tmp.isBinary() = " << (tmp.isBinary() == true ? "TRUE" : "FALSE" ) << std::endl;
+std::cout << "  tmp.isBroken() = " << (tmp.isBroken() == true ? "TRUE" : "FALSE" ) << std::endl;
 
     // update branch lengths
     std::vector<TopologyNode*> tree_nodes = tmp.getNodes();

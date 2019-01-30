@@ -115,7 +115,7 @@ const std::vector<Taxon>& SBNParameters::getTaxa(void) const
 }
 
 /* Computes the probability of seeing a particular root split given an SBN */
-double SBNParameters::computeRootSplitProbability( Subsplit root_split ) const
+double SBNParameters::computeRootSplitProbability( const Subsplit &root_split ) const
 {
   double prob = RbConstants::Double::neginf;
   for (size_t i=0; i<root_splits.size(); ++i)
@@ -129,11 +129,11 @@ double SBNParameters::computeRootSplitProbability( Subsplit root_split ) const
 }
 
 /* Computes the probability of seeing a particular parent-child subsplit pair given an SBN */
-double SBNParameters::computeSubsplitTransitionProbability( const Subsplit parent, const Subsplit child ) const
+double SBNParameters::computeSubsplitTransitionProbability( const Subsplit &parent, const Subsplit &child ) const
 {
 
   // Find all potential children of parent
-  std::vector<std::pair<Subsplit,double> > all_children = subsplit_cpds.at(parent);
+  const std::vector<std::pair<Subsplit,double> > &all_children = subsplit_cpds.at(parent);
 
   double prob = RbConstants::Double::neginf;
 
@@ -168,7 +168,7 @@ Subsplit SBNParameters::drawRootSplit( void ) const
 }
 
 /* Draws a subsplit for subsplit S's clade Y*/
-Subsplit SBNParameters::drawSubsplitForY( Subsplit s ) const
+Subsplit SBNParameters::drawSubsplitForY( const Subsplit &s ) const
 {
 
   // Find all potential children of s
@@ -201,7 +201,7 @@ Subsplit SBNParameters::drawSubsplitForY( Subsplit s ) const
 }
 
 /* Draws a subsplit for subsplit S's clade Z*/
-Subsplit SBNParameters::drawSubsplitForZ( Subsplit s ) const
+Subsplit SBNParameters::drawSubsplitForZ( const Subsplit &s ) const
 {
   // Find all potential children of s
   std::vector<std::pair<Subsplit,double> > my_children = subsplit_cpds.at(s);

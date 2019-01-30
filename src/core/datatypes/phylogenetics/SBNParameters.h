@@ -48,11 +48,11 @@ namespace RevBayesCore {
         const std::vector<Taxon>&                                           getTaxa(void) const; // The taxa in the tree the SBN describes
 
         // Helper functions for SBN distributions
-        double                              computeRootSplitProbability( const Subsplit root_split ) const;
-        double                              computeSubsplitTransitionProbability( const Subsplit parent, const Subsplit child ) const;
+        double                              computeRootSplitProbability( const Subsplit &root_split ) const;
+        double                              computeSubsplitTransitionProbability( const Subsplit &parent, const Subsplit &child ) const;
         Subsplit                            drawRootSplit( void ) const;
-        Subsplit                            drawSubsplitForY( Subsplit s ) const;
-        Subsplit                            drawSubsplitForZ( Subsplit s ) const;
+        Subsplit                            drawSubsplitForY( const Subsplit &s ) const;
+        Subsplit                            drawSubsplitForZ( const Subsplit &s ) const;
         bool                                isValid(void) const;
 
         // Functions for learning SBNs

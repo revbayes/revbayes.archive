@@ -94,7 +94,8 @@ double UnconstrainedSBN::computeLnProbabilityGivenRoot( void )
 
     std::pair<Subsplit,Subsplit> parent_child_pair;
 
-    BOOST_FOREACH(parent_child_pair, parent_child_subsplits) {
+    BOOST_FOREACH(parent_child_pair, parent_child_subsplits)
+    {
       lnProbability += parameters.computeSubsplitTransitionProbability(parent_child_pair.first, parent_child_pair.second);
     }
 
