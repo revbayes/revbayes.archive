@@ -174,7 +174,7 @@ const std::string& HSRFOrder2HyperpriorsGibbsMove::getMoveName( void ) const
 
 /**
  * The parameter this Gibbs move operates on is always in the prior.
- * If its children are as well, then the conditional distribution is safe if the likelihood is heated.
+ * If it is, then the conditional distribution is safe if the likelihood is heated.
  */
 bool HSRFOrder2HyperpriorsGibbsMove::heatsAreAllowable(double prHeat, double lHeat, double pHeat)
 {

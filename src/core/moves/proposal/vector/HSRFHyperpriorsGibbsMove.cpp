@@ -148,6 +148,36 @@ const std::string& HSRFHyperpriorsGibbsMove::getMoveName( void ) const
     return name;
 }
 
+/**
+ * The parameter this Gibbs move operates on are almost always in the prior.
+ * If it is, then the conditional distribution is safe if the likelihood is heated.
+ */
+bool HSRFHyperpriorsGibbsMove::heatsAreAllowable(double prHeat, double lHeat, double pHeat)
+{
+  if ( prHeat == 1.0 && lHeat == 1.0 && pHeat == 1.0 )
+  {
+    return true;
+  }
+
+  if ( prHeat != 1.0 || pHeat != 1.0 ) {
+    return false;
+  }
+
+  if ( lHeat != 1.0 )
+  {
+    for (size_t i=0; i<normals.size(); ++i)
+    {
+      if ( normals[i]->isClamped() )
+      {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  return false;
+}
+
 /** Perform the move */
 void HSRFHyperpriorsGibbsMove::performGibbsMove( void )
 {
