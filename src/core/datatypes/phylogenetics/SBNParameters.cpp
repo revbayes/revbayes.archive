@@ -117,15 +117,15 @@ const std::vector<Taxon>& SBNParameters::getTaxa(void) const
 /* Computes the probability of seeing a particular root split given an SBN */
 double SBNParameters::computeRootSplitProbability( const Subsplit &root_split ) const
 {
-  double prob = RbConstants::Double::neginf;
+  double log_prob = RbConstants::Double::neginf;
   for (size_t i=0; i<root_splits.size(); ++i)
   {
     if ( root_split == root_splits[i].first)
     {
-      prob = root_splits[i].second;
+      log_prob = log(root_splits[i].second);
     }
   }
-  return log(prob);
+  return log_prob;
 }
 
 /* Computes the probability of seeing a particular parent-child subsplit pair given an SBN */
@@ -135,16 +135,16 @@ double SBNParameters::computeSubsplitTransitionProbability( const Subsplit &pare
   // Find all potential children of parent
   const std::vector<std::pair<Subsplit,double> > &all_children = subsplit_cpds.at(parent);
 
-  double prob = RbConstants::Double::neginf;
+  double log_prob = RbConstants::Double::neginf;
 
   for (size_t i=0; i<all_children.size(); ++i)
   {
     if ( child == all_children[i].first)
     {
-      prob = all_children[i].second;
+      log_prob = log(all_children[i].second);
     }
   }
-  return log(prob);
+  return log_prob;
 
 }
 
@@ -554,7 +554,7 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
   makeCPDs(parent_child_counts);
 
   // Turn branch length observations into lognormal distributions
-  std::pair<std::pair<Subsplit,Subsplit>,std::vector<double>> parent_child_edge_set;
+  std::pair<std::pair<Subsplit,Subsplit>,std::vector<double> > parent_child_edge_set;
   BOOST_FOREACH(parent_child_edge_set, branch_length_observations) {
     if (parent_child_edge_set.second.size() > 2)
     {

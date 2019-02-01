@@ -89,45 +89,48 @@ double RootedUnconstrainedSBNProposal::getProposalTuningParameter( void ) const
  */
 double RootedUnconstrainedSBNProposal::doProposal( void )
 {
-std::cout << "hello from the move" << std::endl;
+// std::cout << "hello from the move" << std::endl;
 
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 
     // Compute q(x|x') = q(x)
     stored_tree = tree->getValue();
-std::cout << "stored tree" << std::endl;
+// std::cout << "stored tree" << std::endl;
 
     Tree &tau = tree->getValue();
 
-std::cout << "dealt with trees" << std::endl;
-    SBNDistribution.setValue( tree->getValue().clone() ,false);
-std::cout << "SBNDistribution.setValue(&tau,false);" << std::endl;
+// std::cout << "dealt with trees" << std::endl;
+    SBNDistribution.setValue( tree->getValue().clone() ,true);
+// std::cout << "SBNDistribution.setValue(&tau,false);" << std::endl;
+// Tree uhoh = SBNDistribution.getValue();
+
+// std::cout << "SBN has set value to this tree: \n" << uhoh << std::endl;
 
     double lnHastingsratio = SBNDistribution.computeLnProbability();
-std::cout << "Computed lnProbability as " << SBNDistribution.computeLnProbability() << std::endl;
+std::cout << "Computed current tree lnProbability as " << SBNDistribution.computeLnProbability() << std::endl;
 
     // Store branch lengths
     for (size_t index=0; index<length; ++index)
     {
       stored_branch_lengths[index] = variables[index]->getValue();
     }
-std::cout << "stored branches" << std::endl;
+// std::cout << "stored branches" << std::endl;
 
     // Get new tree, compute q(x'|x) = q(x')
     SBNDistribution.redrawValue();
-std::cout << "redrew tree" << std::endl;
+// std::cout << "redrew tree" << std::endl;
 
     lnHastingsratio -= SBNDistribution.computeLnProbability();
 std::cout << "computed new tree lnProbability as " << SBNDistribution.computeLnProbability() << std::endl;
 
     // Set new tree
     Tree tmp = SBNDistribution.getValue();
-std::cout << "Tree tmp = SBNDistribution.getValue();" << std::endl;
-std::cout << "  tmp.getNumberOfTips() = " << tmp.getNumberOfTips() << std::endl;
-std::cout << "  tmp.getNumberOfNodes() = " << tmp.getNumberOfNodes() << std::endl;
-    std::cout << "  tmp.isBinary() = " << (tmp.isBinary() == true ? "TRUE" : "FALSE" ) << std::endl;
-std::cout << "  tmp.isBroken() = " << (tmp.isBroken() == true ? "TRUE" : "FALSE" ) << std::endl;
+// std::cout << "Tree tmp = SBNDistribution.getValue();" << std::endl;
+// std::cout << "  tmp.getNumberOfTips() = " << tmp.getNumberOfTips() << std::endl;
+// std::cout << "  tmp.getNumberOfNodes() = " << tmp.getNumberOfNodes() << std::endl;
+//     std::cout << "  tmp.isBinary() = " << (tmp.isBinary() == true ? "TRUE" : "FALSE" ) << std::endl;
+// std::cout << "  tmp.isBroken() = " << (tmp.isBroken() == true ? "TRUE" : "FALSE" ) << std::endl;
 
     // update branch lengths
     std::vector<TopologyNode*> tree_nodes = tmp.getNodes();
@@ -143,10 +146,6 @@ std::cout << "  tmp.isBroken() = " << (tmp.isBroken() == true ? "TRUE" : "FALSE"
 
     // Update tree
     tree->getValue() = tmp;
-std::cout << "tree->getValue() = tmp;" << std::endl;
-std::cout << "new tree is " << tree->getValue() << std::endl;
-
-    // tau = SBNDistribution.getValue();
 
     return lnHastingsratio;
 

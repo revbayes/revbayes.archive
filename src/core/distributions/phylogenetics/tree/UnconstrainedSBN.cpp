@@ -117,6 +117,8 @@ double UnconstrainedSBN::computeLnProbabilityGivenRoot( void )
 
         std::pair<double,double> these_params = edge_length_params[this_parent_child];
 
+// std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Lognormal::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
+// std::cout << "lognormal mu: " << these_params.first << "; lognormal sigma: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
         lnProbability += RbStatistics::Lognormal::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
 
       }
@@ -126,6 +128,7 @@ double UnconstrainedSBN::computeLnProbabilityGivenRoot( void )
     {
       return RbConstants::Double::nan;
     }
+// std::cout << "This lnProb for SBN tree = " << lnProbability << std::endl;
     return lnProbability;
 }
 
