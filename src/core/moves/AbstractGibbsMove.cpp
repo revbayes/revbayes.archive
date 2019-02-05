@@ -20,7 +20,7 @@ using namespace RevBayesCore;
  */
 AbstractGibbsMove::AbstractGibbsMove( double w  ) : AbstractMove( w, false )
 {
-    
+
 }
 
 
@@ -30,7 +30,7 @@ AbstractGibbsMove::AbstractGibbsMove( double w  ) : AbstractMove( w, false )
  */
 AbstractGibbsMove::~AbstractGibbsMove( void )
 {
-    
+
 }
 
 
@@ -40,6 +40,22 @@ double AbstractGibbsMove::getMoveTuningParameter( void ) const
     return RbConstants::Double::nan;
 }
 
+/**
+ * Check if move is allowable with given heating scheme.
+ * Gibbs moves are not generally compatible with heats, so here we return false with any heating.
+ * We allow individual moves to override this on a case-by-case basis.
+ */
+bool AbstractGibbsMove::heatsAreAllowable(double prHeat, double lHeat, double pHeat)
+{
+    if ( prHeat != 1.0 || lHeat != 1.0 || pHeat != 1.0 )
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }
+}
 
 
 /**
@@ -49,14 +65,14 @@ double AbstractGibbsMove::getMoveTuningParameter( void ) const
 void AbstractGibbsMove::performMcmcMove( double prHeat, double lHeat, double pHeat )
 {
     // check heating values
-    if ( prHeat != 1.0 || lHeat != 1.0 || pHeat != 1.0 )
+    if ( !heatsAreAllowable(prHeat, lHeat, pHeat) )
     {
         throw RbException("Cannot apply Gibbs sampler when the probability is heated.");
     }
-    
+
     // delegate to derived class
     performGibbsMove();
-    
+
 }
 
 
@@ -72,10 +88,10 @@ void AbstractGibbsMove::printSummary(std::ostream &o, bool current_period) const
 {
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
-    
+
     o << std::fixed;
     o << std::setprecision(4);
-    
+
     // print the name
     const std::string &n = getMoveName();
     size_t spaces = 40 - (n.length() > 40 ? 40 : n.length());
@@ -85,7 +101,7 @@ void AbstractGibbsMove::printSummary(std::ostream &o, bool current_period) const
         o << " ";
     }
     o << " ";
-    
+
     // print the DagNode name
     const std::vector<DagNode*> nodes = getDagNodes();
     std::string dn_name = "???";
@@ -100,7 +116,7 @@ void AbstractGibbsMove::printSummary(std::ostream &o, bool current_period) const
         o << " ";
     }
     o << " ";
-    
+
     // print the weight
     int w_length = 4;
     if (weight > 0) w_length -= (int)log10(weight);
@@ -110,13 +126,13 @@ void AbstractGibbsMove::printSummary(std::ostream &o, bool current_period) const
     }
     o << weight;
     o << " ";
-    
+
     size_t num_tried = num_tried_total;
     if (current_period == true)
     {
         num_tried = num_tried_current_period;
     }
-    
+
     // print the number of tries
     int t_length = 9;
     if (num_tried > 0) t_length -= (int)log10(num_tried);
@@ -126,36 +142,36 @@ void AbstractGibbsMove::printSummary(std::ostream &o, bool current_period) const
     }
     o << num_tried;
     o << " ";
-    
+
     // print the number of accepted
     int a_length = 9;
     if (num_tried > 0) a_length -= (int)log10(num_tried);
-    
+
     for (int i = 0; i < a_length; ++i)
     {
         o << " ";
     }
     o << num_tried;
     o << " ";
-    
+
     // print the acceptance ratio
     double ratio = 1.0;
     if (num_tried == 0) ratio = 0;
     int r_length = 5;
-    
+
     for (int i = 0; i < r_length; ++i)
     {
         o << " ";
     }
     o << ratio;
     o << " ";
-    
+
     o << std::endl;
-    
+
     o.setf(previousFlags);
     o.precision(previousPrecision);
-    
-    
+
+
 }
 
 
@@ -171,9 +187,5 @@ void AbstractGibbsMove::setMoveTuningParameter(double tp)
  */
 void AbstractGibbsMove::tune( void )
 {
-    
+
 }
-
-
-
-
