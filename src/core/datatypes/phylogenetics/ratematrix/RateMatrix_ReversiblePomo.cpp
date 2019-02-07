@@ -411,7 +411,8 @@ std::vector<double> RateMatrix_ReversiblePomo::getStationaryFrequencies( void ) 
   }
 
   //normalization
-  for (size_t i = 0; i < numElements; ++i ){
+  for (size_t i = 0; i < numElements; ++i )
+  {
     stationaryVector[i] = stationaryVector[i]/sum;
   }
 
