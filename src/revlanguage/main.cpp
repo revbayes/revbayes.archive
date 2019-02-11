@@ -43,6 +43,8 @@ variables_map parse_cmd_line(int argc, char* argv[])
 {
     using namespace po;
 
+size_t err = 0;
+
     // Put all options in one group for now.
     options_description general("Options");
     general.add_options()
@@ -65,6 +67,7 @@ variables_map parse_cmd_line(int argc, char* argv[])
 
     // Parse the command line into variables_map 'args'
     variables_map args;
+
     store(command_line_parser(argc, argv).options(general).positional(p).run(), args);
     notify(args);
 
@@ -92,9 +95,7 @@ int main(int argc, char* argv[]) {
     try
     {
         MPI_Init(&argc, &argv);
-//        process_id = MPI::COMM_WORLD.Get_rank();
         MPI_Comm_rank(MPI_COMM_WORLD, &process_id);
-//        num_processes = MPI::COMM_WORLD.Get_size();
         MPI_Comm_size(MPI_COMM_WORLD, &num_processes);
 
         unsigned int seed = 0;
@@ -116,7 +117,6 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 #endif
-
 
     /* Parse argv to get the command line arguments */
     variables_map args = parse_cmd_line(argc, argv);

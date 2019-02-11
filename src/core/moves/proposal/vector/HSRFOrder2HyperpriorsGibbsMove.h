@@ -1,5 +1,5 @@
-#ifndef HSRFHyperpriorsGibbsMove_H
-#define HSRFHyperpriorsGibbsMove_H
+#ifndef HSRFOrder2HyperpriorsGibbsMove_H
+#define HSRFOrder2HyperpriorsGibbsMove_H
 
 #include "AbstractGibbsMove.h"
 #include "AbstractMove.h"
@@ -10,17 +10,17 @@
 
 namespace RevBayesCore {
 
-    class HSRFHyperpriorsGibbsMove : public AbstractGibbsMove {
+    class HSRFOrder2HyperpriorsGibbsMove : public AbstractGibbsMove {
 
     public:
-        HSRFHyperpriorsGibbsMove( StochasticNode<double> *g, std::vector< StochasticNode<double> *> l, std::vector< StochasticNode<double> *> n, double z, double w);                                                         //!<  constructor
-        virtual                                ~HSRFHyperpriorsGibbsMove(void);                                                             //!< Destructor
+        HSRFOrder2HyperpriorsGibbsMove( StochasticNode<double> *g, std::vector< StochasticNode<double> *> l, std::vector< StochasticNode<double> *> n, double z, double w);                                                         //!<  constructor
+        virtual                                ~HSRFOrder2HyperpriorsGibbsMove(void);                                                             //!< Destructor
 
         // Basic utility functions
-        HSRFHyperpriorsGibbsMove*            clone(void) const;                                                                  //!< Clone object
+        HSRFOrder2HyperpriorsGibbsMove*            clone(void) const;                                                                  //!< Clone object
         const std::string&                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
         bool                                     heatsAreAllowable(double prHeat, double lHeat, double pHeat); //<! A check we can call for whether it is okay to use this move with given prior/likelihood/posterior heats
-        
+
     protected:
         void                                    performGibbsMove(void);                                 //!< Perform move
         void                                    swapNodeInternal(DagNode *oldN, DagNode *newN);                                             //!< Swap the pointers to the variable on which the move works on.

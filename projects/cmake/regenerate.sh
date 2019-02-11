@@ -10,6 +10,7 @@ debug="false"
 mac="false"
 win="false"
 mpi="false"
+gentoo="false"
 help="false"
 jupyter="false"
 
@@ -63,6 +64,10 @@ elif [ "$win" = "true" ]
 then
 ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals --with-toolset=mingw
 ./b2 link=static
+elif [ "$gentoo" = "true" ]
+then
+./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
+./b2 link=static --ignore-site-config
 else
 ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
 ./b2 link=static
@@ -164,10 +169,11 @@ set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../src)
 
 
 
-SET(BOOST_ROOT ../../../boost_1_60_0)
-SET(BOOST_LIBRARY ../../../boost_1_60_0/stage/lib)
-SET(Boost_USE_STATIC_RUNTIME true)
+SET(BOOST_ROOT "../../../boost_1_60_0")
+SET(BOOST_LIBRARY "../../../boost_1_60_0/stage/lib")
+SET(Boost_USE_STATIC_RUNTIME ON)
 SET(Boost_USE_STATIC_LIBS ON)
+SET(Boost_NO_SYSTEM_PATHS ON)
 find_package(Boost
 1.60.0
 COMPONENTS regex
@@ -212,6 +218,7 @@ fi
 
 if [ "$mpi" = "true" ]
 then
+echo "set executable"
 echo '
 add_executable(rb-mpi ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 

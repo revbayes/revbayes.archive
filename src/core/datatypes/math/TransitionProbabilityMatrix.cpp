@@ -112,7 +112,7 @@ TransitionProbabilityMatrix& TransitionProbabilityMatrix::operator*=(const Trans
     for (size_t i=0; i<num_states*num_states; i++)
         theMatrix[i] = C.theMatrix[i];
     
-	return *this;
+    return *this;
 }
 
 double TransitionProbabilityMatrix::getElement(size_t i, size_t j) const {

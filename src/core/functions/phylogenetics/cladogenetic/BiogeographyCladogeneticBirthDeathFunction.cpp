@@ -1060,6 +1060,9 @@ void BiogeographyCladogeneticBirthDeathFunction::updateEventMapWeights(void) {
     // get weight vector
     const RbVector<double>& weights = connectivityWeights->getValue();
     
+    // get max factors
+    std::vector<double> max_value( NUM_CLADO_EVENT_TYPES, 0.0 );
+
     // loop over all events and their types
     std::map< std::vector<unsigned>, unsigned >::iterator it;
     for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
@@ -1072,11 +1075,37 @@ void BiogeographyCladogeneticBirthDeathFunction::updateEventMapWeights(void) {
         double weight = weights[event_type];
         
         // get event score
-        eventMapWeights[ idx ] = std::pow(eventMapFactors[ idx ], weight);
+//        eventMapWeights[ idx ] = std::pow(eventMapFactors[ idx ], weight);
+        double v = 0.0;
+//        if (event_type == SYMPATRY) {
+            v = std::pow( (1 + std::exp( eventMapFactors[idx]) ), weight );
+//        }
+//        else if (event_type == ALLOPATRY) {
+//            v = std::pow( (1 + std::exp( eventMapFactors[idx]) ), weight );
+//        }
+        eventMapWeights[ idx ] = v; //        z = (1 + exp(-z))^rho
         
-        std::cout << "";
+        if ( v > max_value[event_type] )
+        {
+            max_value[event_type] = v;
+        }
+        
+//        if (event_type == ALLOPATRY) {
+//            std::cout << "(" <<  idx[0] << "->" << idx[1] << "," << idx[2] << ")\tt=" << event_type << "\tf=" << eventMapFactors[idx] << "\tw=" << weight << "\tv=" << v << "\n";
+//        }
+     
     }
     
+    for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
+    {
+        // get event info
+        std::vector<unsigned> idx = it->first;
+        unsigned event_type = it->second;
+        eventMapWeights[ idx ] = eventMapWeights[ idx ] / max_value[event_type];
+
+    }
+    
+    std::cout << "";
     return;
 }
 
