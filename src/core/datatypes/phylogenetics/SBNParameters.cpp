@@ -549,31 +549,30 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
   // Turn parent-child subsplit counts into CPDs
   makeCPDs(parent_child_counts);
 
-  // Turn branch length observations into lognormal distributions
+  // Turn branch length observations into gamma distributions
   std::pair<RbBitSet,std::vector<double> > clade_edge_observations;
   BOOST_FOREACH(clade_edge_observations, branch_length_observations) {
     if (clade_edge_observations.second.size() > 2)
     {
       // Get mean/sd of log of observations
-      double log_mean;
+      double mean;
       for (size_t i=0; i<clade_edge_observations.second.size(); ++i)
       {
-        log_mean += log(clade_edge_observations.second[i]);
+        mean += clade_edge_observations.second[i];
       }
-      log_mean /= clade_edge_observations.second.size();
+      mean /= clade_edge_observations.second.size();
 
-      double log_sd;
+      double var;
       for (size_t i=0; i<clade_edge_observations.second.size(); ++i)
       {
-        log_sd += pow(log(clade_edge_observations.second[i])-log_mean,2.0);
+        var += pow(clade_edge_observations.second[i] - mean,2.0);
       }
-      log_sd /= clade_edge_observations.second.size();
-      log_sd = sqrt(log_sd);
+      var /= clade_edge_observations.second.size();
 
       // Approximate edge-length distribution using lognormal, use MLE parameters
       std::pair<double,double> these_params;
-      these_params.first = log_mean;
-      these_params.second = log_sd;
+      these_params.second = mean/var;
+      these_params.first = mean * these_params.second;
 
       edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
 
@@ -581,10 +580,10 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
     else
     {
       // Basically no information on edge length distribution
-      // Approximate edge-length distribution using a lognormal that looks like the standard MrBayes prior
+      // Approximate edge-length distribution using an exponential(10)
       std::pair<double,double> these_params;
-      these_params.first = -2.8;
-      these_params.second = 1.0;
+      these_params.first = 1.0;
+      these_params.second = 10.0;
 
       edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
     }

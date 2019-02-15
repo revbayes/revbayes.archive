@@ -117,8 +117,9 @@ double UnconstrainedSBN::computeLnProbabilityGivenRoot( void )
 
 // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Lognormal::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
 // std::cout << "lognormal mu: " << these_params.first << "; lognormal sigma: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
-        lnProbability += RbStatistics::Lognormal::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
+        // lnProbability += RbStatistics::Lognormal::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
 
+        lnProbability += RbStatistics::Gamma::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
       }
     }
 
@@ -227,7 +228,7 @@ void UnconstrainedSBN::simulateTree( void )
 
       std::pair<double,double> these_params = edge_length_params[Y_child.asCladeBitset()];
 
-      double brlen  = RbStatistics::Lognormal::rv(these_params.first, these_params.second, *rng);
+      double brlen  = RbStatistics::Gamma::rv(these_params.first, these_params.second, *rng);
       Y_child_node->setBranchLength(brlen,false);
 
       // Choose subsplit of Z
@@ -249,7 +250,7 @@ void UnconstrainedSBN::simulateTree( void )
       // this_parent_child.second = Z_child;
 
       these_params = edge_length_params[Z_child.asCladeBitset()];
-      brlen = RbStatistics::Lognormal::rv(these_params.first, these_params.second, *rng);
+      brlen = RbStatistics::Gamma::rv(these_params.first, these_params.second, *rng);
       Z_child_node->setBranchLength(brlen,false);
 
       // Attach nodes to eachother
