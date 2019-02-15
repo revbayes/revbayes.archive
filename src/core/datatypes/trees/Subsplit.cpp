@@ -145,7 +145,7 @@ Subsplit& Subsplit::operator=(const Subsplit &s)
 
 }
 /**
- * Equals operator, we outsource comparison to std::pair<RbBitset,RbBitSet>.
+ * Equals operator, we outsource comparison to std::pair<RbBitSet,RbBitSet>.
  * Only if both clades in both subsplits are equal are two Subsplits are equal.
  */
 bool Subsplit::operator==(const Subsplit &s) const

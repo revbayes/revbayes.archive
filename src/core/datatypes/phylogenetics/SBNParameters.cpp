@@ -84,7 +84,7 @@ SBNParameters& SBNParameters::operator=( const SBNParameters &sbn )
     return *this;
 }
 
-std::map<std::pair<Subsplit,Subsplit>,std::pair<double,double> >& SBNParameters::getEdgeLengthDistributionParameters(void)
+std::map<RbBitSet,std::pair<double,double> >& SBNParameters::getEdgeLengthDistributionParameters(void)
 {
   return edge_length_distribution_parameters;
 }
@@ -516,7 +516,7 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
   // For unrooted trees, the weight will be less than 1, and may vary (in the EM algorithm)
   double weight = 1.0;
 
-  std::map<std::pair<Subsplit,Subsplit>,std::vector<double> > branch_length_observations;
+  std::map<RbBitSet,std::vector<double> > branch_length_observations;
 
   // Loop over all trees
   // for each, get all root splits and subsplit parent-child relationships
@@ -533,13 +533,9 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
       if (!tree_nodes[i]->isRoot())
       {
         Subsplit this_split = tree_nodes[i]->getSubsplit(taxa);
-        Subsplit this_parent = tree_nodes[i]->getParent().getSubsplit(taxa);
+        RbBitSet this_clade = this_split.asCladeBitset();
 
-        std::pair<Subsplit,Subsplit> this_parent_child;
-        this_parent_child.first = this_parent;
-        this_parent_child.second = this_split;
-
-        (branch_length_observations[this_parent_child]).push_back(tree_nodes[i]->getBranchLength());
+        (branch_length_observations[this_clade]).push_back(tree_nodes[i]->getBranchLength());
 
       }
     }
@@ -554,24 +550,24 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
   makeCPDs(parent_child_counts);
 
   // Turn branch length observations into lognormal distributions
-  std::pair<std::pair<Subsplit,Subsplit>,std::vector<double> > parent_child_edge_set;
-  BOOST_FOREACH(parent_child_edge_set, branch_length_observations) {
-    if (parent_child_edge_set.second.size() > 2)
+  std::pair<RbBitSet,std::vector<double> > clade_edge_observations;
+  BOOST_FOREACH(clade_edge_observations, branch_length_observations) {
+    if (clade_edge_observations.second.size() > 2)
     {
       // Get mean/sd of log of observations
       double log_mean;
-      for (size_t i=0; i<parent_child_edge_set.second.size(); ++i)
+      for (size_t i=0; i<clade_edge_observations.second.size(); ++i)
       {
-        log_mean += log(parent_child_edge_set.second[i]);
+        log_mean += log(clade_edge_observations.second[i]);
       }
-      log_mean /= parent_child_edge_set.second.size();
+      log_mean /= clade_edge_observations.second.size();
 
       double log_sd;
-      for (size_t i=0; i<parent_child_edge_set.second.size(); ++i)
+      for (size_t i=0; i<clade_edge_observations.second.size(); ++i)
       {
-        log_sd += pow(log(parent_child_edge_set.second[i])-log_mean,2.0);
+        log_sd += pow(log(clade_edge_observations.second[i])-log_mean,2.0);
       }
-      log_sd /= parent_child_edge_set.second.size();
+      log_sd /= clade_edge_observations.second.size();
       log_sd = sqrt(log_sd);
 
       // Approximate edge-length distribution using lognormal, use MLE parameters
@@ -579,7 +575,7 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
       these_params.first = log_mean;
       these_params.second = log_sd;
 
-      edge_length_distribution_parameters[parent_child_edge_set.first] = these_params;
+      edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
 
     }
     else
@@ -590,7 +586,7 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
       these_params.first = -2.8;
       these_params.second = 1.0;
 
-      edge_length_distribution_parameters[parent_child_edge_set.first] = these_params;
+      edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
     }
   }
 
