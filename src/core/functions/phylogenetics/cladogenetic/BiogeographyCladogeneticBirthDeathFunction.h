@@ -26,7 +26,7 @@ namespace RevBayesCore {
         
     public:
         
-        BiogeographyCladogeneticBirthDeathFunction( const TypedDagNode< RbVector< double > >* sr, unsigned mrs, TypedDagNode< RbVector< RbVector<double> > >* cm, TypedDagNode< RbVector< double > >* cw, std::string ct);
+        BiogeographyCladogeneticBirthDeathFunction( const TypedDagNode< RbVector< double > >* sr, unsigned mrs, TypedDagNode< RbVector< RbVector<double> > >* cm, TypedDagNode< RbVector< double > >* cw, std::string ct="cutset");
         virtual                                                     ~BiogeographyCladogeneticBirthDeathFunction(void);
         
         const static unsigned NUM_CLADO_EVENT_TYPES                 = 3;
@@ -66,7 +66,7 @@ namespace RevBayesCore {
         double                                                      computeCutsetScore(std::vector<unsigned> idx, unsigned et);
         double                                                      computeModularityScore(std::vector<unsigned> idx, unsigned et);
         size_t                                                      computeNumStates(size_t numAreas, size_t maxRangeSize);
-        void                                                        printEventMap(void);
+        void                                                        printEventMap(std::map< std::vector< unsigned >, double > x);
         unsigned                                                    sumBits(const std::vector<unsigned>& b);
         void                                                        updateEventMapWeights(void);
         void                                                        updateEventMapCutsetWeights(void);
