@@ -52,11 +52,11 @@ RevBayesCore::TypedFunction< RevBayesCore::CladogeneticSpeciationRateMatrix >* F
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* cm = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* cw = static_cast<const ModelVector<RealPos> &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
-    std::string c_type = static_cast<const RlString &>( this->args[4].getVariable()->getRevObject() ).getValue();
-    int ns = (int)static_cast<const Natural &>( this->args[5].getVariable()->getRevObject() ).getValue();
+//    std::string c_type = static_cast<const RlString &>( this->args[4].getVariable()->getRevObject() ).getValue();
+    int mrs = (int)static_cast<const Natural &>( this->args[4].getVariable()->getRevObject() ).getValue();
     
     
-    RevBayesCore::BiogeographyCladogeneticBirthDeathFunction* f = new RevBayesCore::BiogeographyCladogeneticBirthDeathFunction( sr, ns, cm, cw, c_type );
+    RevBayesCore::BiogeographyCladogeneticBirthDeathFunction* f = new RevBayesCore::BiogeographyCladogeneticBirthDeathFunction( sr, mrs, cm, cw );
     f->setRateMultipliers(rm);
     
     return f;
@@ -78,11 +78,10 @@ const ArgumentRules& Func_biogeographyCladoEventsBD::getArgumentRules( void ) co
         argumentRules.push_back( new ArgumentRule( "connectivity_matrix", ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), "The connectivity matrix.", ArgumentRule::BY_VALUE, ArgumentRule::CONSTANT, NULL ) );
         argumentRules.push_back( new ArgumentRule( "connectivity_weights", ModelVector<RealPos>::getClassTypeSpec() , "The speciation rates for different cladogenetic event types.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
-        std::vector<std::string> options;
-        options.push_back( "none" );
-//        options.push_back( "modularity" );
-        options.push_back( "cutset" );
-        argumentRules.push_back( new OptionRule( "connectivity_type", new RlString("modularity"), options, "How modularity of cladogenetic outcomes." ) );
+//        std::vector<std::string> options;
+//        options.push_back( "none" );
+//        options.push_back( "cutset" );
+////        argumentRules.push_back( new OptionRule( "connectivity_type", new RlString("modularity"), options, "How modularity of cladogenetic outcomes." ) );
         argumentRules.push_back( new ArgumentRule( "max_range_size", Natural::getClassTypeSpec(), "The maximum range size.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rules_set = true;

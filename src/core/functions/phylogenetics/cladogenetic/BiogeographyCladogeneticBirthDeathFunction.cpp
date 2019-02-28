@@ -22,7 +22,7 @@ BiogeographyCladogeneticBirthDeathFunction::BiogeographyCladogeneticBirthDeathFu
                                                                                         TypedDagNode< RbVector< RbVector<double> > >* cm,
                                                                                         TypedDagNode< RbVector< double > >* cw,
                                                                                         std::string ct ):
-TypedFunction<CladogeneticSpeciationRateMatrix>( new CladogeneticSpeciationRateMatrix( mrs ) ),
+TypedFunction<CladogeneticSpeciationRateMatrix>( new CladogeneticSpeciationRateMatrix(  pow(2,mrs)-1) ),
 speciationRates( sr ),
 connectivityMatrix( cm ),
 connectivityWeights( cw ),
@@ -49,7 +49,7 @@ connectivityType( ct )
     buildRanges(ranges, connectivityMatrix, true);
     
     numRanges = (unsigned)ranges.size();
-    numRanges++; // add one for the null range
+//    numRanges++; // add one for the null range
     
     buildEventMap();
     buildEventMapFactors();
@@ -589,14 +589,11 @@ void BiogeographyCladogeneticBirthDeathFunction::buildEventMapFactors(void)
         buildCutsets();
 //        buildCutsetFactors();
     }
-    else if (connectivityType == "modularity")
-    {
-        ; // do nothing
-//        buildModularityFactors();
-    }
     buildBuddingRegions();
     
     std::vector<double> max_value( NUM_CLADO_EVENT_TYPES, 0.0 );
+    std::vector<double> sum_value( NUM_CLADO_EVENT_TYPES, 0.0 );
+    std::vector<unsigned> n_value( NUM_CLADO_EVENT_TYPES, 0 );
     
     // loop over all events and their types
     std::map< std::vector<unsigned>, unsigned >::iterator it;
@@ -615,18 +612,20 @@ void BiogeographyCladogeneticBirthDeathFunction::buildEventMapFactors(void)
         else if (connectivityType == "cutset") {
             v = computeCutsetScore(idx, event_type);
         }
-        else {
-            v = computeModularityScore(idx, event_type);
-        }
+
         eventMapFactors[ idx ] = v;
 
-        
+        // get event map factor statistics for renormalization
         if ( v > max_value[event_type] )
         {
             max_value[event_type] = v;
         }
+        sum_value[event_type] += v;
+        n_value[event_type] += 1;
 
     }
+    
+//    printEventMap( eventMapFactors );
 
     
     // normalize event factors by max factor of event type
@@ -636,8 +635,11 @@ void BiogeographyCladogeneticBirthDeathFunction::buildEventMapFactors(void)
         std::vector<unsigned> idx = it->first;
         unsigned event_type = it->second;
 
-        eventMapFactors[ idx ] = eventMapFactors[ idx ] / max_value[ event_type ];
+//        eventMapFactors[ idx ] = eventMapFactors[ idx ] / max_value[ event_type ];
+        eventMapFactors[ idx ] = eventMapFactors[ idx ] / (sum_value[ event_type ] / n_value[ event_type ]);
     }
+    
+//    printEventMap( eventMapFactors );
     
     return;
 }
@@ -754,6 +756,13 @@ double BiogeographyCladogeneticBirthDeathFunction::computeCutsetScore( std::vect
     }
     else if (event_type == ALLOPATRY)
     {
+        
+        std::string s0 = bitsToString( statesToBitsByNumOn[ idx[0] ] );
+        std::string s1 = bitsToString( statesToBitsByNumOn[ idx[1] ] );
+        std::string s2 = bitsToString( statesToBitsByNumOn[ idx[2] ] );
+        
+        
+//        std::cout << "COST " << s0 << " -> " << s1 << " | " << s2 << "\n";
         // allopatry depends on inverse sum of cutset cost of edge weights
         const std::vector<std::vector<unsigned> >& cutset = eventMapCutsets[idx];
         for (size_t i = 0; i < cutset.size(); i++) {
@@ -765,7 +774,7 @@ double BiogeographyCladogeneticBirthDeathFunction::computeCutsetScore( std::vect
         
         // take the inverse sum of costs
         cost = 1.0 / cost;
-//        std::cout << idx[0] << " " << idx[1] << " " << idx[2] << " : " << cost << "\n";
+//        std::cout << " = " << cost << "\n\n";
     }
     return cost;
 }
@@ -897,16 +906,41 @@ const std::map< std::vector<unsigned>, double >&  BiogeographyCladogeneticBirthD
  * Prints the event map -- for debugging mostly
  */
 
-void BiogeographyCladogeneticBirthDeathFunction::printEventMap(void)
+void BiogeographyCladogeneticBirthDeathFunction::printEventMap(std::map< std::vector< unsigned >, double > x)
 {
     std::map< std::vector< unsigned >, double >::iterator it;
-    for (it = eventMap.begin(); it != eventMap.end(); it++)
-    {
-        std::vector<unsigned> idx = it->first;
-        double rate = it->second;
-        unsigned event_type = eventMapTypes[ idx ];
-        std::cout << idx[0] << " -> " << idx[1] << " | " << idx[2] << " : " << event_type << " = " << rate << "\n";
+    
+    for (size_t i = 0; i < 2; i++) {
+        
+        std::string clado_str = "WITHIN_SPECIATION";
+        if (i == ALLOPATRY) {
+            clado_str = "BETWEEN_SPECIATION";
+        }
+            
+        std::cout << "Event type : " << clado_str << "\n";
+        for (it = x.begin(); it != x.end(); it++)
+        {
+            std::vector<unsigned> idx = it->first;
+            double rate = it->second;
+            unsigned event_type = eventMapTypes[ idx ];
+            
+            if (i == event_type) {
+            
+                std::vector<unsigned> b0= statesToBitsByNumOn[ idx[0] ];
+                std::vector<unsigned> b1= statesToBitsByNumOn[ idx[1] ];
+                std::vector<unsigned> b2= statesToBitsByNumOn[ idx[2] ];
+                
+                std::string s0 = bitsToString( b0 );
+                std::string s1 = bitsToString( b1 );
+                std::string s2 = bitsToString( b2 );
+                
+                std::cout << s0 << " -> " << s1 << " | " << s2 << " = " << rate << "\n";
+            }
+        }
+        
+        std::cout << "\n";
     }
+    
 }
 
 
@@ -1042,13 +1076,10 @@ void BiogeographyCladogeneticBirthDeathFunction::update( void )
         }
     }
     
-    //    printEventMap();
-    
     // done!
     value->setEventMap(eventMap);
-//    printEventMap();
     
-    std::cout << "";
+    //printEventMap( eventMap );
 }
 
 /*
@@ -1062,6 +1093,9 @@ void BiogeographyCladogeneticBirthDeathFunction::updateEventMapWeights(void) {
     
     // get max factors
     std::vector<double> max_value( NUM_CLADO_EVENT_TYPES, 0.0 );
+    std::vector<double> sum_value( NUM_CLADO_EVENT_TYPES, 0.0 );
+    std::vector<unsigned> n_value( NUM_CLADO_EVENT_TYPES, 0 );
+
 
     // loop over all events and their types
     std::map< std::vector<unsigned>, unsigned >::iterator it;
@@ -1075,24 +1109,18 @@ void BiogeographyCladogeneticBirthDeathFunction::updateEventMapWeights(void) {
         double weight = weights[event_type];
         
         // get event score
-//        eventMapWeights[ idx ] = std::pow(eventMapFactors[ idx ], weight);
         double v = 0.0;
-//        if (event_type == SYMPATRY) {
-            v = std::pow( (1 + std::exp( eventMapFactors[idx]) ), weight );
-//        }
-//        else if (event_type == ALLOPATRY) {
-//            v = std::pow( (1 + std::exp( eventMapFactors[idx]) ), weight );
-//        }
+//        v = std::pow( (1 + std::exp( eventMapFactors[idx]) ), weight );
+        v = std::pow( eventMapFactors[idx], weight );
         eventMapWeights[ idx ] = v; //        z = (1 + exp(-z))^rho
         
+        // get event score stats for renormalization
+        sum_value[event_type] += v;
+        n_value[event_type] += 1;
         if ( v > max_value[event_type] )
         {
             max_value[event_type] = v;
         }
-        
-//        if (event_type == ALLOPATRY) {
-//            std::cout << "(" <<  idx[0] << "->" << idx[1] << "," << idx[2] << ")\tt=" << event_type << "\tf=" << eventMapFactors[idx] << "\tw=" << weight << "\tv=" << v << "\n";
-//        }
      
     }
     
@@ -1101,11 +1129,11 @@ void BiogeographyCladogeneticBirthDeathFunction::updateEventMapWeights(void) {
         // get event info
         std::vector<unsigned> idx = it->first;
         unsigned event_type = it->second;
-        eventMapWeights[ idx ] = eventMapWeights[ idx ] / max_value[event_type];
+//        eventMapWeights[ idx ] = eventMapWeights[ idx ] / max_value[event_type];
+        eventMapWeights[ idx ] = eventMapWeights[ idx ] / (sum_value[event_type] / n_value[event_type]);
 
     }
     
-    std::cout << "";
     return;
 }
 
