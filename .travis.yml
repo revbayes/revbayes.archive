@@ -8,9 +8,12 @@ matrix:
       dist: xenial
       addons:
         apt:
+          sources:
+          - sourceline: 'ppa:mhier/libboost-latest'
           packages:
           - g++-5
           - pandoc
+          - boost1.67
     - os: linux
       dist: xenial
       env: CXX_COMPILER=g++-6
@@ -18,9 +21,11 @@ matrix:
         apt:
           sources:
           - ubuntu-toolchain-r-test
+          - sourceline: 'ppa:mhier/libboost-latest'
           packages:
           - g++-6
           - pandoc
+          - boost1.67
     - os: linux
       dist: xenial
       env: CXX_COMPILER=g++-7
@@ -28,9 +33,11 @@ matrix:
         apt:
           sources:
           - ubuntu-toolchain-r-test
+          - sourceline: 'ppa:mhier/libboost-latest'
           packages:
           - g++-7
           - pandoc
+          - boost1.67
     - os: linux
       dist: xenial
       env: CXX_COMPILER=g++-8
@@ -38,9 +45,11 @@ matrix:
         apt:
           sources:
           - ubuntu-toolchain-r-test
+          - sourceline: 'ppa:mhier/libboost-latest'
           packages:
           - g++-8
           - pandoc
+          - boost1.67
     - os: linux
       dist: xenial
       compiler: clang++
@@ -48,9 +57,11 @@ matrix:
         apt:
           sources:
           - ubuntu-toolchain-r-test
+          - sourceline: 'ppa:mhier/libboost-latest'
           packages:
           - g++-8
           - pandoc
+          - boost1.67
     - os: osx
       osx_image: xcode8.3
       env: PYTHON=3.5.1
@@ -60,12 +71,12 @@ matrix:
 # xcode 10 also times out a lot
 #  - os: osx
 #      osx_image: xcode10.1
-      
+
 before_install:
   # We need to re-export CC and CXX here, because travis exports CXX=g++ or clang++ AFTER we set CXX.
   - if [ -n "${C_COMPILER}" ]; then export CC="${C_COMPILER}"; fi
   - if [ -n "${CXX_COMPILER}" ]; then export CXX="${CXX_COMPILER}"; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update && brew upgrade python; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update && brew upgrade python boost; fi
 
 script:
 # Build
