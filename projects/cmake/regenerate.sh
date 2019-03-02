@@ -167,13 +167,16 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake ${CMAKE_MODULE_PATH})
 # Set source root relate to project file
 set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../src)
 
+option(INTERNAL_BOOST "Use the version of boost shipped with revbayes" ON)
 
+if (INTERNAL_BOOST)
+   SET(BOOST_ROOT "../../../boost_1_60_0")
+   SET(BOOST_LIBRARY "../../../boost_1_60_0/stage/lib")
+   SET(Boost_NO_SYSTEM_PATHS ON)
+   SET(Boost_USE_STATIC_RUNTIME ON)
+   SET(Boost_USE_STATIC_LIBS ON)
+endif()
 
-SET(BOOST_ROOT "../../../boost_1_60_0")
-SET(BOOST_LIBRARY "../../../boost_1_60_0/stage/lib")
-SET(Boost_USE_STATIC_RUNTIME ON)
-SET(Boost_USE_STATIC_LIBS ON)
-SET(Boost_NO_SYSTEM_PATHS ON)
 find_package(Boost
 1.60.0
 COMPONENTS regex
