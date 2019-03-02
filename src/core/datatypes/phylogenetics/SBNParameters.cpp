@@ -554,25 +554,30 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
   BOOST_FOREACH(clade_edge_observations, branch_length_observations) {
     if (clade_edge_observations.second.size() > 2)
     {
+      // TODO: if we are going to keep using lognormal via MLE, there are more efficient ways to get the logmean and logsd
       // Get mean/sd of log of observations
-      double mean;
+      double log_mean;
       for (size_t i=0; i<clade_edge_observations.second.size(); ++i)
       {
-        mean += clade_edge_observations.second[i];
+        // Branch lengths x such that c++ returns log(x) = -inf are possible, replace with smallest representable number instead
+        double log_x = log(clade_edge_observations.second[i]);
+        log_mean += log_x == RbConstants::Double::neginf ? RbConstants::Double::min : log_x;
       }
-      mean /= clade_edge_observations.second.size();
+      log_mean /= clade_edge_observations.second.size();
 
-      double var;
+      double log_sd;
       for (size_t i=0; i<clade_edge_observations.second.size(); ++i)
       {
-        var += pow(clade_edge_observations.second[i] - mean,2.0);
+        double log_x = log(clade_edge_observations.second[i]);
+        log_sd += log_x == RbConstants::Double::neginf ? pow(RbConstants::Double::min - log_mean,2.0) : pow(clade_edge_observations.second[i] - log_mean,2.0);
       }
-      var /= clade_edge_observations.second.size();
+      log_sd /= clade_edge_observations.second.size();
+      log_sd = sqrt(log_sd);
 
       // Approximate edge-length distribution using lognormal, use MLE parameters
       std::pair<double,double> these_params;
-      these_params.second = mean/var;
-      these_params.first = mean * these_params.second;
+      these_params.first = log_mean;
+      these_params.second = log_sd;
 
       edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
 
