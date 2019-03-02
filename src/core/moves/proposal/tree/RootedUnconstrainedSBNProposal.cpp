@@ -108,7 +108,7 @@ double RootedUnconstrainedSBNProposal::doProposal( void )
 // std::cout << "SBN has set value to this tree: \n" << uhoh << std::endl;
 
     double lnHastingsratio = SBNDistribution.computeLnProbability();
-std::cout << "Computed current tree lnProbability as " << SBNDistribution.computeLnProbability() << std::endl;
+// std::cout << "Computed current tree lnProbability as " << SBNDistribution.computeLnProbability() << std::endl;
 
     // Store branch lengths
     for (size_t index=0; index<length; ++index)
@@ -122,7 +122,7 @@ std::cout << "Computed current tree lnProbability as " << SBNDistribution.comput
 // std::cout << "redrew tree" << std::endl;
 
     lnHastingsratio -= SBNDistribution.computeLnProbability();
-std::cout << "computed new tree lnProbability as " << SBNDistribution.computeLnProbability() << std::endl;
+// std::cout << "computed new tree lnProbability as " << SBNDistribution.computeLnProbability() << std::endl;
 
     // Set new tree
     Tree tmp = SBNDistribution.getValue();
@@ -189,6 +189,8 @@ void RootedUnconstrainedSBNProposal::undoProposal( void )
 
   Tree &tau = tree->getValue();
   tau = stored_tree;
+
+  // tree->setValue(stored_tree.clone(),true);
 
   for (size_t i=0; i<length; ++i)
   {
