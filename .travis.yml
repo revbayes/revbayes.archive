@@ -5,17 +5,14 @@ language: cpp
 matrix:
   include:
     - os: linux
-      dist: trusty
-      env: CXX_COMPILER=g++-5
+      dist: xenial
       addons:
         apt:
-          sources:
-          - ubuntu-toolchain-r-test
           packages:
           - g++-5
           - pandoc
     - os: linux
-      dist: trusty
+      dist: xenial
       env: CXX_COMPILER=g++-6
       addons:
         apt:
@@ -25,7 +22,7 @@ matrix:
           - g++-6
           - pandoc
     - os: linux
-      dist: trusty
+      dist: xenial
       env: CXX_COMPILER=g++-7
       addons:
         apt:
@@ -35,14 +32,24 @@ matrix:
           - g++-7
           - pandoc
     - os: linux
-      dist: trusty
+      dist: xenial
+      env: CXX_COMPILER=g++-8
+      addons:
+        apt:
+          sources:
+          - ubuntu-toolchain-r-test
+          packages:
+          - g++-8
+          - pandoc
+    - os: linux
+      dist: xenial
       compiler: clang++
       addons:
         apt:
           sources:
           - ubuntu-toolchain-r-test
           packages:
-          - g++-7
+          - g++-8
           - pandoc
 # xcode9.4 times out a lot
 #    - os: osx
