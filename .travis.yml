@@ -51,14 +51,15 @@ matrix:
           packages:
           - g++-8
           - pandoc
-# xcode9.4 times out a lot
-#    - os: osx
-#      osx_image: xcode9.4
     - os: osx
       osx_image: xcode8.3
       env: PYTHON=3.5.1
-    - os: osx
-      osx_image: xcode10.1
+# xcode9.4 times out a lot
+#    - os: osx
+#      osx_image: xcode9.4
+# xcode 10 also times out a lot
+#  - os: osx
+#      osx_image: xcode10.1
       
 before_install:
   # We need to re-export CC and CXX here, because travis exports CXX=g++ or clang++ AFTER we set CXX.
