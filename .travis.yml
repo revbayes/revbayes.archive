@@ -77,7 +77,12 @@ before_install:
 script:
 # Build
   - cd projects/cmake
-  - ./build.sh
+  - mkdir build
+  - ./regenerate.sh -boost false
+  - cd build
+  - cmake . -DINTERNAL_BOOST=OFF
+  - make -j4
+  - cd ..
 # Run tests
   - cd ../..
   - echo "\"Hello World\"" | projects/cmake/rb
