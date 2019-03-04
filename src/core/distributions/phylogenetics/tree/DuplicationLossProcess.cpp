@@ -13,15 +13,16 @@
 
 using namespace RevBayesCore;
 
+// XXX: Which formula does this function use?
 DuplicationLossProcess::DuplicationLossProcess(const TypedDagNode<Tree> *it, const std::vector<Taxon> &t) : TypedDistribution<Tree>( NULL ),
     taxa(t),
     individual_tree( it ),
     num_taxa( taxa.size() ),
     log_tree_topology_prob (0.0)
 {
-    // add the parameters to our set (in the base class)
-    // in that way other class can easily access the set of our parameters
-    // this will also ensure that the parameters are not getting deleted before we do
+    // add the parameters to our set (in the base class) in that way other
+    // classes can easily access the set of our parameters this will also ensure
+    // that the parameters are not getting deleted before we do
     addParameter( individual_tree );
 
     double ln_fact = RbMath::lnFactorial((int)(num_taxa));
@@ -35,6 +36,7 @@ DuplicationLossProcess::~DuplicationLossProcess()
 {
 }
 
+// XXX: What is this function doing?
 void DuplicationLossProcess::attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times)
 {
     if (index < num_taxa-1)
@@ -66,7 +68,7 @@ void DuplicationLossProcess::attachTimes(Tree *psi, std::vector<TopologyNode *> 
             tips.push_back(rightChild);
         }
 
-        // recursive call to this function
+        // recursive call this function
         attachTimes(psi, tips, index+1, times);
     }
 }
@@ -152,6 +154,8 @@ double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_ge
       current_ext_prob = ext_prob_left * ext_prob_right;
     }
 
+  // FIXME: Shouldn't this be something like n_dupl >= num_genes_recent -
+  // num_genes_ancient?
   if (dupl_ages.size() >= num_genes_recent)
     throw std::length_error("There are more duplication events than branches on this branch of the individual tree.");
 
@@ -323,14 +327,14 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
     }
 
   //////////////////////////////////////////////////
-  // 1. Handle node.
+  // 1. Handle inerr nodes. At the leaves, the genes have to be set a priori,
+  // e.g., during the simulation.
 
   if ( ! individual_node.isTip() )
     {
       // The genes at inner nodes (genes_per_branch_recent) will be set when
       // traversing the children (using their respective
-      // genes_per_branch_ancient). At the leaves, the genes have to be set a
-      // priori, e.g., during the simulation.
+      // genes_per_branch_ancient).
       genes_per_branch_recent[ individual_node.getIndex() ].clear();
       // Add likelihood from children.
       for (size_t i=0; i<individual_node.getNumberOfChildren(); ++i)
@@ -339,7 +343,7 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
       // merging at the same time, consider this event being part of the
       // coalescence. If, on the other hand, they do not join, a loss must have
       // happened (and also a duplication at a previous time point). Here we
-      // assume that the tree BIFURCATING.
+      // assume that the tree is BIFURCATING.
       size_t left_index  = individual_node.getChild(0).getIndex();
       size_t right_index = individual_node.getChild(1).getIndex();
       std::set< const TopologyNode* > &genes_for_this_individual = genes_per_branch_recent[ individual_node.getIndex() ];
@@ -373,7 +377,7 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
     }
 
   //////////////////////////////////////////////////
-  // 2. Handle branch attached to node.
+  // 2. Handle branch attached to node (bottom up, recent to ancient).
 
   // Create a local copy of the genes per branch.
   // initial_genes   :: Genes present at the bottom of the branch (more recent to the present, 'genes_per_branch_recent').
@@ -401,8 +405,9 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
   // when there are no more branching events).
   while ( current_time < parent_individual_age && branching_times_to_nodes.size() > 0 )
     {
-      // Maps are sorted by their key, so this will give as the next branching
-      // event up on the gene tree.
+      // Maps are sorted by their key, so this will give us the next branching
+      // event up on the gene tree (since at each iteration, we always erase the
+      // first element).
       const TopologyNode *parent = branching_times_to_nodes.begin()->second;
       double parent_age = parent->getAge();
       current_time = parent_age;
@@ -425,12 +430,13 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
 
           // Insert the parent into vector of genes in this branch.
           remaining_genes.insert( parent );
-          // // TODO @Dominik @Sebastian. Why do we bother about the grandparent here?
-          //  if ( ! parent->isRoot() )
-          //    {
-          //      const TopologyNode *grand_parent = &parent->getParent();
-          //      branching_times_to_nodes[ grand_parent->getAge() ] = grand_parent;
-          //    }
+          // Since more than one duplication event can affect the same gene, we
+          // have to check for further duplications up the gene branch.
+           if ( ! parent->isRoot() )
+             {
+               const TopologyNode *grand_parent = &parent->getParent();
+               branching_times_to_nodes[ grand_parent->getAge() ] = grand_parent;
+             }
           if ( (fabs( parent_age - individual_age) > EPS_COAL) &&       // The branching event didn't happen close to the bottom of the individual branch (which would be a coalescence).
                (fabs( parent_age - parent_individual_age) > EPS_COAL) ) // Nor did it happen close to the top of the individual branch (which would also be a coalescence).
             {
@@ -449,8 +455,10 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
   // Merge the two sets of genes that go into the next individual.
   if ( ! individual_node.isRoot() )
     {
+      // Do not clear the genes here, because both daughter branches will insert
+      // genes and the other branch may already have inserted its genes. Rather,
+      // add the remaining genes.
       std::set<const TopologyNode *> &genes_parent_branch_recent = genes_per_branch_recent[ individual_node.getParent().getIndex() ];
-      // Do not clear the genes here, because both daughter branches will insert genes and the other branch may already have inserted its genes.
       genes_parent_branch_recent.insert( remaining_genes.begin(), remaining_genes.end());
     }
 
@@ -587,6 +595,7 @@ void DuplicationLossProcess::recursivelySimulateTreeForward(double age_begin, co
     if (current_age <= age_end) {
       // This may not be necessary.
       current_age = age_end;
+      // Exit loop, not event happened before bottom of branch.
       break;
     }
     // Which gene is affected?
@@ -613,8 +622,9 @@ void DuplicationLossProcess::recursivelySimulateTreeForward(double age_begin, co
     }
   }
 
+  // Handle coalescence, which corresponds to a huge "duplication like" event
+  // when going forward in time.
   if (! i_node->isTip()) {
-    // Handle coalescence.
     std::vector<TopologyNode *> genes_left;
     std::vector<TopologyNode *> genes_right;
     for (std::vector<TopologyNode *>::iterator it = genes.begin(); it != genes.end(); it++) {
@@ -637,10 +647,11 @@ void DuplicationLossProcess::recursivelySimulateTreeForward(double age_begin, co
     recursivelySimulateTreeForward(age_end, i_left, genes_left);
     recursivelySimulateTreeForward(age_end, i_right, genes_right);
   }
+  // Handle tip.
   else {
-    // Handle tip.
     double age = i_node->getAge();
-    if (age != 0.0) throw RbException("Uhh, call a maintainer.");
+    // XXX: But what if individuals are sampled not at the present?
+    if (age != 0.0) throw RbException("Uhh, go to your phone and call a revBayes maintainer; sorry ...");
     for (std::vector<TopologyNode *>::iterator it = genes.begin(); it != genes.end(); it++) {
       TopologyNode *g_node = *it;
       g_node->setAge(age);
@@ -655,8 +666,11 @@ void DuplicationLossProcess::recursivelySimulateTreeForward(double age_begin, co
 
 // For a given individual tree, walk down from the root and simulate a birth and
 // death process. Only if we end up with the correct amount of genes at each
-// leaf, we keep the tree. Of course, this is a naive method that will most
-// likely take a looong time.
+// leaf, we keep the tree.
+
+// FIXME: Of course, this is a naive method that will most likely take a loooong
+// time. Can't we use the simulation method of reconstructed trees introduced by
+// Tanja Stadler?
 void DuplicationLossProcess::simulateTreeRejectionSampling(void)
 {
   const Tree &ind = individual_tree->getValue();
@@ -692,6 +706,9 @@ void DuplicationLossProcess::simulateTreeRejectionSampling(void)
     const TopologyNode *i_root = &ind.getRoot();
     double root_age = i_root->getAge();
     root->setAge(root_age);
+    // TODO: See previous comment. This cannot work, because the age of root of
+    // the individual tree and the root age are equal, so there is no time for
+    // events.
     recursivelySimulateTreeForward(root_age, i_root, genes);
 
     // Create the tree object.
