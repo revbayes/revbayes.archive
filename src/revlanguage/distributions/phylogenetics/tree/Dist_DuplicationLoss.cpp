@@ -59,12 +59,15 @@ RevBayesCore::DuplicationLossProcess* Dist_DuplicationLoss::createDistribution( 
     // Get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* ind_tree = static_cast<const TimeTree &>( individual_tree->getRevObject() ).getDagNode();
     const std::vector<RevBayesCore::Taxon>      &t  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
+
+    RevBayesCore::TypedDagNode<double>* org = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
+
     
     // get the number of nodes for the tree
     size_t n_nodes = ind_tree->getValue().getNumberOfNodes();
     size_t n_tips = ind_tree->getValue().getNumberOfTips();
     
-    RevBayesCore::DuplicationLossProcess*   d = new RevBayesCore::DuplicationLossProcess( ind_tree, t );
+    RevBayesCore::DuplicationLossProcess*   d = new RevBayesCore::DuplicationLossProcess( ind_tree, org, t );
     
     RevBayesCore::ConstantNode< RevBayesCore::RbVector<double> > *sampling = new RevBayesCore::ConstantNode< RevBayesCore::RbVector<double> >("gene_sampling", new RevBayesCore::RbVector<double>(n_tips,1.0) );
     
@@ -186,6 +189,7 @@ const MemberRules& Dist_DuplicationLoss::getParameterRules(void) const
         branch_mu_types.push_back( RealPos::getClassTypeSpec() );
         branch_mu_types.push_back( ModelVector<RealPos>::getClassTypeSpec() );
         memberRules.push_back( new ArgumentRule( "mu"    , branch_mu_types, "The loss rate(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "origin", RealPos::getClassTypeSpec(), "Time of origin.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The vector of taxa which have species and individual names.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rules_set = true;
@@ -219,6 +223,10 @@ void Dist_DuplicationLoss::setConstParameter(const std::string& name, const RevP
     else if ( name == "mu" )
     {
         mu = var;
+    }
+    else if ( name == "origin" )
+    {
+        origin = var;
     }
     else if ( name == "taxa" )
     {

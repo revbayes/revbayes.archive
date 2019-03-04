@@ -55,6 +55,7 @@ namespace RevLanguage {
         
         RevPtr<const RevVariable>                           lambda;                                                                                     //!< The population size
         RevPtr<const RevVariable>                           mu;                                                                                     //!< The population size
+        RevPtr<const RevVariable>                           origin;                                                                                     //!< The population size
         RevPtr<const RevVariable>                           individual_tree;                                                                            //!< The species tree
         RevPtr<const RevVariable>                           taxa;                                                                                   //!< The taxons
         

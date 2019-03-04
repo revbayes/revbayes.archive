@@ -17,7 +17,7 @@ namespace RevBayesCore {
   class DuplicationLossProcess : public TypedDistribution<Tree> {
 
   public:
-    DuplicationLossProcess(const TypedDagNode<Tree> *it, const std::vector<Taxon> &t);
+    DuplicationLossProcess(const TypedDagNode<Tree> *it, const TypedDagNode<double> *org, const std::vector<Taxon> &t);
     // Virtual destructor.
     virtual                                             ~DuplicationLossProcess(void);
 
@@ -41,8 +41,6 @@ namespace RevBayesCore {
     void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP); //!< Swap a parameter
 
     // Helper functions.
-    void                                                attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times);
-    void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
     double                                              computeD(double dt, double e);
     double                                              computeE(double dt, double e);
     // k :: Number of genes at the bottom of the branch.
@@ -55,7 +53,7 @@ namespace RevBayesCore {
     double                                              recursivelyComputeLnProbability(const TopologyNode &n);
     void                                                resetTipAllocations(void);
     void                                                simulateTree(void);
-    void                                                simulateTreeRejectionSampling(void);
+    bool                                                simulateTreeRejectionSampling(void);
     void                                                recursivelySimulateTreeForward(double age_begin, const TopologyNode *i_node, std::vector<TopologyNode *> genes);
 
     // Members.
@@ -64,11 +62,14 @@ namespace RevBayesCore {
     size_t                                              num_taxa;
     double                                              log_tree_topology_prob;
 
+    const TypedDagNode<double>*                         origin;
+
+      
     const TypedDagNode<RbVector<double> >*              duplication_rates;
     const TypedDagNode<double>*                         duplication_rate;
     const TypedDagNode<RbVector<double> >*              loss_rates;
     const TypedDagNode<double>*                         loss_rate;
-    const TypedDagNode<RbVector<double> >*              gene_sampling_probability;
+    const TypedDagNode<RbVector<double> >*              gene_sampling_probabilities;
 
     std::vector< std::set< const TopologyNode* > >      genes_per_branch_recent;
     std::vector< std::set< const TopologyNode* > >      genes_per_branch_ancient;
