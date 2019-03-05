@@ -197,7 +197,7 @@ void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
 {
     
     // start the progress bar
-    ProgressBar progress = ProgressBar(generations, 0);
+    ProgressBar progress = ProgressBar(num_runs, 0);
     
     if ( process_active == true )
     {
@@ -216,10 +216,9 @@ void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
     size_t run_block_end   = std::max( int(run_block_start), int(floor( (double(pid+1) / num_processes ) * num_runs) ) - 1);
     
     // Run the chain
-    size_t numStars = 0;
     for (size_t i = run_block_start; i <= run_block_end; ++i)
     {
-        if ( runs[i] == NULL ) std::cerr << "Runing bad burnin (pid=" << pid <<", run="<< i << ") of runs.size()=" << runs.size() << "." << std::endl;
+        if ( runs[i] == NULL ) std::cerr << "Running bad burnin (pid=" << pid <<", run="<< i << ") of runs.size()=" << runs.size() << "." << std::endl;
         // run the i-th analyses
 #ifdef RB_MPI
         runs[i]->burnin(generations, MPI_COMM_WORLD, tuningInterval, false, false);
