@@ -50,8 +50,22 @@ DuplicationLossProcess* DuplicationLossProcess::clone(void) const
 
 double DuplicationLossProcess::computeLnProbability( void )
 {
+    
+    // test that the origin time is older than the root age of the haplotype tree
+    double org_time = origin->getValue();
+    double haplotype_root_age = individual_tree->getValue().getRoot().getAge();
+    
+    if ( org_time < haplotype_root_age )
+    {
+        return RbConstants::Double::neginf;
+    }
+    
+    // to be safe, we always reset the tip allications at the beginning of the probability computation
+    // we could check if it is sufficient to do so only once at the beginning when values are set
     resetTipAllocations();
     
+    // to be safe, we reset the extinction probability vector at the beginning of the probability computation.
+    // we could probably do this when we initialize the value too
     extinction_probs = std::vector<double>(individual_tree->getValue().getNumberOfNodes(),0.0);
 
     // variable declarations and initialization
