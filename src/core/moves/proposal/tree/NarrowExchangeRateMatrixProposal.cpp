@@ -170,7 +170,7 @@ double NarrowExchangeRateMatrixProposal::lnProposalProbabilityRateMatrix(const T
     
     // potential affected nodes for likelihood computation
     RbOrderedSet<DagNode *> affected;
-    rm->getAffectedNodes( affected );
+    rm->initiateGetAffectedNodes( affected );
     
     // Get random number generator
     RandomNumberGenerator* rng = GLOBAL_RNG;

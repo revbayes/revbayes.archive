@@ -241,7 +241,6 @@ void RateGenerator::printForUser(std::ostream &o, const std::string &sep, int l,
     std::streamsize previous_precision = o.precision();
     std::ios_base::fmtflags previous_flags = o.flags();
     
-    o << "[ ";
     o << std::fixed;
     o << std::setprecision(4);
 
@@ -257,6 +256,7 @@ void RateGenerator::printForUser(std::ostream &o, const std::string &sep, int l,
             o << "  ";
         }
         
+        o << "[ ";
         for (size_t j = 0; j < size(); ++j)
         {
             if (j != 0)

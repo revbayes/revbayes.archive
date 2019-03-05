@@ -10,7 +10,7 @@
 #include "RealPos.h"
 #include "RevObject.h"
 #include "RandomDiveProposal.h"
-#include "LogRandomDiveProposal.h"
+#include "HalfRandomDiveProposal.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -70,7 +70,7 @@ void Move_RandomDive::constructInternalObject( void )
     {
         RevBayesCore::TypedDagNode<double>* tmp = static_cast<const RealPos &>( x->getRevObject() ).getDagNode();
         RevBayesCore::StochasticNode<double> *n = dynamic_cast<RevBayesCore::StochasticNode<double> *>( tmp );
-        p = new RevBayesCore::LogRandomDiveProposal(n,d,r);
+        p = new RevBayesCore::HalfRandomDiveProposal(n,d,r);
     }
     else
     {
@@ -116,20 +116,14 @@ const TypeSpec& Move_RandomDive::getClassTypeSpec(void)
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Move_RandomDive::getHelpDescription(void) const
+std::string Move_RandomDive::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
+    std::string details = "The multiplicative proposal of Dutta 2012, allows for long-distance moves.\n\n";
     
-    std::string details_1 = "The multiplicative proposal of Dutta 2012, allows for long-distance moves.";
+    details += "Useful for fat-tailed distributions, possibly for bimoodal distributions.\n\n";
     
-    details.push_back( details_1 );
-    
-    std::string details_2 = "Useful for fat-tailed distributions, possibly for bimoodal distributions.";
-    
-    details.push_back( details_2 );
-    
-    std::string details_3 = "Variables on [0,infinity) are log-transformed for proposals.";
+    details += "Variables on [0,infinity) are log-transformed for proposals.";
     
     return details;
 }

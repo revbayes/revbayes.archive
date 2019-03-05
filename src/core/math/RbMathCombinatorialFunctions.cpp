@@ -48,13 +48,13 @@ double RbMath::choose(double n, double k)
     double r, k0 = k;
     k = floor(k + 0.5);
     if (fabs(k - k0) > 1e-7)
-        {
+    {
         std::ostringstream s;
         s << "'k' (" << k0 << ") must be integer, rounded to " << k;
         throw RbException(s.str());
-        }
+    }
     if (k < k_small_max)
-        {
+    {
         int j;
         if (n-k < k && n >= 0 && RbMath::isInt(n)) k = n-k; /* <- Symmetry */
         if (k <	 0) return 0.0;
@@ -65,27 +65,27 @@ double RbMath::choose(double n, double k)
             r *= (n-j+1)/j;
         return RbMath::isInt(n) ? floor(r + 0.5) : r;
         /* might have got rounding errors */
-        }
+    }
     /* else: k >= k_small_max */
     if (n < 0)
-        {
+    {
         r = choose(-n+ k-1, k);
         if (k != 2 * floor(k / 2.)) r = -r;
         return r;
-        }
+    }
     else if (RbMath::isInt(n))
-        {
+    {
         if (n < k) return 0.;
         if (n - k < k_small_max) return choose(n, n-k); /* <- Symmetry */
         return floor(exp(RbMath::lfastchoose(n, k)) + 0.5);
-        }
+    }
     /* else non-integer n >= 0 : */
     if (n < k-1)
-        {
+    {
         int s_choose;
         r = RbMath::lfastchoose2(n, k, /* -> */ &s_choose);
         return s_choose * exp(r);
-        }
+    }
     return exp(RbMath::lfastchoose(n, k));
 }
 
@@ -224,12 +224,12 @@ double RbMath::lnFactorial(int n) {
     if (n == 0)
         return 0;
     
-	double n1 = n;
-	double r  = 1.0 / n1;
-	double C0 =  0.918938533204672722;
-	double C1 =  1.0/12.0;
-	double C3 = -1.0/360.0;
-	return (n1 + 0.5) * log(n1) - n1 + C0 + r*(C1 + r*r*C3);
+    double n1 = n;
+    double r  = 1.0 / n1;
+    double C0 =  0.918938533204672722;
+    double C1 =  1.0/12.0;
+    double C3 = -1.0/360.0;
+    return (n1 + 0.5) * log(n1) - n1 + C0 + r*(C1 + r*r*C3);
 }
 
 

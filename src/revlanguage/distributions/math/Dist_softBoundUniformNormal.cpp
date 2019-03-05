@@ -118,30 +118,25 @@ std::vector<std::string> Dist_SoftBoundUniformNormal::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_SoftBoundUniformNormal::getHelpDescription(void) const
+std::string Dist_SoftBoundUniformNormal::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "A softbound uniform distribution with normally distributed tails outside the interval of the uniform distribution." );
+    std::string description = "A softbound uniform distribution with normally distributed tails outside the interval of the uniform distribution.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_SoftBoundUniformNormal::getHelpDetails(void) const
+std::string Dist_SoftBoundUniformNormal::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
-    std::string details_1 = "";
-    details_1 += "The center piece of this distribution a uniform distribution defined between the given interval.";
-    details_1 += " A variable is drawn from that uniform distribution with probability p and with probability 1-p outside the interval.";
-    details_1 += " The probability density outside the interval is described by a normal distribution with standard deviation sd.";
-    
-    details.push_back( details_1 );
+    std::string details = "";
+    details += "The center piece of this distribution a uniform distribution defined between the given interval.";
+    details += " A variable is drawn from that uniform distribution with probability p and with probability 1-p outside the interval.";
+    details += " The probability density outside the interval is described by a normal distribution with standard deviation sd.";
     
     return details;
 }

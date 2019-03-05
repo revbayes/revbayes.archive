@@ -1,10 +1,3 @@
-//
-//  RateMatrix_Pomo.cpp
-//
-//  Created by Bastien Boussau on 4/4/14.
-//  Copyright (c) 2014 Bastien Boussau. All rights reserved.
-//
-
 #include "RateMatrix_Pomo.h"
 #include "MatrixReal.h"
 #include "RbException.h"
@@ -19,7 +12,8 @@ using namespace RevBayesCore;
 RateMatrix_Pomo::RateMatrix_Pomo(size_t n) : AbstractRateMatrix( n ), N( 10 ), matrixSize( n )
 {
     std::vector<double> temp (4, 0.0);
-    for (size_t i = 0; i<4 ; ++i) {
+    for (size_t i = 0; i<4 ; ++i)
+    {
         mu.push_back(temp);
         s.push_back(1.0);
     }
@@ -109,9 +103,9 @@ void RateMatrix_Pomo::buildRateMatrix(void)
         
     }
     
-    //Change from a monomorphic into a polymorphic state
+    // Change from a monomorphic into a polymorphic state
     //(i.e. the first 4 lines in the matrix )
-    //The 4..4+Nminus1 states are the AC matrix
+    //The 4..4+N-1 states are the AC matrix
     //Only 2 entries can differ from 0, (N-1)A and (N-1)C
     //(N-1)A can only come from monomorphic state A, i.e. i=0
     //(N-1)A is at the end of the submatrix, j=4+N-1
@@ -252,29 +246,38 @@ void RateMatrix_Pomo::buildRateMatrix(void)
     //In these B matrices, again most cells = 0.
     //The diagonal is such that it's 0 - (sum of the cells in the line)
     
-    for (size_t k = 0; k <= 5; k++){
+    for (size_t k = 0; k <= 5; k++)
+    {
         //Definition of the fitnesses
         double f1, f2;
-        if (k<3) {
+        if (k<3)
+        {
             f1 = s[0];
         }
-        else if (k<5) {
+        else if (k<5)
+        {
             f1 = s[1];
         }
-        else {
+        else
+        {
             f1 = s[2];
         }
-        if (k==0) {
+        
+        if (k==0)
+        {
             f2 = s[1];
         }
-        else if (k==1 || k==3) {
+        else if (k==1 || k==3)
+        {
             f2 = s[2];
         }
-        else {
+        else
+        {
             f2 = s[3];
         }
         
-        for (size_t i = 1; i <= N-2 ; ++i){
+        for (size_t i = 1; i <= N-2 ; ++i)
+        {
             size_t j = i+1;
             (*the_rate_matrix)[3+i+Nminus1*k][3+j+Nminus1*k] = (f1*i/(f1*i + f2*(N-i)) * (N-i)/N);
             (*the_rate_matrix)[3+j+Nminus1*k][3+i+Nminus1*k] = (f2*j/(f2*j + f1*(N-j)) * (N-j)/N);
@@ -339,50 +342,51 @@ void RateMatrix_Pomo::buildRateMatrix(void)
 }
 
 
-double RateMatrix_Pomo::computeEntryFromMoranProcessWithSelection(size_t state1, size_t state2, double& count1){
-    //We always assume state1 with count1 is increasing
+double RateMatrix_Pomo::computeEntryFromMoranProcessWithSelection(size_t state1, size_t state2, double& count1)
+{
+    // We always assume state1 with count1 is increasing
     double count2 = (double)N-count1;
-    //One of state2 alleles is chosen for disappearance
+    
+    // One of state2 alleles is chosen for disappearance
     double result = count2/(double)N; // 1/count2;
-    //One of state1 alleles is chosen for replication
+    
+    // One of state1 alleles is chosen for replication
     result *= s[state1]*count1 / ( s[state2]*count2 + s[state1]*count1) ;
     return result;
 }
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_Pomo::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
-   // std::cout << "In calculateTransitionProbabilities: "<< t <<std::endl;
+void RateMatrix_Pomo::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+{
     
     //Now the instantaneous rate matrix has been filled up entirely.
     //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
     double t = rate * (startAge - endAge);
     computeExponentialMatrixByRepeatedSquaring(t, P);
     
-/*    for (size_t i = 0 ; i<58; ++i) {
-      //  for (size_t j = 0 ; j<58; ++j) {
-            std::cout << "t: "<< t <<  " Diag "<< i << " : "<< P.getElement(i, i)<<std::endl;
-        //}
-        
-    }*/
-    
     return;
 }
 
-void RateMatrix_Pomo::computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const {
+void RateMatrix_Pomo::computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const
+{
     //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
     //Ideally one should dynamically decide how many squarings are necessary. 
     //For the moment, we arbitrarily do 10 such squarings, as it seems to perform well in practice (N. Lartillot, personal communication).
     //first, multiply the matrix by the right scalar
     //2^10 = 1024
     double tOver2s = t/(1024);
-    for ( size_t i = 0; i < matrixSize; i++ ) {
-        for ( size_t j = 0; j < matrixSize; j++ ) {
+    for ( size_t i = 0; i < matrixSize; i++ )
+    {
+        for ( size_t j = 0; j < matrixSize; j++ )
+        {
             P[i][j] = (*the_rate_matrix)[i][j] * tOver2s; 
         }
     }
+    
     //Add the identity matrix:
-     for ( size_t i = 0; i < matrixSize; i++ ) {
+     for ( size_t i = 0; i < matrixSize; i++ )
+     {
          P[i][i] += 1;
      }
      //Now we can do the multiplications
@@ -401,17 +405,22 @@ void RateMatrix_Pomo::computeExponentialMatrixByRepeatedSquaring(double t,  Tran
      return;
 }
 
-inline void RateMatrix_Pomo::squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const {
+inline void RateMatrix_Pomo::squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const
+{
     //Could probably use boost::ublas here, for the moment we do it ourselves.
-    for ( size_t i = 0; i < matrixSize; i++ ) {
-        for ( size_t j = 0; j < matrixSize; j++ ) {
+    for ( size_t i = 0; i < matrixSize; i++ )
+    {
+        for ( size_t j = 0; j < matrixSize; j++ )
+        {
             P2.getElement ( i, j ) = 0;
-            for ( size_t k = 0; k < matrixSize; k++ ) {
+            for ( size_t k = 0; k < matrixSize; k++ )
+            {
                 P2.getElement ( i, j ) += P.getElement ( i, k ) * P.getElement ( k, j );
-                }
+                
             }
         }
     }
+}
 
 
 
@@ -477,7 +486,8 @@ void RateMatrix_Pomo::setMutationRates(const RateGenerator& mm)
 }
 
 
-void RateMatrix_Pomo::setSelectionCoefficients(const std::vector<double>& sc){
+void RateMatrix_Pomo::setSelectionCoefficients(const std::vector<double>& sc)
+{
     s = sc;
 
 }

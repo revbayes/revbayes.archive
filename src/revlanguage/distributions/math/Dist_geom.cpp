@@ -129,24 +129,23 @@ std::vector<std::string> Dist_geom::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_geom::getHelpDescription(void) const
+std::string Dist_geom::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "A geometric distribution defines a random variable on natural numbers. The geometric distribution describes the number of success until the first failure, with success probability p." );
+    std::string description = "A geometric distribution defines a random variable on natural numbers. The geometric distribution describes the number of success until the first failure, with success probability p.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_geom::getHelpDetails(void) const
+std::string Dist_geom::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
+    std::string details;
+
     return details;
 }
 

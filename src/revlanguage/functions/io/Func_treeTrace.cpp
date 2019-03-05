@@ -135,16 +135,12 @@ std::vector<std::string> Func_treeTrace::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_treeTrace::getHelpDescription(void) const
+std::string Func_treeTrace::getHelpDescription(void) const
 {
-    // create a variable for the description of the function
-    std::vector<std::string> descriptions;
+    std::string description = "";
+    description += "Creates a tree trace object from a vector of trees.";
     
-    std::string description1 = "";
-    description1 += "Creates a tree trace object from a vector of trees.";
-    descriptions.push_back( description1 );
-    
-    return descriptions;
+    return description;
 }
 
 

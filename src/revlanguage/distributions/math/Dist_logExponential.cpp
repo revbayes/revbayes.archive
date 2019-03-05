@@ -89,36 +89,28 @@ std::vector<std::string> Dist_logExponential::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_logExponential::getHelpDescription(void) const
+std::string Dist_logExponential::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "A real number x has a log-Exponential distribution if y = exp(x) has Exponential distribution." );
+    std::string description = "A real number x has a log-Exponential distribution if y = exp(x) has Exponential distribution.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_logExponential::getHelpDetails(void) const
+std::string Dist_logExponential::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
+    std::string details = "";
+    details += "The log-Exponential distribution is defined over real numbers.";
+    details += " Saying that x is log-Exponential is equivalent to saying that y = exp(x) is Exponential.";
+    details += " The log-Exponential distribution therefore expresses lack of information about the order of magnitude of a scale parameter: ";
+    details += " if x has a log-Exponential distribution, then it has equal chance to be contained by any of the intervals of the form (10^k, 10^(k+1)) within the allowed range.\n\n";
     
-    std::string details_1 = "";
-    details_1 += "The log-Exponential distribution is defined over real numbers.";
-    details_1 += " Saying that x is log-Exponential is equivalent to saying that y = exp(x) is Exponential.";
-    details_1 += " The log-Exponential distribution therefore expresses lack of information about the order of magnitude of a scale parameter: ";
-    details_1 += " if x has a log-Exponential distribution, then it has equal chance to be contained by any of the intervals of the form (10^k, 10^(k+1)) within the allowed range.";
-    
-    details.push_back( details_1 );
-    
-    std::string details_2 = "";
-    details_2 += "The density is p(x) = ???, which can be seen by defining x = ln(y) where y has Exponential distribution and apply the change-of-variable formula.";
-    
-    details.push_back( details_2 );
+    details += "The density is p(x) = ???, which can be seen by defining x = ln(y) where y has Exponential distribution and apply the change-of-variable formula.";
     
     return details;
 }

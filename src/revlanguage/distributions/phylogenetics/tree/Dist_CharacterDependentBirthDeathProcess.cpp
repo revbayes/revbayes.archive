@@ -98,15 +98,18 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirt
     
     bool cond_tip_states = false;
     bool cond_num_tips = false;
+    bool cond_tree = false;
     if (simulate_cond == "tipStates")
     {
         cond_tip_states = true;
-        cond_num_tips = false;
     }
-    if (simulate_cond == "numTips")
+    else if (simulate_cond == "numTips")
     {
-        cond_tip_states = false;
         cond_num_tips = true;
+    }
+    else if (simulate_cond == "tree")
+    {
+        cond_tree = true;
     }
     
     size_t max_l = static_cast<const Integer &>( max_lineages->getRevObject() ).getValue();
@@ -116,18 +119,38 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirt
     
     size_t prune = static_cast<const RlBoolean &>( prune_extinct_lineages->getRevObject() ).getValue();
     
+    
     // finally make the distribution 
-    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, bf, rh, cond, uo, min_l, max_l, exact_l, max_t, prune, cond_tip_states, cond_num_tips );
+    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, bf, rh, cond, uo, min_l, max_l, exact_l, max_t, prune, cond_tip_states, cond_num_tips, cond_tree );
    
+    
+    size_t ex_size = ex->getValue().size();
+    size_t q_size = q->getValue().size();
+    size_t sp_size = 0;
+    
     // set speciation/cladogenetic event rates
     if (speciation_rates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ))
     {
         d->setSpeciationRates( sp );
+        sp_size = sp->getValue().size();
     }
     else if (speciation_rates->getRevObject().isType( CladogeneticSpeciationRateMatrix::getClassTypeSpec() ))
     {
         d->setCladogenesisMatrix( cp );
+        sp_size = cp->getValue().getNumberOfStates();
     } 
+
+    std::stringstream ss_err;
+    if (ex_size != q_size) {
+        ss_err << "State count mismatch between extinction rates (" << ex_size << ") and Q (" << q_size << ")";
+        throw RbException(ss_err.str());
+    } if (ex_size != sp_size) {
+        ss_err << "State count mismatch between extinction rates (" << ex_size << ") and speciation rates (" << sp_size << ")";
+        throw RbException(ss_err.str());
+    } if (q_size != sp_size) {
+        ss_err << "State count mismatch between speciation rates (" << sp_size << ") and Q (" << q_size << ")";
+        throw RbException(ss_err.str());
+    }
     
     // set the number of time slices for the numeric ODE
     double n = static_cast<const RealPos &>( num_time_slices->getRevObject() ).getValue();
@@ -271,6 +294,7 @@ const MemberRules& Dist_CharacterDependentBirthDeathProcess::getParameterRules(v
         optionsSimulateCondition.push_back("startTime");
         optionsSimulateCondition.push_back("numTips");
         optionsSimulateCondition.push_back("tipStates");
+        optionsSimulateCondition.push_back("tree");
         memberRules.push_back( new OptionRule("simulateCondition", new RlString("startTime"), optionsSimulateCondition, "The conditions under which to simulate." ) );
         memberRules.push_back( new ArgumentRule("minNumLineages", Natural::getClassTypeSpec(), "The minimum number of lineages to simulate; applied under the startTime condition.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural() ) );
         memberRules.push_back( new ArgumentRule("maxNumLineages", Natural::getClassTypeSpec(), "The maximum number of lineages to simulate; applied under the startTime condition.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(500) ) );

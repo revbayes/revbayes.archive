@@ -70,14 +70,18 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
 
     
     std::vector<DagNode*> nodes = model.getDagNodes();
-    
+
     size_t sim_pid_start = size_t(floor( (double(pid) / num_processes * n_samples ) ) );
     size_t sim_pid_end   = std::max( int(sim_pid_start), int(floor( (double(pid+1) / num_processes * n_samples ) ) - 1) );
     
     size_t index_sample = sim_pid_start;
-    size_t current_pp_sim = sim_pid_start;
+    while ( index_sample % thinning > 0 ) ++index_sample;
+    size_t current_pp_sim = size_t( floor( index_sample / thinning ) );
+    
+    
     for ( ; index_sample <= sim_pid_end; ++current_pp_sim, index_sample += thinning)
     {
+        
         
         // create a new directory name for this simulation
         std::stringstream s;
@@ -97,7 +101,7 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
                 if ( the_node->getName() == parameter_name )
                 {
                     // set the value for the variable with the i-th sample
-                    the_node->setValueFromString( traces[j].objectAt( current_pp_sim ) );
+                    the_node->setValueFromString( traces[j].objectAt( index_sample ) );
                 }
             
             }
@@ -140,7 +144,7 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
                             tip_state_trace = &ancestral_state_traces[idx];
                         }
                         const std::vector<std::string>& tip_state_vector = tip_state_trace->getValues();
-                        std::string state_str = tip_state_vector[current_pp_sim];
+                        std::string state_str = tip_state_vector[index_sample];
   
                         // create a taxon data object for each tip
                         DiscreteTaxonData<NaturalNumbersState> this_tip_data = DiscreteTaxonData<NaturalNumbersState>(tips[tip_index]);
@@ -162,8 +166,17 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
                     // we need to store the new simulated data
                     the_node->writeToFile(sim_directory_name);
                 }
-                catch(...)
+                catch (RbException e)
                 {
+                    
+                    std::cerr << "Problem in Posterior Predictive Simulation:" << std::endl;
+                    std::cerr << e.getMessage() << std::endl;
+                    // skip this simulation
+                }
+                catch (...)
+                {
+                    
+                    std::cerr << "Problem occurred." << std::endl;
                     // skip this simulation
                 }
             }

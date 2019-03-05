@@ -159,6 +159,7 @@
 #include "Dist_bimodalLnorm.h"
 #include "Dist_bimodalNorm.h"
 #include "Dist_binomial.h"
+#include "Dist_bivariatePoisson.h"
 #include "Dist_categorical.h"
 #include "Dist_Cauchy.h"
 #include "Dist_chisq.h"
@@ -209,6 +210,7 @@
 #include "Dist_dpp.h"
 #include "Dist_event.h"
 #include "Dist_mixture.h"
+#include "Dist_MultiValueEvent.h"
 #include "Dist_reversibleJumpMixtureConstant.h"
 #include "Dist_upp.h"
 
@@ -363,6 +365,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         // binomial distribution
         AddDistribution< Natural                    >( new Dist_binomial() );
 
+        // bivariate poisson distribution
+        AddDistribution< ModelVector<Natural>       >( new Dist_bivariatePoisson() );
+
         // negative binomial distribution
         AddDistribution< Natural                    >( new Dist_nbinomial() );
 
@@ -499,6 +504,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< ModelVector<Natural>       >( new Dist_event<Natural>()      );
         AddDistribution< ModelVector<Integer>       >( new Dist_event<Integer>()      );
         AddDistribution< ModelVector<Probability>   >( new Dist_event<Probability>()  );
+        AddDistribution< MultiValueEvent            >( new Dist_MultiValueEvent()     );
 		
         // uniform partitions prior
         AddDistribution< ModelVector<RealPos>       >( new Dist_upp<RealPos>() );

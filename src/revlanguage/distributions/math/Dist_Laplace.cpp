@@ -130,38 +130,27 @@ std::vector<std::string> Dist_Laplace::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_Laplace::getHelpDescription(void) const
+std::string Dist_Laplace::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Laplace distribution with mean equal to ‘mean’ and scale equal to ‘scale’." );
+    std::string description = "Laplace distribution with mean equal to ‘mean’ and scale equal to ‘scale’.";
 
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_Laplace::getHelpDetails(void) const
+std::string Dist_Laplace::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
+    std::string details;
+    details += "The Laplace distribution has density:\n\n";
 
-    std::string details_1 = "";
-    details_1 += "The Laplace distribution has density:";
+    details += "f(x) = 1/(2 b) e^-(abs(x-mu)/b)\n\n";
 
-    details.push_back( details_1 );
-
-    std::string details_2 = "";
-    details_2 += "f(x) = 1/(2 b) e^-(abs(x-mu)/b)";
-
-    details.push_back( details_2 );
-
-    std::string details_3 = "";
-    details_3 += "where mu is the mean of the distribution and b the scale.";
-
-    details.push_back( details_3 );
+    details += "where mu is the mean of the distribution and b the scale.";
 
     return details;
 }

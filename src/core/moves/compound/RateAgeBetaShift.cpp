@@ -92,7 +92,7 @@ void RateAgeBetaShift::performMcmcMove( double prHeat, double lHeat, double pHea
     
     Tree& tau = tree->getValue();
     RbOrderedSet<DagNode*> affected;
-    tree->getAffectedNodes( affected );
+    tree->initiateGetAffectedNodes( affected );
     
     double oldLnLike = 0.0;
     bool checkLikelihoodShortcuts = rng->uniform01() < 0.001;

@@ -92,38 +92,22 @@ std::vector<std::string> Move_CorrelationMatrixElementSwap::getHelpAuthor(void) 
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Move_CorrelationMatrixElementSwap::getHelpDescription(void) const
+std::string Move_CorrelationMatrixElementSwap::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Swaps elements i and j of the correlation matrix (i != j)." );
+    std::string description = "Swaps elements i and j of the correlation matrix (i != j).";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Move_CorrelationMatrixElementSwap::getHelpDetails(void) const
+std::string Move_CorrelationMatrixElementSwap::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
-//    std::string details_1 = "";
-//    details_1 += "The normal distribution has density:";
-//    
-//    details.push_back( details_1 );
-//    
-//    std::string details_2 = "";
-//    details_2 += "f(x) = 1/(sqrt(2 pi) sigma) e^-((x - mu)^2/(2 sigma^2))";
-//    
-//    details.push_back( details_2 );
-//    
-//    std::string details_3 = "";
-//    details_3 += "where mu is the mean of the distribution and sigma the standard deviation.";
-//    
-//    details.push_back( details_3 );
+    std::string details;
     
     return details;
 }

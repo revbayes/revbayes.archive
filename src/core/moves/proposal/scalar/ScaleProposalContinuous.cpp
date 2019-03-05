@@ -96,16 +96,16 @@ double ScaleProposalContinuous::doProposal( void )
     double newVal = val * scaling_factor;
     
     /* reflect the new value */
-    while ( newVal < min || newVal > max ) {
-        if ( newVal < min )
-        {
-            newVal = pow(min, 2) / newVal;
-        }
-        else if ( newVal > max )
-        {
-            newVal = pow(max, 2) / newVal;
-        }
-    }
+//    while ( newVal < min || newVal > max ) {
+//        if ( newVal < min )
+//        {
+//            newVal = pow(min, 2) / newVal;
+//        }
+//        else if ( newVal > max )
+//        {
+//            newVal = pow(max, 2) / newVal;
+//        }
+//    }
     
     // compute the Hastings ratio
     double lnHastingsratio = log( newVal / val ); // Jacobian

@@ -1376,6 +1376,17 @@ bool Tree::recursivelyPruneTaxa( TopologyNode* n, const RbBitSet& prune_map )
 }
 
 
+void Tree::reindex( void )
+{
+    
+    for (unsigned int i = 0; i < nodes.size(); ++i)
+    {
+        nodes[i]->setIndex(i);
+    }
+    
+}
+
+
 void Tree::removeDuplicateTaxa( void )
 {
     
@@ -1529,6 +1540,19 @@ TopologyNode& Tree::reverseParentChild(TopologyNode &n)
 void Tree::setNegativeConstraint(bool tf)
 {
     is_negative_constraint = tf;
+}
+
+
+
+
+void Tree::setDefaultTipNames(const std::string &name, bool use_tip_index )
+{
+    
+    for (size_t i = 0; i < num_tips; ++i)
+    {
+        nodes[i]->setName( name + i );
+    }
+    
 }
 
 

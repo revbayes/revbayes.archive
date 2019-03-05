@@ -411,24 +411,22 @@ std::vector<std::string> Func_ls::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_ls::getHelpDescription(void) const
+std::string Func_ls::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Show the content of the workspace." );
+    std::string description = "Show the content of the workspace.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Func_ls::getHelpDetails(void) const
+std::string Func_ls::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    details.push_back( "The list functions shows all the variables in the current workspace. You can also see all the functions available if you use ls(all=TRUE)" );
+    std::string details = "The list functions shows all the variables in the current workspace. You can also see all the functions available if you use ls(all=TRUE)";
     
     return details;
 }
@@ -626,7 +624,6 @@ void Func_ls::printFunctions( bool printAll, std::string filter ) const
         RBOUT( "\n" );
         RBOUT( title + ":" );
         RBOUT( "===============" );
-        RBOUT( "\n" );
         RBOUT( fn_str );
         
     }
