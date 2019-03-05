@@ -24,7 +24,7 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
     std::vector<std::string>& line = chars[0];
     std::map<std::string, int> column_map;
 
-    std::string arr[] = {"taxon","age","species","min","max"};
+    std::string arr[] = {"taxon","age","species","haplotype","min","max"};
     std::vector<std::string> fields (arr, arr + sizeof(arr) / sizeof(arr[0]) );
     
     for (size_t i = 0 ; i < line.size() ; ++i)
@@ -112,6 +112,12 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
         if ( column_map.find("species") != column_map.end() )
         {
             t.setSpeciesName( line[ column_map["species"] ] );
+        }
+        
+        
+        if ( column_map.find("haplotype") != column_map.end() )
+        {
+            t.setSpeciesName( line[ column_map["haplotype"] ] );
         }
         
         taxa.push_back( t );
