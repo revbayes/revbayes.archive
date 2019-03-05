@@ -13,14 +13,15 @@
 
 using namespace RevBayesCore;
 
-DuplicationLossProcess::DuplicationLossProcess(const TypedDagNode<Tree> *it, const TypedDagNode<double> *org, const std::vector<Taxon> &t) : TypedDistribution<Tree>( NULL ),
+DuplicationLossProcess::DuplicationLossProcess(const TypedDagNode<Tree> *it, const TypedDagNode<double> *org, const std::vector<Taxon> &t, bool condition) : TypedDistribution<Tree>( NULL ),
     taxa(t),
     individual_tree( it ),
     num_taxa( taxa.size() ),
     log_tree_topology_prob (0.0),
     origin( org ),
     duplication_rate( new ConstantNode<double>("", new double(1.0)) ),
-    loss_rate( new ConstantNode<double>("", new double(0.5)) )
+    loss_rate( new ConstantNode<double>("", new double(0.5)) ),
+    condition_on_tip_gene_numbers( condition )
 {
     // add the parameters to our set (in the base class) in that way other
     // classes can easily access the set of our parameters this will also ensure
