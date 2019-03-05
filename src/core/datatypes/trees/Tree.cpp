@@ -1545,12 +1545,12 @@ void Tree::setNegativeConstraint(bool tf)
 
 
 
-void Tree::setDefaultTipNames(const std::string &name, bool use_tip_index )
+void Tree::setDefaultTipNames(const std::string &name, bool use_same_species_name )
 {
     
     for (size_t i = 0; i < num_tips; ++i)
     {
-        nodes[i]->setName( name + i );
+        nodes[i]->setName( name + i, use_same_species_name );
     }
     
 }

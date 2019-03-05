@@ -129,7 +129,7 @@ namespace RevBayesCore {
         void                                                reroot(TopologyNode &n, bool reindex);
         void                                                removeDuplicateTaxa(void);
         void                                                renameNodeParameter(const std::string &old_name, const std::string &new_name);
-        void                                                setDefaultTipNames(const std::string &name, bool use_index=true);
+        void                                                setDefaultTipNames(const std::string &name, bool use_same_species_name=true);
         void                                                setNegativeConstraint(bool);
         void                                                setRoot(TopologyNode* r, bool reindex);                                                             //!< Set the root and bootstrap the Tree from it
         void                                                setRooted(bool tf);

@@ -449,6 +449,10 @@ void DuplicationLossProcess::resetTipAllocations( void )
         const TopologyNode &n = value->getNode( i );
         const std::string &individual_name = n.getSpeciesName();
         TopologyNode *individual_node = individual_names_2_individual_nodes[individual_name];
+        if ( individual_node == NULL )
+        {
+            throw RbException("There was an unexpected problem when inializing the tips of the gene tree in the duplication loss process. Could not find a node in the haplotype tree with name '" + individual_name + "'.");
+        }
         size_t index = individual_node->getIndex();
         genes_per_branch_recent[ index ].insert( &n );
     }
@@ -746,7 +750,7 @@ void DuplicationLossProcess::simulateTree( void )
     psi->reindex();
     
     // set the names of the tips
-    psi->setDefaultTipNames("Tip_",true);
+    psi->setDefaultTipNames("Tip_",false);
     
     // Finally store the new tree.
     value = psi;

@@ -1747,11 +1747,14 @@ void TopologyNode::setIndex( size_t idx)
 }
 
 
-void TopologyNode::setName(std::string const &n)
+void TopologyNode::setName(std::string const &n, bool same_species_name)
 {
     
     taxon.setName( n );
-    taxon.setSpeciesName( n );
+    if ( same_species_name == true )
+    {
+        taxon.setSpeciesName( n );
+    }
     
 }
 
