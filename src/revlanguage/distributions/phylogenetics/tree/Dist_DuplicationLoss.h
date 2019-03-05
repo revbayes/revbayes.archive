@@ -58,7 +58,8 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                           origin;                                                                                     //!< The population size
         RevPtr<const RevVariable>                           individual_tree;                                                                            //!< The species tree
         RevPtr<const RevVariable>                           taxa;                                                                                   //!< The taxons
-        
+        RevPtr<const RevVariable>                           condition;                                                                                   //!< The taxons
+
         
     };
     

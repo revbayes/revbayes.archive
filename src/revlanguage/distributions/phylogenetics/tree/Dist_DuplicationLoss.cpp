@@ -67,7 +67,9 @@ RevBayesCore::DuplicationLossProcess* Dist_DuplicationLoss::createDistribution( 
     size_t n_nodes = ind_tree->getValue().getNumberOfNodes();
     size_t n_tips = ind_tree->getValue().getNumberOfTips();
     
-    RevBayesCore::DuplicationLossProcess*   d = new RevBayesCore::DuplicationLossProcess( ind_tree, org, t );
+    bool cdt = static_cast<const RlBoolean &>( condition->getRevObject() ).getValue();
+    
+    RevBayesCore::DuplicationLossProcess*   d = new RevBayesCore::DuplicationLossProcess( ind_tree, org, t, cdt );
     
     RevBayesCore::ConstantNode< RevBayesCore::RbVector<double> > *sampling = new RevBayesCore::ConstantNode< RevBayesCore::RbVector<double> >("gene_sampling", new RevBayesCore::RbVector<double>(n_tips,1.0) );
     
@@ -175,27 +177,28 @@ std::string Dist_DuplicationLoss::getDistributionFunctionName( void ) const
 const MemberRules& Dist_DuplicationLoss::getParameterRules(void) const
 {
     
-    static MemberRules memberRules;
+    static MemberRules member_rules;
     static bool rules_set = false;
     
     if ( !rules_set )
     {
-        memberRules.push_back( new ArgumentRule( "individualTree", TimeTree::getClassTypeSpec(), "The individual tree in which the gene trees evolve.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        member_rules.push_back( new ArgumentRule( "individualTree", TimeTree::getClassTypeSpec(), "The individual tree in which the gene trees evolve.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         std::vector<TypeSpec> branch_lambda_types;
         branch_lambda_types.push_back( RealPos::getClassTypeSpec() );
         branch_lambda_types.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        memberRules.push_back( new ArgumentRule( "lambda"    , branch_lambda_types, "The duplication rate(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        member_rules.push_back( new ArgumentRule( "lambda"    , branch_lambda_types, "The duplication rate(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         std::vector<TypeSpec> branch_mu_types;
         branch_mu_types.push_back( RealPos::getClassTypeSpec() );
         branch_mu_types.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        memberRules.push_back( new ArgumentRule( "mu"    , branch_mu_types, "The loss rate(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "origin", RealPos::getClassTypeSpec(), "Time of origin.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The vector of taxa which have species and individual names.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        
+        member_rules.push_back( new ArgumentRule( "mu"    , branch_mu_types, "The loss rate(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        member_rules.push_back( new ArgumentRule( "origin", RealPos::getClassTypeSpec(), "Time of origin.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        member_rules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The vector of taxa which have species and individual names.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        member_rules.push_back( new ArgumentRule( "conditionOnTipSamples"  , RlBoolean::getClassTypeSpec(), "Should we condition the simulation on having exactly the specified number of genes per haplotype?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+
         rules_set = true;
     }
     
-    return memberRules;
+    return member_rules;
 }
 
 
@@ -231,6 +234,10 @@ void Dist_DuplicationLoss::setConstParameter(const std::string& name, const RevP
     else if ( name == "taxa" )
     {
         taxa = var;
+    }
+    else if ( name == "conditionOnTipSamples" )
+    {
+        condition = var;
     }
     else
     {

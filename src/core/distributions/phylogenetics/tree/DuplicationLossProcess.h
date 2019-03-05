@@ -17,7 +17,7 @@ namespace RevBayesCore {
   class DuplicationLossProcess : public TypedDistribution<Tree> {
 
   public:
-    DuplicationLossProcess(const TypedDagNode<Tree> *it, const TypedDagNode<double> *org, const std::vector<Taxon> &t);
+    DuplicationLossProcess(const TypedDagNode<Tree> *it, const TypedDagNode<double> *org, const std::vector<Taxon> &t, bool condition);
     // Virtual destructor.
     virtual                                             ~DuplicationLossProcess(void);
 
@@ -75,6 +75,9 @@ namespace RevBayesCore {
     std::vector< std::set< const TopologyNode* > >      genes_per_branch_ancient;
     // Extinction probabilities at start (older/ancient end) of individual branch.
     std::vector< double >                               extinction_probs;
+      
+      bool                                              condition_on_tip_gene_numbers;
+  
   };
 }
 #endif
