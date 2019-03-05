@@ -51,6 +51,8 @@ DuplicationLossProcess* DuplicationLossProcess::clone(void) const
 double DuplicationLossProcess::computeLnProbability( void )
 {
     resetTipAllocations();
+    
+    extinction_probs = std::vector<double>(individual_tree->getValue().getNumberOfNodes(),0.0);
 
     // variable declarations and initialization
     double ln_prob_coal = 0;
@@ -76,7 +78,9 @@ double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_ge
   // Get extinction probability at the bottom of this branch.
   if ( node_individual.isTip() )
     {
-      current_ext_prob = 1.0 - gene_sampling_probabilities->getValue()[index_individual];
+        // TODO: We need to use the actual sampling probabilities.
+        current_ext_prob = 0.0;
+//      current_ext_prob = 1.0 - gene_sampling_probabilities->getValue()[index_individual];
     }
   else
     {
@@ -510,9 +514,9 @@ void DuplicationLossProcess::setValue(Tree *v, bool f )
         for (size_t j=0; j<n_taxa; ++j)
         {
             // check if the name of the tip corresponds to this taxon of our taxon list
-            if ( name == taxa[i].getName() )
+            if ( name == taxa[j].getName() )
             {
-                n.setTaxon( taxa[i] );
+                n.setTaxon( taxa[j] );
                 found = true;
                 break;
             }
