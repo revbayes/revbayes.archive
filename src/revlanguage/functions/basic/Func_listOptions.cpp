@@ -101,24 +101,22 @@ std::vector<std::string> Func_listOptions::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_listOptions::getHelpDescription(void) const
+std::string Func_listOptions::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "List all global options for RevBayes." );
+    std::string description = "List all global options for RevBayes.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Func_listOptions::getHelpDetails(void) const
+std::string Func_listOptions::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    details.push_back( "Options are used to personalize RevBayes and are stored on the local machine. Currently this is rather experimental." );
+    std::string details =  "Options are used to personalize RevBayes and are stored on the local machine. Currently this is rather experimental." ;
     
     return details;
 }

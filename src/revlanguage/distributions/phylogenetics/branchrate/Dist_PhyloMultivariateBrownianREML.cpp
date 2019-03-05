@@ -132,24 +132,22 @@ std::vector<std::string> Dist_PhyloMultivariateBrownianREML::getHelpAuthor(void)
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_PhyloMultivariateBrownianREML::getHelpDescription(void) const
+std::string Dist_PhyloMultivariateBrownianREML::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Multivariate Brownian motion over a phylogeny with variance-covariance matrix rateMatrix." );
+    std::string description = "Multivariate Brownian motion over a phylogeny with variance-covariance matrix rateMatrix.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_PhyloMultivariateBrownianREML::getHelpDetails(void) const
+std::string Dist_PhyloMultivariateBrownianREML::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
+    std::string details;
     return details;
 }
 

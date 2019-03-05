@@ -173,24 +173,22 @@ std::vector<std::string> Func_structure::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_structure::getHelpDescription(void) const
+std::string Func_structure::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Shows all the information about a given variable." );
+    std::string description = "Shows all the information about a given variable.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Func_structure::getHelpDetails(void) const
+std::string Func_structure::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
+    std::string details;
     return details;
 }
 

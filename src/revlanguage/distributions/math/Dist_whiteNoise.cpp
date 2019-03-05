@@ -90,29 +90,24 @@ std::vector<std::string> Dist_whiteNoise::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_whiteNoise::getHelpDescription(void) const
+std::string Dist_whiteNoise::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "White-Noise process for positive real numbers." );
+    std::string description = "White-Noise process for positive real numbers.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_whiteNoise::getHelpDetails(void) const
+std::string Dist_whiteNoise::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
-    std::string details_1 = "";
-    details_1 += "The white-noise process is a process of a positive continuous variable similar to Brownian motion and the Ornstein-Uhlenbeck process.";
-    details_1 += " However, the white-noise process has a large variance when the time is small, and has small variance if the time is large.";
-    
-    details.push_back( details_1 );
+    std::string details = "";
+    details += "The white-noise process is a process of a positive continuous variable similar to Brownian motion and the Ornstein-Uhlenbeck process.";
+    details += " However, the white-noise process has a large variance when the time is small, and has small variance if the time is large.";
     
     return details;
 }

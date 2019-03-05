@@ -119,6 +119,9 @@
 #include "RlCladogeneticSpeciationRateMatrix.h"
 #include "RlTimeTree.h"
 
+#include "Func_VectorMonitors.h"
+#include "Func_VectorMoves.h"
+
 
 
 /** Initialize global workspace */
@@ -130,6 +133,10 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
 
         addTypeWithConstructor( new Clade() );
         addTypeWithConstructor( new Taxon() );
+        
+        addFunction( new Func_VectorMoves()  );
+        addFunction( new Func_VectorMonitors()  );
+
 
         addFunction( new Func_workspaceVector<Model>() );
         

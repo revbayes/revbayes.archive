@@ -641,7 +641,7 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
     double max_age = tree_base_distribution->getOriginAge();
     
     // we need a sorted vector of constraints, starting with the smallest
-    std::set<Clade> sorted_clades;
+    std::vector<Clade> sorted_clades;
     
     for (size_t i = 0; i < monophyly_constraints.size(); ++i)
     {
@@ -691,24 +691,47 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
             {
                 std::vector<Clade> optional_constraints = monophyly_constraints[i].getOptionalConstraints();
                 size_t idx = (size_t)( GLOBAL_RNG->uniform01() * optional_constraints.size() );
-                sorted_clades.insert( optional_constraints[idx] );
+                sorted_clades.push_back( optional_constraints[idx] );
             }
             else
             {
-                sorted_clades.insert( monophyly_constraints[i] );
+                sorted_clades.push_back( monophyly_constraints[i] );
             }
         }
         
     }
     
+    
     // create a clade that contains all species
     Clade all_species = Clade(taxa);
     all_species.setAge( ra );
-    sorted_clades.insert(all_species);
+    sorted_clades.push_back(all_species);
+    
+//    for(std::vector<Clade>::iterator it = sorted_clades.begin(); it != sorted_clades.end(); it++)
+//    {
+//        std::cout << it->getAge() << std::endl;
+//    }
+    
+    // DO WE NEED TO SORT THE TAXA?
+    // try this crummy bubble sort
+    size_t num_clades = sorted_clades.size();
+    for (int i = 0; i < num_clades - 1; i++) {
+        for(int j = 0; j < num_clades - i - 1; j++){
+            if (sorted_clades[j].getAge() > sorted_clades[j+1].getAge()) {
+                std::swap(sorted_clades[j], sorted_clades[j+1]);
+            }
+        }
+    }
+    
+//    for(std::vector<Clade>::iterator it = sorted_clades.begin(); it != sorted_clades.end(); it++)
+//    {
+//        std::cout << it->getAge() << std::endl;
+//    }
+
     
     std::vector<Clade> virtual_taxa;
     int i = -1;
-    for (std::set<Clade>::iterator it = sorted_clades.begin(); it != sorted_clades.end(); it++)
+    for (std::vector<Clade>::iterator it = sorted_clades.begin(); it != sorted_clades.end(); it++)
     {
         // ignore negative clade constraints during simulation
         if ( it->isNegativeConstraint() == true )
@@ -716,13 +739,15 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
             continue;
         }
         
+//        std::cout << it->getAge() << std::endl;
+        
         ++i;
         const Clade &c = *it;
         std::vector<Taxon> taxa = c.getTaxa();
         std::vector<Clade> clades;
         
         int j = i;
-        std::set<Clade>::reverse_iterator jt(it);
+        std::vector<Clade>::reverse_iterator jt(it);
         for (; jt != sorted_clades.rend(); jt++)
         {
             // ignore negative clade constraints during simulation
@@ -812,6 +837,7 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
                 max_node_age = nodes_in_clade[j]->getAge();
             }
         }
+        
         if ( clade_age <= max_node_age )
         {
             // Get the rng

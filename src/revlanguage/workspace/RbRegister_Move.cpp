@@ -52,6 +52,8 @@
 #include "RlMove.h"
 
 /* Moves on real values */
+#include "Move_Mirror.h"
+#include "Move_MirrorMultiplier.h"
 #include "Move_HSRFHyperpriorsGibbs.h"
 #include "Move_HSRFUnevenGridHyperpriorsGibbs.h"
 #include "Move_SliceSampling.h"
@@ -92,6 +94,7 @@
 #include "Move_GMRFUnevenGridHyperpriorGibbs.h"
 #include "Move_MultipleElementScale.h"
 #include "Move_ShrinkExpand.h"
+#include "Move_ShrinkExpandScale.h"
 #include "Move_SingleElementScale.h"
 #include "Move_SingleElementSlide.h"
 #include "Move_EllipticalSliceSamplingLognormalIID.h"
@@ -162,6 +165,10 @@
 #include "Move_EventTimeSlide.h"
 #include "Move_GibbsDrawCharacterHistory.h"
 
+#include "Move_MultiValueEventBirthDeath.h"
+#include "Move_MultiValueEventScale.h"
+#include "Move_MultiValueEventSlide.h"
+
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
@@ -213,6 +220,8 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Regular moves (in folder "datatypes/inference/moves") (grouped by parameter type) */
 
         /* Moves on real values */
+        addTypeWithConstructor( new Move_Mirror() );
+        addTypeWithConstructor( new Move_MirrorMultiplier() );
         addTypeWithConstructor( new Move_Scale() );
         addTypeWithConstructor( new Move_GammaScale() );
         addTypeWithConstructor( new Move_RandomDive() );
@@ -254,6 +263,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_SingleElementSlide() );
         addTypeWithConstructor( new Move_SingleElementScale() );
         addTypeWithConstructor( new Move_ShrinkExpand() );
+        addTypeWithConstructor( new Move_ShrinkExpandScale() );
         addTypeWithConstructor( new Move_VectorBinarySwitch() );
         addTypeWithConstructor( new Move_VectorScale() );
         addTypeWithConstructor( new Move_VectorSlide() );
@@ -292,7 +302,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_GraphFlipEdge() );
         addTypeWithConstructor( new Move_GraphFlipClique() );
         addTypeWithConstructor( new Move_GraphShiftEdge() );
-        
+
         /* Moves on continuous character data (matrices of real values) */
         addTypeWithConstructor( new Move_ContinuousCharacterDataSlide() );
 
@@ -334,6 +344,11 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Simplex>( )               );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<ModelVector<Natural> >( ) );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Tree>( )                  );
+        
+        addTypeWithConstructor( new Move_MultiValueEventBirthDeath()                    );
+        addTypeWithConstructor( new Move_MultiValueEventScale()                         );
+        addTypeWithConstructor( new Move_MultiValueEventSlide()                         );
+
 
 
         addTypeWithConstructor( new Move_BirthDeathEventContinuous()                    );

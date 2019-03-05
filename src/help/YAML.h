@@ -42,6 +42,7 @@ namespace YAML
         ~Node();
 
         std::string render(size_t depth = 0);
+        std::string format(std::string value, size_t depth = 0);
 
         std::vector<Element*> elements;
 

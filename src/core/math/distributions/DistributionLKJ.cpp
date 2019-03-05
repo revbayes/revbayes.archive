@@ -65,7 +65,7 @@ double RbStatistics::LKJ::lnPdf(double eta, const MatrixReal &z)
         {
             if (c > r)
             {
-                if ( z[r][c] > 1.0 | z[r][c] < -1.0 )
+                if ( z[r][c] > 1.0 or z[r][c] < -1.0 )
                 {
                     return RbConstants::Double::neginf;
                 }

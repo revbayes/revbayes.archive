@@ -89,35 +89,24 @@ std::vector<std::string> Dist_LKJ::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_LKJ::getHelpDescription(void) const
+std::string Dist_LKJ::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "The LKJ (Lewandowski-Kurowicka-Joe) distribution on correlation matrices with concentration parameter eta." );
+    std::string description = "The LKJ (Lewandowski-Kurowicka-Joe) distribution on correlation matrices with concentration parameter eta.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_LKJ::getHelpDetails(void) const
+std::string Dist_LKJ::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
-    details.push_back( "The LKJ distribution is uniform over positive-definite correlation matrices when eta=1." );
-    
-    std::string density1 = "";
-    density1 += "The probability density of a correlation matrix under the LKJ distribution is:";
-    
-    details.push_back( density1 );
-    
-    std::string density2 = "";
-    density2 += "f(x) = det(x)^(eta - 1)";
-    
-    details.push_back( density2 );
+    std::string details = "The LKJ distribution is uniform over positive-definite correlation matrices when eta=1.";
+    details += "The probability density of a correlation matrix under the LKJ distribution is:";
+    details += "f(x) = det(x)^(eta - 1)";
     
     return details;
 }

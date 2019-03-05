@@ -129,24 +129,22 @@ std::vector<std::string> Dist_poisson::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_poisson::getHelpDescription(void) const
+std::string Dist_poisson::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "A Poisson distribution defines probabilities for natural numbers. It is defined as the number of exponentially distributed events in a given interval." );
+    std::string description = "A Poisson distribution defines probabilities for natural numbers. It is defined as the number of exponentially distributed events in a given interval.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_poisson::getHelpDetails(void) const
+std::string Dist_poisson::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
+    std::string details;
     return details;
 }
 

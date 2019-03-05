@@ -69,13 +69,13 @@ double RbStatistics::VarianceGamma::lnPdf(double mu, double kappa, double tau, d
     try {
         h_bessel = log( boost::math::cyl_bessel_k(h_bessel_arg1, h_bessel_arg2) );
     }
-    catch(boost::exception_detail::clone_impl<boost::exception_detail::error_info_injector<std::overflow_error> > e)
+    catch(boost::exception_detail::clone_impl<boost::exception_detail::error_info_injector<std::overflow_error> >& e)
     {
         // TODO: Bessel function is very unstable w/r/t nu (=time/kappa-0.5)
         // K_nu(x) converges to very large values when nu is large
         h_bessel = RbConstants::Double::inf;
     }
-    catch(boost::exception_detail::clone_impl<boost::exception_detail::error_info_injector<boost::math::rounding_error> > e)
+    catch(boost::exception_detail::clone_impl<boost::exception_detail::error_info_injector<boost::math::rounding_error> >& e)
     {
         // TODO: Figure this one out...
         // related error looks like:

@@ -428,7 +428,7 @@ void SampledSpeciationBirthDeathProcess::getAffected(RbOrderedSet<DagNode *> &af
     
     if ( affecter == root_age)
     {
-        dag_node->getAffectedNodes( affected );
+        dag_node->initiateGetAffectedNodes( affected );
     }
     
 }

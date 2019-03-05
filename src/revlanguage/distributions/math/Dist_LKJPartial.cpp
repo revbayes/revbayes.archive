@@ -104,35 +104,24 @@ std::vector<std::string> Dist_LKJPartial::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Dist_LKJPartial::getHelpDescription(void) const
+std::string Dist_LKJPartial::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "The LKJ (Lewandowski-Kurowicka-Joe) distribution (on the partial correlation matrix) with concentration parameter eta." );
+    std::string description = "The LKJ (Lewandowski-Kurowicka-Joe) distribution (on the partial correlation matrix) with concentration parameter eta.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Dist_LKJPartial::getHelpDetails(void) const
+std::string Dist_LKJPartial::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
-    details.push_back( "The LKJPartial distribution is uniform over positive-definite correlation matrices when eta=1." );
-
-    std::string density1 = "";
-    density1 += "The probability density of a correlation matrix under the LKJ distribution is:";
-    
-    details.push_back( density1 );
-
-    std::string density2 = "";
-    density2 += "f(x) = det(x)^(eta - 1)";
-
-    details.push_back( density2 );
+    std::string details = "The LKJPartial distribution is uniform over positive-definite correlation matrices when eta=1.\n\n";
+    details += "The probability density of a correlation matrix under the LKJ distribution is:\n\n";
+    details += "f(x) = det(x)^(eta - 1)";
     
     return details;
 }
@@ -146,7 +135,7 @@ std::vector<std::string> Dist_LKJPartial::getHelpDetails(void) const
 std::string Dist_LKJPartial::getHelpExample(void) const
 {
     // create an example as a single string variable.
-    std::string example = "\n";
+    std::string example;
     
     example += "# we simulate a partial correlation matrix.\n";
     example += "P <- rLKJPartial(n=1, eta=1, dim=5)\n\n";

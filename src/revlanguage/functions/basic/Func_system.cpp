@@ -111,24 +111,22 @@ std::vector<std::string> Func_system::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_system::getHelpDescription(void) const
+std::string Func_system::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Run a system command." );
+    std::string description = "Run a system command.";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Func_system::getHelpDetails(void) const
+std::string Func_system::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    details.push_back( "This function will delegate the command to the system. In that way, the function works as an interface to the shell." );
+    std::string details =  "This function will delegate the command to the system. In that way, the function works as an interface to the shell." ;
     
     return details;
 }

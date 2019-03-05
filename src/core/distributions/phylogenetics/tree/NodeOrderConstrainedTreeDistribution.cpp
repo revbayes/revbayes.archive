@@ -84,8 +84,8 @@ NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(const
         // otherwise we simply use the same pointer
         value = &base_distribution->getValue();
     }
-    
-    
+
+
     // add the parameters of the base distribution
     const std::vector<const DagNode*>& pars = base_distribution->getParameters();
     for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
@@ -153,7 +153,7 @@ double NodeOrderConstrainedTreeDistribution::computeLnProbability( void )
  */
 void NodeOrderConstrainedTreeDistribution::getAffected(RbOrderedSet<RevBayesCore::DagNode *> &affected, RevBayesCore::DagNode *affecter)
 {
-    
+
     // delegate to the base distribution
     base_distribution->getAffected(affected, affecter);
 }
@@ -168,10 +168,11 @@ void NodeOrderConstrainedTreeDistribution::getAffected(RbOrderedSet<RevBayesCore
 bool NodeOrderConstrainedTreeDistribution::matchesConstraints( void )
 {
 
+
     updateMapOfNodeAges();
-    /*
+
     std::vector <std::pair < std::pair<std::string, std::string>, std::pair<std::string, std::string> > > constra = constraints.getConstraints();
-    
+    /*
     for (size_t i = 0; i < constra.size() ; ++i)
     {
         constrained_nodes.insert(constra[i].first);
@@ -185,11 +186,20 @@ bool NodeOrderConstrainedTreeDistribution::matchesConstraints( void )
 
     for (size_t i = 0; i < constra.size() ; ++i)
     {
+      //std::cout << "FIRST: "<<    node_ages.at(constra[i].first)<<" and SECOND: " << node_ages.at(constra[i].second) << std::endl;
+
+      //std::cout << value->getPlainNewickRepresentation() << std::endl;
+
         if ( node_ages.at(constra[i].first) <  node_ages.at(constra[i].second) )
         {
+
+          //std::cout << "NodeOrderConstrainedTreeDistribution::matchesConstraints: FALSE" <<std::endl;
+
             return false;
         }
     }
+    //std::cout << "NodeOrderConstrainedTreeDistribution::matchesConstraints: TRUE; "<< constra.size() <<std::endl;
+
     return true;
 
 }
@@ -297,15 +307,15 @@ void NodeOrderConstrainedTreeDistribution::redrawValue( void )
  */
 void NodeOrderConstrainedTreeDistribution::setStochasticNode( StochasticNode<Tree> *n )
 {
-    
+
     // delegate to base class first
     TypedDistribution<Tree>::setStochasticNode( n );
-    
+
     if ( base_distribution != NULL )
     {
         base_distribution->setStochasticNode( n );
     }
-    
+
 }
 
 

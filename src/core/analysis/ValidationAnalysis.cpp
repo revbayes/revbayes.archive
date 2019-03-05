@@ -4,6 +4,7 @@
 #include "MaxIterationStoppingRule.h"
 #include "MonteCarloAnalysis.h"
 #include "MonteCarloSampler.h"
+#include "ProgressBar.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -195,6 +196,9 @@ ValidationAnalysis& ValidationAnalysis::operator=(const ValidationAnalysis &a)
 void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
 {
     
+    // start the progress bar
+    ProgressBar progress = ProgressBar(generations, 0);
+    
     if ( process_active == true )
     {
         // Let user know what we are doing
@@ -204,18 +208,12 @@ void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
         RBOUT( ss.str() );
         
         // Print progress bar (68 characters wide)
-        std::cout << std::endl;
-        std::cout << "Progress:" << std::endl;
-        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
-        std::cout.flush();
+        progress.start();
     }
     
     // compute which block of the data this process needs to compute
     size_t run_block_start = size_t(floor( (double(pid)   / num_processes ) * num_runs) );
     size_t run_block_end   = std::max( int(run_block_start), int(floor( (double(pid+1) / num_processes ) * num_runs) ) - 1);
-    //    size_t stone_block_size  = stone_block_end - stone_block_start;
-    
-//    std::cerr << pid << ":\t From " << run_block_start << " to " << run_block_end << "." << std::endl;
     
     // Run the chain
     size_t numStars = 0;
@@ -223,31 +221,24 @@ void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
     {
         if ( runs[i] == NULL ) std::cerr << "Runing bad burnin (pid=" << pid <<", run="<< i << ") of runs.size()=" << runs.size() << "." << std::endl;
         // run the i-th analyses
-//        std::cerr << pid << ":\t Started burnin of run " << i << "." << std::endl;
+#ifdef RB_MPI
+        runs[i]->burnin(generations, MPI_COMM_WORLD, tuningInterval, false, false);
+#else
         runs[i]->burnin(generations, tuningInterval, false, false);
-        
+#endif
         if ( process_active == true )
         {
-            size_t progress = 68 * (double) (i+1.0) / (double) (1 + run_block_end - run_block_start);
-            if ( progress > numStars )
-            {
-                for ( ;  numStars < progress; ++numStars )
-                    std::cout << "*";
-                std::cout.flush();
-            }
+            progress.update( i );
             
         }
         
-//        std::cerr << pid << ":\t Finished burnin of run " << i << "." << std::endl;
-
         
     }
     
     if ( process_active == true )
     {
-        std::cout << std::endl;
+        progress.finish();
     }
-//    std::cerr << pid << ":\t Finished burnin." << std::endl;
     
 }
 
@@ -273,8 +264,6 @@ void ValidationAnalysis::runAll(size_t gen)
     // compute which block of the runs this process needs to compute
     size_t run_block_start = size_t(floor( (double(pid)   / num_processes ) * num_runs) );
     size_t run_block_end   = std::max( int(run_block_start), int(floor( (double(pid+1) / num_processes ) * num_runs) ) - 1);
-    //    size_t stone_block_size  = stone_block_end - stone_block_start;
-//    std::cerr << pid << ":\t Started actual runs." << std::endl;
     
     // Run the chain
     for (size_t i = run_block_start; i <= run_block_end; ++i)
@@ -283,9 +272,7 @@ void ValidationAnalysis::runAll(size_t gen)
         // run the i-th stone
         runSim(i, gen);
         
-    }
-//    std::cerr << pid << ":\t Started Finished runs." << std::endl;
-    
+    }    
     
 }
 

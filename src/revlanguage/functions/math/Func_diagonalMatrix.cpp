@@ -104,24 +104,22 @@ std::vector<std::string> Func_diagonalMatrix::getHelpAuthor(void) const
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Func_diagonalMatrix::getHelpDescription(void) const
+std::string Func_diagonalMatrix::getHelpDescription(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> descriptions;
-    descriptions.push_back( "Building a identity/diagonal matrix with 'n' columns and rows. " );
+    std::string description = "Building a identity/diagonal matrix with 'n' columns and rows. ";
     
-    return descriptions;
+    return description;
 }
 
 
 /**
  * Get the more detailed description of the function
  */
-std::vector<std::string> Func_diagonalMatrix::getHelpDetails(void) const
+std::string Func_diagonalMatrix::getHelpDetails(void) const
 {
     // create a variable for the description of the function
-    std::vector<std::string> details;
-    
+    std::string details;
     return details;
 }
 

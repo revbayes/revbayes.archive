@@ -263,19 +263,15 @@ const TypeSpec& Tree::getClassTypeSpec(void)
 /**
  * Get the (brief) description for this function
  */
-std::vector<std::string> Tree::getHelpDescription(void) const
+std::string Tree::getHelpDescription(void) const
 {
-    // create a variable for the description of the function
-    std::vector<std::string> descriptions;
+    std::string description = "";
+    description += "The Tree datatype stores information to describe the shared ancestry";
+    description += "of a taxon set. Information includes taxon labels, topology, node";
+    description += "count, and branch lengths. Tree objects also possess several useful";
+    description += "methods to traverse and manipulate the Tree's value.";
     
-    std::string description1 = "";
-    description1 += "The Tree datatype stores information to describe the shared ancestry";
-    description1 += "of a taxon set. Information includes taxon labels, topology, node";
-    description1 += "count, and branch lengths. Tree objects also possess several useful";
-    description1 += "methods to traverse and manipulate the Tree's value.";
-    descriptions.push_back( description1 );
-    
-    return descriptions;
+    return description;
 }
 
 
