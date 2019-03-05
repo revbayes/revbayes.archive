@@ -151,30 +151,23 @@ double DuplicationLossProcess::computeD(double dt, double p_e)
   const double la = duplication_rate->getValue();
   const double mu = loss_rate->getValue();
 
-  //////////////////////////////
-  // Discrepancies between formulas from
-  // 1. Sebastian
-  // 2. Wandrille
-  // 3. Eq (1) and (2) in Stadler, T. (2010). Sampling-through-time in birth-death trees. Journal of Theoretical Biology, 267(3), 396–404. http://doi.org/10.1016/j.jtbi.2010.09.010
-  // 4. Eq (1) and (2) in Stadler, T. (2011). Mammalian phylogeny reveals recent diversification rate shifts. Proceedings of the National Academy of Sciences, 108(15), 6187–6192. http://doi.org/10.1073/pnas.1016876108
-  // Total confusion :-).
-  // I USE METHOD 4!
+  // Tue Mar  5 14:34:30 CET 2019: Discrepancies between formulas have been resolved.
 
-  // I think a big part of the confusion is the name of the parameters as well
-  // as variables. For instance, the time can be measured on the branch only
-  // (0 at the bottom closest to present), or from the bottom of the phylogny
-  // (0 means the present).
+  // Sebastian's formula (see below) matches Eq (1) and (2) in Stadler, T.
+  // (2011). Mammalian phylogeny reveals recent diversification rate shifts.
+  // Proceedings of the National Academy of Sciences, 108(15), 6187–6192.
+  // http://doi.org/10.1073/pnas.1016876108
 
-  //////////////////////////////
-  // Formula from Sebastian. This formula is SIMILAR BUT NOT THE SAME to the
-  // one below. Notably, there is a difference in B (+mu instead of -mu, so
-  // that 'B = -c' from below!). Also, an 'G0 = 1- E0' is missing in the
-  // nominator and E0 is used instead of G0 in the calculation of B. Is this
-  // an error, or did we copy the wrong formulas? However, this formula fits
-  // apart from a missing G[0] in the nominator with the one from Wandrille
-  // (see mail from Gergely 2018-05-16 "probabilities for birth death on a
-  // tree").
+  // A different parametrization (boundary values of E and D) is used in Eq (1)
+  // and (2) in Stadler, T. (2010). Sampling-through-time in birth-death trees.
+  // Journal of Theoretical Biology, 267(3), 396–404.
+  // http://doi.org/10.1016/j.jtbi.2010.09.010
 
+  // Wandrille also uses a formula that looks different, see mail from Gergely
+  // 2018-05-16 "probabilities for birth death on a tree". I did not validate
+  // the equality of his formula to the ones used here.
+
+  // Formula from Sebastian.
   // double A = la - mu;
   // double B = ( (1.0 - 2*e)*la+mu ) / A;
   // double et = exp(-A * dt);
@@ -183,35 +176,27 @@ double DuplicationLossProcess::computeD(double dt, double p_e)
   // D /= (1.0+B+et*(1-B));
   // return D;
 
-  //////////////////////////////
-  // Eq. (2) with psi=0 in Stadler, T. (2010). Sampling-through-time in
-  // birth-death trees. Journal of Theoretical Biology, 267(3), 396–404.
-  // http://doi.org/10.1016/j.jtbi.2010.09.010
-  // double G0  = 1 - E0;
-  // double d  = la - mu;
-  // double c  = ( (1.0 - 2*G0)*la - mu ) / d;
-  // double et = exp(-d * dt);
-  // double G  = 4.0 * G0 * et;
-  // double dn = ( (1.0 + c) + (1 - c)*et );
-  // G /= dn;
-  // G /= dn;
-  // return G;
-
-  //////////////////////////////
   // Eq (2) from PNAS paper of Stadler.
-  // e       :: Index of this branch.
-  // t       :: Time on phylogeny (0 at present, increases into the past).
-  // g(t, e) :: Probability density that the species corresponding to edge e at time t evolved between t and the present as observed in the phylogeny.
+  // e       :: Index of the considered branch.
+  // t       :: Time on complete phylogeny (0 at present, increases into the past).
+  // g(t, e) :: Probability density that the species/gene on edge e at time t
+  //            evolved between t and the present as observed in the phylogeny.
   // dt      :: Time on the branch (dt=0 means bottom of branch).
-  // p_e     :: Probability of going extinct between the bottom of branch e and the present. Also called E(0) sometimes.
-  // It turns out that g(t,e) only depends on dt and on p_e, and not on the actual time t.
+  // p_e     :: Probability of going extinct between the bottom of branch e and the
+  //            present. Also called E(0).
 
-  // Technically, we also need to know g(t, f) and g(t, h), where f and h are the daughter branches of branch e. See the variable d_{i,e} in Stadlers paper.
-  // However, since this is only a multiplicative factor, we can also apply it when calculating the likelihood. See 'DuplicationLossProcess::computeLnDuplicationLossProbability'.
-  // double d_ie        = 1.0;
+  // It turns out that the dependency on time t of g(t,e) can be factored out
+  // and that g(t,e) only depends on the time dt running on the considered
+  // branch e, and on the boundary condition p_e at the bottom of the considered
+  // branch.
+
+  // Technically, we also need to know g(t, f) and g(t, h), where f and h are
+  // the daughter branches of the considered branch e. See the variable d_{i,e}
+  // in Stadlers paper. However, since this is only a multiplicative factor, we
+  // apply it when calculating the likelihood. See
+  // 'DuplicationLossProcess::computeLnDuplicationLossProbability'.
   double d           = la - mu;
   double et          = exp(-d * dt);
-  // double nominator   = d_ie * d * d *et;
   double nominator   = d * d *et;
   double denominator = la*(p_e - 1.0) + (mu - p_e*la)*et;
   double g_te        = nominator / denominator / denominator;
@@ -223,33 +208,15 @@ double DuplicationLossProcess::computeE(double dt, double p_e)
   const double la = duplication_rate->getValue();
   const double mu = loss_rate->getValue();
 
-  // See discussion at 'DuplicationLossProcess::computeD'.
+  // See comments in 'computeD()'.
 
-  //////////////////////////////
-  // Formula from Sebastian. Again, this is SIMILAR BUT NOT THE SAME to the
-  // one below. Possible sign error before the large fraction in the
-  // nominator. I am not sure what's the correct formula.
-
+  // Formula from Sebastian.
   // double A = la - mu;
   // double B = ( (1.0 - 2*e)*la+mu ) / A;
   // double et = exp(A * dt);
   // double E = la + mu - A *(1.0+B-et*(1.0-B))/(1.0+B+et*(1.0-B));
   // E /= (2*la);
 
-  //////////////////////////////
-  // Eq. (1) with psi=0 in Stadler, T. (2010). Sampling-through-time in
-  // birth-death trees. Journal of Theoretical Biology, 267(3), 396–404.
-  // http://doi.org/10.1016/j.jtbi.2010.09.010
-  // double G0  = 1 - E0;
-  // double d  = la - mu;
-  // double c  = ( (1.0 - 2*G0)*la - mu ) / d;
-  // double et = exp(-d * dt);
-  // double nom = ( et*(1.0-c) - (1.0+c) ) / ( et*(1.0-c) + (1.0+c) );
-  // double E = la + mu + d*nom;
-  // E /= (2*la);
-  // return E;
-
-  //////////////////////////////
   // Eq. (1) from PNAS paper of Stadler.
   double d           = la - mu;
   double et          = exp(-d * dt);
