@@ -67,78 +67,81 @@ double DuplicationLossProcess::computeLnProbability( void )
 
 double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_genes_recent, const std::vector<double> &dupl_ages, double age_recent, double age_ancient, const TopologyNode &node_individual, bool is_root)
 {
-  double ln_prob = 0.0;
+    
+    double ln_prob = 0.0;
 
-  size_t index_individual = node_individual.getIndex();
-  double dupl_rate = duplication_rate->getValue();
+    size_t index_individual = node_individual.getIndex();
+    double dupl_rate = duplication_rate->getValue();
 
-  double current_age = age_recent;
-  double current_ext_prob = 0.0;
+    double current_age = age_recent;
+    double current_ext_prob = 0.0;
 
-  // Get extinction probability at the bottom of this branch.
-  if ( node_individual.isTip() )
+    // Get extinction probability at the bottom of this branch.
+    if ( node_individual.isTip() )
     {
         // TODO: We need to use the actual sampling probabilities.
         current_ext_prob = 0.0;
 //      current_ext_prob = 1.0 - gene_sampling_probabilities->getValue()[index_individual];
     }
-  else
+    else
     {
-      size_t index_left = node_individual.getChild(0).getIndex();
-      size_t index_right = node_individual.getChild(1).getIndex();
+        size_t index_left = node_individual.getChild(0).getIndex();
+        size_t index_right = node_individual.getChild(1).getIndex();
 
-      double ext_prob_left  = extinction_probs[index_left];
-      double ext_prob_right = extinction_probs[index_right];
+        double ext_prob_left  = extinction_probs[index_left];
+        double ext_prob_right = extinction_probs[index_right];
 
-      current_ext_prob = ext_prob_left * ext_prob_right;
+        current_ext_prob = ext_prob_left * ext_prob_right;
     }
 
-  if (dupl_ages.size() >= num_genes_recent)
-    throw std::length_error("There are more duplication events than branches on this branch of the individual tree.");
-
-  // Handle duplications.
-  for ( size_t i=0; i<dupl_ages.size(); ++i )
+    if (dupl_ages.size() >= num_genes_recent)
     {
-      double this_dupl_age = dupl_ages[i];
-      double dt = this_dupl_age - current_age;
+        throw std::length_error("There are more duplication events than branches on this branch of the individual tree.");
+    }
+    
+    // Handle duplications.
+    for ( size_t i=0; i<dupl_ages.size(); ++i )
+    {
+        double this_dupl_age = dupl_ages[i];
+        double dt = this_dupl_age - current_age;
 
-      // Walk up dt to the next duplication on the branch of the individual tree.
-      // It contains 'N = num_genes_recent-i' genes.
+        // Walk up dt to the next duplication on the branch of the individual tree.
+        // It contains 'N = num_genes_recent-i' genes.
         // FIXME: We need to tell D what dop-loss rates to use when we want to use haplotype-branch-specific rates
-      ln_prob += (num_genes_recent-i) * log( computeD(dt, current_ext_prob) );
-      // Have a duplication.
-      ln_prob += log( dupl_rate );
-      // Combinatorial factor. The duplication can happen on any of the 'N-1'
-      // branches existing earlier (i.e., before the duplication happens when
-      // going forwards in time), but we require it to happen on a specific
-      // branch.
-      ln_prob += log( num_genes_recent - i - 1 );
+        ln_prob += (num_genes_recent-i) * log( computeD(dt, current_ext_prob) );
+        // Have a duplication.
+        ln_prob += log( dupl_rate );
+        // Combinatorial factor. The duplication can happen on any of the 'N-1'
+        // branches existing earlier (i.e., before the duplication happens when
+        // going forwards in time), but we require it to happen on a specific
+        // branch.
+        ln_prob += log( num_genes_recent - i - 1 );
 
-      current_age = this_dupl_age;
+        current_age = this_dupl_age;
         // FIXME: We need to tell D what dop-loss rates to use when we want to use haplotype-branch-specific rates
-      current_ext_prob = computeE( dt, current_ext_prob );
+        current_ext_prob = computeE( dt, current_ext_prob );
     }
 
-  // Final branch segment before coalescence on individual tree, i.e., there are
-  // no more duplications.
-  if (is_root)
+    // Final branch segment before coalescence on individual tree, i.e., there are
+    // no more duplications.
+    if ( is_root == true )
     {
-      // What happens when we are at the root? dt=inf -> D=0 -> log(D)=-inf; certainly not what we want.
-      // throw RbException("At root, should we handle this in a special way?");
-      // Assume that we are done.
+        // What happens when we are at the root? dt=inf -> D=0 -> log(D)=-inf; certainly not what we want.
+        // throw RbException("At root, should we handle this in a special way?");
+        // Assume that we are done.
         
         if ( num_genes_recent - dupl_ages.size() != 1  )
         {
-            throw RbException("Dominik says we have a problem!");
+            throw RbException("Dominik says we have a problem! We are at the root node. There are " + StringUtilities::to_string(num_genes_recent) + " genes at the recent end of the branch, and had " + StringUtilities::to_string(dupl_ages.size()) + " duplication events.");
         }
 
         double dt = origin->getValue() - current_age;
         ln_prob += log( computeD(dt, current_ext_prob) );
         
         return ln_prob;
-    }
+  }
   else
-    {
+  {
       double dt = age_ancient - current_age;
       ln_prob += (num_genes_recent-dupl_ages.size()) * log( computeD(dt, current_ext_prob) );
       extinction_probs[index_individual] = computeE( dt, current_ext_prob );
@@ -296,6 +299,8 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
       size_t right_index = individual_node.getChild(1).getIndex();
       std::set< const TopologyNode* > &genes_for_this_individual = genes_per_branch_recent[ individual_node.getIndex() ];
       const std::set< const TopologyNode* > &genes_for_left_descendant  = genes_per_branch_ancient[ left_index ];
+        std::set< const TopologyNode* > genes_to_remove;
+        std::set< const TopologyNode* > genes_to_insert;
       for (std::set<const TopologyNode*>::iterator it=genes_for_this_individual.begin(); it!=genes_for_this_individual.end(); ++it)
         {
           const TopologyNode *this_gene_node = *it;
@@ -303,6 +308,15 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
           if ( fabs( this_age - individual_age) < EPS_COAL )
             {
               // Coalescent event; likelihood unchanged.
+                // Do something
+//                const std::set< const TopologyNode* >::iterator tmp_it = genes_for_left_descendant.find(this_gene_node);
+//                if ( tmp_it == genes_for_left_descendant.end() )
+//                {
+//                    throw RbException("Missing second gene in coalescent event.");
+//                }
+                genes_to_remove.insert( this_gene_node );
+                genes_to_insert.insert( &this_gene_node->getParent() );
+                
             }
           else
             {
@@ -322,7 +336,19 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
                 }
             }
         }
+        
+        
+        // now we remove the gene that were coalescent events
+        for (std::set<const TopologyNode*>::const_iterator it=genes_to_remove.begin(); it!=genes_to_remove.end(); ++it)
+        {
+            genes_for_this_individual.erase( *it );
+        }
+        for (std::set<const TopologyNode*>::const_iterator it=genes_to_insert.begin(); it!=genes_to_insert.end(); ++it)
+        {
+            genes_for_this_individual.insert( *it );
+        }
     }
+    
 
   //////////////////////////////////////////////////
   // 2. Handle branch attached to node (bottom up, recent to ancient).
@@ -795,6 +821,7 @@ void DuplicationLossProcess::simulateTree( void )
 /** Swap a parameter of the distribution */
 void DuplicationLossProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
+    
     if ( oldP == individual_tree )
     {
         individual_tree = static_cast<const TypedDagNode< Tree >* >( newP );
@@ -829,4 +856,6 @@ void DuplicationLossProcess::swapParameterInternal(const DagNode *oldP, const Da
     {
         gene_sampling_probabilities = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
+    
+    
 }
