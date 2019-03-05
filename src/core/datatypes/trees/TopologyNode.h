@@ -141,8 +141,8 @@ namespace RevBayesCore {
         void                                        setBranchLength(double b, bool flag_dirty=true);                                    //!< Set the length of the branch leading to this node.
         void                                        setIndex(size_t idx);                                                               //!< Set the index of the node
 
-        void                                        setName(const std::string& n);                                                      //!< Set the name of this node
-  		void										   setNodeType(bool tip, bool root, bool interior); //SK
+        void                                        setName(const std::string& n, bool set_same_species_name=true);                     //!< Set the name of this node
+  		void										setNodeType(bool tip, bool root, bool interior); //SK
         void                                        setSampledAncestor(bool tf);                                                        //!< Set if the node is a sampled ancestor
         void                                        setSpeciesName(std::string const &n);                                               //!< Set the species name of this node
         void                                        setTaxon(Taxon const &t);                                                           //!< Set the taxon of this node
