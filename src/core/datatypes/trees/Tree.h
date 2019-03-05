@@ -75,7 +75,7 @@ namespace RevBayesCore {
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, long &rv) const;       //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, Boolean &rv) const;    //!< Map the member methods to internal function calls
         std::vector<Taxon>                                  getFossilTaxa() const;                                                                              //!< Get all the taxa in the tree
-      std::vector<size_t>                                   getFossilLeavesIdxs();
+        std::vector<size_t>                                 getFossilLeavesIdxs();
         const TopologyNode&                                 getMrca(const TopologyNode &n) const;
         TopologyNode&                                       getMrca(const Clade &c);
         const TopologyNode&                                 getMrca(const Clade &c) const;
@@ -123,11 +123,13 @@ namespace RevBayesCore {
         void                                                makeInternalNodesBifurcating(bool reindex);                                                         //!< Make all the internal nodes bifurcating.
         void                                                orderNodesByIndex();
         void                                                pruneTaxa(const RbBitSet&);
+        void                                                reindex(void);                                                                                      //!< Re-index the nodes, most importantly, to have tips with index 0 to N-1
         void                                                reroot(const Clade &outgroup, bool reindex);                                                        //!< Re-root the tree with the given outgroup
         void                                                reroot(const std::string &outgroup, bool reindex);                                                  //!< Re-root the tree with the given outgroup
         void                                                reroot(TopologyNode &n, bool reindex);
         void                                                removeDuplicateTaxa(void);
         void                                                renameNodeParameter(const std::string &old_name, const std::string &new_name);
+        void                                                setDefaultTipNames(const std::string &name, bool use_index=true);
         void                                                setNegativeConstraint(bool);
         void                                                setRoot(TopologyNode* r, bool reindex);                                                             //!< Set the root and bootstrap the Tree from it
         void                                                setRooted(bool tf);

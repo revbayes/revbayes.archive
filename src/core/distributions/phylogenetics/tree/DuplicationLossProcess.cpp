@@ -770,22 +770,21 @@ void DuplicationLossProcess::simulateTree( void )
     
     // Remove extinct genes.
     std::vector<size_t> fossil_leaves_idxs;
-    while ( (fossil_leaves_idxs = psi->Tree::getFossilLeavesIdxs()).size() > 0) {
+    while ( (fossil_leaves_idxs = psi->Tree::getFossilLeavesIdxs()).size() > 0)
+    {
         psi->dropTipNode( fossil_leaves_idxs[0] );
-//        for (std::vector<size_t>::iterator it=fossil_leaves_idxs.begin(); it != fossil_leaves_idxs.end(); ++it)
-//            psi->dropTipNode(*it);
     }
     
-    // TODO: We probably need to re-index the tip nodes here.
+    // We probably need to re-index the tip nodes here.
+    psi->reindex();
     
+    // set the names of the tips
+    psi->setDefaultTipNames("Tip_",true);
     
     // Finally store the new tree.
     value = psi;
     
     resetTipAllocations();
-    
-    std::cerr << value->getPlainNewickRepresentation() << std::endl;
-    std::cerr << value->getNewickRepresentation() << std::endl;
 }
 
 
