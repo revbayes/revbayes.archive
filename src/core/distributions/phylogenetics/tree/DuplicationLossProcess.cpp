@@ -18,19 +18,24 @@ DuplicationLossProcess::DuplicationLossProcess(const TypedDagNode<Tree> *it, con
     individual_tree( it ),
     num_taxa( taxa.size() ),
     log_tree_topology_prob (0.0),
-    origin( org )
+    origin( org ),
+    duplication_rate( new ConstantNode<double>("", new double(1.0)) ),
+    loss_rate( new ConstantNode<double>("", new double(0.5)) )
 {
     // add the parameters to our set (in the base class) in that way other
     // classes can easily access the set of our parameters this will also ensure
     // that the parameters are not getting deleted before we do
     addParameter( individual_tree );
     addParameter( origin );
+    
+    addParameter( duplication_rate );
+    addParameter( loss_rate );
 
     // XXX: Which formula does this function use?
 //    double ln_fact = RbMath::lnFactorial((int)(num_taxa));
 //    log_tree_topology_prob = (num_taxa - 1) * RbConstants::LN2 - 2.0 * ln_fact - std::log( num_taxa ) ;
 
-    redrawValue();
+//    redrawValue();
 }
 
 DuplicationLossProcess::~DuplicationLossProcess()
@@ -443,6 +448,13 @@ void DuplicationLossProcess::redrawValue( void )
 
 void DuplicationLossProcess::resetTipAllocations( void )
 {
+    num_taxa = value->getNumberOfTips();
+    
+    if ( value->getRoot().getNumberOfChildren() == 0 )
+    {
+        return;
+    }
+    
     const Tree &ind_tree = individual_tree->getValue();
     const std::vector< TopologyNode* > &individual_tree_nodes = ind_tree.getNodes();
 
@@ -466,7 +478,8 @@ void DuplicationLossProcess::resetTipAllocations( void )
         const TopologyNode &n = value->getNode( i );
         const std::string &individual_name = n.getSpeciesName();
         TopologyNode *individual_node = individual_names_2_individual_nodes[individual_name];
-        genes_per_branch_recent[ individual_node->getIndex() ].insert( &n );
+        size_t index = individual_node->getIndex();
+        genes_per_branch_recent[ index ].insert( &n );
     }
 }
 
@@ -478,6 +491,38 @@ void DuplicationLossProcess::setValue(Tree *v, bool f )
 {
     // delegate to super class
     TypedDistribution<Tree>::setValue(v, f);
+    
+    size_t n_tips = value->getNumberOfTips();
+    size_t n_taxa = taxa.size();
+    
+    if ( n_tips != n_taxa )
+    {
+        throw RbException("The number of taxa in the tree and the taxon list need to be the same when setting the tree.");
+    }
+
+    for (size_t i=0; i<n_tips; ++i)
+    {
+        // let's get the i-th tip of the gene tree
+        TopologyNode &n = value->getTipNode( i );
+        const std::string &name =n.getName();
+        
+        bool found = false;
+        for (size_t j=0; j<n_taxa; ++j)
+        {
+            // check if the name of the tip corresponds to this taxon of our taxon list
+            if ( name == taxa[i].getName() )
+            {
+                n.setTaxon( taxa[i] );
+                found = true;
+                break;
+            }
+        }
+        
+        if ( found == false )
+        {
+            throw RbException("We could not find a taxon with name '" +name+ "' in our taxon list.");
+        }
+    }
 
     resetTipAllocations();
 }
@@ -628,7 +673,7 @@ void DuplicationLossProcess::recursivelySimulateTreeForward(double age_begin, co
     }
     // Set the extant genes (genes_per_branch_recent) at extant branches.
     // std::vector< std::set< const TopologyNode* > > genes_per_branch_recent;
-    genes_per_branch_recent[i_node->getIndex()].insert( genes.begin(), genes.end());
+//    genes_per_branch_recent[i_node->getIndex()].insert( genes.begin(), genes.end());
     return;
   }
   return;
@@ -645,6 +690,12 @@ bool DuplicationLossProcess::simulateTreeRejectionSampling(void)
 {
     simulateTree();
     
+    
+    if ( value->getRoot().getNumberOfChildren() == 0 )
+    {
+        return false;
+    }
+        
     // Check that the number of genes in the simulated tree matches the number of genes specified in the taxon vector.
     const Tree &ind = individual_tree->getValue();
     
@@ -679,13 +730,6 @@ bool DuplicationLossProcess::simulateTreeRejectionSampling(void)
     }
 
     
-    
-    // Remove extinct genes.
-    //    std::vector<size_t> fossil_leaves_idxs;
-    //    while ( (fossil_leaves_idxs = psi->Tree::getFossilLeavesIdxs()).size() > 0) {
-    //      for (std::vector<size_t>::iterator it=fossil_leaves_idxs.begin(); it != fossil_leaves_idxs.end(); ++it)
-    //        psi->dropTipNode(*it);
-    //    }
   return true;
 }
 
@@ -694,15 +738,10 @@ void DuplicationLossProcess::simulateTree( void )
     
     const Tree &ind = individual_tree->getValue();
     
-    // A map from an individual node to the genes that are present at that node.
-//    std::map< const TopologyNode *, std::vector< TopologyNode* > > genes_per_branch;
-    
-    // The time tree object (topology + times).
-    Tree *psi = NULL;
     
     // Delete old tree, if found.
-    if (psi != NULL) {
-        delete psi;
+    if (value != NULL) {
+        delete value;
     }
         
     // The root of the tree.
@@ -717,16 +756,32 @@ void DuplicationLossProcess::simulateTree( void )
     recursivelySimulateTreeForward(origin->getValue(), i_root, genes);
         
     // Create the tree object.
-    psi = new Tree();
+    // The time tree object (topology + times).
+    Tree *psi = new Tree();
     // Internally we treat unrooted topologies the same as rooted.
     psi->setRooted(true);
     // Initialize the gene topology by setting the root and reindex the tree.
     psi->setRoot(root, true);
     
     
+    // Remove extinct genes.
+    std::vector<size_t> fossil_leaves_idxs;
+    while ( (fossil_leaves_idxs = psi->Tree::getFossilLeavesIdxs()).size() > 0) {
+        psi->dropTipNode( fossil_leaves_idxs[0] );
+//        for (std::vector<size_t>::iterator it=fossil_leaves_idxs.begin(); it != fossil_leaves_idxs.end(); ++it)
+//            psi->dropTipNode(*it);
+    }
+    
+    // TODO: We probably need to re-index the tip nodes here.
+    
+    
     // Finally store the new tree.
     value = psi;
+    
     resetTipAllocations();
+    
+    std::cerr << value->getPlainNewickRepresentation() << std::endl;
+    std::cerr << value->getNewickRepresentation() << std::endl;
 }
 
 

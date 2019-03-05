@@ -133,7 +133,7 @@ namespace RevBayesCore {
         void                                                setRooted(bool tf);
         void                                                setTaxonIndices(const TaxonMap &tm);                                                                //!< Set the indices of the taxa from the taxon map
         void                                                setTaxonName(const std::string& currentName, const std::string& newName);                           //!< Change the name of a taxon
-        void                                                setTaxonObject(const std::string& currentName, const Taxon &newName);                           //!< Change the name of a taxon
+        void                                                setTaxonObject(const std::string& currentName, const Taxon &newName);                               //!< Change the name of a taxon
         TopologyNode&                                       reverseParentChild(TopologyNode &n);                                                                //!< Reverse the parent child relationship.
 
     protected:
