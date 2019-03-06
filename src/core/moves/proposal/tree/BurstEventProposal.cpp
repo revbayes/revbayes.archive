@@ -109,13 +109,13 @@ double BurstEventProposal::doProposal( void )
     // we need to work with the times
     double parent_age  = parent.getAge();
     double my_age      = node->getAge();
-    double child_Age   = node->getChild( 0 ).getAge();
-    if ( child_Age < node->getChild( 1 ).getAge())
+    double child_age   = node->getChild( 0 ).getAge();
+    if ( child_age < node->getChild( 1 ).getAge())
     {
-        child_Age = node->getChild( 1 ).getAge();
+        child_age = node->getChild( 1 ).getAge();
     }
 
-    if ( parent_age < burst_age || child_Age > burst_age )
+    if ( parent_age < burst_age || child_age > burst_age )
     {
         return 0;
     }
@@ -129,14 +129,14 @@ double BurstEventProposal::doProposal( void )
     {
         
         // draw new ages and compute the hastings ratio at the same time
-        double my_new_age = (parent_age-child_Age) * rng->uniform01() + child_Age;
+        double my_new_age = (parent_age-child_age) * rng->uniform01() + child_age;
         
         // set the age
         stored_node->setAge( my_new_age );
         
         dist->setBurstSpeciation(node_index, false);
         
-        hr += log(parent_age - child_Age);
+        hr += log(parent_age - child_age);
     }
     else
     {
@@ -145,7 +145,7 @@ double BurstEventProposal::doProposal( void )
         
         dist->setBurstSpeciation(node_index, true);
         
-        hr += - log(parent_age - child_Age);
+        hr += - log(parent_age - child_age);
     }
     
     return hr;

@@ -5,6 +5,7 @@
 #include "ModelVector.h"
 #include "MultispeciesCoalescent.h"
 #include "Natural.h"
+#include "OptionRule.h"
 #include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -67,9 +68,11 @@ RevBayesCore::DuplicationLossProcess* Dist_DuplicationLoss::createDistribution( 
     size_t n_nodes = ind_tree->getValue().getNumberOfNodes();
     size_t n_tips = ind_tree->getValue().getNumberOfTips();
     
-    bool cdt = static_cast<const RlBoolean &>( condition->getRevObject() ).getValue();
+    // condition
+    const std::string& cond = static_cast<const RlString &>( condition->getRevObject() ).getValue();
+
     
-    RevBayesCore::DuplicationLossProcess*   d = new RevBayesCore::DuplicationLossProcess( ind_tree, org, t, cdt );
+    RevBayesCore::DuplicationLossProcess*   d = new RevBayesCore::DuplicationLossProcess( ind_tree, org, t, cond );
     
     RevBayesCore::ConstantNode< RevBayesCore::RbVector<double> > *sampling = new RevBayesCore::ConstantNode< RevBayesCore::RbVector<double> >("gene_sampling", new RevBayesCore::RbVector<double>(n_tips,1.0) );
     
@@ -193,8 +196,13 @@ const MemberRules& Dist_DuplicationLoss::getParameterRules(void) const
         member_rules.push_back( new ArgumentRule( "mu"    , branch_mu_types, "The loss rate(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         member_rules.push_back( new ArgumentRule( "origin", RealPos::getClassTypeSpec(), "Time of origin.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         member_rules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The vector of taxa which have species and individual names.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        member_rules.push_back( new ArgumentRule( "conditionOnTipSamples"  , RlBoolean::getClassTypeSpec(), "Should we condition the simulation on having exactly the specified number of genes per haplotype?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-
+        
+        std::vector<std::string> options_condition;
+//        options_condition.push_back( "time" );
+        options_condition.push_back( "survival" );
+        options_condition.push_back( "genes" );
+        member_rules.push_back( new OptionRule( "condition", new RlString("survival"), options_condition, "The condition of the process." ) );
+        
         rules_set = true;
     }
     
@@ -235,7 +243,7 @@ void Dist_DuplicationLoss::setConstParameter(const std::string& name, const RevP
     {
         taxa = var;
     }
-    else if ( name == "conditionOnTipSamples" )
+    else if ( name == "condition" )
     {
         condition = var;
     }

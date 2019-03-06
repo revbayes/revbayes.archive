@@ -13,7 +13,7 @@
 
 using namespace RevBayesCore;
 
-DuplicationLossProcess::DuplicationLossProcess(const TypedDagNode<Tree> *it, const TypedDagNode<double> *org, const std::vector<Taxon> &t, bool condition) : TypedDistribution<Tree>( NULL ),
+DuplicationLossProcess::DuplicationLossProcess(const TypedDagNode<Tree> *it, const TypedDagNode<double> *org, const std::vector<Taxon> &t, const std::string &cond) : TypedDistribution<Tree>( NULL ),
     taxa(t),
     individual_tree( it ),
     num_taxa( taxa.size() ),
@@ -21,7 +21,7 @@ DuplicationLossProcess::DuplicationLossProcess(const TypedDagNode<Tree> *it, con
     origin( org ),
     duplication_rate( new ConstantNode<double>("", new double(1.0)) ),
     loss_rate( new ConstantNode<double>("", new double(0.5)) ),
-    condition_on_tip_gene_numbers( condition )
+    condition( cond )
 {
     // add the parameters to our set (in the base class) in that way other
     // classes can easily access the set of our parameters this will also ensure
@@ -71,6 +71,11 @@ double DuplicationLossProcess::computeLnProbability( void )
 
     // now calculate the probability of observing the gene tree (recursively)
     double ln_prob_dl = recursivelyComputeLnProbability( individual_tree->getValue().getRoot() );
+    
+    if ( condition == "survival" )
+    {
+        ln_prob_dl -= log( 1.0 - extinction_probs[individual_tree->getValue().getNumberOfNodes()-1] );
+    }
 
     return ln_prob_dl; // + logTreeTopologyProb;
 }
@@ -102,6 +107,7 @@ double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_ge
         double ext_prob_right = extinction_probs[index_right];
 
         current_ext_prob = ext_prob_left * ext_prob_right;
+
     }
 
     if (dupl_ages.size() >= num_genes_recent)
@@ -119,13 +125,14 @@ double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_ge
         // It contains 'N = num_genes_recent-i' genes.
         // FIXME: We need to tell D what dop-loss rates to use when we want to use haplotype-branch-specific rates
         ln_prob += (num_genes_recent-i) * log( computeD(dt, current_ext_prob) );
+        
         // Have a duplication.
         ln_prob += log( dupl_rate );
         // Combinatorial factor. The duplication can happen on any of the 'N-1'
         // branches existing earlier (i.e., before the duplication happens when
         // going forwards in time), but we require it to happen on a specific
         // branch.
-//        ln_prob += log( num_genes_recent - i - 1 );
+        ln_prob += log( num_genes_recent - i - 1 );
 
         current_age = this_dupl_age;
         // FIXME: We need to tell D what dop-loss rates to use when we want to use haplotype-branch-specific rates
@@ -148,6 +155,8 @@ double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_ge
 
         double dt = origin->getValue() - current_age;
         ln_prob += log( computeD(dt, current_ext_prob) );
+        
+        extinction_probs[index_individual] = computeE( dt, current_ext_prob );
 
         return ln_prob;
   }
@@ -155,8 +164,9 @@ double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_ge
   {
       double dt = age_ancient - current_age;
       ln_prob += (num_genes_recent-dupl_ages.size()) * log( computeD(dt, current_ext_prob) );
-      extinction_probs[index_individual] = computeE( dt, current_ext_prob );
       
+      extinction_probs[index_individual] = computeE( dt, current_ext_prob );
+
       return ln_prob;
     }
 }
@@ -284,30 +294,30 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
         std::set< const TopologyNode* > genes_to_insert;
         for (std::set<const TopologyNode*>::iterator it=genes_for_this_individual.begin(); it!=genes_for_this_individual.end(); ++it)
         {
-          const TopologyNode *this_gene_node = *it;
-          double this_age = this_gene_node->getParent().getAge();
-          if ( fabs( this_age - individual_age) < EPS_COAL )
+            const TopologyNode *this_gene_node = *it;
+            double this_age = this_gene_node->getParent().getAge();
+            if ( fabs( this_age - individual_age) < EPS_COAL )
             {
                 // Coalescent event; likelihood unchanged.
                 genes_to_remove.insert( this_gene_node );
                 genes_to_insert.insert( &this_gene_node->getParent() );
                 
             }
-          else
+            else
             {
-              // Check if this gene comes from the left or right descendant.
-              if ( genes_for_left_descendant.find(this_gene_node) != genes_for_left_descendant.end() )
+                // Check if this gene comes from the left or right descendant.
+                if ( genes_for_left_descendant.find(this_gene_node) != genes_for_left_descendant.end() )
                 {
-                  // Found in the left descendant.
-                  // Multiply with probability of loss in right descendant.
-                  ln_prob_dupl_loss += log(extinction_probs[right_index]);
+                    // Found in the left descendant.
+                    // Multiply with probability of loss in right descendant.
+                    ln_prob_dupl_loss += log(extinction_probs[right_index]);
                 }
-              else
+                else
                 {
-                  // Not found in the left descendant. We expect only two
-                  // descendants and hence, the loss happens in the left
-                  // descendant.
-                  ln_prob_dupl_loss += log(extinction_probs[left_index]);
+                    // Not found in the left descendant. We expect only two
+                    // descendants and hence, the loss happens in the left
+                    // descendant.
+                    ln_prob_dupl_loss += log(extinction_probs[left_index]);
                 }
             }
         }
@@ -399,7 +409,7 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
     }
 
   if ( initial_genes.size() >= 1 )
-      ln_prob_dupl_loss += computeLnDuplicationLossProbability(initial_genes.size(), duplication_times, individual_age, parent_individual_age, individual_node.getIndex(), individual_node.isRoot());
+      ln_prob_dupl_loss += computeLnDuplicationLossProbability(initial_genes.size(), duplication_times, individual_age, parent_individual_age, individual_node, individual_node.isRoot());
 
   // Merge the two sets of genes that go into the next individual.
   if ( ! individual_node.isRoot() )
@@ -424,7 +434,7 @@ void DuplicationLossProcess::redrawValue( void )
     
     size_t attempts = 0;
     
-    if ( condition_on_tip_gene_numbers == true )
+    if ( condition == "gene" )
     {
         
         while (attempts < 10000)
@@ -442,7 +452,27 @@ void DuplicationLossProcess::redrawValue( void )
         
         throw RbException("After 10000 attempts a duplication-loss tree could not be simulated.");
     }
-    else
+    else if ( condition == "survival" )
+    {
+        
+        while (attempts < 10000)
+        {
+            bool success = false;
+            
+            simulateTree();
+            
+            success = value->getNumberOfTips() > 0 && value->getTipNode(0).isRoot() == false;
+            
+            if (success == true)
+            {
+                return;
+            }
+            ++attempts;
+        }
+        
+        throw RbException("After 10000 attempts a duplication-loss tree could not be simulated.");
+    }
+
     {
         simulateTree();
     }

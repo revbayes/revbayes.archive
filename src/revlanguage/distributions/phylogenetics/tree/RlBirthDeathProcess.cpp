@@ -74,30 +74,30 @@ const TypeSpec& BirthDeathProcess::getClassTypeSpec(void)
 const MemberRules& BirthDeathProcess::getParameterRules(void) const 
 {
     
-    static MemberRules memberRules;
+    static MemberRules member_rules;
     static bool rules_set = false;
     
     if ( !rules_set ) 
     {
-        memberRules.push_back( new ArgumentRule( "rootAge", RealPos::getClassTypeSpec()    , "The time of the process starting at the root, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        member_rules.push_back( new ArgumentRule( "rootAge", RealPos::getClassTypeSpec()    , "The time of the process starting at the root, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
         std::vector<std::string> optionsStrategy;
         optionsStrategy.push_back( "uniform" );
         optionsStrategy.push_back( "diversified" );
-        memberRules.push_back( new OptionRule( "samplingStrategy", new RlString("uniform"), optionsStrategy, "The sampling strategy of including taxa at the present." ) );
+        member_rules.push_back( new OptionRule( "samplingStrategy", new RlString("uniform"), optionsStrategy, "The sampling strategy of including taxa at the present." ) );
 
-        std::vector<std::string> optionsCondition;
-        optionsCondition.push_back( "time" );
-        optionsCondition.push_back( "survival" );
-        optionsCondition.push_back( "nTaxa" );
-        memberRules.push_back( new OptionRule( "condition", new RlString("time"), optionsCondition, "The condition of the process." ) );
-        memberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The taxa used for initialization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "incompleteClades"  , ModelVector<Clade>::getClassTypeSpec(), "Vector of incompletely sampled clades with number of missing species.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        std::vector<std::string> options_condition;
+        options_condition.push_back( "time" );
+        options_condition.push_back( "survival" );
+        options_condition.push_back( "nTaxa" );
+        member_rules.push_back( new OptionRule( "condition", new RlString("time"), options_condition, "The condition of the process." ) );
+        member_rules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The taxa used for initialization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        member_rules.push_back( new ArgumentRule( "incompleteClades"  , ModelVector<Clade>::getClassTypeSpec(), "Vector of incompletely sampled clades with number of missing species.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         rules_set = true;
     }
     
-    return memberRules;
+    return member_rules;
 }
 
 
