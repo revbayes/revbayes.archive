@@ -16,10 +16,10 @@ jupyter="false"
 
 # parse command line arguments
 while echo $1 | grep ^- > /dev/null; do
-# intercept help while parsing "-key value" pairs
-if [ "$1" = "--help" ] || [ "$1" = "-h" ]
-then
-echo '
+    # intercept help while parsing "-key value" pairs
+    if [ "$1" = "--help" ] || [ "$1" = "-h" ]
+    then
+        echo '
 The minimum steps to build RevBayes after running this script is:
 cmake .
 make
@@ -34,13 +34,13 @@ Command line options are:
 '
 # secret test option
 # -jupyter        <true|false>    : set to true if you want ot buikd the jupyter version. Defaults to false.
-exit
-fi
+        exit
+    fi
 
-# parse pairs
-eval $( echo $1 | sed 's/-//g' | tr -d '\012')=$2
-shift
-shift
+    # parse pairs
+    eval $( echo $1 | sed 's/-//g' | tr -d '\012')=$2
+    shift
+    shift
 done
 
 
@@ -50,31 +50,31 @@ done
 
 if [ "$boost" = "true" ]
 then
-echo 'Building boost libraries'
-echo 'you can turn this off with argument "-boost false"'
+    echo 'Building boost libraries'
+    echo 'you can turn this off with argument "-boost false"'
 
-cd ../../boost_1_60_0
-rm ./project-config.jam*  # clean up from previous runs
+    cd ../../boost_1_60_0
+    rm ./project-config.jam*  # clean up from previous runs
 
-if [ "$mac" = "true" ]
-then
-./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
-./b2 link=static
-elif [ "$win" = "true" ]
-then
-./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals --with-toolset=mingw
-./b2 link=static
-elif [ "$gentoo" = "true" ]
-then
-./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
-./b2 link=static --ignore-site-config
+    if [ "$mac" = "true" ]
+    then
+        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
+        ./b2 link=static
+    elif [ "$win" = "true" ]
+    then
+        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals --with-toolset=mingw
+        ./b2 link=static
+    elif [ "$gentoo" = "true" ]
+    then
+        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
+        ./b2 link=static --ignore-site-config
+    else
+        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
+        ./b2 link=static
+    fi
+
 else
-./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
-./b2 link=static
-fi
-
-else
-echo 'not building boost libraries'
+    echo 'not building boost libraries'
 fi
 
 
@@ -167,13 +167,16 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake ${CMAKE_MODULE_PATH})
 # Set source root relate to project file
 set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../src)
 
+option(INTERNAL_BOOST "Use the version of boost shipped with revbayes" ON)
 
+if (INTERNAL_BOOST)
+   SET(BOOST_ROOT "../../../boost_1_60_0")
+   SET(BOOST_LIBRARY "../../../boost_1_60_0/stage/lib")
+   SET(Boost_NO_SYSTEM_PATHS ON)
+   SET(Boost_USE_STATIC_RUNTIME ON)
+   SET(Boost_USE_STATIC_LIBS ON)
+endif()
 
-SET(BOOST_ROOT "../../../boost_1_60_0")
-SET(BOOST_LIBRARY "../../../boost_1_60_0/stage/lib")
-SET(Boost_USE_STATIC_RUNTIME ON)
-SET(Boost_USE_STATIC_LIBS ON)
-SET(Boost_NO_SYSTEM_PATHS ON)
 find_package(Boost
 1.60.0
 COMPONENTS regex
