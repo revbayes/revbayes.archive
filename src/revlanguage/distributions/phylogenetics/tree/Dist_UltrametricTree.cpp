@@ -60,14 +60,14 @@ RevBayesCore::UltrametricTreeDistribution* Dist_UltrametricTree::createDistribut
 
     const RevBayesCore::TraceTree& tt                           = static_cast<const TraceTree &>( trees->getRevObject() ).getValue();
 
-    RevBayesCore::Trace<double>* nt = NULL;
+    RevBayesCore::Trace<double>* sample_prior = NULL;
     if( density->getRevObject() != RevNullObject::getInstance() )
     {
-        nt = &static_cast<const Trace &>( density->getRevObject() ).getValue();
+        sample_prior = &static_cast<const Trace &>( density->getRevObject() ).getValue();
     }
 
     // create the internal distribution object
-    RevBayesCore::UltrametricTreeDistribution* dist = new RevBayesCore::UltrametricTreeDistribution(tp, rp, ra, tt, nt);
+    RevBayesCore::UltrametricTreeDistribution* dist = new RevBayesCore::UltrametricTreeDistribution(tp, rp, ra, tt, sample_prior);
     
     
     return dist;

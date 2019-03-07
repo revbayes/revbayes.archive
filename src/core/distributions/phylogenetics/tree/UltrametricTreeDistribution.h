@@ -81,7 +81,7 @@ namespace RevBayesCore {
         TypedDistribution<double>*                          rate_prior;
         const TypedDagNode<double>*                         root_age;
         std::vector<Tree>                                   trees;
-        Trace<double>*                                      density;
+        Trace<double>*                                      sample_prior_density;
         
         std::vector<std::string>                            trees_newick;
         std::map<std::string, std::vector<size_t> >         topology_indices;

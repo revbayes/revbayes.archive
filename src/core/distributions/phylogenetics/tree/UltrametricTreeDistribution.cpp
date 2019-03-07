@@ -22,7 +22,7 @@ UltrametricTreeDistribution::UltrametricTreeDistribution( TypedDistribution<Tree
     tree_prior( tp ),
     rate_prior( rp ),
     root_age( ra ),
-    density( dens ),
+    sample_prior_density( dens ),
     num_samples( 0 ),
     sample_block_start( 0 ),
     sample_block_end( num_samples ),
@@ -92,7 +92,7 @@ UltrametricTreeDistribution::UltrametricTreeDistribution( const UltrametricTreeD
     rate_prior( d.rate_prior->clone() ),
     root_age( d.root_age ),
     trees( d.trees ),
-    density( d.density ),
+    sample_prior_density( d.sample_prior_density ),
     trees_newick( d.trees_newick ),
     topology_indices( d.topology_indices ),
     tree_branch_lengths( d.tree_branch_lengths ),
@@ -103,9 +103,9 @@ UltrametricTreeDistribution::UltrametricTreeDistribution( const UltrametricTreeD
     sample_block_size( d.sample_block_size ),
     ln_probs( d.ln_probs )
 {
-    if ( d.density != NULL )
+    if ( d.sample_prior_density != NULL )
     {
-        density = d.density->clone();
+        sample_prior_density = d.sample_prior_density->clone();
     }
 }
 
@@ -115,7 +115,7 @@ UltrametricTreeDistribution::~UltrametricTreeDistribution()
     
     delete tree_prior;
     delete rate_prior;
-    delete density;
+    delete sample_prior_density;
     
 }
 
@@ -133,111 +133,32 @@ UltrametricTreeDistribution& UltrametricTreeDistribution::operator=( const Ultra
         // free memory
         delete tree_prior;
         delete rate_prior;
-        delete density;
+        delete sample_prior_density;
         
-        tree_prior          = d.tree_prior->clone();
-        rate_prior          = d.rate_prior->clone();
-        root_age            = d.root_age;
-        trees               = d.trees;
-        density             = d.density;
-        trees_newick        = d.trees_newick;
-        topology_indices    = d.topology_indices;
-        tree_branch_lengths = d.tree_branch_lengths;
-        outgroup            = d.outgroup;
-        num_samples         = d.num_samples;
-        sample_block_start  = d.sample_block_start;
-        sample_block_end    = d.sample_block_end;
-        sample_block_size   = d.sample_block_size;
-        ln_probs            = d.ln_probs;
+        tree_prior              = d.tree_prior->clone();
+        rate_prior              = d.rate_prior->clone();
+        root_age                = d.root_age;
+        trees                   = d.trees;
+        sample_prior_density    = d.sample_prior_density;
+        trees_newick            = d.trees_newick;
+        topology_indices        = d.topology_indices;
+        tree_branch_lengths     = d.tree_branch_lengths;
+        outgroup                = d.outgroup;
+        num_samples             = d.num_samples;
+        sample_block_start      = d.sample_block_start;
+        sample_block_end        = d.sample_block_end;
+        sample_block_size       = d.sample_block_size;
+        ln_probs                = d.ln_probs;
         
-        if ( d.density != NULL )
+        if ( d.sample_prior_density != NULL )
         {
-            density = d.density->clone();
+            sample_prior_density = d.sample_prior_density->clone();
         }
         
     }
     
     return *this;
 }
-
-
-///**
-// * Recursive call to attach ordered interior node times to the time tree psi. Call it initially with the
-// * root of the tree.
-// */
-//void UltrametricTreeDistribution::attachTimes(Tree* psi, std::vector<TopologyNode *> &nodes, size_t index, const std::vector<double> &interiorNodeTimes, double originTime )
-//{
-//
-//    if (index < num_taxa-1)
-//    {
-//        // Get the rng
-//        RandomNumberGenerator* rng = GLOBAL_RNG;
-//
-//        // Randomly draw one node from the list of nodes
-//        size_t node_index = static_cast<size_t>( floor(rng->uniform01()*nodes.size()) );
-//
-//        // Get the node from the list
-//        TopologyNode* parent = nodes.at(node_index);
-//        psi->getNode( parent->getIndex() ).setAge( originTime - interiorNodeTimes[index] );
-//
-//        // Remove the randomly drawn node from the list
-//        nodes.erase(nodes.begin()+long(node_index));
-//
-//        // Add the left child if an interior node
-//        TopologyNode* leftChild = &parent->getChild(0);
-//        if ( !leftChild->isTip() )
-//        {
-//            nodes.push_back(leftChild);
-//        }
-//
-//        // Add the right child if an interior node
-//        TopologyNode* rightChild = &parent->getChild(1);
-//        if ( !rightChild->isTip() )
-//        {
-//            nodes.push_back(rightChild);
-//        }
-//
-//        // Recursive call to this function
-//        attachTimes(psi, nodes, index+1, interiorNodeTimes, originTime);
-//    }
-//
-//}
-
-
-///** Build random binary tree to size num_taxa. The result is a draw from the uniform distribution on histories. */
-//void UltrametricTreeDistribution::buildRandomBinaryHistory(std::vector<TopologyNode*> &tips)
-//{
-//
-//    if (tips.size() < num_taxa)
-//    {
-//        // Get the rng
-//        RandomNumberGenerator* rng = GLOBAL_RNG;
-//
-//        // Randomly draw one node from the list of tips
-//        size_t index = static_cast<size_t>( floor(rng->uniform01()*tips.size()) );
-//
-//        // Get the node from the list
-//        TopologyNode* parent = tips.at(index);
-//
-//        // Remove the randomly drawn node from the list
-//        tips.erase(tips.begin()+long(index));
-//
-//        // Add a left child
-//        TopologyNode* leftChild = new TopologyNode(0);
-//        parent->addChild(leftChild);
-//        leftChild->setParent(parent);
-//        tips.push_back(leftChild);
-//
-//        // Add a right child
-//        TopologyNode* rightChild = new TopologyNode(0);
-//        parent->addChild(rightChild);
-//        rightChild->setParent(parent);
-//        tips.push_back(rightChild);
-//
-//        // Recursive call to this function
-//        buildRandomBinaryHistory(tips);
-//    }
-//}
 
 
 /* Clone function */
@@ -451,9 +372,9 @@ double UltrametricTreeDistribution::computeLnProbability( void )
 
             ln_probs[i] = computeBranchRateLnProbability( *value, my_tree_newick, my_splits, i );
             
-            if ( density != NULL && RbMath::isFinite( ln_probs[i] ) )
+            if ( sample_prior_density != NULL && RbMath::isFinite( ln_probs[i] ) )
             {
-                ln_probs[i] -= density->getValues()[i];
+                ln_probs[i] -= sample_prior_density->getValues()[i];
             }
             
         }
