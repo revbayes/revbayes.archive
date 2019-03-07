@@ -124,4 +124,6 @@ mymodel = model(chromotree)
 mymcmc = mcmc(mymodel, monitors, moves)
 mymcmc.run(generations=mcmc_iterations)
 
+setOption("useScaling","true")
+
 q()

@@ -1,19 +1,14 @@
-//
-//  PruneTreeFunction.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 3/2/16.
-//  Copyright © 2016 Michael Landis. All rights reserved.
-//
-
 #include "PruneTreeFunction.h"
 #include "RbException.h"
 
 using namespace RevBayesCore;
 
-PruneTreeFunction::PruneTreeFunction(const TypedDagNode<Tree> *t,  std::vector<Taxon> taxa, bool retain, bool prune_fossils) : TypedFunction<Tree>( new Tree() ),
+PruneTreeFunction::PruneTreeFunction(const TypedDagNode<Tree> *t,  std::vector<Taxon> tx, bool r, bool pf) : TypedFunction<Tree>( new Tree() ),
     prune_map( t->getValue().getNumberOfTips() ),
-    tau( t )
+    tau( t ),
+    taxa( tx ),
+    retain( r ),
+    prune_fossils( pf )
 {
     // add the lambda parameter as a parent
     addParameter( tau );
@@ -26,7 +21,7 @@ PruneTreeFunction::PruneTreeFunction(const TypedDagNode<Tree> *t,  std::vector<T
 
         std::vector<Taxon>::iterator it = std::find(taxa.begin(), taxa.end(), taxon);
 
-        if( retain == ( it == taxa.end() ) || ( prune_fossils && nodes[i]->isFossil() ) )
+        if ( retain == ( it == taxa.end() ) || ( prune_fossils && nodes[i]->isFossil() ) )
         {
             prune_map.set(i);
         }
@@ -68,5 +63,21 @@ void PruneTreeFunction::swapParameterInternal(const DagNode *oldP, const DagNode
     {
         tau = static_cast<const TypedDagNode<Tree>* >( newP );
     }
+    
+    std::vector<TopologyNode*> nodes = tau->getValue().getNodes();
+
+    prune_map.clear();
+    for (size_t i = 0; i < tau->getValue().getNumberOfTips(); i++)
+    {
+        const Taxon& taxon = nodes[i]->getTaxon();
+        
+        std::vector<Taxon>::iterator it = std::find(taxa.begin(), taxa.end(), taxon);
+        
+        if ( retain == ( it == taxa.end() ) || ( prune_fossils && nodes[i]->isFossil() ) )
+        {
+            prune_map.set(i);
+        }
+    }
+    
 }
 

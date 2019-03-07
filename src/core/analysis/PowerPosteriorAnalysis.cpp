@@ -3,6 +3,7 @@
 #include "MonteCarloSampler.h"
 #include "MoveSchedule.h"
 #include "PowerPosteriorAnalysis.h"
+#include "ProgressBar.h"
 #include "RandomMoveSchedule.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -89,6 +90,9 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
     // reset the counters for the move schedules
     sampler->reset();
     
+    // start the progress bar
+    ProgressBar progress = ProgressBar(generations, 0);
+    
     if ( process_active == true )
     {
         // Let user know what we are doing
@@ -99,10 +103,7 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
         std::cout << ss.str() << std::endl;
     
         // Print progress bar (68 characters wide)
-        std::cout << std::endl;
-        std::cout << "Progress:" << std::endl;
-        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
-        std::cout.flush();
+        progress.start();
     }
     
     
@@ -112,16 +113,7 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
     {
         if ( process_active == true )
         {
-            size_t progress = 68 * (double) k / (double) generations;
-            if ( progress > numStars )
-            {
-                for ( ;  numStars < progress; ++numStars )
-                {
-                    std::cout << "*";
-                }
-                
-                std::cout.flush();
-            }
+            progress.update( k );
         }
         
         sampler->nextCycle(false);
@@ -139,7 +131,7 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
     
     if ( process_active == true )
     {
-        std::cout << std::endl;
+        progress.finish();
     }
     
 }

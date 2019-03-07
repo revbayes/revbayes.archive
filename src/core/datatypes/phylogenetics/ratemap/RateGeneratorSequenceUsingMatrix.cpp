@@ -313,6 +313,7 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
                 CharacterHistoryRateModifier& chrm = (*rateModifiers)[k];
                 double m = chrm.computeRateMultiplier(from, &to, sites_with_states, age);
                 r *= m;
+                if (r == 0.0) break;
             }
             
             // add rate to sum

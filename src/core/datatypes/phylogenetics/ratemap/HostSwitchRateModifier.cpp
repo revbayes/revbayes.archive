@@ -54,28 +54,22 @@ double HostSwitchRateModifier::computeRateMultiplier(std::vector<CharacterEvent*
     size_t to_state = newState->getState();
     
     double r = 1.0;
+
     
     // loss event (independent of other hosts)
     if (from_state > to_state)
     {
-        
-        // repertoire must contain at least a single 2 (actual host)
-        // if the current repertoire contains one 2,
-        // and if our event causes the loss of state 2
-        if (sites_with_states[2].size() == 1 && from_state==2)
-        {
-            // cannot enter the null range (conditions on survival)
-            r = 0.0;
-            return r;
-        }
-        else
-        {
-            r = 1.0;
-            return r;
-        }
+        return 1.0;
     }
-    else
+    else if (from_state < to_state)
     {
+        // rate of leaving 0/1-repertoire equals zero
+        size_t num_two = sites_with_states[2].size();
+        
+        if (num_two == 0) {
+            return 0.0;
+        }
+        
         // gain event
         double scaler_value = scale[ to_state - 1 ];
         
@@ -102,6 +96,9 @@ double HostSwitchRateModifier::computeRateMultiplier(std::vector<CharacterEvent*
         double delta_mean = delta / n_on;
         r = std::pow( delta_mean, -scaler_value);
 //        r = std::exp( -scaler_value * delta_mean );
+    }
+    else {
+        throw RbException("Self-transitions not allowed");
     }
     return r;
 }

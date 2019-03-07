@@ -250,6 +250,33 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         
         return new RevVariable( new RlBoolean( cov ) );
     }
+    else if ( name == "getTrees" )
+    {
+        found = true;
+        
+        std::vector<RevBayesCore::Tree> trees = this->value->getValues();
+        size_t start_index = this->value->getBurnin();
+        
+        if ( this->value->isClock() == true )
+        {
+            ModelVector<TimeTree> *rl_trees = new ModelVector<TimeTree>;
+            for (size_t i=start_index; i<trees.size(); ++i)
+            {
+                rl_trees->push_back( trees[i] );
+            }
+            return new RevVariable( rl_trees );
+        }
+        else
+        {
+            ModelVector<BranchLengthTree> *rl_trees = new ModelVector<BranchLengthTree>;
+            for (size_t i=start_index; i<trees.size(); ++i)
+            {
+                rl_trees->push_back( trees[i] );
+            }
+            return new RevVariable( rl_trees );
+        }
+        
+    }
     
     return RevObject::executeMethod( name, args, found );
 }
@@ -352,6 +379,9 @@ void TraceTree::initMethods( void )
     getUniqueTreesArgRules->push_back( new ArgumentRule("credibleTreeSetSize", Probability::getClassTypeSpec(), "The size of the credible set.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );
     getUniqueTreesArgRules->push_back( new ArgumentRule("verbose", RlBoolean::getClassTypeSpec(), "Printing verbose output.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true)) );
     this->methods.addFunction( new MemberProcedure( "getUniqueTrees", ModelVector<Tree>::getClassTypeSpec(), getUniqueTreesArgRules) );
+    
+    ArgumentRules* get_trees_arg_rules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "getTrees", ModelVector<Tree>::getClassTypeSpec(), get_trees_arg_rules) );
     
     ArgumentRules* get_unique_clades_arg_rules = new ArgumentRules();
     get_unique_clades_arg_rules->push_back( new ArgumentRule("credibleTreeSetSize", Probability::getClassTypeSpec(), "The size of the credible set.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );

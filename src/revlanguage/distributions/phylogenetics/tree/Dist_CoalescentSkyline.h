@@ -30,6 +30,7 @@ namespace RevLanguage {
         static const std::string&                           getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                              getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::string                                         getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
+        virtual MethodTable                                 getDistributionMethods( void ) const;                                                                       //!< Get the member methods
         const TypeSpec&                                     getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
         const MemberRules&                                  getParameterRules(void) const;                                                          //!< Get member rules (const)
         
@@ -45,7 +46,7 @@ namespace RevLanguage {
     private:
         
         // members
-        RevPtr<const RevVariable>                           taxonNames;                                                                             //!< The taxon names that will be applied to the initally simulated tree
+        RevPtr<const RevVariable>                           taxa;                                                                                   //!< The taxon names that will be applied to the initally simulated tree
         RevPtr<const RevVariable>                           constraints;                                                                            //!< Topological constraints that will be used for calibrations
         RevPtr<const RevVariable>                           theta;
         RevPtr<const RevVariable>                           times;

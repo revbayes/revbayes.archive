@@ -258,7 +258,8 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
 				rl << nname.str() ;
            
             // only print values of constant nodes (only simple numeric values)
-            if ((*it)->getDagNodeType() == RevBayesCore::DagNode::CONSTANT){
+            if ( (*it)->getDagNodeType() == RevBayesCore::DagNode::CONSTANT )
+            {
                 std::stringstream trl;
                 if ((*it)->isSimpleNumeric())  
                     (*it)->printValue(trl," ", true);

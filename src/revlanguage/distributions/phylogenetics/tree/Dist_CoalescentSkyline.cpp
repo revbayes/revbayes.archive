@@ -9,7 +9,9 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RlClade.h"
+#include "RlDistributionMemberFunction.h"
 #include "RlString.h"
+#include "RlTaxon.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
 #include "Taxon.h"
@@ -57,22 +59,32 @@ RevBayesCore::PiecewiseConstantCoalescent* Dist_CoalescentSkyline::createDistrib
     // theta
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* th       = static_cast<const ModelVector<RealPos> &>( theta->getRevObject() ).getDagNode();
     // theta
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* ti       = static_cast<const ModelVector<RealPos> &>( times->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* ti       = NULL;
+    if ( times != NULL && times->getRevObject() != RevNullObject::getInstance() )
+    {
+        ti = static_cast<const ModelVector<RealPos> &>( times->getRevObject() ).getDagNode();
+    }
     // method
-//    const std::string &m                        = static_cast<const RlString &>( method->getRevObject() ).getValue();
+    const std::string &m                        = static_cast<const RlString &>( method->getRevObject() ).getValue();
     // taxon names
-    const std::vector<std::string> &names       = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
+    const std::vector<RevBayesCore::Taxon> & ta = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
     // clade constraints
     const std::vector<RevBayesCore::Clade> &c   = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
     
-    std::vector<RevBayesCore::Taxon> taxa;
-    for (size_t i = 0; i < names.size(); ++i)
+    RevBayesCore::PiecewiseConstantCoalescent::METHOD_TYPES meth = RevBayesCore::PiecewiseConstantCoalescent::SPECIFIED;
+    if ( m == "events" )
     {
-        taxa.push_back( RevBayesCore::Taxon( names[i] ) );
+        meth = RevBayesCore::PiecewiseConstantCoalescent::EVENTS;
+    } else if ( m == "uniform" )
+    {
+        meth = RevBayesCore::PiecewiseConstantCoalescent::UNIFORM;
+    } else if ( m == "specified" )
+    {
+        meth = RevBayesCore::PiecewiseConstantCoalescent::SPECIFIED;
     }
     
     // create the internal distribution object
-    RevBayesCore::PiecewiseConstantCoalescent*   d = new RevBayesCore::PiecewiseConstantCoalescent(th, ti, taxa, c);
+    RevBayesCore::PiecewiseConstantCoalescent*   d = new RevBayesCore::PiecewiseConstantCoalescent(th, ti, meth, ta, c);
     
     return d;
 }
@@ -123,6 +135,20 @@ std::string Dist_CoalescentSkyline::getDistributionFunctionName( void ) const
 }
 
 
+MethodTable Dist_CoalescentSkyline::getDistributionMethods( void ) const
+{
+    
+    MethodTable methods = TypedDistribution<TimeTree>::getDistributionMethods();
+    
+    // member functions
+    ArgumentRules* get_interval_ages_arg_rules = new ArgumentRules();
+    methods.addFunction( new DistributionMemberFunction<Dist_CoalescentSkyline, ModelVector<RealPos> >( "getIntervalAges", variable, get_interval_ages_arg_rules   ) );
+    
+    
+    return methods;
+}
+
+
 /**
  * Get the member rules used to create the constructor of this object.
  *
@@ -136,29 +162,29 @@ std::string Dist_CoalescentSkyline::getDistributionFunctionName( void ) const
 const MemberRules& Dist_CoalescentSkyline::getParameterRules(void) const
 {
     
-    static MemberRules memberRules;
+    static MemberRules dist_member_rules;
     static bool rules_set = false;
     
     if ( !rules_set )
     {
-        memberRules.push_back( new ArgumentRule( "theta"      , ModelVector<RealPos>::getClassTypeSpec(), "A vector of per interval population sizes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "times"      , ModelVector<RealPos>::getClassTypeSpec(), "A vector of times for the intervals, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "theta"      , ModelVector<RealPos>::getClassTypeSpec(), "A vector of per interval population sizes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "times"      , ModelVector<RealPos>::getClassTypeSpec(), "A vector of times for the intervals, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "events" );
         optionsCondition.push_back( "uniform" );
         optionsCondition.push_back( "specified" );
-        memberRules.push_back( new OptionRule( "method", new RlString("events"), optionsCondition, "The method how intervals are defined." ) );
-        memberRules.push_back( new ArgumentRule( "names"      , ModelVector<RlString>::getClassTypeSpec(), "The names of the taxa used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec(), "The strictly enforced topology constraints.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
+        dist_member_rules.push_back( new OptionRule( "method", new RlString("events"), optionsCondition, "The method how intervals are defined." ) );
+        dist_member_rules.push_back( new ArgumentRule( "taxa"       , ModelVector<Taxon>::getClassTypeSpec(), "The taxa used when drawing a random tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec(), "The strictly enforced topology constraints.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
         
         // add the rules from the base class
         const MemberRules &parentRules = TypedDistribution<TimeTree>::getParameterRules();
-        memberRules.insert(memberRules.end(), parentRules.begin(), parentRules.end());
+        dist_member_rules.insert(dist_member_rules.end(), parentRules.begin(), parentRules.end());
         
         rules_set = true;
     }
     
-    return memberRules;
+    return dist_member_rules;
 }
 
 
@@ -193,9 +219,9 @@ void Dist_CoalescentSkyline::setConstParameter(const std::string& name, const Re
     {
         theta = var;
     }
-    else if ( name == "names" )
+    else if ( name == "taxa" )
     {
-        taxonNames = var;
+        taxa = var;
     }
     else if ( name == "constraints" )
     {

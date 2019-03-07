@@ -48,10 +48,13 @@ void PomoRateMatrixFunction::update( void )
 {
     //For the moment, we do not allow that the population size could be updated.
     std::vector<double> r ;
-    if (useMutationMatrix) {
+    if (useMutationMatrix)
+    {
         // get the information from the arguments for reading the file
         r = setMutationRates( mutationMatrix->getValue() );
-    } else {
+    }
+    else
+    {
         // get the information from the arguments for reading the file
         r = mutationRates->getValue();
 
