@@ -63,7 +63,7 @@ RevBayesCore::UltrametricTreeDistribution* Dist_UltrametricTree::createDistribut
     RevBayesCore::Trace<double>* sample_prior = NULL;
     if( density->getRevObject() != RevNullObject::getInstance() )
     {
-        sample_prior = &static_cast<const Trace &>( density->getRevObject() ).getValue();
+        sample_prior = static_cast<const Trace &>( density->getRevObject() ).getValue().clone();
     }
 
     // create the internal distribution object

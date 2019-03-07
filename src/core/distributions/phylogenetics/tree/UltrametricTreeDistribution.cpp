@@ -92,7 +92,7 @@ UltrametricTreeDistribution::UltrametricTreeDistribution( const UltrametricTreeD
     rate_prior( d.rate_prior->clone() ),
     root_age( d.root_age ),
     trees( d.trees ),
-    sample_prior_density( d.sample_prior_density ),
+    sample_prior_density( NULL ),
     trees_newick( d.trees_newick ),
     topology_indices( d.topology_indices ),
     tree_branch_lengths( d.tree_branch_lengths ),
@@ -139,7 +139,7 @@ UltrametricTreeDistribution& UltrametricTreeDistribution::operator=( const Ultra
         rate_prior              = d.rate_prior->clone();
         root_age                = d.root_age;
         trees                   = d.trees;
-        sample_prior_density    = d.sample_prior_density;
+        sample_prior_density    = NULL;
         trees_newick            = d.trees_newick;
         topology_indices        = d.topology_indices;
         tree_branch_lengths     = d.tree_branch_lengths;
