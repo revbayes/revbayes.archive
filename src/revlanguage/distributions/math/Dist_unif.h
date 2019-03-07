@@ -22,7 +22,7 @@ namespace RevLanguage {
      * @since 2012-08-08, version 1.0
      *
      */
-    class Dist_unif :  public ContinuousDistribution {
+    class Dist_unif : public ContinuousDistribution {
     
     public:
         Dist_unif ( void );

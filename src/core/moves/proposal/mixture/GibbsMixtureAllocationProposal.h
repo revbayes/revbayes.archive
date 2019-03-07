@@ -141,7 +141,7 @@ double RevBayesCore::GibbsMixtureAllocationProposal<mixtureType>::doProposal( vo
     
     // potential affected nodes for likelihood computation
     RbOrderedSet<DagNode *> affected;
-    variable->getAffectedNodes( affected );
+    variable->initiateGetAffectedNodes( affected );
     
     // Get random number generator
     RandomNumberGenerator* rng = GLOBAL_RNG;

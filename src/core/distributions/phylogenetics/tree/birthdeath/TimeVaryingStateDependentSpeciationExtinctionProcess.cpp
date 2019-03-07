@@ -1569,7 +1569,7 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::getAffected(RbOrdered
     
     if ( affecter == process_age)
     {
-        dag_node->getAffectedNodes( affected );
+        dag_node->initiateGetAffectedNodes( affected );
     }
     
 }

@@ -621,7 +621,7 @@ void UltrametricTreeDistribution::getAffected(RbOrderedSet<DagNode *> &affected,
     
     if ( affecter == root_age)
     {
-        dag_node->getAffectedNodes( affected );
+        dag_node->initiateGetAffectedNodes( affected );
     }
     
 }

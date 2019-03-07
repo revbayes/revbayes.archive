@@ -63,6 +63,9 @@ This creates a `revbayes/build` directory where the build will take place, and s
 
 If there are errors in the configure step, you can look in `build/meson-logs/meson-log.txt` for log messages to help diagnose the problem.
 
+There is currently a `-Dstatic=true` flag, but this is maybe a hack.  Alternatively you can do `-Dcpp_link_args=-static`.  Both of these
+work for `rb` but not for `RevStudio`.
+
 ## Perform the build
 Next, run `ninja` while targetting the `build` directory
 ```
@@ -128,7 +131,9 @@ To do a cross-build from linux to windows, we need to
 * tell pkg-config where to find them
 * install the cross-compiler
 * create a meson cross-file
-* run meson
+* run meson (configure)
+* run ninja (build)
+* install DLLs
 
 1. Let's put our windows libraries in a directory called `~/win_root`.  The libraries will end up in `~/win_root/mingw64/lib` with header files in `~/win_root/mingw64/include`.
 
@@ -137,24 +142,33 @@ To do a cross-build from linux to windows, we need to
    cd ~/win_root
 
    for PKG in boost-1.67.0-2 \
-              pango-1.42.3-1 \
-              glib2-2.56.1-3 \
-              cairo-1.15.8-1 \
-              gdk-pixbuf2-2.36.9-1 \
-              atk-2.28.1-1 \
-              gtk2-2.24.32-1 \
+              pango-1.42.4-2 \
+              glib2-2.58.1-1 \
+              cairo-1.16.0-1 \
+              gdk-pixbuf2-2.38.0-2 \
+              atk-2.30.0-1 \
+              gtk2-2.24.32-3 \
               pcre-8.42-1 \
               fribidi-1.0.5-1 \
-              pixman-0.34.0-3 \
-              fontconfig-2.13.0-1 \
+              pixman-0.36.0-1 \
+              fontconfig-2.13.1-1 \
               freetype-2.9.1-1 \
-              zlib-1.2.8-9 \
+              zlib-1.2.11-5 \
               bzip2-1.0.6-6 \
-              libpng-1.6.35-1 \
-              harfbuzz-1.8.5-1 \
-              graphite2-1.3.9-1 \
-              expat-2.2.5-1 \
-              gettext-0.19.4-4 \
+              libpng-1.6.36-1 \
+              harfbuzz-2.2.0-1 \
+              graphite2-1.3.12-1 \
+              expat-2.2.6-1 \
+              gettext-0.19.8.1-7 \
+              libtiff-4.0.9-2 \
+              jasper-2.0.14-1 \
+              libjpeg-turbo-2.0.1-1 \
+              xz-5.2.4-1 \
+              libiconv-1.15-3 \
+              libffi-3.2.1-3 \
+              libthai-0.1.28-2 \
+              libdatrie-0.2.12-1 \
+              libwinpthread-git-7.0.0.5273.3e5acf5d-1 \
               ; do
       wget http://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-${PKG}-any.pkg.tar.xz
       tar -Jxf mingw-w64-x86_64-${PKG}-any.pkg.tar.xz
@@ -193,11 +207,52 @@ To do a cross-build from linux to windows, we need to
 4. Look at the cross file `revbayes/projects/meson/mingw-64bit-cross.txt`. Change the string `/path/to/win_root/` to refer to `$HOME/win_root`.
 
 
-5. Now we can finally run meson:
+5. Now we can finally run meson and ninja:
 
    ```
    cd revbayes
    ( cd projects/meson ; ./generate.sh )
-   meson cross-build --cross-file=projects/meson/mingw-64bit-cross.txt -Dstudio=true
+   meson cross-build --cross-file=projects/meson/mingw-64bit-cross.txt -Dstudio=true -Dstatic=false -Dprefix=$HOME/win_rb
    ninja -C cross-build
    ```
+
+   It seems that statically linking the gtk libraries doesn't work, at least
+   when using the libraries from MSYS2.
+
+6. Install DLLs
+
+   If your executables are not completely statically linked, you will have to
+   include the DLLs that the executable needs.  If you put them in the same
+   directory as the executable, then they will be found when you run it.
+
+   It is possible to build rb.exe statically so that no DLLs are needed, but
+   this doesn't seem possible for RevStudio.exe because static linking of
+   GTK doesn't seem to be supported.  At the moment, static linking can be
+   enabled or disabled with `-Dstatic=true` / `-Dstatic=false`.  This might
+   be a bit of a hack.
+
+   Libraries for GCC should be included with the compiler.  The exact location
+   of these libraries depends on your linux/mac distribution.  On Debian, you
+   might do something like this:
+
+   ```
+   cp /usr/lib/gcc/x86_64-w64-mingw32/7.3-win32/libgcc_s_seh-1.dll $OUTPUT/bin/
+   cp /usr/lib/gcc/x86_64-w64-mingw32/7.3-win32/libstdc++-6.dll $OUTPUT/bin/
+   ```
+
+   It is possible that you might need slightly different libraries than the ones
+   above, and its possible that you might need a 3rd one.
+
+   For libraries related to BOOST and GTK, try running the executable under wine
+   and see what DLLs it says are missing.  WINE claims DLLs are missing if they
+   depend on another DLL that is missing, which is somewhat confusing.  But
+   if you find all the DLLs that are missing and copy them to $OUTPUT/bin/ then
+   the program should run under WINE.
+
+   Currently RevStudio.exe and rb.exe both run under wine, but both stall after
+   printing the welcome message and before the prompt.  However, they work
+   in a windows VM, so this is probably a problem with WINE.
+
+
+
+   

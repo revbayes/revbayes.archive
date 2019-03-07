@@ -18,10 +18,10 @@ namespace RevBayesCore {
     public:
         virtual                             ~RateGenerator(void);
 
-        bool                        operator==(const RateGenerator &rm) const { return this == &rm; }
-        bool                        operator!=(const RateGenerator &rm) const { return !operator==(rm); }
-        bool                        operator<(const RateGenerator &rm) const { return this < &rm; }
-        bool                        operator<=(const RateGenerator &rm) const { return operator<(rm) || operator==(rm); }
+        bool                                operator==(const RateGenerator &rm) const { return this == &rm; }
+        bool                                operator!=(const RateGenerator &rm) const { return !operator==(rm); }
+        bool                                operator<(const RateGenerator &rm) const { return this < &rm; }
+        bool                                operator<=(const RateGenerator &rm) const { return operator<(rm) || operator==(rm); }
 
         // pure virtual methods
         virtual RateGenerator&              assign(const Assignable &m);

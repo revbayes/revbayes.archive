@@ -228,7 +228,7 @@ void AbstractRootedTreeDistribution::getAffected(RbOrderedSet<DagNode *> &affect
     
     if ( affecter == process_age && dag_node != NULL )
     {
-        dag_node->getAffectedNodes( affected );
+        dag_node->initiateGetAffectedNodes( affected );
     }
     
 }

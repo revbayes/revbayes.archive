@@ -1846,7 +1846,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::tipDrawJointCondi
         charType c = td.getCharacter(i);
 
 
-        if (!c.isAmbiguous())
+        if ( c.isAmbiguous() == false )
         {
             // we know the tip state for unambiguous characters
             endStates[node_index][i] = c;
@@ -1868,8 +1868,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::tipDrawJointCondi
             }
 
             // get the ambiguous character's bitset for the tip taxon
-            RbBitSet bs = td.getCharacter(i).getState();
-
+            RbBitSet bs = RbBitSet(this->num_chars, true);
+            if ( c.isMissingState() == false )
+            {
+                bs = c.getState();
+            }
+            
             // iterate over possible end states for each site given start state
             for (size_t j = 0; j < this->num_chars; j++)
             {

@@ -99,6 +99,10 @@ RevPtr<RevVariable> Func_write::execute( void )
         }
     }
     
+#ifdef RB_MPI
+    MPI_Barrier(MPI_COMM_WORLD);
+#endif
+    
     return NULL;
 }
 

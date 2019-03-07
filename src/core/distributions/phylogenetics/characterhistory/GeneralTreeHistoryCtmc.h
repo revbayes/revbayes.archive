@@ -29,7 +29,7 @@ namespace RevBayesCore {
     class GeneralTreeHistoryCtmc : public TreeHistoryCtmc<charType> {
         
     public:
-        GeneralTreeHistoryCtmc(const TypedDagNode< Tree > *t, size_t nChars, size_t nSites, bool useAmbigChar=false);
+        GeneralTreeHistoryCtmc(const TypedDagNode< Tree > *t, size_t nChars, size_t nSites, bool useAmbigChar=false, bool internal=false);
         GeneralTreeHistoryCtmc(const GeneralTreeHistoryCtmc &n);                                                                         //!< Copy constructor
         virtual                                            ~GeneralTreeHistoryCtmc(void);                                                //!< Virtual destructor
         
@@ -41,6 +41,7 @@ namespace RevBayesCore {
         virtual std::vector<double>                         getRootFrequencies(void) const;
         virtual std::vector<std::string>                    getCladogeneticEvents(void) const;
         virtual std::string                                 getCladogeneticEvent( size_t index ) const;
+        const CladogeneticProbabilityMatrix&                getCladogeneticProbabilityMatrix( void ) const;
         virtual void                                        redrawValue(void);
         virtual void                                        reInitialized(void);
         virtual void                                        simulate(void);
@@ -90,7 +91,6 @@ namespace RevBayesCore {
         
         // cladogenetic histories
         std::vector<std::string>                            cladogeneticEvents;
-
         
     };
     
@@ -104,7 +104,7 @@ namespace RevBayesCore {
 #include "RbConstants.h"
 
 template<class charType>
-RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const TypedDagNode<Tree> *tau, size_t nChars, size_t nSites, bool useAmbigChar) : TreeHistoryCtmc<charType>( tau, nChars, nSites, useAmbigChar )
+RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const TypedDagNode<Tree> *tau, size_t nChars, size_t nSites, bool useAmbigChar, bool internal) : TreeHistoryCtmc<charType>( tau, nChars, nSites, useAmbigChar, internal )
 {
     
     // initialize with default parameters
@@ -320,7 +320,8 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
         const AbstractCladogenicStateFunction* cf = dynamic_cast<const AbstractCladogenicStateFunction* >( &homogeneousCladogeneticProbabilityMatrix->getFunction() );
         size_t left_index = node.getChild(0).getIndex();
         size_t right_index = node.getChild(1).getIndex();
-        lnL += cf->computeDataAugmentedCladogeneticLnProbability( this->histories, node_index, left_index, right_index );
+        double lnL_clado = cf->computeDataAugmentedCladogeneticLnProbability( this->histories, node_index, left_index, right_index );
+        lnL += lnL_clado;
         
     }
     
@@ -495,6 +496,12 @@ template<class charType>
 std::string RevBayesCore::GeneralTreeHistoryCtmc<charType>::getCladogeneticEvent( size_t index ) const
 {
     return cladogeneticEvents[ index ];
+}
+
+template<class charType>
+const RevBayesCore::CladogeneticProbabilityMatrix& RevBayesCore::GeneralTreeHistoryCtmc<charType>::getCladogeneticProbabilityMatrix( void ) const
+{
+    return homogeneousCladogeneticProbabilityMatrix->getValue();
 }
 
 template<class charType>

@@ -168,6 +168,7 @@
 
 
 /* Cladogeneic state prob function */
+#include "Func_biogeographyCladoEventsBD.h"
 #include "Func_DECCladoProbs.h"
 #include "Func_DECRates.h"
 #include "Func_DECRoot.h"
@@ -256,6 +257,7 @@
 
 /* Statistics functions (in folder "functions/statistics") */
 /* These are functions related to statistical distributions */
+#include "Func_assembleContinuousMRF.h"
 #include "Func_discretizeBeta.h"
 #include "Func_discretizeBetaQuadrature.h"
 #include "Func_discretizeGamma.h"
@@ -338,6 +340,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_DECRates() );
         addFunction( new Func_DECRoot() );
         addFunction( new Func_EpochCladoProbs() );
+        addFunction( new Func_biogeographyCladoEventsBD() );
         addFunction( new Func_chromosomesCladoProbs() );
         addFunction( new Func_chromosomesCladoEventsBD() );
         addFunction( new Func_chromosomesPloidyCladoEventsBD() );
@@ -424,7 +427,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // log function
         addFunction( new Func_log()  );
-        
+
         // matrix function (converts into MatrixReal)
         addFunction( new Func_matrix() );
 
@@ -434,7 +437,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         // mean function
         addFunction( new Func_mean()  );
         addFunction( new Func_meanPositive()  );
-        
+
         // median function
         addFunction( new Func_median()  );
 
@@ -475,7 +478,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         // geographical distance function
         addFunction( new Func_geographicalDistance() );
         addFunction( new Func_shortestDistance() );
-        
+
                 // hyperbolic tangent function
         addFunction( new Func_hyperbolicTangent() );
 
@@ -488,7 +491,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // upper triangle of a matrix function
         addFunction( new Func_upperTriangle()  );
-        
+
         // variance function
         addFunction( new Func_variance()  );
 
@@ -497,12 +500,15 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // get ln Probability function
         addFunction( new Func_lnProbability() );
-        
+
         // empirical cummulative probability function
         addFunction( new Func_posteriorPredictiveProbability()  );
 
 
  		/* Statistics functions (in folder "functions/statistics") */
+
+    // helpers for Markov Random Field models
+        addFunction( new Func_assembleContinuousMRF( )     );
 
 		// some helper statistics for the DPP distribution
         addFunction( new Func_dppConcFromMean( )     );

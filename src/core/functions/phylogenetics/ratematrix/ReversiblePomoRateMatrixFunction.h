@@ -51,10 +51,10 @@ namespace RevBayesCore {
 
         // members
 
-        const TypedDagNode< long >*                          populationSize;
+        const TypedDagNode< long >*                         populationSize;
         // const TypedDagNode< RateGenerator >*                mutationMatrix;
-        const TypedDagNode< RbVector<double> >*                   exchangeabilities;
-        const TypedDagNode< Simplex >*                   equilibriumFrequencies;
+        const TypedDagNode< RbVector<double> >*             exchangeabilities;
+        const TypedDagNode< Simplex >*                      equilibriumFrequencies;
 
 
         // private member functions

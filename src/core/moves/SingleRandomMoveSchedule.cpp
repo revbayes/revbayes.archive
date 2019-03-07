@@ -1,11 +1,3 @@
-//
-//  SingleRandomMoveSchedule.cpp
-//  revbayes_mlandis
-//
-//  Created by Michael Landis on 2/6/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
 #include "SingleRandomMoveSchedule.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -13,7 +5,8 @@
 
 using namespace RevBayesCore;
 
-SingleRandomMoveSchedule::SingleRandomMoveSchedule(RbVector<Move> *s) : MoveSchedule( s ) {
+SingleRandomMoveSchedule::SingleRandomMoveSchedule(RbVector<Move> *s) : MoveSchedule( s )
+{
     
     sumOfWeights = 0.0;
     for (RbIterator<Move> it = moves->begin(); it != moves->end(); ++it)
@@ -42,7 +35,8 @@ double SingleRandomMoveSchedule::getNumberMovesPerIteration( void ) const
 }
 
 
-Move& SingleRandomMoveSchedule::nextMove( unsigned long gen ) {
+Move& SingleRandomMoveSchedule::nextMove( unsigned long gen )
+{
     
     RandomNumberGenerator* rng = GLOBAL_RNG;
     double u = sumOfWeights * rng->uniform01();

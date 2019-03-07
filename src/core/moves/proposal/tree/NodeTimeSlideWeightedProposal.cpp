@@ -125,7 +125,7 @@ double NodeTimeSlideWeightedProposal::doProposal( void )
     std::vector<double> lnl(1,0.0);
     // get the affected dag nodes for the posterior computation
     RbOrderedSet<DagNode*> affected;
-    variable->getAffectedNodes( affected );
+    variable->initiateGetAffectedNodes( affected );
     double f = (parent_age - child_Age);
     double marginal = 0.0;
     double prev_x = 0.0;
