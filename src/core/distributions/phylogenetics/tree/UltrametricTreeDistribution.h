@@ -26,12 +26,25 @@ namespace RevBayesCore {
         }
     };
     
+//    /*
+//     * This struct represents a tree bipartition (split) that can be rooted or unrooted
+//     */
+//    struct Split : public std::pair<RbBitSet, std::set<Taxon> >
+//    {
+//        Split( RbBitSet b, std::set<Taxon> m) : std::pair<RbBitSet, std::set<Taxon> >( b[0] ? ~b : b, m) {}
+//
+//        inline bool operator()(const Sample<Split>& s)
+//        {
+//            return (*this) == s.first;
+//        }
+//    };
+    
     /*
      * This struct represents a tree bipartition (split) that can be rooted or unrooted
      */
-    struct Split : public std::pair<RbBitSet, std::set<Taxon> >
+    struct Split : public RbBitSet
     {
-        Split( RbBitSet b, std::set<Taxon> m) : std::pair<RbBitSet, std::set<Taxon> >( b[0] ? ~b : b, m) {}
+        Split( RbBitSet b ) : RbBitSet( b ) {}
         
         inline bool operator()(const Sample<Split>& s)
         {
@@ -98,7 +111,7 @@ namespace RevBayesCore {
 #endif
 
         std::vector<double>                                 ln_probs;
-//        size_t                                              num_taxa;
+        size_t                                              num_taxa;
 //        std::vector<Taxon>                                  taxa;
     };
     
