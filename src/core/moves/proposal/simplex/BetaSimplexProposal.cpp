@@ -240,5 +240,7 @@ void BetaSimplexProposal::tune( double rate )
         alpha *= (2.0 - rate/p);
     }
     
+    // set a hard maximum of 100
+    alpha = fmin(100, alpha);
 }
 
