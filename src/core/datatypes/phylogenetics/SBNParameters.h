@@ -41,7 +41,8 @@ namespace RevBayesCore {
         SBNParameters&        operator=(const SBNParameters& sbn);
 
         // Access to members
-        std::map<RbBitSet,std::pair<double,double> >&   getEdgeLengthDistributionParameters(void); // For each subsplit parent-child relationship, the parameters of the edge length distribution
+        // std::map<RbBitSet,std::pair<double,double> >&   getEdgeLengthDistributionParameters(void); // For each subsplit parent-child relationship, the parameters of the edge length distribution
+        std::map<RbBitSet,std::pair<std::vector<double>,std::vector<double> > >&   getEdgeLengthDistributionParameters(void); // For each subsplit parent-child relationship, the parameters of the edge length distribution
         const size_t                                                        getNumTaxa(void) const; // The number of taxa in the tree the SBN describes
         std::vector<std::pair<Subsplit,double> >&                           getRootSplits(void); // The root splits in the tree and their probabilities
         std::map<Subsplit,std::vector<std::pair<Subsplit,double> > >&       getSubsplitCPDs(void); // For each subsplit, its children and their probabilities
@@ -75,7 +76,8 @@ namespace RevBayesCore {
         std::vector<Taxon>                             taxa; // The taxa in the tree the SBN describes
         std::vector<std::pair<Subsplit,double> >       root_splits; // The root splits in the tree and their probabilities
         std::map<Subsplit,std::vector<std::pair<Subsplit,double> > >        subsplit_cpds; // For each subsplit, its children and their probabilities
-        std::map<RbBitSet,std::pair<double,double> >    edge_length_distribution_parameters; // In a rooted unconstrained SBN, we learn branch lengths as functions of the clades they subtend. In an unrooted unconstrained SBN, we learn branch lengths as functions of the splits they represent. Either way, we can represnt this as a bitset
+        // std::map<RbBitSet,std::pair<double,double> >    edge_length_distribution_parameters; // In a rooted unconstrained SBN, we learn branch lengths as functions of the clades they subtend. In an unrooted unconstrained SBN, we learn branch lengths as functions of the splits they represent. Either way, we can represnt this as a bitset
+        std::map<RbBitSet,std::pair<std::vector<double>,std::vector<double> > >    edge_length_distribution_parameters; // In a rooted unconstrained SBN, we learn branch lengths as functions of the clades they subtend. In an unrooted unconstrained SBN, we learn branch lengths as functions of the splits they represent. Either way, we can represnt this as a bitset
     };
 
     // Global functions using the class

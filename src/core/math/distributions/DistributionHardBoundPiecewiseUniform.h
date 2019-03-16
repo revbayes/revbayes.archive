@@ -1,8 +1,8 @@
 /**
- * @file DistributionHardBoundPiecewiseConstant
- * This file contains the functions of a piecewise constant distribution with hard bounds (a histogram).
+ * @file DistributionHardBoundPiecewiseUniform
+ * This file contains the functions of a piecewise uniform distribution with hard bounds (a histogram).
  *
- * @brief Implementation of the HardBoundPiecewiseConstant distribution.
+ * @brief Implementation of the HardBoundPiecewiseUniform distribution.
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -15,8 +15,8 @@
  */
 
 
-#ifndef DistributionHardBoundPiecewiseConstant_H
-#define DistributionHardBoundPiecewiseConstant_H
+#ifndef DistributionHardBoundPiecewiseUniform_H
+#define DistributionHardBoundPiecewiseUniform_H
 
 #include <vector>
 
@@ -26,7 +26,7 @@ namespace RevBayesCore {
 
     namespace RbStatistics {
 
-        namespace HardBoundPiecewiseConstant {
+        namespace HardBoundPiecewiseUniform {
 
             double                      pdf(std::vector<double>& probs, std::vector<double>& breaks, double x);
             double                      lnPdf(std::vector<double>& probs, std::vector<double>& breaks, double x);
@@ -34,7 +34,7 @@ namespace RevBayesCore {
             double                      quantile(std::vector<double>& probs, std::vector<double>& breaks, double p);
             double                      rv(std::vector<double>& probs, std::vector<double>& breaks, RandomNumberGenerator& rng);
 
-            int                         findInterval(std::vector<double>& breaks, double x);
+            // int                         findInterval(std::vector<double>& breaks, double x);
 
         }
     }

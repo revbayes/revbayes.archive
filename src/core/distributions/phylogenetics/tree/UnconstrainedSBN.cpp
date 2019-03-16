@@ -1,6 +1,7 @@
 #include <boost/foreach.hpp>
 #include "Clade.h"
 #include "DistributionGamma.h"
+#include "DistributionHardBoundPiecewiseUniform.h"
 #include "DistributionLognormal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -100,7 +101,8 @@ double UnconstrainedSBN::computeLnProbabilityGivenRoot( void )
     }
 
 
-    std::map<RbBitSet,std::pair<double,double> > edge_length_params = parameters.getEdgeLengthDistributionParameters();
+    // std::map<RbBitSet,std::pair<double,double> > edge_length_params = parameters.getEdgeLengthDistributionParameters();
+    std::map<RbBitSet,std::pair<std::vector<double>,std::vector<double> > > edge_length_params = parameters.getEdgeLengthDistributionParameters();
 
     // Get branch lengths
     const std::vector<TopologyNode*> tree_nodes = value->getNodes();
@@ -113,11 +115,19 @@ double UnconstrainedSBN::computeLnProbabilityGivenRoot( void )
         Subsplit this_split = tree_nodes[i]->getSubsplit(taxa);
         RbBitSet this_clade = this_split.asCladeBitset();
 
-        std::pair<double,double> these_params = edge_length_params[this_clade];
+        // std::pair<double,double> these_params = edge_length_params[this_clade];
 
-// std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Lognormal::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
-// std::cout << "lognormal mu: " << these_params.first << "; lognormal sigma: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
-        lnProbability += RbStatistics::Lognormal::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
+        std::pair<std::vector<double>,std::vector<double> > these_params = edge_length_params[this_clade];
+
+        lnProbability += RbStatistics::HardBoundPiecewiseUniform::lnPdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
+
+        // // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Lognormal::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
+        // // std::cout << "lognormal mu: " << these_params.first << "; lognormal sigma: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
+        // lnProbability += RbStatistics::Lognormal::lnPdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
+
+        // // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Gamma::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
+        // // std::cout << "gamma shape: " << these_params.first << "; gamma rate: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
+        // lnProbability += RbStatistics::Gamma::lnPdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
       }
     }
 
@@ -170,7 +180,8 @@ void UnconstrainedSBN::simulateTree( void )
     psi->setRooted( rooted );
 
     // For drawing branch lengths
-    std::map<RbBitSet,std::pair<double,double> > edge_length_params = parameters.getEdgeLengthDistributionParameters();
+    // std::map<RbBitSet,std::pair<double,double> > edge_length_params = parameters.getEdgeLengthDistributionParameters();
+    std::map<RbBitSet,std::pair<std::vector<double>,std::vector<double> > > edge_length_params = parameters.getEdgeLengthDistributionParameters();
 
     // create the tip nodes
     std::vector<TopologyNode*> tip_nodes;
@@ -224,9 +235,13 @@ void UnconstrainedSBN::simulateTree( void )
       // this_parent_child.first = this_parent_subsplit;
       // this_parent_child.second = Y_child;
 
-      std::pair<double,double> these_params = edge_length_params[Y_child.asCladeBitset()];
+      // Draw a branch length from the observed pool at random
+      // std::pair<double,double> these_params = edge_length_params[Y_child.asCladeBitset()];
 
-      double brlen  = RbStatistics::Lognormal::rv(these_params.first, these_params.second, *rng);
+      std::pair<std::vector<double>,std::vector<double> > these_params = edge_length_params[Y_child.asCladeBitset()];
+      double brlen  = RbStatistics::HardBoundPiecewiseUniform::rv(these_params.first, these_params.second, *rng);
+      // double brlen  = RbStatistics::Lognormal::rv(these_params.first, these_params.second, *rng);
+      // double brlen  = RbStatistics::Gamma::rv(these_params.first, these_params.second, *rng);
       Y_child_node->setBranchLength(brlen,false);
 
       // Choose subsplit of Z
@@ -248,7 +263,10 @@ void UnconstrainedSBN::simulateTree( void )
       // this_parent_child.second = Z_child;
 
       these_params = edge_length_params[Z_child.asCladeBitset()];
-      brlen = RbStatistics::Lognormal::rv(these_params.first, these_params.second, *rng);
+
+      brlen  = RbStatistics::HardBoundPiecewiseUniform::rv(these_params.first, these_params.second, *rng);
+      // brlen = RbStatistics::Lognormal::rv(these_params.first, these_params.second, *rng);
+      // brlen = RbStatistics::Gamma::rv(these_params.first, these_params.second, *rng);
       Z_child_node->setBranchLength(brlen,false);
 
       // Attach nodes to eachother
