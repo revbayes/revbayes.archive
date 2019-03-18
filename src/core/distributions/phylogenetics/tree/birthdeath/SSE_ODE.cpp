@@ -1,5 +1,3 @@
-
-
 #include <cmath>
 #include "SSE_ODE.h"
 
@@ -13,7 +11,7 @@ SSE_ODE::SSE_ODE( const std::vector<double> &m, const RateGenerator* q, double r
     rate( r ),
     extinction_only( extinction_only ),
     backward_time( backward_time ),
-    allow_rate_shifts_extinction( allow_rate_shifts_extinction )
+    allow_rate_shifts_extinction( allow_shifts_extinct )
 {
     
 }
