@@ -50,7 +50,7 @@ void Move_RateAgeBetaShift::constructInternalObject( void )
     RevBayesCore::VectorFunction<double>* funcVec = dynamic_cast<RevBayesCore::VectorFunction<double>*>( &dnode->getFunction() );
     if ( funcVec == NULL )
     {
-        throw RbException("Wrong argument type for the rates vector. We expect a vector of iid elements.");
+        throw RbException("Problem in RateAgeBetaShift move. Wrong argument type for the rates vector. We expect a vector of iid elements.");
     }
     const std::vector<const RevBayesCore::TypedDagNode<double>* >& pars = funcVec->getVectorParameters();
 
