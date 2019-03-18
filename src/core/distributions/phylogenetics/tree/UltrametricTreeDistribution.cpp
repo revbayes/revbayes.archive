@@ -347,34 +347,9 @@ double UltrametricTreeDistribution::computeLnProbability( void )
     // create a temporary copy of the this tree
     Tree *my_tree = value->clone();
     
-    // get the root node because we need to make this tree unrooted (for topology comparison)
-    TopologyNode *old_root = &my_tree->getRoot();
-    
-    // make the tree use branch lengths instead of ages
-    old_root->setUseAges(false, true);
-    
-    size_t child_index = 0;
-    if ( old_root->getChild(child_index).isTip() == true )
-    {
-        child_index = 1;
-    }
-    TopologyNode *new_root = &old_root->getChild( child_index );
-    TopologyNode *second_child = &old_root->getChild( (child_index == 0 ? 1 : 0) );
-    
-    double bl_first = new_root->getBranchLength();
-    double bl_second = second_child->getBranchLength();
-    
-    old_root->removeChild( new_root );
-    old_root->removeChild( second_child );
-    new_root->setParent( NULL );
-    new_root->addChild( second_child );
-    second_child->setParent( new_root );
-    
-    second_child->setBranchLength( bl_first + bl_second );
+    // make the tree non-rooted
+    my_tree->unroot();
 
-    // finally we need to set the new root to our tree copy
-    my_tree->setRooted( false );
-    my_tree->setRoot( new_root, true);
     my_tree->reroot( outgroup, true);
     
     std::string my_tree_newick = my_tree->getPlainNewickRepresentation();

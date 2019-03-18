@@ -2,6 +2,7 @@
 #include "Natural.h"
 #include "RbUtil.h"
 #include "RlBoolean.h"
+#include "RlBranchLengthTree.h"
 #include "RlTimeTree.h"
 #include "RlMemberFunction.h"
 #include "RlString.h"
@@ -120,6 +121,17 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
         this->dag_node->getValue().collapseNegativeBranchLengths(length);
         return NULL;
     }
+    else if (name == "unroot")
+    {
+        found = true;
+        
+        RevBayesCore::Tree *unrooted = this->dag_node->getValue().clone();
+        
+        // now unroot the tree
+        unrooted->unroot();
+        
+        return new RevVariable( new BranchLengthTree( unrooted ) );
+    }
     
     return Tree::executeMethod( name, args, found );
 }
@@ -157,35 +169,38 @@ const TypeSpec& TimeTree::getTypeSpec( void ) const
 void TimeTree::initMethods( void )
 {
     
-    ArgumentRules* isRootArgRules = new ArgumentRules();
-    isRootArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    methods.addFunction( new MemberProcedure( "isRoot", RlBoolean::getClassTypeSpec(), isRootArgRules ) );
+    ArgumentRules* is_root_arg_rules = new ArgumentRules();
+    is_root_arg_rules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "isRoot", RlBoolean::getClassTypeSpec(), is_root_arg_rules ) );
 
-    ArgumentRules* dropFossilsArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "dropFossils", RlUtils::Void, dropFossilsArgRules ) );
+    ArgumentRules* drop_fossils_arg_rules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "dropFossils", RlUtils::Void, drop_fossils_arg_rules ) );
 
-    ArgumentRules* getFossilsArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getFossils", ModelVector<Taxon>::getClassTypeSpec(), getFossilsArgRules ) );
+    ArgumentRules* get_fossils_arg_rules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "getFossils", ModelVector<Taxon>::getClassTypeSpec(), get_fossils_arg_rules ) );
 
-    ArgumentRules* collapseNegativeBranchesRules = new ArgumentRules();
-    collapseNegativeBranchesRules->push_back( new ArgumentRule( "length", RealPos::getClassTypeSpec(), "The new length of all negative branches.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ));
-    methods.addFunction( new MemberProcedure( "collapseNegativeBranches", RlUtils::Void, collapseNegativeBranchesRules ) );
+    ArgumentRules* collapse_negative_branches_arg_rules = new ArgumentRules();
+    collapse_negative_branches_arg_rules->push_back( new ArgumentRule( "length", RealPos::getClassTypeSpec(), "The new length of all negative branches.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ));
+    methods.addFunction( new MemberProcedure( "collapseNegativeBranches", RlUtils::Void, collapse_negative_branches_arg_rules ) );
 
-    ArgumentRules* nSampledAncestorsArgRules = new ArgumentRules();
-    methods.addFunction( new MemberFunction<TimeTree, Natural>( "numSampledAncestors", this, nSampledAncestorsArgRules ) );
+    ArgumentRules* n_sampled_ancestors_arg_rules = new ArgumentRules();
+    methods.addFunction( new MemberFunction<TimeTree, Natural>( "numSampledAncestors", this, n_sampled_ancestors_arg_rules ) );
 
     // member functions
-    ArgumentRules* heightArgRules = new ArgumentRules();
-    methods.addFunction( new MemberFunction<TimeTree, RealPos>( "rootAge", this, heightArgRules   ) );
+    ArgumentRules* height_arg_rules = new ArgumentRules();
+    methods.addFunction( new MemberFunction<TimeTree, RealPos>( "rootAge", this, height_arg_rules   ) );
     
-    ArgumentRules* nodeAgeArgRules = new ArgumentRules();
-    nodeAgeArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-    methods.addFunction( new MemberFunction<TimeTree, RealPos>( "nodeAge", this, nodeAgeArgRules   ) );
+    ArgumentRules* node_age_arg_rules = new ArgumentRules();
+    node_age_arg_rules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberFunction<TimeTree, RealPos>( "nodeAge", this, node_age_arg_rules   ) );
 
-    ArgumentRules* collessArgRules = new ArgumentRules();
-    methods.addFunction( new MemberFunction<TimeTree, Natural>( "colless", this, collessArgRules ) );
+    ArgumentRules* colless_arg_rules = new ArgumentRules();
+    methods.addFunction( new MemberFunction<TimeTree, Natural>( "colless", this, colless_arg_rules ) );
     
-    ArgumentRules* gArgRules = new ArgumentRules();
-    methods.addFunction( new MemberFunction<TimeTree, Real>( "gammaStatistic", this, gArgRules ) );
+    ArgumentRules* gamma_arg_rules = new ArgumentRules();
+    methods.addFunction( new MemberFunction<TimeTree, Real>( "gammaStatistic", this, gamma_arg_rules ) );
+
+    ArgumentRules* unroot_arg_rules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "unroot", BranchLengthTree::getClassTypeSpec(), unroot_arg_rules ) );
 
 }
