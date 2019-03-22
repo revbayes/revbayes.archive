@@ -54,6 +54,10 @@ void RevLanguage::Workspace::initializeDemographicFunctionGlobalWorkspace(void)
         
         addTypeWithConstructor( new ConstantDemographicFunction() );
         
+
+
+        addFunction( new Func_workspaceVector<DemographicFunction>() );
+        
     }
     catch(RbException& rbException)
     {
