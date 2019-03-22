@@ -12,9 +12,10 @@
 
 using namespace RevBayesCore;
 
-HeterochronousCoalescent::HeterochronousCoalescent(const TypedDagNode< RbVector<double> > *iv, const std::vector<Taxon> &tn, const std::vector<Clade> &c) :
+HeterochronousCoalescent::HeterochronousCoalescent(const TypedDagNode< RbVector<double> > *iv, const RbVector< DemographicFunction > &df, const std::vector<Taxon> &tn, const std::vector<Clade> &c) :
     AbstractCoalescent( tn, c ),
-    intervals( iv )
+    intervals( iv ),
+    demographies( df )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters

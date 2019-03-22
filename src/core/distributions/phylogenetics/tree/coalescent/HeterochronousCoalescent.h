@@ -29,7 +29,7 @@ namespace RevBayesCore {
     class HeterochronousCoalescent : public AbstractCoalescent {
         
     public:
-        HeterochronousCoalescent(const TypedDagNode< RbVector<double> > *iv, const std::vector<Taxon> &tn, const std::vector<Clade> &c);
+        HeterochronousCoalescent(const TypedDagNode< RbVector<double> > *iv, const RbVector< DemographicFunction > &df, const std::vector<Taxon> &tn, const std::vector<Clade> &c);
         virtual                                            ~HeterochronousCoalescent(void);                                                                    //!< Virtual destructor
         
         // public member functions
