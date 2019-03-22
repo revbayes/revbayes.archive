@@ -56,3 +56,11 @@ double ConstantDemographicFunction::getIntegral(double start, double finish) con
     double delta = finish - start;
     return theta->getValue() * delta;
 }
+
+
+
+
+std::ostream& operator<<(std::ostream& o, const ConstantDemographicFunction& x)
+{
+    return o;
+}
