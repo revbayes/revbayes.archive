@@ -8,6 +8,7 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RlClade.h"
+#include "RlDemographicFunction.h"
 #include "RlString.h"
 #include "RlTaxon.h"
 #include "RlTimeTree.h"

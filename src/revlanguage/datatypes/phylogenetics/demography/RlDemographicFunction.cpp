@@ -3,83 +3,83 @@
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
 #include "ModelVector.h"
-#include "Monitor.h"
+#include "DemographicFunction.h"
 #include "OptionRule.h"
 #include "RevObject.h"
 #include "RbException.h"
-#include "RlMonitor.h"
+#include "RlDemographicFunction.h"
 #include "TypeSpec.h"
 
 
 using namespace RevLanguage;
 
-Monitor::Monitor(void) : WorkspaceToCoreWrapperObject<RevBayesCore::Monitor>()
+DemographicFunction::DemographicFunction(void) : WorkspaceToCoreWrapperObject<RevBayesCore::DemographicFunction>()
 {
     
-    // add method for call "addVariable" as a function
-    ArgumentRules* addArgRules = new ArgumentRules();
-    addArgRules->push_back( new ArgumentRule( "x" , RevObject::getClassTypeSpec(), "A variable you want to monitor.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-    methods.addFunction( new MemberProcedure( "addVariable", RlUtils::Void, addArgRules) );
+//    // add method for call "addVariable" as a function
+//    ArgumentRules* addArgRules = new ArgumentRules();
+//    addArgRules->push_back( new ArgumentRule( "x" , RevObject::getClassTypeSpec(), "A variable you want to DemographicFunction.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+//    methods.addFunction( new MemberProcedure( "addVariable", RlUtils::Void, addArgRules) );
     
 }
 
 
-Monitor::Monitor(RevBayesCore::Monitor *m) : WorkspaceToCoreWrapperObject<RevBayesCore::Monitor>( m )
+DemographicFunction::DemographicFunction(RevBayesCore::DemographicFunction *m) : WorkspaceToCoreWrapperObject<RevBayesCore::DemographicFunction>( m )
 {
     
-    // add method for call "addVariable" as a function
-    ArgumentRules* addArgRules = new ArgumentRules();
-    addArgRules->push_back( new ArgumentRule( "x" , RevObject::getClassTypeSpec(), "A variable you want to monitor.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-    methods.addFunction( new MemberProcedure( "addVariable", RlUtils::Void, addArgRules) );
+//    // add method for call "addVariable" as a function
+//    ArgumentRules* addArgRules = new ArgumentRules();
+//    addArgRules->push_back( new ArgumentRule( "x" , RevObject::getClassTypeSpec(), "A variable you want to DemographicFunction.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+//    methods.addFunction( new MemberProcedure( "addVariable", RlUtils::Void, addArgRules) );
     
 }
 
 
 
-RevPtr<RevVariable> Monitor::executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found)
+RevPtr<RevVariable> DemographicFunction::executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found)
 {
     
-    if ( name == "addVariable" )
-    {
-        found = true;
-        
-        RevBayesCore::DagNode* node = args[0].getVariable()->getRevObject().getDagNode();
-        
-        RevBayesCore::Monitor *m = static_cast<RevBayesCore::Monitor*>(this->value);
-        m->addVariable( node );
-        
-        return NULL;
-    }
-    else if ( name == "removeVariable" )
-    {
-        found = true;
-        
-        RevBayesCore::DagNode* node = args[0].getVariable()->getRevObject().getDagNode();
-        
-        RevBayesCore::Monitor *m = static_cast<RevBayesCore::Monitor*>(this->value);
-        m->removeVariable( node );
-        
-        return NULL;
-    }
+//    if ( name == "addVariable" )
+//    {
+//        found = true;
+//
+//        RevBayesCore::DagNode* node = args[0].getVariable()->getRevObject().getDagNode();
+//
+//        RevBayesCore::DemographicFunction *f = static_cast<RevBayesCore::DemographicFunction*>(this->value);
+//        f->addVariable( node );
+//
+//        return NULL;
+//    }
+//    else if ( name == "removeVariable" )
+//    {
+//        found = true;
+//
+//        RevBayesCore::DagNode* node = args[0].getVariable()->getRevObject().getDagNode();
+//
+//        RevBayesCore::DemographicFunction *f = static_cast<RevBayesCore::DemographicFunction*>(this->value);
+//        f->removeVariable( node );
+//
+//        return NULL;
+//    }
     
-    return WorkspaceToCoreWrapperObject<RevBayesCore::Monitor>::executeMethod( name, args, found );
+    return WorkspaceToCoreWrapperObject<RevBayesCore::DemographicFunction>::executeMethod( name, args, found );
 }
 
 
 /** Get Rev type of object */
-const std::string& Monitor::getClassType(void)
+const std::string& DemographicFunction::getClassType(void)
 {
     
-    static std::string rev_type = "Monitor";
+    static std::string rev_type = "DemographicFunction";
     
 	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Monitor::getClassTypeSpec(void)
+const TypeSpec& DemographicFunction::getClassTypeSpec(void)
 {
     
-    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::Monitor>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::DemographicFunction>::getClassTypeSpec() ) );
     
 	return rev_type_spec; 
 }
@@ -90,16 +90,16 @@ const TypeSpec& Monitor::getClassTypeSpec(void)
  *
  * \return Rev aliases of constructor function.
  */
-std::vector<std::string> Monitor::getConstructorFunctionAliases( void ) const
+std::vector<std::string> DemographicFunction::getConstructorFunctionAliases( void ) const
 {
     // create a constructor function name alias variable that is the same for all instance of this class
     std::vector<std::string> aliases;
     
-    std::vector<std::string> monitor_aliases = getMonitorAliases();
-    for (size_t i=0; i < monitor_aliases.size(); ++i)
+    std::vector<std::string> DemographicFunction_aliases = getDemographicFunctionAliases();
+    for (size_t i=0; i < DemographicFunction_aliases.size(); ++i)
     {
-        std::string tmp = monitor_aliases[i];
-        std::string c_name = "mn" + StringUtilities::firstCharToUpper( tmp );
+        std::string tmp = DemographicFunction_aliases[i];
+        std::string c_name = "df" + StringUtilities::firstCharToUpper( tmp );
         
         aliases.push_back( c_name );
     }
@@ -113,28 +113,28 @@ std::vector<std::string> Monitor::getConstructorFunctionAliases( void ) const
  *
  * \return Rev name of constructor function.
  */
-std::string Monitor::getConstructorFunctionName( void ) const
+std::string DemographicFunction::getConstructorFunctionName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string tmp = getMonitorName();
-    std::string c_name = "mn" + StringUtilities::firstCharToUpper( tmp );
+    std::string tmp = getDemographicFunctionName();
+    std::string c_name = "df" + StringUtilities::firstCharToUpper( tmp );
     
     return c_name;
 }
 
 
 /** Get type spec */
-void Monitor::printValue(std::ostream &o, bool user) const
+void DemographicFunction::printValue(std::ostream &o, bool user) const
 {
     
     printValue(o);
 }
 
 /** Get type spec */
-void Monitor::printValue(std::ostream &o) const
+void DemographicFunction::printValue(std::ostream &o) const
 {
     
-    o << getMonitorName();
+    o << getDemographicFunctionName();
 }
 
 

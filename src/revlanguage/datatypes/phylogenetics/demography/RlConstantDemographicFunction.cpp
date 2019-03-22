@@ -1,20 +1,18 @@
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "Ellipsis.h"
+#include "ConstantDemographicFunction.h"
 #include "ModelVector.h"
-#include "Mntr_Screen.h"
-#include "Natural.h"
 #include "RbException.h"
+#include "RealPos.h"
 #include "RevObject.h"
 #include "RlString.h"
-#include "ScreenMonitor.h"
+#include "RlConstantDemographicFunction.h"
 #include "TypeSpec.h"
 
 
 using namespace RevLanguage;
 
-Mntr_Screen::Mntr_Screen(void) : Monitor()
+ConstantDemographicFunction::ConstantDemographicFunction(void) : DemographicFunction()
 {
     
 }
@@ -26,50 +24,39 @@ Mntr_Screen::Mntr_Screen(void) : Monitor()
  *
  * \return A new copy of the process.
  */
-Mntr_Screen* Mntr_Screen::clone(void) const
+ConstantDemographicFunction* ConstantDemographicFunction::clone(void) const
 {
     
-	return new Mntr_Screen(*this);
+	return new ConstantDemographicFunction(*this);
 }
 
 
-void Mntr_Screen::constructInternalObject( void )
+void ConstantDemographicFunction::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
     
-    // now allocate space for a new Mntr_Screen object
-    int g = (int)static_cast<const Natural &>( printgen->getRevObject() ).getValue();
+    // now allocate space for a new ConstantDemographicFunction object
+    RevBayesCore::TypedDagNode<double> *th = static_cast<const RealPos &>( theta->getRevObject() ).getDagNode();
 
-    vars.erase( unique( vars.begin(), vars.end() ), vars.end() );
-    sort( vars.begin(), vars.end(), compareVarNames );
-    std::vector<RevBayesCore::DagNode *> n;
-    for (std::vector<RevPtr<const RevVariable> >::iterator i = vars.begin(); i != vars.end(); ++i)
-    {
-        RevBayesCore::DagNode* node = (*i)->getRevObject().getDagNode();
-        n.push_back( node );
-    }
-    bool pp = static_cast<const RlBoolean &>( posterior->getRevObject() ).getValue();
-    bool l = static_cast<const RlBoolean &>( likelihood->getRevObject() ).getValue();
-    bool pr = static_cast<const RlBoolean &>( prior->getRevObject() ).getValue();
-    value = new RevBayesCore::ScreenMonitor(n, g, pp, l, pr);
+    value = new RevBayesCore::ConstantDemographicFunction( th );
 }
 
 
 /** Get Rev type of object */
-const std::string& Mntr_Screen::getClassType(void)
+const std::string& ConstantDemographicFunction::getClassType(void)
 {
     
-    static std::string rev_type = "Mntr_Screen";
+    static std::string rev_type = "ConstantDemographicFunction";
     
 	return rev_type; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Mntr_Screen::getClassTypeSpec(void)
+const TypeSpec& ConstantDemographicFunction::getClassTypeSpec(void)
 {
     
-    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( DemographicFunction::getClassTypeSpec() ) );
     
 	return rev_type_spec; 
 }
@@ -80,39 +67,35 @@ const TypeSpec& Mntr_Screen::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Mntr_Screen::getMonitorName( void ) const
+std::string ConstantDemographicFunction::getDemographicFunctionName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "Screen";
+    std::string c_name = "Constant";
     
     return c_name;
 }
 
 
 /** Return member rules (no members) */
-const MemberRules& Mntr_Screen::getParameterRules(void) const
+const MemberRules& ConstantDemographicFunction::getParameterRules(void) const
 {
     
-    static MemberRules memberRules;
+    static MemberRules member_rules;
     static bool rules_set = false;
     
-    if ( !rules_set )
+    if ( rules_set == false )
     {
         
-        memberRules.push_back( new Ellipsis( "Variables to monitor.", RevObject::getClassTypeSpec() ) );
-        memberRules.push_back( new ArgumentRule("printgen"  , Natural::getClassTypeSpec()  , "The frequency how often the variables are monitored.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
-        memberRules.push_back( new ArgumentRule("posterior" , RlBoolean::getClassTypeSpec(), "Monitor the joint posterior probability.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        memberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec(), "Monitor the joint likelihood.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        memberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec(), "Monitor the joint prior probability.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        member_rules.push_back( new ArgumentRule("theta"  , RealPos::getClassTypeSpec(), "The population size.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
         
         rules_set = true;
     }
     
-    return memberRules;
+    return member_rules;
 }
 
 /** Get type spec */
-const TypeSpec& Mntr_Screen::getTypeSpec( void ) const
+const TypeSpec& ConstantDemographicFunction::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
@@ -122,39 +105,23 @@ const TypeSpec& Mntr_Screen::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void Mntr_Screen::printValue(std::ostream &o) const
+void ConstantDemographicFunction::printValue(std::ostream &o) const
 {
     
-    o << "Mntr_Screen";
+    o << "ConstantDemographicFunction";
 }
 
 
 /** Set a member variable */
-void Mntr_Screen::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void ConstantDemographicFunction::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    if ( name == "" )
+    if ( name == "theta" )
     {
-        vars.push_back( var );
-    }
-    else if ( name == "printgen" )
-    {
-        printgen = var;
-    }
-    else if ( name == "prior" )
-    {
-        prior = var;
-    }
-    else if ( name == "posterior" )
-    {
-        posterior = var;
-    }
-    else if ( name == "likelihood" )
-    {
-        likelihood = var;
+        theta = var;
     }
     else
     {
-        RevObject::setConstParameter(name, var);
+        DemographicFunction::setConstParameter(name, var);
     }
 }
