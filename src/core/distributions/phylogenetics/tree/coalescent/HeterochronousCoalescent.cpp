@@ -80,6 +80,9 @@ double HeterochronousCoalescent::computeLnProbabilityTimes( void ) const
         }
     }
     
+    // retrieve change times
+    const RbVector<double> &change_times = intervals->getValue();
+    
     std::vector<double> combined_event_times;
     std::vector<EVENT_TYPE> combined_event_types;
     
@@ -91,15 +94,20 @@ double HeterochronousCoalescent::computeLnProbabilityTimes( void ) const
         
         size_t index_age = 0;
         size_t index_serial_time = 0;
+        size_t index_demographic_function_change_point = 0;
         double next_age = ages[index_age];
         double next_serial_time = serial_times[index_serial_time];
-        
+        double next_df_change_time = RbConstants::Double::inf;
+        if ( index_demographic_function_change_point < change_times.size() )
+        {
+            next_df_change_time = change_times[index_demographic_function_change_point];
+        }
         // create master list of event times and types
         // events are either a sample (lineage size up), coalescence (lineage size down), or theta changepoint (lineage size constant)
         do
         {
             next_age = ages[index_age];
-            if (next_serial_time <= next_age)
+            if ( next_serial_time <= next_age && next_serial_time <= next_df_change_time )
             {
                 // serial sample
                 combined_event_times.push_back(next_serial_time);
@@ -112,6 +120,21 @@ double HeterochronousCoalescent::computeLnProbabilityTimes( void ) const
                 else
                 {
                     next_serial_time = RbConstants::Double::inf;
+                }
+            }
+            else if ( next_df_change_time <= next_age )
+            {
+                // change of demographic function
+                combined_event_times.push_back(next_df_change_time);
+                combined_event_types.push_back( DEMOGRAPHIC_MODEL_CHANGE );
+                ++index_demographic_function_change_point;
+                if ( index_demographic_function_change_point < change_times.size() )
+                {
+                    next_df_change_time = change_times[index_demographic_function_change_point];
+                }
+                else
+                {
+                    next_df_change_time = RbConstants::Double::inf;
                 }
             }
             else
@@ -144,9 +167,8 @@ double HeterochronousCoalescent::computeLnProbabilityTimes( void ) const
         double duration = combined_event_times[i] - window_start;
         double interval_area = current_demographic_function->getIntegral(window_start, combined_event_times[i]);
         
-
         // add log probability that nothing happens until the next event
-        ln_prob_times -= n_pairs * interval_area ;
+        ln_prob_times -= n_pairs * interval_area;
         
         // handle events accordingly
         if (combined_event_types[i] == SERIAL_SAMPLE )
