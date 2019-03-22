@@ -138,8 +138,8 @@
 #include "Dist_divDepYuleProcess.h"
 #include "Dist_empiricalTree.h"
 #include "Dist_episodicBirthDeath.h"
-#include "Dist_HeterochronousCoalescent.h"
-#include "Dist_HeterochronousCoalescentSkyline.h"
+#include "Dist_HeterochronousConstantCoalescent.h"
+#include "Dist_HeterochronousSkylineCoalescent.h"
 #include "Dist_heterogeneousRateBirthDeath.h"
 #include "Dist_multispeciesCoalescentInverseGammaPrior.h"
 #include "Dist_multispeciesCoalescentUniformPrior.h"
@@ -313,10 +313,10 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< TimeTree                   >( new Dist_CoalescentSkyline() );
         
 //        // heterochronously sampled coalescent (constant population sizes)
-        AddDistribution< TimeTree                   >( new Dist_HeterochronousCoalescent() );
+        AddDistribution< TimeTree                   >( new Dist_HeterochronousConstantCoalescent() );
 //
 //        // heterochronously sampled coalescent (skyline population sizes)
-        AddDistribution< TimeTree                   >( new Dist_HeterochronousCoalescentSkyline() );
+        AddDistribution< TimeTree                   >( new Dist_HeterochronousSkylineCoalescent() );
         
         // duplication loss process
         AddDistribution< TimeTree                   >( new Dist_DuplicationLoss() );
