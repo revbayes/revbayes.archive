@@ -16,21 +16,11 @@ using namespace RevLanguage;
 DemographicFunction::DemographicFunction(void) : WorkspaceToCoreWrapperObject<RevBayesCore::DemographicFunction>()
 {
     
-//    // add method for call "addVariable" as a function
-//    ArgumentRules* addArgRules = new ArgumentRules();
-//    addArgRules->push_back( new ArgumentRule( "x" , RevObject::getClassTypeSpec(), "A variable you want to DemographicFunction.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-//    methods.addFunction( new MemberProcedure( "addVariable", RlUtils::Void, addArgRules) );
-    
 }
 
 
 DemographicFunction::DemographicFunction(RevBayesCore::DemographicFunction *m) : WorkspaceToCoreWrapperObject<RevBayesCore::DemographicFunction>( m )
 {
-    
-//    // add method for call "addVariable" as a function
-//    ArgumentRules* addArgRules = new ArgumentRules();
-//    addArgRules->push_back( new ArgumentRule( "x" , RevObject::getClassTypeSpec(), "A variable you want to DemographicFunction.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-//    methods.addFunction( new MemberProcedure( "addVariable", RlUtils::Void, addArgRules) );
     
 }
 
@@ -38,29 +28,6 @@ DemographicFunction::DemographicFunction(RevBayesCore::DemographicFunction *m) :
 
 RevPtr<RevVariable> DemographicFunction::executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found)
 {
-    
-//    if ( name == "addVariable" )
-//    {
-//        found = true;
-//
-//        RevBayesCore::DagNode* node = args[0].getVariable()->getRevObject().getDagNode();
-//
-//        RevBayesCore::DemographicFunction *f = static_cast<RevBayesCore::DemographicFunction*>(this->value);
-//        f->addVariable( node );
-//
-//        return NULL;
-//    }
-//    else if ( name == "removeVariable" )
-//    {
-//        found = true;
-//
-//        RevBayesCore::DagNode* node = args[0].getVariable()->getRevObject().getDagNode();
-//
-//        RevBayesCore::DemographicFunction *f = static_cast<RevBayesCore::DemographicFunction*>(this->value);
-//        f->removeVariable( node );
-//
-//        return NULL;
-//    }
     
     return WorkspaceToCoreWrapperObject<RevBayesCore::DemographicFunction>::executeMethod( name, args, found );
 }
