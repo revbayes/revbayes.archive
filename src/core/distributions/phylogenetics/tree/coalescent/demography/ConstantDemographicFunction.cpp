@@ -54,7 +54,7 @@ double ConstantDemographicFunction::getDemographic(double t) const
 double ConstantDemographicFunction::getIntegral(double start, double finish) const
 {
     double delta = finish - start;
-    return theta->getValue() * delta;
+    return delta / theta->getValue();
 }
 
 
