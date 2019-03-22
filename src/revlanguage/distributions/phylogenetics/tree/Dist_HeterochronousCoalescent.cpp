@@ -204,7 +204,7 @@ void Dist_HeterochronousCoalescent::setConstParameter(const std::string& name, c
     {
         change_points = var;
     }
-    else if ( name == "demographies" )
+    else if ( name == "df" )
     {
         demographies = var;
     }
