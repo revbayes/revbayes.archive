@@ -158,7 +158,7 @@ const MemberRules& Dist_HeterochronousCoalescent::getParameterRules(void) const
     if ( !rules_set )
     {
         dist_member_rules.push_back( new ArgumentRule( "df", WorkspaceVector<DemographicFunction>::getClassTypeSpec(), "The vector of demographic functions.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        dist_member_rules.push_back( new ArgumentRule( "changePoints", ModelVector<RealPos>::getClassTypeSpec(), "The times when the demographic function changes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "changePoints", ModelVector<RealPos>::getClassTypeSpec(), "The times when the demographic function changes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
         dist_member_rules.push_back( new ArgumentRule( "taxa"       , ModelVector<Taxon>::getClassTypeSpec(), "The taxon names used for initialization.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         dist_member_rules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec()   , "The topological constraints strictly enforced.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
         
