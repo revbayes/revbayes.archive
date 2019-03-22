@@ -32,7 +32,8 @@ namespace RevBayesCore {
         double                                          getIntegral(double start, double finish) const;         //!< Calculates the integral 1/N(x) dx between start and finish.
         
     protected:
-        
+        virtual void                                    swapNodeInternal(const DagNode *oldN, const DagNode *newN);
+
         
     private:
         

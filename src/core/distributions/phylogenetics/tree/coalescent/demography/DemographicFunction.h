@@ -9,6 +9,8 @@
 
 namespace RevBayesCore {
     
+    class DagNode;
+    
     /**
      * @brief DemographicFunction: interface for all core DemographicFunctions
      *
@@ -21,7 +23,14 @@ namespace RevBayesCore {
         virtual                                                 ~DemographicFunction(void);
         
         // public methods
+        virtual void                                            addVariable(const DagNode *n);
+        virtual void                                            swapNode(const DagNode *oldN, const DagNode *newN);
+//        virtual void                                            removeVariable(DagNode *n);
         
+        // getters and setters
+        const std::vector<const DagNode *>&                     getDagNodes(void) const;                                                            //!< Get the nodes vector
+//        void                                                    setDagNodes(const std::vector<DagNode *>& args);
+
         // pure virtual public methods
         virtual DemographicFunction*                            clone(void) const = 0;                                      //!< Clone the DemographicFunction
         virtual double                                          getDemographic(double t) const = 0;                         //!< demographic function N(t) at time t
@@ -42,9 +51,12 @@ namespace RevBayesCore {
         DemographicFunction(const DemographicFunction &f);                                                                  //!< Copy constructor
         DemographicFunction&                                    operator=(const DemographicFunction &f);                    //!< Assignment operator
         
-        
+        virtual void                                            swapNodeInternal(const DagNode *oldN, const DagNode *newN) {}
+
     private:
         
+        std::vector<const DagNode *>                            variables;
+
     };
     
     // Global functions using the class

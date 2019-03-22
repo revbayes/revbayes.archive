@@ -1,4 +1,5 @@
 #include "ConstantDemographicFunction.h"
+#include "TypedDagNode.h"
 
 
 using namespace RevBayesCore;
@@ -7,6 +8,8 @@ using namespace RevBayesCore;
 ConstantDemographicFunction::ConstantDemographicFunction(const TypedDagNode<double>* t) : DemographicFunction(),
     theta( t )
 {
+    // add the parameter
+    addVariable( theta );
     
 }
 
@@ -57,6 +60,15 @@ double ConstantDemographicFunction::getIntegral(double start, double finish) con
     return delta / theta->getValue();
 }
 
+void ConstantDemographicFunction::swapNodeInternal(const DagNode *old_node, const DagNode *new_node)
+{
+    
+    if (old_node == theta)
+    {
+        theta = static_cast<const TypedDagNode<double>* >( new_node );
+    }
+    
+}
 
 
 

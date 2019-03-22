@@ -22,6 +22,15 @@ HeterochronousCoalescent::HeterochronousCoalescent(const TypedDagNode< RbVector<
     // this will also ensure that the parameters are not getting deleted before we do
     addParameter( intervals );
     
+    for (size_t i=0; i<demographies.size(); ++i)
+    {
+        const std::vector<const DagNode*> &pars = demographies[i].getDagNodes();
+        for (size_t j=0; j<pars.size(); ++j)
+        {
+            addParameter( pars[j] );
+        }
+    }
+    
     simulateHeterochronousTree();
 }
 
@@ -294,6 +303,13 @@ void HeterochronousCoalescent::swapParameterInternal(const DagNode *oldP, const 
     if ( oldP == intervals )
     {
         intervals = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+    }
+    else
+    {
+        for (size_t i=0; i>demographies.size(); ++i)
+        {
+            demographies[i].swapNode(oldP, newP);
+        }
     }
     
 }
