@@ -11,7 +11,10 @@ ExponentialDemographicFunction::ExponentialDemographicFunction(const TypedDagNod
     time_ancient( t1 ),
     time_recent( t0 )
 {
-    
+    addVariable( N0 );
+    addVariable( N1 );
+    addVariable( t0 );
+    addVariable( t1 );
 }
 
 
@@ -106,6 +109,30 @@ double ExponentialDemographicFunction::getIntegral(double start, double finish) 
 }
 
 
+void ExponentialDemographicFunction::swapNodeInternal(const DagNode *old_node, const DagNode *new_node)
+{
+    
+    if (old_node == theta_ancient)
+    {
+        theta_ancient = static_cast<const TypedDagNode<double>* >( new_node );
+    }
+    
+    if (old_node == theta_recent)
+    {
+        theta_recent = static_cast<const TypedDagNode<double>* >( new_node );
+    }
+    
+    if (old_node == time_ancient)
+    {
+        time_ancient = static_cast<const TypedDagNode<double>* >( new_node );
+    }
+    
+    if (old_node == time_recent)
+    {
+        time_recent = static_cast<const TypedDagNode<double>* >( new_node );
+    }
+    
+}
 
 
 std::ostream& operator<<(std::ostream& o, const ExponentialDemographicFunction& x)
