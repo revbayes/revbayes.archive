@@ -117,7 +117,7 @@ std::vector<std::string> Dist_HeterochronousCoalescent::getDistributionFunctionA
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
     a_names.push_back( "HeterochronousCoalescentDemography" );
-    a_names.push_back( "CoalescentDemography" );
+//    a_names.push_back( "CoalescentDemography" );
     
     return a_names;
 }
@@ -133,7 +133,7 @@ std::vector<std::string> Dist_HeterochronousCoalescent::getDistributionFunctionA
 std::string Dist_HeterochronousCoalescent::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
-    std::string d_name = "HeterochronousCoalescent";
+    std::string d_name = "CoalescentDemography";
     
     return d_name;
 }

@@ -12,8 +12,7 @@
 
 using namespace RevBayesCore;
 
-HeterochronousCoalescent::HeterochronousCoalescent(const TypedDagNode< RbVector<double> > *iv, const RbVector< DemographicFunction > &df, const std::vector<Taxon> &tn, const std::vector<Clade> &c) :
-    AbstractCoalescent( tn, c ),
+HeterochronousCoalescent::HeterochronousCoalescent(const TypedDagNode< RbVector<double> > *iv, const RbVector< DemographicFunction > &df, const std::vector<Taxon> &tn, const std::vector<Clade> &c) : AbstractCoalescent( tn, c ),
     intervals( iv ),
     demographies( df )
 {
@@ -35,12 +34,60 @@ HeterochronousCoalescent::HeterochronousCoalescent(const TypedDagNode< RbVector<
 }
 
 
+//HeterochronousCoalescent::HeterochronousCoalescent(const HeterochronousCoalescent &c) : AbstractCoalescent( c ),
+//    intervals( c.intervals ),
+//    demographies( c.demographies )
+//{
+//    
+//    // add the parameters to our set (in the base class)
+//    // in that way other class can easily access the set of our parameters
+//    // this will also ensure that the parameters are not getting deleted before we do
+//    addParameter( intervals );
+//    
+//    for (size_t i=0; i<demographies.size(); ++i)
+//    {
+//        const std::vector<const DagNode*> &pars = demographies[i].getDagNodes();
+//        for (size_t j=0; j<pars.size(); ++j)
+//        {
+//            addParameter( pars[j] );
+//        }
+//    }
+//    
+//}
+
 
 HeterochronousCoalescent::~HeterochronousCoalescent()
 {
     
 }
 
+
+//HeterochronousCoalescent& HeterochronousCoalescent::operator=(const HeterochronousCoalescent &c)
+//{
+//    AbstractCoalescent::operator=(c);
+//
+//    if ( &c != this )
+//    {
+//        intervals       = c.intervals;
+//        demographies    = c.demographies;
+//
+////        // add the parameters to our set (in the base class)
+////        // in that way other class can easily access the set of our parameters
+////        // this will also ensure that the parameters are not getting deleted before we do
+////        addParameter( intervals );
+////
+////        for (size_t i=0; i<demographies.size(); ++i)
+////        {
+////            const std::vector<const DagNode*> &pars = demographies[i].getDagNodes();
+////            for (size_t j=0; j<pars.size(); ++j)
+////            {
+////                addParameter( pars[j] );
+////            }
+////        }
+//    }
+//
+//    return *this;
+//}
 
 /**
  * The clone function is a convenience function to create proper copies of inherited objected.
@@ -83,7 +130,8 @@ double HeterochronousCoalescent::computeLnProbabilityTimes( void ) const
     for (size_t i = 0; i < value->getNumberOfTips(); ++i)
     {
         double a = value->getNode(i).getAge();
-        if ( a > 0.0 ) {
+        if ( a > 0.0 )
+        {
             serial_times.push_back(a);
             --num_taxa_at_present;
         }
@@ -172,8 +220,6 @@ double HeterochronousCoalescent::computeLnProbabilityTimes( void ) const
     for (size_t i = 0; i < combined_event_times.size(); ++i)
     {
         double n_pairs = j * (j-1) / 2.0;
-        
-        double duration = combined_event_times[i] - window_start;
         double interval_area = current_demographic_function->getIntegral(window_start, combined_event_times[i]);
         
         // add log probability that nothing happens until the next event
@@ -189,6 +235,10 @@ double HeterochronousCoalescent::computeLnProbabilityTimes( void ) const
         {
             // change of the demographic function
             ++index_demographic_function;
+            if ( index_demographic_function > demographies.size() )
+            {
+                throw RbException("Problem occurred in coalescent process with demographic functions: We tried to access a demographic function outside the vector.");
+            }
             current_demographic_function = &demographies[index_demographic_function];
         }
         else
@@ -300,13 +350,14 @@ std::vector<double> HeterochronousCoalescent::simulateCoalescentAges( size_t n )
  */
 void HeterochronousCoalescent::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
+
     if ( oldP == intervals )
     {
         intervals = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     else
     {
-        for (size_t i=0; i>demographies.size(); ++i)
+        for (size_t i=0; i<demographies.size(); ++i)
         {
             demographies[i].swapNode(oldP, newP);
         }

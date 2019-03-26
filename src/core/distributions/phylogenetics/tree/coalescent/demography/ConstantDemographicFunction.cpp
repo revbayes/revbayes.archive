@@ -62,7 +62,7 @@ double ConstantDemographicFunction::getIntegral(double start, double finish) con
 
 void ConstantDemographicFunction::swapNodeInternal(const DagNode *old_node, const DagNode *new_node)
 {
-    
+
     if (old_node == theta)
     {
         theta = static_cast<const TypedDagNode<double>* >( new_node );

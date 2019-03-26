@@ -180,14 +180,15 @@ const std::vector<const DagNode *>& DemographicFunction::getDagNodes(void) const
 //}
 
 
-void DemographicFunction::swapNode(const DagNode *oldN, const DagNode *newN)
+void DemographicFunction::swapNode(const DagNode *old_node, const DagNode *new_node)
 {
+
     // error catching
-    std::vector<const DagNode*>::iterator it = find(variables.begin(), variables.end(), oldN);
+    std::vector<const DagNode*>::iterator it = find(variables.begin(), variables.end(), old_node);
     
     if (it == variables.end())
     {
-        throw RbException("Cannot replace DAG node with name\"" + oldN->getName() + "\" in this demographic function because the demographic function doesn't hold this DAG node.");
+        throw RbException("Cannot replace DAG node with name\"" + old_node->getName() + "\" in this demographic function because the demographic function doesn't hold this DAG node.");
     }
     
     // remove myself from the old node and add myself to the new node
@@ -195,17 +196,17 @@ void DemographicFunction::swapNode(const DagNode *oldN, const DagNode *newN)
 //    newN->addMonitor( this );
     
     // increment and decrement the reference counts
-    newN->incrementReferenceCount();
-    if ( oldN->decrementReferenceCount() == 0 )
+    new_node->incrementReferenceCount();
+    if ( old_node->decrementReferenceCount() == 0 )
     {
         throw RbException("Memory leak in demographic function. Please report this bug to Sebastian.");
     }
     
-    it = variables.insert( it, newN );
+    it = variables.insert( it, new_node );
     variables.erase( it + 1 );
     
     // now delegate to the derive classes
-    swapNodeInternal(oldN, newN);
+    swapNodeInternal(old_node, new_node);
 }
 
 
