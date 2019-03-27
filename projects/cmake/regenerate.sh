@@ -1,5 +1,6 @@
 #!/bin/sh
-HERE=$(pwd)/build
+HERE="$(pwd)/build"
+mkdir -p "${HERE}"
 echo $HERE
 
 #################
