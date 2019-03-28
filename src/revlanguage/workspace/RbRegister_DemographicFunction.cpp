@@ -42,6 +42,7 @@
 #include "RlDemographicFunction.h"
 #include "RlConstantDemographicFunction.h"
 #include "RlExponentialDemographicFunction.h"
+#include "RlLinearDemographicFunction.h"
 
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeDemographicFunctionGlobalWorkspace(void)
@@ -53,8 +54,9 @@ void RevLanguage::Workspace::initializeDemographicFunctionGlobalWorkspace(void)
         /* Add demographic function (in folder "datatypes/phylogenetic/demography") (alphabetic order) */
         ////////////////////////////////////////////////////////////////////////////////
         
-        addTypeWithConstructor( new ConstantDemographicFunction() );
-        addTypeWithConstructor( new ExponentialDemographicFunction() );
+        addTypeWithConstructor( new ConstantDemographicFunction()       );
+        addTypeWithConstructor( new ExponentialDemographicFunction()    );
+        addTypeWithConstructor( new LinearDemographicFunction()         );
 
 
 

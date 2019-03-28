@@ -1,11 +1,11 @@
-#include "ExponentialDemographicFunction.h"
+#include "LinearDemographicFunction.h"
 
 #include <cmath>
 
 using namespace RevBayesCore;
 
 
-ExponentialDemographicFunction::ExponentialDemographicFunction(const TypedDagNode<double>* N0, const TypedDagNode<double>* N1, const TypedDagNode<double>* t0, const TypedDagNode<double>* t1) : DemographicFunction(),
+LinearDemographicFunction::LinearDemographicFunction(const TypedDagNode<double>* N0, const TypedDagNode<double>* N1, const TypedDagNode<double>* t0, const TypedDagNode<double>* t1) : DemographicFunction(),
     theta_ancient( N1 ),
     theta_recent( N0 ),
     time_ancient( t1 ),
@@ -18,7 +18,7 @@ ExponentialDemographicFunction::ExponentialDemographicFunction(const TypedDagNod
 }
 
 
-ExponentialDemographicFunction::ExponentialDemographicFunction(const ExponentialDemographicFunction &f) : DemographicFunction(f),
+LinearDemographicFunction::LinearDemographicFunction(const LinearDemographicFunction &f) : DemographicFunction(f),
     theta_ancient( f.theta_ancient ),
     theta_recent( f.theta_recent ),
     time_ancient( f.time_ancient ),
@@ -28,13 +28,13 @@ ExponentialDemographicFunction::ExponentialDemographicFunction(const Exponential
 }
 
 
-ExponentialDemographicFunction::~ExponentialDemographicFunction( void )
+LinearDemographicFunction::~LinearDemographicFunction( void )
 {
     
 }
 
 
-ExponentialDemographicFunction& ExponentialDemographicFunction::operator=(const ExponentialDemographicFunction &f)
+LinearDemographicFunction& LinearDemographicFunction::operator=(const LinearDemographicFunction &f)
 {
     DemographicFunction::operator=( f );
     
@@ -50,23 +50,23 @@ ExponentialDemographicFunction& ExponentialDemographicFunction::operator=(const 
 }
 
 
-ExponentialDemographicFunction* ExponentialDemographicFunction::clone( void ) const
+LinearDemographicFunction* LinearDemographicFunction::clone( void ) const
 {
     
-    return new ExponentialDemographicFunction(*this);
+    return new LinearDemographicFunction(*this);
 }
 
 
-double ExponentialDemographicFunction::getDemographic(double t) const
+double LinearDemographicFunction::getDemographic(double t) const
 {
     double N0 = theta_recent->getValue();
     double N1 = theta_ancient->getValue();
     double t0 = time_recent->getValue();
     double t1 = time_ancient->getValue();
     
-    if ( t1 < t0 || t0 < 0 || N1 < 0 || N1 < 0 || t < t0 || t > t1 )
+    if ( t1 < t0 || t0 < 0 || N1 < 0 || N1 < 0 || t < t0 || t > t1)
     {
-        throw RbException("Impossible parameter values in exponential growth/decline demographic functions.");
+        throw RbException("Impossible parameter values in Linear growth/decline demographic functions.");
     }
     
     if ( N0 == N1 )
@@ -75,14 +75,14 @@ double ExponentialDemographicFunction::getDemographic(double t) const
     }
     else
     {
-        double alpha = log( N1/N0 ) / (t0 - t1);
-        return N0 * exp( (t0-t) * alpha);
+        double alpha = ( N1-N0 ) / (t1 - t0);
+        return N0 + (t-t0) * alpha;
     }
     
 }
 
 
-double ExponentialDemographicFunction::getIntegral(double start, double finish) const
+double LinearDemographicFunction::getIntegral(double start, double finish) const
 {
     double N0 = theta_recent->getValue();
     double N1 = theta_ancient->getValue();
@@ -91,7 +91,7 @@ double ExponentialDemographicFunction::getIntegral(double start, double finish) 
     
     if ( t1 < t0 || t0 < 0 || N1 < 0 || N1 < 0 || start < t0 || start > t1 || finish < t0 || finish > t1 )
     {
-        throw RbException("Impossible parameter values in exponential growth/decline demographic functions.");
+        throw RbException("Impossible parameter values in Linear growth/decline demographic functions.");
     }
     
     
@@ -102,14 +102,14 @@ double ExponentialDemographicFunction::getIntegral(double start, double finish) 
     }
     else
     {
-        double alpha = log( N1/N0 ) / (t0 - t1);
-        return (exp( (finish-t0)*alpha ) - exp((start-t0)*alpha)) / N0 / alpha;
+        double alpha = ( N1-N0 ) / (t1 - t0);
+        return ( log( N0 + (finish-t0) * alpha ) - log( N0 + (start-t0) * alpha ) ) / alpha;
     }
     
 }
 
 
-void ExponentialDemographicFunction::swapNodeInternal(const DagNode *old_node, const DagNode *new_node)
+void LinearDemographicFunction::swapNodeInternal(const DagNode *old_node, const DagNode *new_node)
 {
     
     if (old_node == theta_ancient)
@@ -135,7 +135,7 @@ void ExponentialDemographicFunction::swapNodeInternal(const DagNode *old_node, c
 }
 
 
-std::ostream& operator<<(std::ostream& o, const ExponentialDemographicFunction& x)
+std::ostream& operator<<(std::ostream& o, const LinearDemographicFunction& x)
 {
     return o;
 }
