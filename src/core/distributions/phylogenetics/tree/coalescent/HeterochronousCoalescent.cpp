@@ -143,72 +143,72 @@ double HeterochronousCoalescent::computeLnProbabilityTimes( void ) const
     std::vector<double> combined_event_times;
     std::vector<EVENT_TYPE> combined_event_types;
     
-    if (num_taxa_at_present < num_taxa)
+    bool heterochronous = num_taxa_at_present < num_taxa;
+    
+    if ( heterochronous == true )
     {
-        
         // sort the vector of serial sampling times in ascending order
         std::sort(serial_times.begin(), serial_times.end());
-        
-        size_t index_age = 0;
-        size_t index_serial_time = 0;
-        size_t index_demographic_function_change_point = 0;
-        double next_age = ages[index_age];
-        double next_serial_time = serial_times[index_serial_time];
-        double next_df_change_time = RbConstants::Double::inf;
-        if ( index_demographic_function_change_point < change_times.size() )
+    }
+
+    size_t index_age = 0;
+    size_t index_serial_time = 0;
+    size_t index_demographic_function_change_point = 0;
+    double next_age = ages[index_age];
+    double next_serial_time = RbConstants::Double::nan;
+    if ( heterochronous == true )
+    {
+        serial_times[index_serial_time];
+    }
+    double next_df_change_time = RbConstants::Double::inf;
+    if ( index_demographic_function_change_point < change_times.size() )
+    {
+        next_df_change_time = change_times[index_demographic_function_change_point];
+    }
+    // create master list of event times and types
+    // events are either a sample (lineage size up), coalescence (lineage size down), or theta changepoint (lineage size constant)
+    do
+    {
+        next_age = ages[index_age];
+        if ( heterochronous == true && next_serial_time <= next_age && next_serial_time <= next_df_change_time )
         {
-            next_df_change_time = change_times[index_demographic_function_change_point];
-        }
-        // create master list of event times and types
-        // events are either a sample (lineage size up), coalescence (lineage size down), or theta changepoint (lineage size constant)
-        do
-        {
-            next_age = ages[index_age];
-            if ( next_serial_time <= next_age && next_serial_time <= next_df_change_time )
+            // serial sample
+            combined_event_times.push_back(next_serial_time);
+            combined_event_types.push_back( SERIAL_SAMPLE );
+            ++index_serial_time;
+            if (index_serial_time < serial_times.size())
             {
-                // serial sample
-                combined_event_times.push_back(next_serial_time);
-                combined_event_types.push_back( SERIAL_SAMPLE );
-                ++index_serial_time;
-                if (index_serial_time < serial_times.size())
-                {
-                    next_serial_time = serial_times[index_serial_time];
-                }
-                else
-                {
-                    next_serial_time = RbConstants::Double::inf;
-                }
-            }
-            else if ( next_df_change_time <= next_age )
-            {
-                // change of demographic function
-                combined_event_times.push_back(next_df_change_time);
-                combined_event_types.push_back( DEMOGRAPHIC_MODEL_CHANGE );
-                ++index_demographic_function_change_point;
-                if ( index_demographic_function_change_point < change_times.size() )
-                {
-                    next_df_change_time = change_times[index_demographic_function_change_point];
-                }
-                else
-                {
-                    next_df_change_time = RbConstants::Double::inf;
-                }
+                next_serial_time = serial_times[index_serial_time];
             }
             else
             {
-                // coalescence
-                combined_event_times.push_back(next_age);
-                combined_event_types.push_back(COALESCENT);
-                ++index_age;
+                next_serial_time = RbConstants::Double::inf;
             }
-        } while (index_age < ages.size());
+        }
+        else if ( next_df_change_time <= next_age )
+        {
+            // change of demographic function
+            combined_event_times.push_back(next_df_change_time);
+            combined_event_types.push_back( DEMOGRAPHIC_MODEL_CHANGE );
+            ++index_demographic_function_change_point;
+            if ( index_demographic_function_change_point < change_times.size() )
+            {
+                next_df_change_time = change_times[index_demographic_function_change_point];
+            }
+            else
+            {
+                next_df_change_time = RbConstants::Double::inf;
+            }
+        }
+        else
+        {
+            // coalescence
+            combined_event_times.push_back(next_age);
+            combined_event_types.push_back(COALESCENT);
+            ++index_age;
+        }
+    } while (index_age < ages.size());
         
-    }
-    else
-    {
-        combined_event_times = ages;
-        combined_event_types = std::vector<EVENT_TYPE>(ages.size(),COALESCENT);
-    }
     
     
     size_t j = num_taxa_at_present;
