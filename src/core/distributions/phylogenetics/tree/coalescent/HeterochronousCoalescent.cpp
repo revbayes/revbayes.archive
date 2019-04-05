@@ -351,16 +351,34 @@ std::vector<double> HeterochronousCoalescent::simulateCoalescentAges( size_t n )
 void HeterochronousCoalescent::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
 
+    bool found = false;
     if ( oldP == intervals )
     {
         intervals = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        found = true;
     }
     else
     {
         for (size_t i=0; i<demographies.size(); ++i)
         {
-            demographies[i].swapNode(oldP, newP);
+            
+            try {
+                demographies[i].swapNode(oldP, newP);
+                // if the statement succeeded and didn't throw an error, then the distribution had this parameter
+                found = true;
+            }
+            catch ( RbException e )
+            {
+                // do nothing because we actually do not know who had the parameter
+            }
+        
         }
+    }
+    
+    
+    if ( found == false )
+    {
+        throw RbException("Could not find the distribution parameter to be swapped for the demographic function coalescent process: " + oldP->getName() + " to " + newP->getName()) ;
     }
     
 }
