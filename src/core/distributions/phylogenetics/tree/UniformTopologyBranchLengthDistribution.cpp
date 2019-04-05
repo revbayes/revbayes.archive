@@ -427,6 +427,8 @@ void UniformTopologyBranchLengthDistribution::simulateTree( void )
         }
     }
     
+    root->setBranchLength(0.0);
+    
     // initialize the topology by setting the root
     psi->setRoot(root, true);
     
