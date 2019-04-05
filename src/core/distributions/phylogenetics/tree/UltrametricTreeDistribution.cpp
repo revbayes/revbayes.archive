@@ -48,7 +48,8 @@ UltrametricTreeDistribution::UltrametricTreeDistribution( TypedDistribution<Tree
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
     this->addParameter( root_age );
-    
+    this->addParameter( root_branch_fraction );
+
     
     // add the parameters of the distribution
     const std::vector<const DagNode*>& pars_tp = tree_prior->getParameters();
@@ -102,6 +103,7 @@ UltrametricTreeDistribution::UltrametricTreeDistribution( const UltrametricTreeD
     tree_prior( d.tree_prior->clone() ),
     rate_prior( d.rate_prior->clone() ),
     root_age( d.root_age ),
+    root_branch_fraction( d.root_branch_fraction ),
     trees( d.trees ),
     sample_prior_density( NULL ),
     trees_newick( d.trees_newick ),
@@ -150,6 +152,7 @@ UltrametricTreeDistribution& UltrametricTreeDistribution::operator=( const Ultra
         tree_prior              = d.tree_prior->clone();
         rate_prior              = d.rate_prior->clone();
         root_age                = d.root_age;
+        root_branch_fraction    = d.root_branch_fraction;
         trees                   = d.trees;
         sample_prior_density    = NULL;
         trees_newick            = d.trees_newick;
