@@ -24,7 +24,6 @@ using namespace RevLanguage;
  */
 Dist_DuplicationLoss::Dist_DuplicationLoss() : TypedDistribution<TimeTree>()
 {
-
 }
 
 /**
@@ -32,16 +31,10 @@ Dist_DuplicationLoss::Dist_DuplicationLoss() : TypedDistribution<TimeTree>()
  *
  * \return a clone of the object.
  */
-
 Dist_DuplicationLoss* Dist_DuplicationLoss::clone(void) const
 {
-
   return new Dist_DuplicationLoss(*this);
-
 }
-
-
-
 
 /**
  * Create a new internal distribution object.
@@ -55,13 +48,11 @@ Dist_DuplicationLoss* Dist_DuplicationLoss::clone(void) const
  */
 RevBayesCore::DuplicationLossProcess* Dist_DuplicationLoss::createDistribution( void ) const
 {
-
   // Get the parameters
   RevBayesCore::TypedDagNode<RevBayesCore::Tree>* ind_tree = static_cast<const TimeTree &>( individual_tree->getRevObject() ).getDagNode();
   const std::vector<RevBayesCore::Taxon>      &t  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
 
   RevBayesCore::TypedDagNode<double>* org = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
-
 
   // get the number of nodes for the tree
   size_t n_nodes = ind_tree->getValue().getNumberOfNodes();
@@ -73,20 +64,21 @@ RevBayesCore::DuplicationLossProcess* Dist_DuplicationLoss::createDistribution( 
 
   RevBayesCore::DuplicationLossProcess*   d = new RevBayesCore::DuplicationLossProcess( ind_tree, org, t, cond );
 
-  RevBayesCore::ConstantNode< RevBayesCore::RbVector<double> > *sampling = new RevBayesCore::ConstantNode< RevBayesCore::RbVector<double> >("gene_sampling", new RevBayesCore::RbVector<double>(n_tips,1.0) );
+  RevBayesCore::ConstantNode< RevBayesCore::RbVector<double> > *sampling =
+    new RevBayesCore::ConstantNode< RevBayesCore::RbVector<double> >("gene_sampling", new RevBayesCore::RbVector<double>(n_tips,1.0) );
 
   d->setGeneSamplingProbability( sampling );
 
   if ( lambda->getRequiredTypeSpec().isDerivedOf( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
-      RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* lambda_node = static_cast<const ModelVector<RealPos> &>( lambda->getRevObject() ).getDagNode();
+      RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* lambda_node =
+        static_cast<const ModelVector<RealPos> &>( lambda->getRevObject() ).getDagNode();
 
-      // sanity check
+      // Sanity check.
       if ( n_nodes != lambda_node->getValue().size() )
         {
           throw RbException( "The number of duplication rates does not match the number of branches." );
         }
-
       d->setDuplicationRate( lambda_node );
     }
   else
@@ -94,17 +86,14 @@ RevBayesCore::DuplicationLossProcess* Dist_DuplicationLoss::createDistribution( 
       RevBayesCore::TypedDagNode<double>* lambda_node = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
       d->setDuplicationRate( lambda_node );
     }
-
   if ( mu->getRequiredTypeSpec().isDerivedOf( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
       RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* mu_node = static_cast<const ModelVector<RealPos> &>( mu->getRevObject() ).getDagNode();
-
-      // sanity check
+      // Sanity check.
       if ( n_nodes != mu_node->getValue().size() )
         {
           throw RbException( "The number of loss rates does not match the number of branches." );
         }
-
       d->setLossRate( mu_node );
     }
   else
@@ -112,10 +101,7 @@ RevBayesCore::DuplicationLossProcess* Dist_DuplicationLoss::createDistribution( 
       RevBayesCore::TypedDagNode<double>* mu_node = static_cast<const RealPos &>( mu->getRevObject() ).getDagNode();
       d->setLossRate( mu_node );
     }
-
-
   d->redrawValue();
-
   return d;
 }
 
@@ -128,9 +114,7 @@ RevBayesCore::DuplicationLossProcess* Dist_DuplicationLoss::createDistribution( 
  */
 const std::string& Dist_DuplicationLoss::getClassType(void)
 {
-
   static std::string rev_type = "Dist_DuplicationLoss";
-
   return rev_type;
 }
 
@@ -142,9 +126,7 @@ const std::string& Dist_DuplicationLoss::getClassType(void)
  */
 const TypeSpec& Dist_DuplicationLoss::getClassTypeSpec(void)
 {
-
   static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
-
   return rev_type_spec;
 }
 
@@ -160,7 +142,6 @@ std::string Dist_DuplicationLoss::getDistributionFunctionName( void ) const
 {
   // create a distribution name variable that is the same for all instance of this class
   std::string d_name = "DuplicationLoss";
-
   return d_name;
 }
 
@@ -216,10 +197,8 @@ const MemberRules& Dist_DuplicationLoss::getParameterRules(void) const
 
       rules_set = true;
     }
-
   return member_rules;
 }
-
 
 /**
  * Set a member variable.
@@ -262,20 +241,14 @@ void Dist_DuplicationLoss::setConstParameter(const std::string& name, const RevP
     {
       TypedDistribution<TimeTree>::setConstParameter(name, var);
     }
-
 }
-
 
 /** Get type spec */
 const TypeSpec& Dist_DuplicationLoss::getTypeSpec( void ) const
 {
-
   static TypeSpec type_spec = getClassTypeSpec();
-
   return type_spec;
 }
-
-
 
 /**
  * Get the author(s) of this function so they can receive credit (and blame) for it.
@@ -285,10 +258,8 @@ std::vector<std::string> Dist_DuplicationLoss::getHelpAuthor(void) const
   // create a vector of authors for this function
   std::vector<std::string> authors;
   authors.push_back( "Dominik Schrempf, Sebastian Höhna." );
-
   return authors;
 }
-
 
 /**
  * Get the (brief) description for this function
@@ -297,10 +268,8 @@ std::string Dist_DuplicationLoss::getHelpDescription(void) const
 {
   // create a variable for the description of the function
   std::string description = "Duplication and loss distribution describing how gene trees can be generated from within a haplotype tree given a set of duplication and loss rate(s), and an origin time.";
-
   return description;
 }
-
 
 /**
  * Get the more detailed description of the function
@@ -310,10 +279,8 @@ std::string Dist_DuplicationLoss::getHelpDetails(void) const
   // create a variable for the description of the function
   std::string details = "";
   details += "The haplotype tree must be ultrametric.\n";
-
   return details;
 }
-
 
 /**
  * Get an executable and instructive example.
@@ -358,10 +325,8 @@ std::string Dist_DuplicationLoss::getHelpExample(void) const
   // example += "  write(geneTrees[i], filename=dataFolder+\"geneTree_\"+i+\".tree\")\n";
   // example += "}\n";
   // example += "\n";
-
   return example;
 }
-
 
 /**
  * Get some references/citations for this function
@@ -375,12 +340,9 @@ std::vector<RevBayesCore::RbHelpReference> Dist_DuplicationLoss::getHelpReferenc
   ref.setCitation("Unpublished.");
   ref.setDoi("");
   ref.setUrl("");
-
   references.push_back(ref);
-
   return references;
 }
-
 
 /**
  * Get the names of similar and suggested other functions.
@@ -390,10 +352,8 @@ std::vector<std::string> Dist_DuplicationLoss::getHelpSeeAlso(void) const
   // create an entry for each suggested function
   std::vector<std::string> see_also;
   see_also.push_back( "dnTimeVaryingStateDependentSpeciationExtinction" );
-
   return see_also;
 }
-
 
 /**
  * Get the title of this help entry.
@@ -401,6 +361,5 @@ std::vector<std::string> Dist_DuplicationLoss::getHelpSeeAlso(void) const
 std::string Dist_DuplicationLoss::getHelpTitle(void) const
 {
   std::string title = "Duplication and loss process.";
-
   return title;
 }
