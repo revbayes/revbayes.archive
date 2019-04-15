@@ -26,12 +26,25 @@ namespace RevBayesCore {
         }
     };
     
+//    /*
+//     * This struct represents a tree bipartition (split) that can be rooted or unrooted
+//     */
+//    struct Split : public std::pair<RbBitSet, std::set<Taxon> >
+//    {
+//        Split( RbBitSet b, std::set<Taxon> m) : std::pair<RbBitSet, std::set<Taxon> >( b[0] ? ~b : b, m) {}
+//
+//        inline bool operator()(const Sample<Split>& s)
+//        {
+//            return (*this) == s.first;
+//        }
+//    };
+    
     /*
      * This struct represents a tree bipartition (split) that can be rooted or unrooted
      */
-    struct Split : public std::pair<RbBitSet, std::set<Taxon> >
+    struct Split : public RbBitSet
     {
-        Split( RbBitSet b, std::set<Taxon> m) : std::pair<RbBitSet, std::set<Taxon> >( b[0] ? ~b : b, m) {}
+        Split( RbBitSet b ) : RbBitSet( b ) {}
         
         inline bool operator()(const Sample<Split>& s)
         {
@@ -42,7 +55,7 @@ namespace RevBayesCore {
     class UltrametricTreeDistribution : public TypedDistribution<Tree>, public MemberObject< RbVector<double> > {
         
     public:
-        UltrametricTreeDistribution(TypedDistribution<Tree>* tp, TypedDistribution<double>* rp, TypedDagNode<double> *ra, const TraceTree &tt, Trace<double>* d = NULL);   //!< Constructor
+        UltrametricTreeDistribution(TypedDistribution<Tree>* tp, TypedDistribution<double>* rp, TypedDagNode<double> *ra, TypedDagNode<double> *rbf, const TraceTree &tt, Trace<double>* d = NULL);   //!< Constructor
         UltrametricTreeDistribution(const UltrametricTreeDistribution &d);                                              //!< Copy-constructor
         virtual                                            ~UltrametricTreeDistribution(void);                          //!< Virtual destructor
         
@@ -80,8 +93,9 @@ namespace RevBayesCore {
         TypedDistribution<Tree>*                            tree_prior;
         TypedDistribution<double>*                          rate_prior;
         const TypedDagNode<double>*                         root_age;
+        const TypedDagNode<double>*                         root_branch_fraction;
         std::vector<Tree>                                   trees;
-        Trace<double>*                                      density;
+        Trace<double>*                                      sample_prior_density;
         
         std::vector<std::string>                            trees_newick;
         std::map<std::string, std::vector<size_t> >         topology_indices;
@@ -98,7 +112,7 @@ namespace RevBayesCore {
 #endif
 
         std::vector<double>                                 ln_probs;
-//        size_t                                              num_taxa;
+        size_t                                              num_taxa;
 //        std::vector<Taxon>                                  taxa;
     };
     

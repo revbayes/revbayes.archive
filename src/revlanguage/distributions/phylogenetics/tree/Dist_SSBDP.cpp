@@ -24,7 +24,7 @@ using namespace RevLanguage;
  */
 Dist_SSBDP::Dist_SSBDP() : BirthDeathProcess()
 {
-    
+
 }
 
 
@@ -52,21 +52,28 @@ Dist_SSBDP* Dist_SSBDP::clone( void ) const
  */
 RevBayesCore::AbstractBirthDeathProcess* Dist_SSBDP::createDistribution( void ) const
 {
-    
+
     // get the parameters
-    
+
     // the start age
     RevBayesCore::TypedDagNode<double>* sa       = static_cast<const RealPos &>( start_age->getRevObject() ).getDagNode();
 
     // the start condition
     bool uo = ( start_condition == "originAge" ? true : false );
-    
+
     // sampling condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
-    
+
     // get the taxa to simulate either from a vector of rev taxon objects or a vector of names
     std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
-    
+
+    // tree for initialization
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* init = NULL;
+    if ( initial_tree->getRevObject() != RevNullObject::getInstance() )
+    {
+        init = static_cast<const TimeTree &>( initial_tree->getRevObject() ).getDagNode();
+    }
+
     bool piecewise = false;
 
     if ( lambda->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
@@ -134,7 +141,7 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_SSBDP::createDistribution( void ) 
             ht = static_cast<const ModelVector<RealPos> &>( timeline->getRevObject() ).getDagNode();
         }
 
-        d = new RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess(sa, l, m, p, r, ht, lt, mt, pt, rt, cond, t, uo);
+        d = new RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess(sa, l, m, p, r, ht, lt, mt, pt, rt, cond, t, uo, init);
     }
     else
     {
@@ -147,7 +154,7 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_SSBDP::createDistribution( void ) 
         // sampling probability
         RevBayesCore::TypedDagNode<double>* r       = static_cast<const RealPos &>( rho->getRevObject() ).getDagNode();
 
-        d = new RevBayesCore::ConstantRateSerialSampledBirthDeathProcess(sa, l, m, p, r, cond, t, uo);
+        d = new RevBayesCore::ConstantRateSerialSampledBirthDeathProcess(sa, l, m, p, r, cond, t, uo, init);
     }
 
     return d;
@@ -161,9 +168,9 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_SSBDP::createDistribution( void ) 
  */
 const std::string& Dist_SSBDP::getClassType( void )
 {
-    
+
     static std::string rev_type = "Dist_SSBDP";
-    
+
     return rev_type;
 }
 
@@ -175,9 +182,9 @@ const std::string& Dist_SSBDP::getClassType( void )
  */
 const TypeSpec& Dist_SSBDP::getClassTypeSpec( void )
 {
-    
+
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
-    
+
     return rev_type_spec;
 }
 
@@ -194,7 +201,7 @@ std::vector<std::string> Dist_SSBDP::getDistributionFunctionAliases( void ) cons
     a_names.push_back( "SSBDP" );
     a_names.push_back( "FBDP" );
     a_names.push_back( "SkylineBDP" );
-    
+
     return a_names;
 }
 
@@ -210,7 +217,7 @@ std::string Dist_SSBDP::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
     std::string d_name = "SerialSampledBirthDeath";
-    
+
     return d_name;
 }
 
@@ -227,10 +234,10 @@ std::string Dist_SSBDP::getDistributionFunctionName( void ) const
  */
 const MemberRules& Dist_SSBDP::getParameterRules(void) const
 {
-    
+
     static MemberRules dist_member_rules;
     static bool rules_set = false;
-    
+
     if ( !rules_set )
     {
         std::vector<std::string> aliases;
@@ -261,10 +268,12 @@ const MemberRules& Dist_SSBDP::getParameterRules(void) const
         optionsCondition.push_back( "survival" );
         dist_member_rules.push_back( new OptionRule( "condition", new RlString("time"), optionsCondition, "The condition of the process." ) );
         dist_member_rules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The taxa used for initialization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        
+
+        dist_member_rules.push_back( new ArgumentRule( "initialTree" , TimeTree::getClassTypeSpec() , "Instead of drawing a tree from the distribution, initialize distribution with this tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+
         rules_set = true;
     }
-    
+
     return dist_member_rules;
 }
 
@@ -276,9 +285,9 @@ const MemberRules& Dist_SSBDP::getParameterRules(void) const
  */
 const TypeSpec& Dist_SSBDP::getTypeSpec( void ) const
 {
-    
+
     static TypeSpec ts = getClassTypeSpec();
-    
+
     return ts;
 }
 
@@ -336,9 +345,13 @@ void Dist_SSBDP::setConstParameter(const std::string& name, const RevPtr<const R
     {
         rho_timeline = var;
     }
+    else if ( name == "initialTree" )
+    {
+        initial_tree = var;
+    }
     else
     {
         BirthDeathProcess::setConstParameter(name, var);
     }
-    
+
 }

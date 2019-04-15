@@ -4,18 +4,19 @@
 #include "AbstractBirthDeathProcess.h"
 
 namespace RevBayesCore {
-    
+
     class Clade;
     class Taxon;
 
     class ConstantRateSerialSampledBirthDeathProcess : public AbstractBirthDeathProcess {
-    
+
     public:
         ConstantRateSerialSampledBirthDeathProcess(const TypedDagNode<double> *o,
                                                 const TypedDagNode<double> *s, const TypedDagNode<double> *e,
                                                 const TypedDagNode<double> *p, const TypedDagNode<double> *r,
-                                                const std::string &cdt, const std::vector<Taxon> &tn, bool uo );
-        
+                                                const std::string &cdt, const std::vector<Taxon> &tn, bool uo,
+                                                TypedDagNode<Tree> *t);
+
         // public member functions
         ConstantRateSerialSampledBirthDeathProcess*         clone(void) const;
 
@@ -23,7 +24,7 @@ namespace RevBayesCore {
         double                                              computeLnProbabilityDivergenceTimes(void) const;                                //!< Compute the log-transformed probability of the current value.
         // Parameter management functions
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                //!< Swap a parameter
-        
+
         // helper functions
         double                                              computeLnProbabilityTimes(void) const;                                          //!< Compute the log-transformed probability of the current value.
         double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
@@ -33,7 +34,7 @@ namespace RevBayesCore {
         double                                              pZero(double t, double c1, double c2) const;
         double                                              lnQ(double t, double c1, double c2) const;
         double                                              pHatZero(double t) const;
-        
+
         // members
         const TypedDagNode<double>*                         lambda;                                                                         //!< The speciation rate.
         const TypedDagNode<double>*                         mu;                                                                             //!< The extinction rate.

@@ -13,7 +13,7 @@ using namespace RevBayesCore;
 
 
 /**
- * Constructor. 
+ * Constructor.
  * We delegate most parameters to the base class and initialize the members.
  *
  * \param[in]    o              Time of the origin/present/length of the process.
@@ -33,30 +33,39 @@ ConstantRateSerialSampledBirthDeathProcess::ConstantRateSerialSampledBirthDeathP
                                                                                   const TypedDagNode<double> *r,
                                                                                   const std::string& cdt,
                                                                                   const std::vector<Taxon> &tn,
-                                                                                  bool uo ) : AbstractBirthDeathProcess( o, cdt, tn, uo ),
+                                                                                  bool uo,
+                                                                                  TypedDagNode<Tree> *t) : AbstractBirthDeathProcess( o, cdt, tn, uo ),
     lambda( s ),
-    mu( e ), 
-    psi( p ), 
+    mu( e ),
+    psi( p ),
     rho( r )
 {
     addParameter( lambda );
     addParameter( mu );
     addParameter( psi );
     addParameter( rho );
-    
-    simulateTree();
-    
+
+    if (t != NULL)
+    {
+      delete value;
+      value = &(t->getValue());
+    }
+    else
+    {
+      simulateTree();
+    }
+
 }
 
 /**
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
  *
- * \return A new copy of myself 
+ * \return A new copy of myself
  */
 ConstantRateSerialSampledBirthDeathProcess* ConstantRateSerialSampledBirthDeathProcess::clone( void ) const
 {
-    
+
     return new ConstantRateSerialSampledBirthDeathProcess( *this );
 }
 
@@ -84,18 +93,18 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityDivergenc
  */
 double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( void ) const
 {
-    
+
     double lnProbTimes = 0.0;
     double process_time = getOriginAge();
     size_t num_initial_lineages = 2;
     const TopologyNode& root = value->getRoot();
-    
+
     if (use_origin) {
         // If we are conditioning on survival from the origin,
         // then we must divide by 2 the log survival probability computed by AbstractBirthDeathProcess
         num_initial_lineages = 1;
     }
-    
+
     // if conditioning on root, root node must be a "true" bifurcation event
     else if (root.getChild(0).isSampledAncestor() || root.getChild(1).isSampledAncestor())
     {
@@ -107,7 +116,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     double death_rate = mu->getValue();
     double serial_rate = psi->getValue();
     double sampling_prob = rho->getValue();
-    
+
     // get helper variables
     double a = birth_rate - death_rate - serial_rate;
     double c1 = std::fabs(sqrt(a * a + 4 * birth_rate * serial_rate));
@@ -150,7 +159,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
             }
         }
     }
-    
+
     // add the log probability for the serial sampling events
     if (serial_rate == 0.0)
     {
@@ -164,13 +173,13 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     {
         lnProbTimes += (serial_tip_ages.size() + num_sampled_ancestors) * log( serial_rate );
     }
-    
+
     // add the log probability for sampling the extant taxa
     if (num_extant_taxa > 0)
     {
         lnProbTimes += num_extant_taxa * log( 4.0 * sampling_prob );
     }
-    
+
     // add the log probability of the initial sequences
     lnProbTimes += -lnQ(process_time, c1, c2) * num_initial_lineages;
 
@@ -200,7 +209,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     }
 
     return lnProbTimes;
-    
+
 }
 
 
@@ -220,12 +229,12 @@ double ConstantRateSerialSampledBirthDeathProcess::lnProbTreeShape(void) const
 
 /**
  * Compute the probability of survival if the process starts with one species at time start and ends at time end.
- * 
+ *
  *
  * \param[in]    start      Start time of the process.
  * \param[in]    end        End/stopping time of the process.
  *
- * \return Speciation rate at time t. 
+ * \return Speciation rate at time t.
  */
 double ConstantRateSerialSampledBirthDeathProcess::pSurvival(double start, double end) const
 {
@@ -244,17 +253,17 @@ double ConstantRateSerialSampledBirthDeathProcess::simulateDivergenceTime(double
 
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
-    
+
     // get the parameters
     double age = origin - present;
     double b = lambda->getValue();
     double d = mu->getValue();
     double r = rho->getValue();
-    
+
     // get a random draw
     double u = rng->uniform01();
-    
-    
+
+
     // compute the time for this draw
     // see Hartmann et al. 2010 and Stadler 2011
     double t = 0.0;
@@ -266,7 +275,7 @@ double ConstantRateSerialSampledBirthDeathProcess::simulateDivergenceTime(double
     {
         t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) )  /  (b-d);
     }
-    
+
     return present + t;
 }
 
@@ -334,5 +343,3 @@ void ConstantRateSerialSampledBirthDeathProcess::swapParameterInternal(const Dag
     }
 
 }
-
-

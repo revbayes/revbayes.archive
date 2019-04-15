@@ -1,14 +1,14 @@
-#ifndef Dist_HeterochronousCoalescent_H
-#define Dist_HeterochronousCoalescent_H
+#ifndef Dist_HeterochronousConstantCoalescent_H
+#define Dist_HeterochronousConstantCoalescent_H
 
-#include "HeterochronousCoalescent.h"
+#include "ConstantPopulationHeterochronousCoalescent.h"
 #include "RlTypedDistribution.h"
 #include "RlTimeTree.h"
 
 namespace RevLanguage {
     
     /**
-     * The RevLanguage wrapper of the Dist_HeterochronousCoalescent
+     * The RevLanguage wrapper of the Dist_HeterochronousConstantCoalescent
      *
      * The RevLanguage wrapper of the constant population size HeterochronousCoalescent process connects
      * the variables/parameters of the process and creates the internal ConstantPopulationHeterochronousCoalescent object.
@@ -20,23 +20,22 @@ namespace RevLanguage {
      * @since 2015-03-05, version 1.0
      *
      */
-    class Dist_HeterochronousCoalescent : public TypedDistribution<TimeTree> {
+    class Dist_HeterochronousConstantCoalescent : public TypedDistribution<TimeTree> {
         
     public:
-        Dist_HeterochronousCoalescent( void );
+        Dist_HeterochronousConstantCoalescent( void );
         
         // Basic utility functions
-        Dist_HeterochronousCoalescent*                              clone(void) const;                                                                      //!< Clone the object
+        Dist_HeterochronousConstantCoalescent*                      clone(void) const;                                                                      //!< Clone the object
         static const std::string&                                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                                      getClassTypeSpec(void);                                                                 //!< Get class type spec
-        std::vector<std::string>                                    getDistributionFunctionAliases(void) const;                                             //!< Get the alternative names used for the constructor function in Rev.
         std::string                                                 getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
         const TypeSpec&                                             getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
         const MemberRules&                                          getParameterRules(void) const;                                                          //!< Get member rules (const)
         
         
         // Distribution functions you have to override
-        RevBayesCore::HeterochronousCoalescent*                     createDistribution(void) const;                                                         //!< Create an internal object of the diveristy-dependent pure-birth process.
+        RevBayesCore::ConstantPopulationHeterochronousCoalescent*   createDistribution(void) const;                                                         //!< Create an internal object of the diveristy-dependent pure-birth process.
         
     protected:
         
@@ -48,9 +47,8 @@ namespace RevLanguage {
         // members
         RevPtr<const RevVariable>                                   taxa;                                                                                   //!< The taxon names that will be applied to the initally simulated tree
         RevPtr<const RevVariable>                                   constraints;                                                                            //!< Topological constraints that will be used for calibrations
-        RevPtr<const RevVariable>                                   change_points;
-        RevPtr<const RevVariable>                                   demographies;
-
+        RevPtr<const RevVariable>                                   theta;
+        
     };
     
 }

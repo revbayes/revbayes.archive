@@ -4,7 +4,7 @@
 #include "RlBirthDeathProcess.h"
 
 namespace RevLanguage {
-    
+
     /**
      * The RevLanguage wrapper of the constant-rate Fossilized-Birth-Death Process
      *
@@ -19,10 +19,10 @@ namespace RevLanguage {
      *c
      */
     class Dist_SSBDP : public BirthDeathProcess {
-        
+
     public:
         Dist_SSBDP( void );
-        
+
         // Basic utility functions
         Dist_SSBDP*                                             clone(void) const;                                                                      //!< Clone the object
         static const std::string&                               getClassType(void);                                                                     //!< Get Rev type
@@ -31,16 +31,16 @@ namespace RevLanguage {
         std::string                                             getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
         const TypeSpec&                                         getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
         const MemberRules&                                      getParameterRules(void) const;                                                          //!< Get member rules (const)
-        
-        
+
+
         // Distribution functions you have to override
         RevBayesCore::AbstractBirthDeathProcess*                createDistribution(void) const;
-        
+
     protected:
-        
+
         void                                                    setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
-        
-        
+
+
     private:
 
         RevPtr<const RevVariable>                               lambda;                                                                                 //!< The speciation rate(s)
@@ -53,9 +53,10 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                               psi_timeline;                                                                           //!< The serial sampling rate change times
         RevPtr<const RevVariable>                               rho_timeline;                                                                           //!< The episodic taxon sampling fraction change times
         std::string                                             start_condition;                                                                     //!< The start condition of the process (rootAge/originAge)
+        RevPtr<const RevVariable>                               initial_tree;
 
     };
-    
+
 }
 
 #endif

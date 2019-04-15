@@ -1,5 +1,3 @@
-
-
 #include "DagNode.h"
 #include "Monitor.h"
 #include "RbException.h"
