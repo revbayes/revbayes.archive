@@ -12,7 +12,7 @@
 const double EPS_COAL = 1E-10;
 
 namespace RevBayesCore {
-  
+
     class Clade;
 
     class DuplicationLossProcess : public TypedDistribution<Tree> {
@@ -66,7 +66,7 @@ namespace RevBayesCore {
 
         const TypedDagNode<double>*                         origin;
 
-      
+
         const TypedDagNode<RbVector<double> >*              duplication_rates;
         const TypedDagNode<double>*                         duplication_rate;
         const TypedDagNode<RbVector<double> >*              loss_rates;
@@ -77,8 +77,8 @@ namespace RevBayesCore {
         std::vector< std::set< const TopologyNode* > >      genes_per_branch_ancient;
         // Extinction probabilities at start (older/ancient end) of individual branch.
         std::vector< double >                               extinction_probs;
-      
-        std::string                                         condition;                                                                                          //!< The condition of the process (none/survival/#taxa).
+        // The condition of the process (none/survival/#taxa).
+        std::string                                         condition;
 
   };
 }
