@@ -23,6 +23,17 @@ DuplicationLossProcess::DuplicationLossProcess(const TypedDagNode<Tree> *it, con
     loss_rate( new ConstantNode<double>("", new double(0.5)) ),
     condition( cond )
 {
+  // Test that the origin time is older than the root age of the haplotype
+    // tree.
+    double org_time = origin->getValue();
+    double haplotype_root_age = individual_tree->getValue().getRoot().getAge();
+    if ( org_time < haplotype_root_age )
+    {
+      std::string err = "Origin time " + StringUtilities::to_string(org_time);
+      err += " lower than root age of haplotype tree " + StringUtilities::to_string(haplotype_root_age);
+      throw RbException(err);
+    }
+
     // add the parameters to our set (in the base class) in that way other
     // classes can easily access the set of our parameters this will also ensure
     // that the parameters are not getting deleted before we do
@@ -43,14 +54,13 @@ DuplicationLossProcess* DuplicationLossProcess::clone(void) const
     return new DuplicationLossProcess(*this);
 }
 
-
 double DuplicationLossProcess::computeLnProbability( void )
 {
 
-    // test that the origin time is older than the root age of the haplotype tree
+    // Test that the origin time is older than the root age of the haplotype
+    // tree.
     double org_time = origin->getValue();
     double haplotype_root_age = individual_tree->getValue().getRoot().getAge();
-
     if ( org_time < haplotype_root_age )
     {
         return RbConstants::Double::neginf;
@@ -637,7 +647,6 @@ void DuplicationLossProcess::setGeneSamplingProbability(TypedDagNode<RbVector<do
 // genes     :: A vector of pointers to the gene nodes at the top of the branch.
 void DuplicationLossProcess::recursivelySimulateTreeForward(double age_begin, const TopologyNode *i_node, std::vector<TopologyNode *> genes)
 {
-
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
     double age_end = i_node->getAge();
@@ -730,11 +739,16 @@ void DuplicationLossProcess::recursivelySimulateTreeForward(double age_begin, co
 // death process. Only if we end up with the correct amount of genes at each
 // leaf, we keep the tree.
 
+// Simulate a gene tree matching the haplotype tree and the required number of
+// extant genes.
+
 // FIXME: Of course, this is a naive method that will most likely take a loooong
 // time. Can't we use the simulation method of reconstructed trees introduced by
 // Tanja Stadler? No. Maybe?
 bool DuplicationLossProcess::simulateTreeRejectionSampling(void)
 {
+  // FIXME: At least, we could reject the simulation already when reaching the
+  // first tip in the haplotype tree where the number of genes mismatch.
     simulateTree();
 
 
@@ -757,8 +771,8 @@ bool DuplicationLossProcess::simulateTreeRejectionSampling(void)
 
         size_t num_genes_for_ind = 0;
 
-        // TODO: Write this more efficiently. Perhaps that can even be computed once before all simulations.
-        // HINT: Use a map.
+        // TODO: Write this more efficiently. Perhaps that can even be computed
+        // once before all simulations. HINT: Use a map.
         for (std::vector< Taxon >::iterator it = taxa.begin(); it != taxa.end(); ++it)
         {
             const Taxon &n = *(it);
@@ -780,15 +794,25 @@ bool DuplicationLossProcess::simulateTreeRejectionSampling(void)
   return true;
 }
 
+// Simulate a gene tree matching the haplotype tree.
 void DuplicationLossProcess::simulateTree( void )
 {
-
     const Tree &ind = individual_tree->getValue();
-
 
     // Delete old tree, if found.
     if (value != NULL) {
         delete value;
+    }
+
+    // Test that the origin time is older than the root age of the haplotype
+    // tree.
+    double org_time = origin->getValue();
+    double haplotype_root_age = individual_tree->getValue().getRoot().getAge();
+    if ( org_time < haplotype_root_age )
+    {
+      std::string err = "Origin time " + StringUtilities::to_string(org_time);
+      err += " lower than root age of haplotype tree " + StringUtilities::to_string(haplotype_root_age);
+      throw RbException(err);
     }
 
     // The root of the tree.
@@ -821,7 +845,7 @@ void DuplicationLossProcess::simulateTree( void )
     // We probably need to re-index the tip nodes here.
     psi->reindex();
 
-    // set the names of the tips
+    // Set the names of the tips.
     psi->setDefaultTipNames("Tip_",false);
 
     // Finally store the new tree.
