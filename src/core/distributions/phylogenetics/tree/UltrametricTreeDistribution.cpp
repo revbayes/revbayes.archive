@@ -18,10 +18,11 @@
 
 using namespace RevBayesCore;
 
-UltrametricTreeDistribution::UltrametricTreeDistribution( TypedDistribution<Tree>* tp, TypedDistribution<double>* rp, TypedDagNode<double> *ra, const TraceTree &tree_trace, Trace<double>* dens) : TypedDistribution<Tree>( new Tree() ),
+UltrametricTreeDistribution::UltrametricTreeDistribution( TypedDistribution<Tree>* tp, TypedDistribution<double>* rp, TypedDagNode<double> *ra, TypedDagNode<double> *rbf, const TraceTree &tree_trace, Trace<double>* dens) : TypedDistribution<Tree>( new Tree() ),
     tree_prior( tp ),
     rate_prior( rp ),
     root_age( ra ),
+    root_branch_fraction( rbf ),
     sample_prior_density( dens ),
     num_samples( 0 ),
     sample_block_start( 0 ),
@@ -47,7 +48,8 @@ UltrametricTreeDistribution::UltrametricTreeDistribution( TypedDistribution<Tree
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
     this->addParameter( root_age );
-    
+    this->addParameter( root_branch_fraction );
+
     
     // add the parameters of the distribution
     const std::vector<const DagNode*>& pars_tp = tree_prior->getParameters();
@@ -101,6 +103,7 @@ UltrametricTreeDistribution::UltrametricTreeDistribution( const UltrametricTreeD
     tree_prior( d.tree_prior->clone() ),
     rate_prior( d.rate_prior->clone() ),
     root_age( d.root_age ),
+    root_branch_fraction( d.root_branch_fraction ),
     trees( d.trees ),
     sample_prior_density( NULL ),
     trees_newick( d.trees_newick ),
@@ -149,6 +152,7 @@ UltrametricTreeDistribution& UltrametricTreeDistribution::operator=( const Ultra
         tree_prior              = d.tree_prior->clone();
         rate_prior              = d.rate_prior->clone();
         root_age                = d.root_age;
+        root_branch_fraction    = d.root_branch_fraction;
         trees                   = d.trees;
         sample_prior_density    = NULL;
         trees_newick            = d.trees_newick;
@@ -289,10 +293,25 @@ double UltrametricTreeDistribution::computeBranchRateLnProbability(const Tree &m
             }
             
             double branch_exp_num_events = tree_branch_lengths[index][splits[i]];
+            if ( the_node->getParent().isRoot() == true )
+            {
+                double frac = 1.0;
+                if ( the_node == &(the_node->getParent().getChild(0)) )
+                {
+                    frac = root_branch_fraction->getValue();
+                }
+                else
+                {
+                    frac = 1.0 - root_branch_fraction->getValue();
+                }
+                branch_exp_num_events *= frac;
+            }
             double branch_rate = branch_exp_num_events / branch_time;
             
             if ( RbMath::isFinite( branch_rate ) == false )
+            {
                 std::cerr << "Rate = " << branch_rate << ",\t\ttime = " << branch_time << ",\t\tevents = " << branch_exp_num_events << std::endl;
+            }
             
             rate_prior->setValue( new double(branch_rate) );
             ln_prob += rate_prior->computeLnProbability();
@@ -345,20 +364,21 @@ double UltrametricTreeDistribution::computeLnProbability( void )
 {
 
     // create a temporary copy of the this tree
-    Tree *my_tree = value->clone();
+    const Tree &my_tree = *value;
     
     // make the tree non-rooted
-    my_tree->unroot();
+    Tree *my_tree_unrooted = my_tree.clone();
+    my_tree_unrooted->unroot();
 
-    my_tree->reroot( outgroup, true);
+    my_tree_unrooted->reroot( outgroup, true);
     
-    std::string my_tree_newick = my_tree->getPlainNewickRepresentation();
+    std::string my_tree_newick = my_tree_unrooted->getPlainNewickRepresentation();
     
-    RbBitSet b( my_tree->getNumberOfTips(), false );
-    std::vector<Split> my_splits = std::vector<Split>(my_tree->getNumberOfNodes(), Split(b) );
-    collectSplits(my_tree->getRoot(), b, my_splits);
+    RbBitSet b( my_tree.getNumberOfTips(), false );
+    std::vector<Split> my_splits = std::vector<Split>(my_tree.getNumberOfNodes(), Split(b) );
+    collectSplits(my_tree.getRoot(), b, my_splits);
 
-    const std::map<std::string, size_t> &my_taxon_bitmap = my_tree->getTaxonBitSetMap();
+    const std::map<std::string, size_t> &my_taxon_bitmap = my_tree.getTaxonBitSetMap();
     std::vector<double> probs    = std::vector<double>(num_samples, 0.0);
     std::vector<double> ln_probs = std::vector<double>(num_samples, 0.0);
     
@@ -381,7 +401,7 @@ double UltrametricTreeDistribution::computeLnProbability( void )
                 std::cerr << "Ooohhh" << std::endl;
             }
 
-            ln_probs[i] = computeBranchRateLnProbability( *my_tree, my_tree_newick, my_splits, i );
+            ln_probs[i] = computeBranchRateLnProbability( my_tree, my_tree_newick, my_splits, i );
             
             if ( sample_prior_density != NULL && RbMath::isFinite( ln_probs[i] ) )
             {
@@ -393,7 +413,7 @@ double UltrametricTreeDistribution::computeLnProbability( void )
         
     }
     
-    delete my_tree;
+    delete my_tree_unrooted;
     
 #ifdef RB_MPI
     for (size_t i = 0; i < num_samples; ++i)
@@ -633,9 +653,14 @@ void UltrametricTreeDistribution::restoreSpecialization(DagNode *affecter)
 /** Swap a parameter of the distribution */
 void UltrametricTreeDistribution::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
-    if (oldP == root_age)
+    if (oldP == root_age )
     {
         root_age = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    
+    if (oldP == root_branch_fraction )
+    {
+        root_branch_fraction = static_cast<const TypedDagNode<double>* >( newP );
     }
     
     try

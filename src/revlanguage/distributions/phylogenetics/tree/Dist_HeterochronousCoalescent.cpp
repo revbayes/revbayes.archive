@@ -65,6 +65,11 @@ RevBayesCore::HeterochronousCoalescent* Dist_HeterochronousCoalescent::createDis
         df.push_back( ws_vec_df[i].getValue() );
     }
     
+    if ( (iv->getValue().size()+1) != df.size() )
+    {
+        throw RbException("You need to provide 1 more demographic function than change points.");
+    }
+    
     // taxon names
     const std::vector<RevBayesCore::Taxon> tn               = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getDagNode()->getValue();
     // clade constraints
