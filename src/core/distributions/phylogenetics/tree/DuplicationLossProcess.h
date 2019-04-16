@@ -47,6 +47,8 @@ namespace RevBayesCore {
     // Helper functions.
     double                                              computeD(double dt, double e);
     double                                              computeE(double dt, double e);
+    // Compute all extinction probabilities for haplotype tree.
+    void                                                computeAllEs(const TopologyNode &hap_node);
     // k :: Number of genes at the bottom of the branch.
     // t :: ORDERED vector of duplication times (ascending order).
     // a :: Age recent (at the bottom of the branch).

@@ -60,7 +60,8 @@ double DuplicationLossProcess::computeLnProbability( void )
   // Test that the origin time is older than the root age of the haplotype
   // tree.
   double org_time = origin->getValue();
-  double haplotype_root_age = individual_tree->getValue().getRoot().getAge();
+  const TopologyNode &hap_root = individual_tree->getValue().getRoot();
+  double haplotype_root_age = hap_root.getAge();
   if ( org_time < haplotype_root_age )
     {
       return RbConstants::Double::neginf;
@@ -73,6 +74,7 @@ double DuplicationLossProcess::computeLnProbability( void )
 
   // Same for extinction probabilities.
   extinction_probs = std::vector<double>(individual_tree->getValue().getNumberOfNodes(), 0.0);
+  computeAllEs(hap_root);
 
   // Now calculate the probability of observing the gene tree (recursively).
   double ln_prob_dl = recursivelyComputeLnProbability( individual_tree->getValue().getRoot() );
@@ -88,7 +90,7 @@ double DuplicationLossProcess::computeLnProbability( void )
 double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_genes_recent, const std::vector<double> &dupl_ages, double age_recent, double age_ancient, const TopologyNode &node_individual, bool is_root)
 {
   double ln_prob = 0.0;
-  size_t index_individual = node_individual.getIndex();
+  // size_t index_individual = node_individual.getIndex();
   double dupl_rate = duplication_rate->getValue();
   double current_age = age_recent;
   double current_ext_prob = 0.0;
@@ -148,14 +150,16 @@ double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_ge
         }
       double dt = origin->getValue() - current_age;
       ln_prob += log( computeD(dt, current_ext_prob) );
-      extinction_probs[index_individual] = computeE( dt, current_ext_prob );
+      // Do not set these here, but calculate them beforehand.
+      // extinction_probs[index_individual] = computeE( dt, current_ext_prob );
       return ln_prob;
     }
   else
     {
       double dt = age_ancient - current_age;
       ln_prob += (num_genes_recent-dupl_ages.size()) * log( computeD(dt, current_ext_prob) );
-      extinction_probs[index_individual] = computeE( dt, current_ext_prob );
+      // Do not set these here, but calculate them beforehand.
+      // extinction_probs[index_individual] = computeE( dt, current_ext_prob );
       return ln_prob;
     }
 }
@@ -215,6 +219,29 @@ double DuplicationLossProcess::computeD(double dt, double p_e)
   double denominator = la*(p_e - 1.0) + (mu - p_e*la)*et;
   double g_te        = nominator / denominator / denominator;
   return g_te;
+}
+
+// Tue Apr 16 13:54:41 CEST 2019 BUGFIX. The extinction probability for branches
+// without genes was not calculated. This is now done separately before the
+// actual likelihood calculcation.
+void DuplicationLossProcess::computeAllEs(const TopologyNode &hap_node) {
+  size_t index = hap_node.getIndex();
+  double length = hap_node.getBranchLength();
+
+  // TODO: Sampling probabilitites.
+  if ( hap_node.isTip() )
+    extinction_probs[index] = computeE(length, 0.0);
+  else {
+    const TopologyNode &left = hap_node.getChild(0);
+    size_t left_index = left.getIndex();
+    const TopologyNode &right = hap_node.getChild(1);
+    size_t right_index = right.getIndex();
+    computeAllEs(left);
+    computeAllEs(right);
+
+    double ext_prob_bottom = extinction_probs[left_index] * extinction_probs[right_index];
+    extinction_probs[index] = computeE(length, ext_prob_bottom);
+    }
 }
 
 double DuplicationLossProcess::computeE(double dt, double p_e)
