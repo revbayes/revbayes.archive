@@ -72,7 +72,7 @@ double DuplicationLossProcess::computeLnProbability( void )
   resetTipAllocations();
 
   // Same for extinction probabilities.
-  extinction_probs = std::vector<double>(individual_tree->getValue().getNumberOfNodes(),0.0);
+  extinction_probs = std::vector<double>(individual_tree->getValue().getNumberOfNodes(), 0.0);
 
   // Now calculate the probability of observing the gene tree (recursively).
   double ln_prob_dl = recursivelyComputeLnProbability( individual_tree->getValue().getRoot() );
@@ -490,6 +490,7 @@ void DuplicationLossProcess::resetTipAllocations( void )
 {
   num_taxa = value->getNumberOfTips();
 
+  // Check for a degenerate tree to avoid segmentation faults.
   if ( value->getRoot().getNumberOfChildren() == 0 )
     {
       return;
@@ -502,11 +503,11 @@ void DuplicationLossProcess::resetTipAllocations( void )
   std::map<std::string, TopologyNode * > individual_names_2_individual_nodes;
   for (std::vector< TopologyNode *>::const_iterator it = individual_tree_nodes.begin(); it != individual_tree_nodes.end(); ++it)
     {
-      TopologyNode *this_node = (*it);
-      if ( this_node->isTip() )
+      TopologyNode *this_ind_node = (*it);
+      if ( this_ind_node->isTip() )
         {
-          const std::string &name = this_node->getName();
-          individual_names_2_individual_nodes[name] = *it;
+          const std::string &ind_name = this_ind_node->getName();
+          individual_names_2_individual_nodes[ind_name] = *it;
         }
     }
 
@@ -812,7 +813,7 @@ void DuplicationLossProcess::simulateTree( void )
 
   // Start the tree traversal.
   const TopologyNode *i_root = &ind.getRoot();
-  recursivelySimulateTreeForward(origin->getValue(), i_root, genes);
+  recursivelySimulateTreeForward(org_time, i_root, genes);
 
   // Create the tree object.
   // The time tree object (topology + times).
@@ -822,6 +823,13 @@ void DuplicationLossProcess::simulateTree( void )
   // Initialize the gene topology by setting the root and reindex the tree.
   psi->setRoot(root, true);
 
+  // Set length of root branch.
+  double root_age = root->getAge();
+  double root_branch_length = org_time - root_age;
+  if (root_branch_length < 0) {
+    throw RbException("Root length smaller than zero.");
+  }
+  root->setBranchLength(root_branch_length);
 
   // Remove extinct genes.
   std::vector<size_t> fossil_leaves_idxs;
