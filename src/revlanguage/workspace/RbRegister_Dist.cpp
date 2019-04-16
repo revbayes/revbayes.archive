@@ -123,6 +123,7 @@
 #include "Dist_bdp.h"
 #include "Dist_bdp_complete.h"
 #include "Dist_BirthDeathBurstProcess.h"
+// #include "Dist_BDSTP.h"
 #include "Dist_CharacterDependentBirthDeathProcess.h"
 #include "Dist_Coalescent.h"
 #include "Dist_CoalescentSkyline.h"
@@ -147,7 +148,7 @@
 #include "Dist_outgroupBirthDeath.h"
 #include "Dist_phyloDistanceGamma.h"
 #include "Dist_sampledSpeciationBirthDeathProcess.h"
-// #include "Dist_BDSTP.h"
+#include "Dist_SSBDP.h"
 #include "Dist_TimeVaryingStateDependentSpeciationExtinctionProcess.h"
 #include "Dist_UltrametricTree.h"
 #include "Dist_uniformTimeTree.h"
@@ -300,6 +301,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // serial-sampled-birth-death process
         // AddDistribution< TimeTree                   >( new Dist_BDSTP());
+        AddDistribution< TimeTree                   >( new Dist_SSBDP());
 
         // diversity-dependent pure-birth process
         AddDistribution< TimeTree                   >( new Dist_divDepYuleProcess() );

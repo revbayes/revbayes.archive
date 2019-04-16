@@ -100,6 +100,7 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_SSBDP::createDistribution( void ) 
 
     if ( piecewise )
     {
+        throw(RbException("Piecewise Constant FBDP currently unsupported. Please use constant-rate process by specifying only constant-rate parameters."));
         // speciation rate
         RevBayesCore::DagNode* l = lambda->getRevObject().getDagNode();
         // extinction rate
