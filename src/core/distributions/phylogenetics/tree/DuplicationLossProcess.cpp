@@ -57,7 +57,6 @@ DuplicationLossProcess* DuplicationLossProcess::clone(void) const
 
 double DuplicationLossProcess::computeLnProbability( void )
 {
-
   // Test that the origin time is older than the root age of the haplotype
   // tree.
   double org_time = origin->getValue();
@@ -67,15 +66,15 @@ double DuplicationLossProcess::computeLnProbability( void )
       return RbConstants::Double::neginf;
     }
 
-  // to be safe, we always reset the tip allications at the beginning of the probability computation
-  // we could check if it is sufficient to do so only once at the beginning when values are set
+  // To be safe, we always reset the tip allications at the beginning of the
+  // probability computation. We could check if it is sufficient to do so only
+  // once at initialization, when values are set.
   resetTipAllocations();
 
-  // to be safe, we reset the extinction probability vector at the beginning of the probability computation.
-  // we could probably do this when we initialize the value too
+  // Same for extinction probabilities.
   extinction_probs = std::vector<double>(individual_tree->getValue().getNumberOfNodes(),0.0);
 
-  // now calculate the probability of observing the gene tree (recursively)
+  // Now calculate the probability of observing the gene tree (recursively).
   double ln_prob_dl = recursivelyComputeLnProbability( individual_tree->getValue().getRoot() );
 
   if ( condition == "survival" )
@@ -83,17 +82,14 @@ double DuplicationLossProcess::computeLnProbability( void )
       ln_prob_dl -= log( 1.0 - extinction_probs[individual_tree->getValue().getNumberOfNodes()-1] );
     }
 
-  return ln_prob_dl; // + logTreeTopologyProb;
+  return ln_prob_dl;
 }
 
 double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_genes_recent, const std::vector<double> &dupl_ages, double age_recent, double age_ancient, const TopologyNode &node_individual, bool is_root)
 {
-
   double ln_prob = 0.0;
-
   size_t index_individual = node_individual.getIndex();
   double dupl_rate = duplication_rate->getValue();
-
   double current_age = age_recent;
   double current_ext_prob = 0.0;
 
@@ -108,12 +104,9 @@ double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_ge
     {
       size_t index_left = node_individual.getChild(0).getIndex();
       size_t index_right = node_individual.getChild(1).getIndex();
-
       double ext_prob_left  = extinction_probs[index_left];
       double ext_prob_right = extinction_probs[index_right];
-
       current_ext_prob = ext_prob_left * ext_prob_right;
-
     }
 
   if (dupl_ages.size() >= num_genes_recent)
@@ -143,36 +136,26 @@ double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_ge
       current_age = this_dupl_age;
       // FIXME: We need to tell D what dop-loss rates to use when we want to use haplotype-branch-specific rates
       current_ext_prob = computeE( dt, current_ext_prob );
-
     }
 
   // Final branch segment before coalescence on individual tree, i.e., there are
   // no more duplications.
   if ( is_root == true )
     {
-      // What happens when we are at the root? dt=inf -> D=0 -> log(D)=-inf; certainly not what we want.
-      // throw RbException("At root, should we handle this in a special way?");
-      // Assume that we are done.
-
       if ( num_genes_recent - dupl_ages.size() != 1  )
         {
           throw RbException("Problem in the probability computation of the duplication and loss process! We are at the root node. There are " + StringUtilities::to_string(num_genes_recent) + " genes at the recent end of the branch, and had " + StringUtilities::to_string(dupl_ages.size()) + " duplication events.");
         }
-
       double dt = origin->getValue() - current_age;
       ln_prob += log( computeD(dt, current_ext_prob) );
-
       extinction_probs[index_individual] = computeE( dt, current_ext_prob );
-
       return ln_prob;
     }
   else
     {
       double dt = age_ancient - current_age;
       ln_prob += (num_genes_recent-dupl_ages.size()) * log( computeD(dt, current_ext_prob) );
-
       extinction_probs[index_individual] = computeE( dt, current_ext_prob );
-
       return ln_prob;
     }
 }
@@ -272,7 +255,7 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
     }
 
   //////////////////////////////////////////////////
-  // 1. Handle inerr nodes. At the leaves, the genes have to be set a priori,
+  // 1. Handle inner nodes. At the leaves, the genes have to be set a priori,
   // e.g., during the simulation.
 
   if ( individual_node.isTip() == false )
@@ -338,7 +321,7 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
         }
 
 
-      // now we remove the gene that were coalescent events
+      // Now we remove the gene that were coalescent events.
       for (std::set<const TopologyNode*>::const_iterator it=genes_to_remove.begin(); it!=genes_to_remove.end(); ++it)
         {
           genes_for_this_individual.erase( *it );
@@ -456,7 +439,7 @@ void DuplicationLossProcess::redrawValue( void )
   if ( condition == "genes" )
     {
 
-      while (attempts < 10000)
+      while (attempts < ATTEMPTS)
         {
           bool success = false;
 
@@ -469,12 +452,14 @@ void DuplicationLossProcess::redrawValue( void )
           ++attempts;
         }
 
-      throw RbException("After 10000 attempts a duplication-loss tree could not be simulated.");
+      std::string err="After " + StringUtilities::to_string(ATTEMPTS);
+      err += " attempts a duplication-loss tree could not be simulated.";
+      throw RbException(err);
     }
   else if ( condition == "survival" )
     {
 
-      while (attempts < 10000)
+      while (attempts < ATTEMPTS)
         {
           bool success = false;
 
@@ -489,7 +474,9 @@ void DuplicationLossProcess::redrawValue( void )
           ++attempts;
         }
 
-      throw RbException("After 10000 attempts a duplication-loss tree could not be simulated.");
+      std::string err="After " + StringUtilities::to_string(ATTEMPTS);
+      err += " attempts a duplication-loss tree could not be simulated.";
+      throw RbException(err);
     }
 
   {
