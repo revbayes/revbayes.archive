@@ -846,9 +846,10 @@ void EpisodicBirthDeathSamplingTreatmentProcess::updateVectorParameters( void ) 
       }
       else
       {
-        throw(RbException("No eventSampling value provided."));
+//        throw(RbException("No eventSampling value provided."));
+          phi_event = std::vector<double>(timeline.size(),0.0);
       }
-      phi_event = std::vector<double>(timeline.size(),0.0);
+        
     }
 
 }
