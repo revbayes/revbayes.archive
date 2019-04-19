@@ -138,8 +138,10 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_BDSTP::createDistribution( void ) 
           d_e = Mu->getRevObject().getDagNode();
         }
         // event sampling
-        RevBayesCore::DagNode* s_e = Phi->getRevObject().getDagNode();
-
+        RevBayesCore::DagNode* s_e = NULL;
+        if ( Phi->getRevObject() != RevNullObject::getInstance() ) {
+            Phi->getRevObject().getDagNode();
+        }
         // rate change times
         RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ht = static_cast<const ModelVector<RealPos> &>( timeline->getRevObject() ).getDagNode();
 
@@ -244,7 +246,7 @@ const MemberRules& Dist_BDSTP::getParameterRules(void) const
     static MemberRules dist_member_rules;
     static bool rules_set = false;
 
-    if ( !rules_set )
+    if ( rules_set == false )
     {
         std::vector<std::string> aliases;
         aliases.push_back("rootAge");
