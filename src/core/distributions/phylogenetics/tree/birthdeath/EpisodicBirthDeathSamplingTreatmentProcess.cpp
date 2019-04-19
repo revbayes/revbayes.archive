@@ -270,25 +270,26 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
         }
 
         // Make sure that we aren't claiming to have sampled all lineages without having sampled all lineages
-        if (phi_event[i] > 1.0 - DBL_EPSILON)
+        if (phi_event[i] >= (1.0 - DBL_EPSILON) && (active_lineages_at_t != N_i) )
         {
-          if (active_lineages_at_t != N_i)
-          {
             return RbConstants::Double::neginf;
             //std::stringstream ss;
             //ss << "The event sampling rate at timeline[ " << i << "] is one, but the tree has unsampled tips at this time.";
             //throw RbException(ss.str());
-          }
-          // Probability of sampling all of the lineages is 1
+          
         }
         else
         {
           ln_sampling_event_prob += N_i * log(phi_event[i]);
-          ln_sampling_event_prob += (active_lineages_at_t - N_i) * log(1 - phi_event[i]);
+            if ( (active_lineages_at_t - N_i) > 0 )
+            {
+                ln_sampling_event_prob += (active_lineages_at_t - N_i) * log(1 - phi_event[i]);
+            }
         }
 
         // Calculate probability of the sampled ancestors
-        if (r[i] > 1.0 - DBL_EPSILON) {
+        if (r[i] >= (1.0 - DBL_EPSILON) )
+        {
           // Cannot have sampled ancestors if r(t) == 1
           if (R_i > 0)
           {
@@ -298,8 +299,9 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
             //throw RbException(ss.str());
           }
         }
-        else
+        else if ( timeline[i] > DBL_EPSILON )
         {
+            // only add these terms for sampling that is not at the present
           ln_sampling_event_prob += R_i * log(1 - r[i]);
           ln_sampling_event_prob += (N_i - R_i) * log(r[i] * (1 - r[i])*E(i,timeline[i]));
         }
@@ -401,8 +403,10 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
 
       if ( !n.isRoot() && !n.isSampledAncestor() )
       {
-        double t_start = n.getParent().getAge();
-        double t_end = n.getAge();
+//        double t_start = n.getParent().getAge();
+//        double t_end = n.getAge();
+          double t_start = n.getAge();
+          double t_end = n.getParent().getAge();
 
         size_t interval_t_start = findIndex(t_start);
         size_t interval_t_end = findIndex(t_end);
@@ -415,13 +419,15 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
           double t_y = timeline[interval_t_o+1];
           size_t interval_t_y = interval_t_o + 1;
 
-          lnProbTimes += lnD(interval_t_o,t_o) - lnD(interval_t_y,t_y);
+            lnProbTimes -= lnD(interval_t_o,t_o);
+            lnProbTimes += lnD(interval_t_y,t_y);
 
           t_o = t_y;
           interval_t_o = interval_t_y;
         }
 
-        lnProbTimes += lnD(interval_t_o,t_o) - lnD(interval_t_end,t_end);
+          lnProbTimes -= lnD(interval_t_o,t_o);
+          lnProbTimes += lnD(interval_t_end,t_end);
 
       }
     }
@@ -610,8 +616,8 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnD(size_t i, double t) const
   }
   else
   {
-    double lnD_i = 2*RbConstants::LN2 + (-A_i[i] * (t - timeline[i]));
-    lnD_i -= 2 * log(1 + B_i[i] + (exp(-A_i[i] * (t - timeline[i]))) * (1 - B_i[i]));
+    double lnD_i = 2*RbConstants::LN2 + (-A_i[i] * (t));
+    lnD_i -= 2 * log(1 + B_i[i] + (exp(-A_i[i] * (t))) * (1 - B_i[i]));
 if (lnD_i < -pow(10.0,17))
 {
   std::cout << "ln(D_" << i << "(" << t << ")) = " << lnD_i << std::endl;
@@ -848,6 +854,8 @@ void EpisodicBirthDeathSamplingTreatmentProcess::updateVectorParameters( void ) 
       {
 //        throw(RbException("No eventSampling value provided."));
           phi_event = std::vector<double>(timeline.size(),0.0);
+          // set the final sampling to one (for sampling at the present)
+          phi_event[0] = 1.0;
       }
         
     }
@@ -983,9 +991,10 @@ int EpisodicBirthDeathSamplingTreatmentProcess::survivors(double t) const
     for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         TopologyNode* n = *it;
-        if ( n->getAge() < t )
+        double a = n->getAge();
+        if ( (a - t) <= DBL_EPSILON )
         {
-            if ( n->isRoot() || n->getParent().getAge() > t )
+            if ( n->isRoot() == true || (n->getParent().getAge() - t) >= -DBL_EPSILON )
             {
                 survivors++;
             }
