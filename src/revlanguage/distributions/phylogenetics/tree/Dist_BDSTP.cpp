@@ -139,11 +139,16 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_BDSTP::createDistribution( void ) 
         }
         // event sampling
         RevBayesCore::DagNode* s_e = NULL;
-        if ( Phi->getRevObject() != RevNullObject::getInstance() ) {
+        if ( Phi->getRevObject() != RevNullObject::getInstance() )
+        {
             s_e = Phi->getRevObject().getDagNode();
         }
         // rate change times
-        RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ht = static_cast<const ModelVector<RealPos> &>( timeline->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ht = NULL;
+        if ( timeline->getRevObject() != RevNullObject::getInstance() )
+        {
+            ht = static_cast<const ModelVector<RealPos> &>( timeline->getRevObject() ).getDagNode();
+        }
 
         d = new RevBayesCore::EpisodicBirthDeathSamplingTreatmentProcess(sa, b_s, d_s, s_s, t, b_e, d_e, s_e, ht, cond, tree, uo, init);
     // }
@@ -272,7 +277,7 @@ const MemberRules& Dist_BDSTP::getParameterRules(void) const
         dist_member_rules.push_back( new ArgumentRule( "Phi",     event_sampling_paramTypes, "The probability of sampling taxa at sampling events (at present only if input is scalar).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
 
-        dist_member_rules.push_back( new ArgumentRule( "timeline",    ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the piecewise constant process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "timeline",    ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the piecewise constant process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
 
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "time" );
