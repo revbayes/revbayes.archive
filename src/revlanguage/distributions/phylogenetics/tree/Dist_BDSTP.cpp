@@ -140,7 +140,7 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_BDSTP::createDistribution( void ) 
         // event sampling
         RevBayesCore::DagNode* s_e = NULL;
         if ( Phi->getRevObject() != RevNullObject::getInstance() ) {
-            Phi->getRevObject().getDagNode();
+            s_e = Phi->getRevObject().getDagNode();
         }
         // rate change times
         RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ht = static_cast<const ModelVector<RealPos> &>( timeline->getRevObject() ).getDagNode();

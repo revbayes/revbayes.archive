@@ -609,15 +609,18 @@ void EpisodicBirthDeathSamplingTreatmentProcess::countAllNodes(void) const
  */
 double EpisodicBirthDeathSamplingTreatmentProcess::lnD(size_t i, double t) const
 {
-  // D(0) = 1
-  if ( t < DBL_EPSILON )
-  {
-    return 0.0;
-  }
-  else
-  {
-    double lnD_i = 2*RbConstants::LN2 + (-A_i[i] * (t));
-    lnD_i -= 2 * log(1 + B_i[i] + (exp(-A_i[i] * (t))) * (1 - B_i[i]));
+    // D(0) = 1
+    if ( t < DBL_EPSILON )
+    {
+        return 0.0;
+    }
+    else
+    {
+        double lnD_i = 2*RbConstants::LN2 + (-A_i[i] * t);
+        lnD_i -= 2 * log(1 + B_i[i] + (exp(-A_i[i] * t)) * (1 - B_i[i]));
+//        double lnD_i = 2*RbConstants::LN2 + (-A_i[i] * (t - timeline[i]));
+//        lnD_i -= 2 * log(1 + B_i[i] + (exp(-A_i[i] * (t - timeline[i]))) * (1 - B_i[i]));
+        
 if (lnD_i < -pow(10.0,17))
 {
   std::cout << "ln(D_" << i << "(" << t << ")) = " << lnD_i << std::endl;
@@ -627,8 +630,9 @@ if (lnD_i < -pow(10.0,17))
   std::cout << "A_i[i] = " << A_i[i] << std::endl;
   std::cout << "lambda[i] = " << lambda[i] << "; mu[i] = " << mu[i] << "; phi[i] = " << phi[i] << std::endl;
 }
-    return lnD_i;
-  }
+        
+        return lnD_i;
+    }
 }
 
 /**
@@ -845,17 +849,16 @@ void EpisodicBirthDeathSamplingTreatmentProcess::updateVectorParameters( void ) 
     }
     else
     {
-      if ( homogeneous_Phi != NULL )
-      {
-        // User specified the sampling fraction at the present
-        phi_event.push_back(homogeneous_Phi->getValue());
-      }
-      else
-      {
-//        throw(RbException("No eventSampling value provided."));
-          phi_event = std::vector<double>(timeline.size(),0.0);
-          // set the final sampling to one (for sampling at the present)
-          phi_event[0] = 1.0;
+        phi_event = std::vector<double>(timeline.size(),0.0);
+        if ( homogeneous_Phi != NULL )
+        {
+            // User specified the sampling fraction at the present
+            phi_event[0] = homogeneous_Phi->getValue();
+        }
+        else
+        {
+            // set the final sampling to one (for sampling at the present)
+            phi_event[0] = 1.0;
       }
         
     }
