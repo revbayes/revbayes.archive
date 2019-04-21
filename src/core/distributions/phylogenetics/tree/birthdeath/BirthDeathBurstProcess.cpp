@@ -430,15 +430,15 @@ double BirthDeathBurstProcess::lnQ(double t) const
         double tmp = 1.0 + B + exp(-A*t)*(1.0-B);
         D /= (tmp*tmp);
         
-        double D_tb_a = 4.0*exp(-A*t_b);
-        double tmp_tb_a = 1.0 + B + exp(-A*t_b)*(1.0-B);
-        D_tb_a /= (tmp_tb_a*tmp_tb_a);
-        
-        double D_tb_b = 4.0*exp(-A*t_b);
-        double tmp_tb_b = 1.0 + B_tmp + exp(-A*t_b)*(1.0-B_tmp);
-        D_tb_b /= (tmp_tb_b*tmp_tb_b);
-        
-        D *= (D_tb_b / D_tb_a);
+//        double D_tb_a = 4.0*exp(-A*t_b);
+//        double tmp_tb_a = 1.0 + B + exp(-A*t_b)*(1.0-B);
+//        D_tb_a /= (tmp_tb_a*tmp_tb_a);
+//
+//        double D_tb_b = 4.0*exp(-A*t_b);
+//        double tmp_tb_b = 1.0 + B_tmp + exp(-A*t_b)*(1.0-B_tmp);
+//        D_tb_b /= (tmp_tb_b*tmp_tb_b);
+//
+//        D *= (D_tb_b / D_tb_a);
     }
     
     return log( D );

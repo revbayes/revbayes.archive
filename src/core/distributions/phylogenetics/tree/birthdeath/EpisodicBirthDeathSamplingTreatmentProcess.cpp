@@ -612,25 +612,38 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnD(size_t i, double t) const
     // D(0) = 1
     if ( t < DBL_EPSILON )
     {
-        return 0.0;
+        return log(phi_event[0]);
     }
     else
     {
-        double lnD_i = 2*RbConstants::LN2 + (-A_i[i] * t);
-        lnD_i -= 2 * log(1 + B_i[i] + (exp(-A_i[i] * t)) * (1 - B_i[i]));
-//        double lnD_i = 2*RbConstants::LN2 + (-A_i[i] * (t - timeline[i]));
-//        lnD_i -= 2 * log(1 + B_i[i] + (exp(-A_i[i] * (t - timeline[i]))) * (1 - B_i[i]));
-//        q = 0.5 * (q - (b+d+f)*dt);
+//        double end = 0.0;
+        double end = timeline[i];
+        double lnD_i = 0.0;
+        if (i > 0)
+        {
+            // D <- D * (1-this_p_s) * (1-this_p_d) * (1-this_p_b + 2*this_p_b*E)
+            lnD_i = lnD_i_t_i[i];
+            lnD_i += log(1.0-phi_event[i]) + log(1.0-mu_event[i]) + log(1-lambda_event[i]+2*lambda_event[i]*E_i_t_i[i-1]);
+//            end = timeline[i-1];
+        }
+        else
+        {
+            lnD_i = log(phi_event[0]);
+        }
+        // D <- D * 4 * exp(-A*(next_t-current_t))
+        // D <- D / ( 1+B+exp(-A*(next_t-current_t))*(1-B) )^2
+        lnD_i += 2*RbConstants::LN2 + (-A_i[i] * (t - end));
+        lnD_i -= 2 * log(1 + B_i[i] + exp(-A_i[i] * (t - end)) * (1 - B_i[i]));
         
-if (lnD_i < -pow(10.0,17))
-{
-  std::cout << "ln(D_" << i << "(" << t << ")) = " << lnD_i << std::endl;
-  std::cout << "numerator = " << 2*RbConstants::LN2 + (-A_i[i] * (t - timeline[i])) << std::endl;
-  std::cout << "denominator = " << 2 * log(1 + B_i[i] + (exp(-A_i[i] * (t - timeline[i]))) * (1 - B_i[i])) << std::endl;
-  std::cout << "t - s_i = " << t - timeline[i] << std::endl;
-  std::cout << "A_i[i] = " << A_i[i] << std::endl;
-  std::cout << "lambda[i] = " << lambda[i] << "; mu[i] = " << mu[i] << "; phi[i] = " << phi[i] << std::endl;
-}
+//if (lnD_i < -pow(10.0,17))
+//{
+//  std::cout << "ln(D_" << i << "(" << t << ")) = " << lnD_i << std::endl;
+//  std::cout << "numerator = " << 2*RbConstants::LN2 + (-A_i[i] * (t - timeline[i])) << std::endl;
+//  std::cout << "denominator = " << 2 * log(1 + B_i[i] + (exp(-A_i[i] * (t - timeline[i]))) * (1 - B_i[i])) << std::endl;
+//  std::cout << "t - s_i = " << t - timeline[i] << std::endl;
+//  std::cout << "A_i[i] = " << A_i[i] << std::endl;
+//  std::cout << "lambda[i] = " << lambda[i] << "; mu[i] = " << mu[i] << "; phi[i] = " << phi[i] << std::endl;
+//}
         
         return lnD_i;
     }
@@ -648,15 +661,18 @@ double EpisodicBirthDeathSamplingTreatmentProcess::E(size_t i, double t) const
   // }
   // else
   // {
-//    B <- ((1-2*((1-this_p_d)*E+this_p_d))*b+d+s)/A
-//    tmp <- (((1-this_p_b)*E+this_p_b*E*E)*(1-this_p_d)+((1-this_p_b)*this_p_d))*(1-this_p_s)
-//    B <- ((1-2*tmp)*b+d+s)/A
-//    E <- (b + d + s - A *(1+B-exp(-A*(next_t-current_t))*(1-B))/(1+B+exp(-A*(next_t-current_t))*(1-B)) ) / (2*b)
 
+    // E <- (b + d + s - A *(1+B-exp(-A*(next_t-current_t))*(1-B))/(1+B+exp(-A*(next_t-current_t))*(1-B)) ) / (2*b)
+//    double end = 0.0;
+//    if (i > 0)
+//    {
+//        end = timeline[i-1];
+//    }
+    double end = timeline[i];
+    
     double E_i = lambda[i] + mu[i] + phi[i];
-    E_i -= A_i[i] * (1 + B_i[i] - (exp(-A_i[i] * (t - timeline[i]))) * (1 - B_i[i])) / (1 + B_i[i] + (exp(-A_i[i] * (t - timeline[i]))) * (1 - B_i[i]));
-//    E_i -= A_i[i] * (1 + B_i[i] - (exp(-A_i[i] * t)) * (1 - B_i[i])) / (1 + B_i[i] + (exp(-A_i[i] * t)) * (1 - B_i[i]));
-    E_i /= 2 * lambda[i];
+    E_i -= A_i[i] * (1 + B_i[i] - exp(-A_i[i] * (t - end)) * (1 - B_i[i])) / (1 + B_i[i] + exp(-A_i[i] * (t - end)) * (1 - B_i[i]));
+    E_i /= (2 * lambda[i]);
 
     return E_i;
   // }
@@ -890,7 +906,8 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void ) 
     C_i = std::vector<double>(timeline.size(),0.0);
 
     // E_i_t_i[i] is E_{i-1}(t_i)
-    E_i_t_i = std::vector<double>(timeline.size(),0.0);
+    E_i_t_i   = std::vector<double>(timeline.size(),0.0);
+    lnD_i_t_i = std::vector<double>(timeline.size(),0.0);
 
     // timeline[0] == 0.0
     double t = timeline[0];
@@ -907,6 +924,9 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void ) 
     // E_{i-1}(0) = 1, and our E(i,t) function requires i >= 0, so we hard-code this explicitly
     // Sebastian: This should be the probability of going extinct, which is in this case the probability of non-sampling.
     E_i_t_i[0] = (1 - phi_event[0]);
+    
+    // we always initialize the probability of observing the lineage at the present with the sampling probability
+    lnD_i_t_i[0] = log( phi_event[0] );
 
     for (size_t i=1; i<timeline.size(); ++i)
     {
@@ -927,8 +947,14 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void ) 
 
         B_i[i] = (1.0 - 2.0 * C_i[i]) * lambda[i] + mu[i] + phi[i];
         B_i[i] /= A_i[i];
-
+        
         E_i_t_i[i] = E(i-1, t);
+        
+//        lnD_i_t_i[i] = lnD_i_t_i[i-1] + log(1.0-phi_event[i]) + log(1.0-mu_event[i]) + log(1-lambda_event[i]+2*lambda_event[i]*E_i_t_i[i-1]);
+//        lnD_i_t_i[i] += 2*RbConstants::LN2 + (-A_i[i] * (t - timeline[i-1]));
+//        lnD_i_t_i[i] -= 2 * log(1 + B_i[i] + (exp(-A_i[i] * (t - timeline[i-1]))) * (1 - B_i[i]));
+        lnD_i_t_i[i] = lnD(i-1, t);
+
     }
 }
 
