@@ -409,7 +409,7 @@ double BirthDeathBurstProcess::lnQ(double t) const
     double A = birth - death;
     double B = 0.0;
     double D = 0.0;
-    if ( t < t_b || !true )
+    if ( t < t_b )
     {
         B = ((1.0 - 2.0*(1.0-sampling)) * birth + death ) /  A;
         

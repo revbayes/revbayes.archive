@@ -280,7 +280,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
         }
         else
         {
-          ln_sampling_event_prob += N_i * log(phi_event[i]);
+            ln_sampling_event_prob += N_i * log(phi_event[i]);
             if ( (active_lineages_at_t - N_i) > 0 )
             {
                 ln_sampling_event_prob += (active_lineages_at_t - N_i) * log(1 - phi_event[i]);
@@ -399,37 +399,37 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
     // Compute probabilities of branch segments on all branches
     for (size_t i=0; i<num_nodes; ++i)
     {
-      const TopologyNode& n = value->getNode( i );
+        const TopologyNode& n = value->getNode( i );
 
-      if ( !n.isRoot() && !n.isSampledAncestor() )
-      {
+        if ( !n.isRoot() && !n.isSampledAncestor() )
+        {
 //        double t_start = n.getParent().getAge();
 //        double t_end = n.getAge();
-          double t_start = n.getAge();
-          double t_end = n.getParent().getAge();
+            double t_start = n.getAge();
+            double t_end = n.getParent().getAge();
 
-        size_t interval_t_start = findIndex(t_start);
-        size_t interval_t_end = findIndex(t_end);
+            size_t interval_t_start = findIndex(t_start);
+            size_t interval_t_end = findIndex(t_end);
 
-        double t_o = t_start;
-        size_t interval_t_o = interval_t_start;
+            double t_o = t_start;
+            size_t interval_t_o = interval_t_start;
 
-        while ( interval_t_o < interval_t_end )
-        {
-          double t_y = timeline[interval_t_o+1];
-          size_t interval_t_y = interval_t_o + 1;
+            while ( interval_t_o < interval_t_end )
+            {
+                double t_y = timeline[interval_t_o+1];
+                size_t interval_t_y = interval_t_o + 1;
+
+                lnProbTimes -= lnD(interval_t_o,t_o);
+                lnProbTimes += lnD(interval_t_y,t_y);
+
+                t_o = t_y;
+                interval_t_o = interval_t_y;
+            }
 
             lnProbTimes -= lnD(interval_t_o,t_o);
-            lnProbTimes += lnD(interval_t_y,t_y);
+            lnProbTimes += lnD(interval_t_end,t_end);
 
-          t_o = t_y;
-          interval_t_o = interval_t_y;
         }
-
-          lnProbTimes -= lnD(interval_t_o,t_o);
-          lnProbTimes += lnD(interval_t_end,t_end);
-
-      }
     }
 
     // // Handle all branch segments by creating master list of all intervals and tracking number alive in each
@@ -620,6 +620,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnD(size_t i, double t) const
         lnD_i -= 2 * log(1 + B_i[i] + (exp(-A_i[i] * t)) * (1 - B_i[i]));
 //        double lnD_i = 2*RbConstants::LN2 + (-A_i[i] * (t - timeline[i]));
 //        lnD_i -= 2 * log(1 + B_i[i] + (exp(-A_i[i] * (t - timeline[i]))) * (1 - B_i[i]));
+//        q = 0.5 * (q - (b+d+f)*dt);
         
 if (lnD_i < -pow(10.0,17))
 {
@@ -647,8 +648,14 @@ double EpisodicBirthDeathSamplingTreatmentProcess::E(size_t i, double t) const
   // }
   // else
   // {
+//    B <- ((1-2*((1-this_p_d)*E+this_p_d))*b+d+s)/A
+//    tmp <- (((1-this_p_b)*E+this_p_b*E*E)*(1-this_p_d)+((1-this_p_b)*this_p_d))*(1-this_p_s)
+//    B <- ((1-2*tmp)*b+d+s)/A
+//    E <- (b + d + s - A *(1+B-exp(-A*(next_t-current_t))*(1-B))/(1+B+exp(-A*(next_t-current_t))*(1-B)) ) / (2*b)
+
     double E_i = lambda[i] + mu[i] + phi[i];
     E_i -= A_i[i] * (1 + B_i[i] - (exp(-A_i[i] * (t - timeline[i]))) * (1 - B_i[i])) / (1 + B_i[i] + (exp(-A_i[i] * (t - timeline[i]))) * (1 - B_i[i]));
+//    E_i -= A_i[i] * (1 + B_i[i] - (exp(-A_i[i] * t)) * (1 - B_i[i])) / (1 + B_i[i] + (exp(-A_i[i] * t)) * (1 - B_i[i]));
     E_i /= 2 * lambda[i];
 
     return E_i;
@@ -903,19 +910,25 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void ) 
 
     for (size_t i=1; i<timeline.size(); ++i)
     {
-      t = timeline[i];
+        t = timeline[i];
+        
+        //    tmp <- (1-this_p_b)*(1-this_p_d)*E
+        //    tmp <- tmp + this_p_b*(1-this_p_d)*E*E
+        //    tmp <- tmp + ((1-this_p_b)*this_p_d)
+        //    tmp <- tmp*(1-this_p_s)
+        //    B <- ((1-2*tmp)*b+d+s)/A
 
-      A_i[i] = sqrt( pow(lambda[i] - mu[i] - phi[i],2.0) + 4 * lambda[i] * phi[i]);
+        A_i[i] = sqrt( pow(lambda[i] - mu[i] - phi[i],2.0) + 4 * lambda[i] * phi[i]);
 
-      C_i[i] = (1.0 - lambda_event[i]) * (1 - mu_event[i]) * E_i_t_i[i-1];
-      C_i[i] += (1.0 - mu_event[i]) * lambda_event[i] * E_i_t_i[i-1] * E_i_t_i[i-1];
-      C_i[i] += (1.0 - lambda_event[i]) * mu_event[i];
-      C_i[i] *= (1.0 - phi_event[i]);
+        C_i[i] = (1.0 - lambda_event[i]) * (1 - mu_event[i]) * E_i_t_i[i-1];
+        C_i[i] += (1.0 - mu_event[i]) * lambda_event[i] * E_i_t_i[i-1] * E_i_t_i[i-1];
+        C_i[i] += (1.0 - lambda_event[i]) * mu_event[i];
+        C_i[i] *= (1.0 - phi_event[i]);
 
-      B_i[i] = (1.0 - 2.0 * C_i[i]) * lambda[i] + mu[i] + phi[i];
-      B_i[i] /= A_i[i];
+        B_i[i] = (1.0 - 2.0 * C_i[i]) * lambda[i] + mu[i] + phi[i];
+        B_i[i] /= A_i[i];
 
-      E_i_t_i[i] = E(i-1, t);
+        E_i_t_i[i] = E(i-1, t);
     }
 }
 
