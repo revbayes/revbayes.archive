@@ -113,8 +113,8 @@ namespace RevBayesCore {
         mutable std::vector<double>                     A_i;                                                   //!< Helper values
         mutable std::vector<double>                     B_i;                                                   //!< Helper values
         mutable std::vector<double>                     C_i;                                                   //!< Helper values
-        mutable std::vector<double>                     E_i_t_i;                                               //!< The probability that a lineage at time t has no sampled descendants.
-        mutable std::vector<double>                     lnD_i_t_i;                                             //!< The probability of an observed lineage
+        mutable std::vector<double>                     E_previous;                                               //!< The probability that a lineage at time t has no sampled descendants.
+        mutable std::vector<double>                     lnD_previous;                                             //!< The probability of an observed lineage
     };
 }
 
