@@ -136,6 +136,8 @@ namespace RevBayesCore {
         bool                                        isSampledAncestor(bool propagate=false) const;                                                      //!< Is node (or a child node) a sampled ancestor?
         bool                                        isTip(void) const;                                                                  //!< Is node tip?
         void                                        makeBifurcating(void);                                                              //!< Make this and all its descendants bifurcating.
+        void                                        recursivelySortNodesByPostorder(std::vector<int> &visited, std::vector<size_t> &nodes) const;  // Recursively fill vector nodes with indices of nodes for a postorder (tip to root) traversal
+        void                                        recursivelySortNodesByPreorder(std::vector<int> &visited, std::vector<size_t> &nodes) const;  // Recursively fill vector nodes with indices of nodes for a preorder (root to tip) traversal
         void                                        renameNodeParameter(const std::string &old_name, const std::string &new_name);
         void                                        removeAllChildren(void);                                                            //!< Removes all of the children of the node
         size_t                                      removeChild(TopologyNode* c);                                                       //!< Removes a specific child

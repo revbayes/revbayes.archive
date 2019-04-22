@@ -693,7 +693,6 @@ const TopologyNode& Tree::getNode(size_t idx) const
     return *nodes[idx];
 }
 
-
 const std::vector<TopologyNode*>& Tree::getNodes(void) const
 {
 
@@ -1264,6 +1263,39 @@ void Tree::orderNodesByIndex( void )
     nodes = nodes_copy;
 
 }
+
+std::vector<TopologyNode*>& Tree::orderNodesForTraversal(std::string &order)
+{
+  // Get vector of indices in appropriate traversal order
+  std::vector<int> visited = std::vector<int>(nodes.size(),0);
+  std::vector<size_t> node_indices;
+
+  if (order == "postorder")
+  {
+    const TopologyNode& n = getTipNode( 0 );
+    n.recursivelySortNodesByPostorder(visited,node_indices);
+  }
+  else if (order == "preorder")
+  {
+    root->recursivelySortNodesByPostorder(visited,node_indices);
+  }
+  else
+  {
+    throw RbException("Unknown order in getNodeIndicesInOrder");
+  }
+
+  // Put nodes in order given by node_indices
+  std::vector<TopologyNode*> nodes_copy = std::vector<TopologyNode*>(nodes.size());
+  return nodes;
+  for (int i = 0; i < nodes.size(); i++)
+  {
+      nodes_copy[i] = nodes[node_indices[i]];
+  }
+
+  nodes = nodes_copy;
+
+}
+
 
 void Tree::pruneTaxa(const RbBitSet& prune_map )
 {

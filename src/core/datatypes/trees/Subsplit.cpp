@@ -59,7 +59,7 @@ Subsplit::Subsplit( const std::vector<Taxon> &c1, const std::vector<Taxon> &n ) 
 
 
 /**
- * Constructor from clade objects.
+ * Constructor from vectors of taxa.
  */
 Subsplit::Subsplit( const std::vector<Taxon> &c1, const std::vector<Taxon> &c2, const std::vector<Taxon> &n ) :
     bitset(),

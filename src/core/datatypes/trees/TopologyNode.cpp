@@ -1369,8 +1369,10 @@ void TopologyNode::getSubsplitParentChildPairsRecursively(std::vector<std::pair<
 {
   if ( !tip_node )
   {
-
-    for ( size_t i=0; i<children.size(); ++i ) //getSubsplit() will check that tree is bifurcating
+    // for ( size_t i=0; i<children.size(); ++i )
+    // getSubsplit() checks that a node is bifurcating and throws an error if it is not,
+    // If an error has not yet been thrown for the current node, we can safely loop over it two descendants,
+    for ( size_t i=0; i<2; ++i )
     {
         Subsplit child_subsplit = children[i]->getSubsplit(ordered_taxa);
 
@@ -1628,6 +1630,55 @@ void TopologyNode::makeBifurcating( void )
 
 }
 
+void TopologyNode::recursivelySortNodesByPostorder(std::vector<int> &visited, std::vector<size_t> &nodes) const
+{
+  if ( tip_node )
+  {
+    visited[index] = 1;
+    nodes.push_back(index);
+    parent->recursivelySortNodesByPostorder(visited,nodes);
+  }
+  else
+  {
+    for (std::vector<TopologyNode *>::const_iterator i = children.begin(); i != children.end(); ++i)
+    {
+        if (!visited[(*i)->getIndex()])
+        {
+          (*i)->recursivelySortNodesByPostorder(visited,nodes);
+        }
+    }
+    visited[index] = 1;
+    nodes.push_back(index);
+    if (!root_node)
+    {
+      parent->recursivelySortNodesByPostorder(visited,nodes);
+    }
+  }
+}
+
+void TopologyNode::recursivelySortNodesByPreorder(std::vector<int> &visited, std::vector<size_t> &nodes) const
+{
+  if (!visited[index])
+  {
+    nodes.push_back(index);
+    visited[index] = 1;
+  }
+
+  if (!tip_node)
+  {
+    for (std::vector<TopologyNode *>::const_iterator i = children.begin(); i != children.end(); ++i)
+    {
+      if (!visited[(*i)->getIndex()])
+      {
+        (*i)->recursivelySortNodesByPreorder(visited,nodes);
+      }
+    }
+    if (!root_node)
+    {
+      parent->recursivelySortNodesByPreorder(visited,nodes);
+    }
+  }
+}
 
 void TopologyNode::recomputeBranchLength( void )
 {

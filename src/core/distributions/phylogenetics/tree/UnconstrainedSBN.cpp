@@ -46,34 +46,67 @@ double UnconstrainedSBN::computeLnProbability( void )
 {
     double lnProbability = 0.0;
 
-    // Here we compute the probability of the tree according to the SBN
-    // If it is rooted, this is a single call to computeLnProbabilityGivenRoot
-    // If not, we must marginalize over the root location
+    // Here we compute the probability of the tree topology according to the SBN
+
     if ( rooted )
     {
-      lnProbability = computeLnProbabilityGivenRoot();
+      lnProbability += computeLnProbabilityRootedTopology();
     }
     else
     {
-      TopologyNode &initial_root = value->getRoot();
-
-      // sum over rooting locations
-      // TODO: with appropriate message passing we could calculate all this in one pass through the tree
-      for (size_t ri=0; ri < value->getNumberOfNodes(); ++ri)
-      {
-        value->reroot(value->getNode(ri),false);
-        lnProbability = logSum(lnProbability,computeLnProbabilityGivenRoot());
-      }
-
-      // Put root back where we found it
-      value->reroot(initial_root,false);
+      lnProbability += computeLnProbabilityUnrootedTopology();
     }
+
+    // Add branch lengths
+    lnProbability += computeLnProbabilityBranchLengths();
 
     return lnProbability;
 }
 
-double UnconstrainedSBN::computeLnProbabilityGivenRoot( void )
+double UnconstrainedSBN::computeLnProbabilityBranchLengths( void )
 {
+    double lnProbability = 0.0;
+
+    // // std::map<RbBitSet,std::pair<double,double> > edge_length_params = parameters.getEdgeLengthDistributionParameters();
+    // std::map<RbBitSet,std::pair<std::vector<double>,std::vector<double> > > edge_length_params = parameters.getEdgeLengthDistributionParameters();
+    //
+    // // Get branch lengths
+    // const std::vector<TopologyNode*> tree_nodes = value->getNodes();
+    // for (size_t i=0; i<tree_nodes.size(); ++i)
+    // {
+    //   if (!tree_nodes[i]->isRoot())
+    //   {
+    //     //TODO: this probability setup is really only good for a rooted tree, unrooted trees use splits not clades
+    //     //      we should prbably make a separate rooted and unrooted lnProb() calculator
+    //     Subsplit this_split = tree_nodes[i]->getSubsplit(taxa);
+    //     RbBitSet this_clade = this_split.asCladeBitset();
+    //
+    //     // std::pair<double,double> these_params = edge_length_params[this_clade];
+    //
+    //     std::pair<std::vector<double>,std::vector<double> > these_params = edge_length_params[this_clade];
+    //
+    //     lnProbability += RbStatistics::HardBoundPiecewiseUniform::lnPdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
+    //
+    //     // // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Lognormal::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
+    //     // // std::cout << "lognormal mu: " << these_params.first << "; lognormal sigma: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
+    //     // lnProbability += RbStatistics::Lognormal::lnPdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
+    //
+    //     // // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Gamma::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
+    //     // // std::cout << "gamma shape: " << these_params.first << "; gamma rate: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
+    //     // lnProbability += RbStatistics::Gamma::lnPdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
+    //   }
+    // }
+
+    return lnProbability;
+}
+
+double UnconstrainedSBN::computeLnProbabilityRootedTopology( void )
+{
+    if ( !(value->isBinary()) )
+    {
+      return RbConstants::Double::nan;
+    }
+
     double lnProbability = 0.0;
 
     // first compute root split probability
@@ -100,47 +133,84 @@ double UnconstrainedSBN::computeLnProbabilityGivenRoot( void )
       lnProbability += parameters.computeSubsplitTransitionProbability(parent_child_pair.first, parent_child_pair.second);
     }
 
+    return lnProbability;
+}
 
-    // std::map<RbBitSet,std::pair<double,double> > edge_length_params = parameters.getEdgeLengthDistributionParameters();
-    std::map<RbBitSet,std::pair<std::vector<double>,std::vector<double> > > edge_length_params = parameters.getEdgeLengthDistributionParameters();
-
-    // Get branch lengths
-    const std::vector<TopologyNode*> tree_nodes = value->getNodes();
-    for (size_t i=0; i<tree_nodes.size(); ++i)
-    {
-      if (!tree_nodes[i]->isRoot())
-      {
-        //TODO: this probability setup is really only good for a rooted tree, unrooted trees use splits not clades
-        //      we should prbably make a separate rooted and unrooted lnProb() calculator
-        Subsplit this_split = tree_nodes[i]->getSubsplit(taxa);
-        RbBitSet this_clade = this_split.asCladeBitset();
-
-        // std::pair<double,double> these_params = edge_length_params[this_clade];
-
-        std::pair<std::vector<double>,std::vector<double> > these_params = edge_length_params[this_clade];
-
-        lnProbability += RbStatistics::HardBoundPiecewiseUniform::lnPdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
-
-        // // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Lognormal::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
-        // // std::cout << "lognormal mu: " << these_params.first << "; lognormal sigma: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
-        // lnProbability += RbStatistics::Lognormal::lnPdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
-
-        // // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Gamma::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
-        // // std::cout << "gamma shape: " << these_params.first << "; gamma rate: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
-        // lnProbability += RbStatistics::Gamma::lnPdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
-      }
-    }
-
+double UnconstrainedSBN::computeLnProbabilityUnrootedTopology( void )
+{
     if ( !(value->isBinary()) )
     {
       return RbConstants::Double::nan;
     }
-// std::cout << "This lnProb for SBN tree = " << lnProbability << std::endl;
+
+    double lnProbability = 0.0;
+
+    // // Brute force marginalization
+    // else
+    // {
+    //   TopologyNode &initial_root = value->getRoot();
+    //
+    //   // sum over rooting locations
+    //   for (size_t ri=0; ri < value->getNumberOfNodes(); ++ri)
+    //   {
+    //     value->reroot(value->getNode(ri),false);
+    //     lnProbability = logSum(lnProbability,computeLnProbabilityRootedTopology());
+    //   }
+    //
+    //   // Put root back where we found it
+    //   value->reroot(initial_root,false);
+    // }
+
+    // // Initialize important features
+    // size_t nnodes = value->getNumberOfNodes();
+    // std::vector<double> lnProb_tree_and_root = std::vector<double>(nnodes,0.0); // For each node in the tree, the log-probability Pr(rooted tree rooted to edge subtending this node), will be 0.0 at root and one of root's children
+    // std::vector<double> descending = std::vector<double>(nnodes,0.0); // Vector of probability of all of tree descending from this node given its subsplit
+    // std::vector<double> reversal = std::vector<double>(nnodes,0.0); // Vector of probabilities of
+    // std::vector<Split> branch_splits = std::vector<Split>(nnodes,Subsplit()); // Branches (that subtend nodes) as Split objects
+    //
+    // // Tip to root pass
+    // value->orderNodesForTraversal("postorder");
+    //
+    // std::vector<TopologyNode*> nodes = value->getNodes();
+    // for (std::vector<TopologyNode*>::iterator n = nodes.begin(); n != children.end(); n++)
+    // {
+    //   size_t i = n->getIndex();
+    //   if (n->isTip())
+    //   {
+    //     lnProb_tree_and_root[i] = 0.0;
+    //   }
+    //   else
+    //   {
+    //     std::vector<TopologyNode*> children_indices = n->getChildrenIndices();
+    //     lnProb_tree_and_root[i] = logSumExpWeights(lnProb_tree_and_root[0], lnProb_tree_and_root[1], );
+    //   }
+    // }
+
     return lnProbability;
 }
 
 
-double UnconstrainedSBN::logSum( double x1, double x2 )
+double UnconstrainedSBN::logSumExp( std::vector<double> &x )
+{
+    double offset = RbConstants::Double::neginf;
+    double sum = 0.0;
+    for (size_t i=0; i < x.size(); ++i)
+    {
+      if (x[i] > offset)
+      {
+        offset = x[i];
+      }
+    }
+
+    for (size_t i=0; i < x.size(); ++i)
+    {
+      sum += exp(x[i] - offset);
+    }
+
+    return log(sum) + offset;
+}
+
+double UnconstrainedSBN::logSumExp( double &x1, double &x2 )
 {
     double offset = std::max(x1,x2);
 
@@ -152,6 +222,37 @@ double UnconstrainedSBN::logSum( double x1, double x2 )
 
     return log(exp_x1 + exp_x2) + offset;
 }
+
+double UnconstrainedSBN::logSumExpWeights( std::vector<double> &x, std::vector<double> &p )
+{
+    double offset = RbConstants::Double::neginf;
+    double sum = 0.0;
+    for (size_t i=0; i < x.size(); ++i)
+    {
+      if (x[i] > offset)
+      {
+        offset = x[i];
+      }
+    }
+
+    for (size_t i=0; i < x.size(); ++i)
+    {
+      sum += p[i] * exp(x[i] - offset);
+    }
+
+    return log(sum) + offset;
+}
+
+double UnconstrainedSBN::logSumExpWeights( double &x1, double &x2, double &p1, double &p2 )
+{
+    double offset = std::max(x1,x2);
+
+    double exp_x1 = p1 * exp(x1 - offset);
+    double exp_x2 = p2 * exp(x2 - offset);
+
+    return log(exp_x1 + exp_x2) + offset;
+}
+
 
 void UnconstrainedSBN::redrawValue( void )
 {
