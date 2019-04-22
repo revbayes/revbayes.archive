@@ -152,8 +152,6 @@ EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentP
       throw(RbException("If provided as a vector, argument Phi must have one more element than timeline."));
     }
 
-    //TODO: calling updateVectorParameters once every computation could likely be replaced by updating parameters as they are swapped
-
     updateVectorParameters();
     prepareProbComputation();
 
@@ -288,18 +286,15 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
         }
 
         // Calculate probability of the sampled ancestors
-        if (r[i] >= (1.0 - DBL_EPSILON) )
+        if ( r[i] >= (1.0 - DBL_EPSILON) && R_i > 0 )
         {
           // Cannot have sampled ancestors if r(t) == 1
-          if (R_i > 0)
-          {
-            return RbConstants::Double::neginf;
-            //std::stringstream ss;
-            //ss << "The conditional probability of death on sampling rate in interval " << i << " is one, but the tree has sampled ancesors in this interval.";
-            //throw RbException(ss.str());
-          }
+          return RbConstants::Double::neginf;
+          //std::stringstream ss;
+          //ss << "The conditional probability of death on sampling rate in interval " << i << " is one, but the tree has sampled ancesors in this interval.";
+          //throw RbException(ss.str());
         }
-        else if ( timeline[i] > DBL_EPSILON )
+        if ( timeline[i] > DBL_EPSILON )
         {
             // only add these terms for sampling that is not at the present
           ln_sampling_event_prob += R_i * log(1 - r[i]);
@@ -612,6 +607,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnD(size_t i, double t) const
     // D(0) = 1
     if ( t < DBL_EPSILON )
     {
+        // TODO: this can't be right, if phi_event[0] = 0 this will blow up
         return log(phi_event[0]);
     }
     else
@@ -924,9 +920,12 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void ) 
 
     // E_{i-1}(0) = 1, and our E(i,t) function requires i >= 0, so we hard-code this explicitly
     // Sebastian: This should be the probability of going extinct, which is in this case the probability of non-sampling.
-    E_previous[0] = (1 - phi_event[0]);
+    // Andy: This is not E_0(t_0) this is E_{-1}(t_0)
+    // E_previous[0] = (1 - phi_event[0]);
+    E_previous[0] = 1.0;
 
     // we always initialize the probability of observing the lineage at the present with the sampling probability
+    // TODO: This can't be right, if there is no event sampling this will blow up
     lnD_previous[0] = log( phi_event[0] );
 
     for (size_t i=1; i<timeline.size(); ++i)
