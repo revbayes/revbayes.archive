@@ -244,66 +244,65 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
     // add the event-sampling terms (ii)
     for (size_t i = 0; i < timeline.size(); ++i)
     {
-      // Only compute sampling probability when there is a sampling event
-      if (phi_event[i] > DBL_EPSILON)
-      {
-        if ( RbMath::isFinite(lnProbTimes) == false )
+        // Only compute sampling probability when there is a sampling event
+        if (phi_event[i] > DBL_EPSILON)
         {
-            // throw(RbException("nan-likelihood in (ii)"));
-            return RbConstants::Double::nan;
-        }
-
-        // Calculate probability of the samples
-        double ln_sampling_event_prob = 0.0;
-        int R_i = event_sampled_ancestor_ages[i].size();
-        int N_i = R_i + event_tip_ages[i].size();
-        int active_lineages_at_t = survivors(timeline[i]); //A(t_{\rho_i})
-
-        if (N_i == 0)
-        {
-          return RbConstants::Double::neginf;
-          //std::stringstream ss;
-          //ss << "The event sampling rate at timeline[ " << i << "] is > 0, but the tree has no samples at this time.";
-          //throw RbException(ss.str());
-        }
-
-        // Make sure that we aren't claiming to have sampled all lineages without having sampled all lineages
-        if (phi_event[i] >= (1.0 - DBL_EPSILON) && (active_lineages_at_t != N_i) )
-        {
-            return RbConstants::Double::neginf;
-            //std::stringstream ss;
-            //ss << "The event sampling rate at timeline[ " << i << "] is one, but the tree has unsampled tips at this time.";
-            //throw RbException(ss.str());
-
-        }
-        else
-        {
-            ln_sampling_event_prob += N_i * log(phi_event[i]);
-            if ( (active_lineages_at_t - N_i) > 0 )
+            if ( RbMath::isFinite(lnProbTimes) == false )
             {
-                ln_sampling_event_prob += (active_lineages_at_t - N_i) * log(1 - phi_event[i]);
+                // throw(RbException("nan-likelihood in (ii)"));
+                return RbConstants::Double::nan;
             }
-        }
 
-        // Calculate probability of the sampled ancestors
-        if ( r[i] >= (1.0 - DBL_EPSILON) && R_i > 0 )
-        {
-          // Cannot have sampled ancestors if r(t) == 1
-          return RbConstants::Double::neginf;
-          //std::stringstream ss;
-          //ss << "The conditional probability of death on sampling rate in interval " << i << " is one, but the tree has sampled ancesors in this interval.";
-          //throw RbException(ss.str());
+            // Calculate probability of the samples
+            double ln_sampling_event_prob = 0.0;
+            int R_i = int(event_sampled_ancestor_ages[i].size());
+            int N_i = R_i + int(event_tip_ages[i].size());
+            int active_lineages_at_t = survivors(timeline[i]); //A(t_{\rho_i})
+
+            if (N_i == 0)
+            {
+                return RbConstants::Double::neginf;
+                //std::stringstream ss;
+                //ss << "The event sampling rate at timeline[ " << i << "] is > 0, but the tree has no samples at this time.";
+                //throw RbException(ss.str());
+            }
+
+            // Make sure that we aren't claiming to have sampled all lineages without having sampled all lineages
+            if (phi_event[i] >= (1.0 - DBL_EPSILON) && (active_lineages_at_t != N_i) )
+            {
+                return RbConstants::Double::neginf;
+                //std::stringstream ss;
+                //ss << "The event sampling rate at timeline[ " << i << "] is one, but the tree has unsampled tips at this time.";
+                //throw RbException(ss.str());
+
+            }
+            else
+            {
+                ln_sampling_event_prob += N_i * log(phi_event[i]);
+                if ( (active_lineages_at_t - N_i) > 0 )
+                {
+                    ln_sampling_event_prob += (active_lineages_at_t - N_i) * log(1 - phi_event[i]);
+                }
+            }
+
+            // Calculate probability of the sampled ancestors
+            if ( r[i] >= (1.0 - DBL_EPSILON) && R_i > 0 )
+            {
+                // Cannot have sampled ancestors if r(t) == 1
+                return RbConstants::Double::neginf;
+                //std::stringstream ss;
+                //ss << "The conditional probability of death on sampling rate in interval " << i << " is one, but the tree has sampled ancesors in this interval.";
+                //throw RbException(ss.str());
+            }
+            if ( timeline[i] > DBL_EPSILON )
+            {
+                // only add these terms for sampling that is not at the present
+                ln_sampling_event_prob += R_i * log(1 - r[i]);
+                ln_sampling_event_prob += (N_i - R_i) * log(r[i] * (1 - r[i])*E(i,timeline[i]));
+            }
+            lnProbTimes += ln_sampling_event_prob;
         }
-        if ( timeline[i] > DBL_EPSILON )
-        {
-            // only add these terms for sampling that is not at the present
-          ln_sampling_event_prob += R_i * log(1 - r[i]);
-          ln_sampling_event_prob += (N_i - R_i) * log(r[i] * (1 - r[i])*E(i,timeline[i]));
-        }
-        lnProbTimes += ln_sampling_event_prob;
-      }
     }
-// std::cout << "computed (ii); lnProbability = " << lnProbTimes << std::endl;
 
     // add the serial tip age terms (iii)
     for (size_t i = 0; i < serial_tip_ages.size(); ++i)
@@ -326,15 +325,15 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
         }
         else
         {
-          double this_prob = r[index] + (1 - r[index]) * E(index,t);
-          this_prob *= phi[index];
-          // double this_prob = phi[index] * r[index];
-          // // Avoid computation in the case of r = 1
-          // if (r[t] <= 1 - DBL_EPSILON)
-          // {
-          //   this_prob += phi[index] * (1 - r[index]) * E(index,t);
-          // }
-          lnProbTimes += log( this_prob );
+            double this_prob = r[index] + (1 - r[index]) * E(index,t);
+            this_prob *= phi[index];
+            // double this_prob = phi[index] * r[index];
+            // // Avoid computation in the case of r = 1
+            // if (r[t] <= 1 - DBL_EPSILON)
+            // {
+            //   this_prob += phi[index] * (1 - r[index]) * E(index,t);
+            // }
+            lnProbTimes += log( this_prob );
         }
     }
 // std::cout << "computed (iii); lnProbability = " << lnProbTimes << std::endl;
@@ -342,23 +341,23 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
     // add the serial sampled ancestor terms (iv)
     for (size_t i=0; i < serial_sampled_ancestor_ages.size(); ++i)
     {
-      if ( RbMath::isFinite(lnProbTimes) == false )
-      {
-          return RbConstants::Double::nan;
-      }
+        if ( RbMath::isFinite(lnProbTimes) == false )
+        {
+            return RbConstants::Double::nan;
+        }
 
-      double t = serial_sampled_ancestor_ages[i];
-      size_t index = findIndex(t);
+        double t = serial_sampled_ancestor_ages[i];
+        size_t index = findIndex(t);
 
-      if ( r[i] > 1.0 - DBL_EPSILON )
-      {
-        return RbConstants::Double::neginf;
-        //std::stringstream ss;
-        //ss << "The conditional probability of death on sampling rate in interval " << i << " is one, but the tree has sampled ancesors in this interval.";
-        //throw RbException(ss.str());
-      }
+        if ( r[index] > 1.0 - DBL_EPSILON )
+        {
+            return RbConstants::Double::neginf;
+            //std::stringstream ss;
+            //ss << "The conditional probability of death on sampling rate in interval " << i << " is one, but the tree has sampled ancesors in this interval.";
+            //throw RbException(ss.str());
+        }
 
-      lnProbTimes += log(phi[i]) + log(1 - r[i]);
+        lnProbTimes += log(phi[index]) + log(1 - r[index]);
 
     }
 // std::cout << "computed (iv); lnProbability = " << lnProbTimes << std::endl;
@@ -366,14 +365,14 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
     // add the burst bifurcation age terms (v)
     for (size_t i = 0; i < timeline.size(); ++i)
     {
-      // Nothing to compute if the burst probability is 0
-      if (lambda_event[i] > DBL_EPSILON)
-      {
-        lnProbTimes += event_bifurcation_times[i].size() * log(lambda_event[i]);
-        int active_lineages_at_t = survivors(timeline[i]); //A(t_{\rho_i})
-        int A_minus_K = active_lineages_at_t - event_bifurcation_times[i].size();
-        lnProbTimes += log(pow(lambda_event[i],A_minus_K)*E(i,timeline[i])+pow(1.0 - lambda_event[i],A_minus_K));
-      }
+        // Nothing to compute if the burst probability is 0
+        if (lambda_event[i] > DBL_EPSILON)
+        {
+            lnProbTimes += event_bifurcation_times[i].size() * log(lambda_event[i]);
+            int active_lineages_at_t = survivors(timeline[i]); //A(t_{\rho_i})
+            int A_minus_K = active_lineages_at_t - int(event_bifurcation_times[i].size());
+            lnProbTimes += log(pow(lambda_event[i],A_minus_K)*E(i,timeline[i])+pow(1.0 - lambda_event[i],A_minus_K));
+        }
     }
 // std::cout << "computed (v); lnProbability = " << lnProbTimes << std::endl;
 
