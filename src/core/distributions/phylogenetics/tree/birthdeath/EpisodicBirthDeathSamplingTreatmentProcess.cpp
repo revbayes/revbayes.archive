@@ -612,7 +612,6 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnD(size_t i, double t) const
     }
     else
     {
-//        double s = 0.0;
         double s = timeline[i];
         double this_lnD_i = 0.0;
         if (i > 0)
@@ -620,9 +619,6 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnD(size_t i, double t) const
             // D <- D * (1-this_p_s) * (1-this_p_d) * (1-this_p_b + 2*this_p_b*E)
             this_lnD_i = lnD_previous[i];
             this_lnD_i += log(1.0-phi_event[i]) + log(1.0-mu_event[i]) + log(1-lambda_event[i]+2*lambda_event[i]*E_previous[i]);
-//            this_lnD_i = lnD_i[i];
-//            this_lnD_i += log(1.0-phi_event[i-1]) + log(1.0-mu_event[i-1]) + log(1-lambda_event[i-1]+2*lambda_event[i-1]*E_i[i-1]);
-//            s = timeline[i-1];
         }
         else
         {
@@ -632,16 +628,6 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnD(size_t i, double t) const
         // D <- D / ( 1+B+exp(-A*(next_t-current_t))*(1-B) )^2
         this_lnD_i += 2*RbConstants::LN2 + (-A_i[i] * (t - s));
         this_lnD_i -= 2 * log(1 + B_i[i] + exp(-A_i[i] * (t - s)) * (1 - B_i[i]));
-
-//if (lnD_i < -pow(10.0,17))
-//{
-//  std::cout << "ln(D_" << i << "(" << t << ")) = " << lnD_i << std::endl;
-//  std::cout << "numerator = " << 2*RbConstants::LN2 + (-A_i[i] * (t - timeline[i])) << std::endl;
-//  std::cout << "denominator = " << 2 * log(1 + B_i[i] + (exp(-A_i[i] * (t - timeline[i]))) * (1 - B_i[i])) << std::endl;
-//  std::cout << "t - s_i = " << t - timeline[i] << std::endl;
-//  std::cout << "A_i[i] = " << A_i[i] << std::endl;
-//  std::cout << "lambda[i] = " << lambda[i] << "; mu[i] = " << mu[i] << "; phi[i] = " << phi[i] << std::endl;
-//}
 
         return this_lnD_i;
     }
@@ -661,11 +647,6 @@ double EpisodicBirthDeathSamplingTreatmentProcess::E(size_t i, double t) const
   // {
 
     // E <- (b + d + s - A *(1+B-exp(-A*(next_t-current_t))*(1-B))/(1+B+exp(-A*(next_t-current_t))*(1-B)) ) / (2*b)
-//    double s = 0.0;
-//    if (i > 0)
-//    {
-//        s = timeline[i-1];
-//    }
     double s = timeline[i];
 
     double E_i = lambda[i] + mu[i] + phi[i];
@@ -732,16 +713,16 @@ size_t EpisodicBirthDeathSamplingTreatmentProcess::findIndex(double t) const
 // calculate offset so we can set t_0 to time of most recent tip
 void EpisodicBirthDeathSamplingTreatmentProcess::getOffset(void) const
 {
-  offset = RbConstants::Double::max;
-  for (size_t i = 0; i < value->getNumberOfNodes(); i++)
-  {
-      const TopologyNode& n = value->getNode( i );
+    offset = RbConstants::Double::max;
+    for (size_t i = 0; i < value->getNumberOfNodes(); i++)
+    {
+        const TopologyNode& n = value->getNode( i );
 
-      if ( n.getAge() < offset )
-      {
-        offset = n.getAge();
-      }
-  }
+        if ( n.getAge() < offset )
+        {
+            offset = n.getAge();
+        }
+    }
 
 }
 
@@ -908,8 +889,6 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void ) 
     // lnD_previous[i] is log(D_{i-1}(s_i))
     E_previous      = std::vector<double>(timeline.size(),0.0);
     lnD_previous    = std::vector<double>(timeline.size(),0.0);
-//    E_i             = std::vector<double>(timeline.size(),0.0);
-//    lnD_i           = std::vector<double>(timeline.size(),0.0);
 
     // timeline[0] == 0.0
     double t = timeline[0];
@@ -928,27 +907,20 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void ) 
     // Andy: This is not E_0(t_0) this is E_{-1}(t_0)
     // E_previous[0] = (1 - phi_event[0]);
     E_previous[0] = 1.0;
-//    E_i[0] = (1 - phi_event[0]);
 
     // we always initialize the probability of observing the lineage at the present with the sampling probability
     // TODO: This can't be right, if there is no event sampling this will blow up
     lnD_previous[0] = 0.0;
-//    lnD_i[0] = 0.0;
 
     for (size_t i=1; i<timeline.size(); ++i)
     {
         t = timeline[i];
-
-        //    tmp <- (1-this_p_b)*(1-this_p_d)*E
-        //    tmp <- tmp + this_p_b*(1-this_p_d)*E*E
-        //    tmp <- tmp + ((1-this_p_b)*this_p_d)
-        //    tmp <- tmp*(1-this_p_s)
-        //    B <- ((1-2*tmp)*b+d+s)/A
         
+        // first, we need to compute E and D at the end of the previous interval
         E_previous[i] = E(i-1, t);
         lnD_previous[i] = lnD(i-1, t);
 
-
+        // now we can compute A_i, B_i and C_i at the end of this interval.
         A_i[i] = sqrt( pow(lambda[i] - mu[i] - phi[i],2.0) + 4 * lambda[i] * phi[i]);
 
         C_i[i] = (1.0 - lambda_event[i]) * (1 - mu_event[i]) * E_previous[i];
@@ -958,12 +930,6 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void ) 
 
         B_i[i] = (1.0 - 2.0 * C_i[i]) * lambda[i] + mu[i] + phi[i];
         B_i[i] /= A_i[i];
-//        E_i[i] = E(i, t);
-
-//        lnD_previous[i] = lnD_previous[i-1] + log(1.0-phi_event[i]) + log(1.0-mu_event[i]) + log(1-lambda_event[i]+2*lambda_event[i]*E_previous[i-1]);
-//        lnD_previous[i] += 2*RbConstants::LN2 + (-A_i[i] * (t - timeline[i-1]));
-//        lnD_previous[i] -= 2 * log(1 + B_i[i] + (exp(-A_i[i] * (t - timeline[i-1]))) * (1 - B_i[i]));
-//        lnD_i[i] = lnD(i, t);
 
     }
 }
