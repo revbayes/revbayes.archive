@@ -623,7 +623,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnD(size_t i, double t) const
         {
             // D <- D * (1-this_p_s) * (1-this_p_d) * (1-this_p_b + 2*this_p_b*E)
             lnD_i = lnD_previous[i];
-            lnD_i += log(1.0-phi_event[i]) + log(1.0-mu_event[i]) + log(1-lambda_event[i]+2*lambda_event[i]*E_previous[i-1]);
+            lnD_i += log(1.0-phi_event[i]) + log(1.0-mu_event[i]) + log(1-lambda_event[i]+2*lambda_event[i]*E_previous[i]);
 //            end = timeline[i-1];
         }
         else
@@ -941,8 +941,8 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void ) 
 
         A_i[i] = sqrt( pow(lambda[i] - mu[i] - phi[i],2.0) + 4 * lambda[i] * phi[i]);
 
-        C_i[i] = (1.0 - lambda_event[i]) * (1 - mu_event[i]) * E_previous[i-1];
-        C_i[i] += (1.0 - mu_event[i]) * lambda_event[i] * E_previous[i-1] * E_previous[i-1];
+        C_i[i] = (1.0 - lambda_event[i]) * (1 - mu_event[i]) * E_previous[i];
+        C_i[i] += (1.0 - mu_event[i]) * lambda_event[i] * E_previous[i] * E_previous[i];
         C_i[i] += (1.0 - lambda_event[i]) * mu_event[i];
         C_i[i] *= (1.0 - phi_event[i]);
 
