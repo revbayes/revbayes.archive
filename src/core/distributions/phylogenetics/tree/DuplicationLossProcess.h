@@ -9,7 +9,7 @@
 // If branching events are closer in time than 'EPS_COAL', they are considered
 // the same event. This is important when assigning coalescent events to
 // branching events on the gene tree.
-const double EPS_COAL = 1E-10;
+const double EPS_COAL = 1E-5;
 // Maximum number of attempts for rejection sampling.
 const int ATTEMPTS = 40000;
 
