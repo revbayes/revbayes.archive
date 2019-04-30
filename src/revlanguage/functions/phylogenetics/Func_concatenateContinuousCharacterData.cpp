@@ -91,7 +91,7 @@ const std::string& Func_concatenateContinuousCharacterData::getClassType(void)
 const TypeSpec& Func_concatenateContinuousCharacterData::getClassTypeSpec(void)
 {
     
-    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Procedure::getClassTypeSpec() ) );
     
     return rev_type_spec;
 }
@@ -158,9 +158,9 @@ std::string Func_concatenateContinuousCharacterData::getHelpExample(void) const
     std::string example = "";
     
     example += "# read in character data for locus_1\n";
-    example += "locus_1 = readDiscreteCharacterData(\"locus_1.nex\")\n";
+    example += "locus_1 = readContinuousCharacterData(\"locus_1.nex\")\n";
     example += "# read in character data for locus_2\n";
-    example += "locus_2 = readDiscreteCharacterData(\"locus_2.nex\")\n";
+    example += "locus_2 = readContinuousCharacterData(\"locus_2.nex\")\n";
     example += "# create concated locus for 1+2 (union of taxa)\n";
     example += "locus_1_and_2 = concatenate( locus_1, locus_2 )\n";
     
@@ -221,7 +221,7 @@ const TypeSpec& Func_concatenateContinuousCharacterData::getTypeSpec( void ) con
 const TypeSpec& Func_concatenateContinuousCharacterData::getReturnType( void ) const
 {
     
-    static TypeSpec return_typeSpec = RlBoolean::getClassTypeSpec();
+    static TypeSpec return_typeSpec = ContinuousCharacterData::getClassTypeSpec();
     
     return return_typeSpec;
 }

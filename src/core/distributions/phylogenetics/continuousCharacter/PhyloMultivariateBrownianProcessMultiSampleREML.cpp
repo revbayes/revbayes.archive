@@ -227,7 +227,7 @@ void PhyloMultivariateBrownianProcessMultiSampleREML::recursiveComputeLnProbabil
                     double x = taxon.getCharacter( site_indices[i] );
                     
                     // get the site specific rate of evolution
-                    double standDev = this->computeSiteRate(i) * stdev;
+                    double standDev = stdev;
                     
                     // compute the contrasts for this site and node
                     double contrast = mu_node[i] - x;
@@ -300,14 +300,14 @@ void PhyloMultivariateBrownianProcessMultiSampleREML::recursiveComputeLnProbabil
             double t_left  = v_left  + delta_left;
             double t_right = v_right + delta_right;
             
-            double branch_length = t_left + t_right;
             
             // set delta_node = (t_l*t_r)/(t_l+t_r);
             this->contrast_uncertainty[this->active_likelihood[node_index]][node_index] = (t_left*t_right) / (t_left+t_right);
             
-            std::vector<double> these_contrasts(num_sites);
+            std::vector<double> these_contrasts(num_sites, 0.0);
             std::vector<double> means(num_sites, 0.0);
             
+            double branch_length = t_left + t_right;
 //            double stdev = sqrt(t_left+t_right);
             for (int i=0; i<this->num_sites; i++)
             {
@@ -320,9 +320,9 @@ void PhyloMultivariateBrownianProcessMultiSampleREML::recursiveComputeLnProbabil
             } // end for-loop over all sites
             
             double lnl_contrast = RbStatistics::MultivariateNormal::lnPdfPrecision(means, precision_matrices[active_matrix], these_contrasts, branch_length);
+//            double lnl_contrast = RbStatistics::MultivariateNormal::lnPdfCovariance(means, rate_matrix->getValue(), these_contrasts, branch_length);
             p_node = lnl_contrast + p_left + p_right;
 
-            
         } // end for-loop over all children
         
     } // end if we need to compute something for this node.
