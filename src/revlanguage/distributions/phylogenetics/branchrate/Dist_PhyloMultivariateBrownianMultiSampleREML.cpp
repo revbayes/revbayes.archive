@@ -36,7 +36,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
     // get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const Tree &>( tree->getRevObject() ).getDagNode();
     size_t n_nodes = tau->getValue().getNumberOfNodes();
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* var = static_cast<const ModelVector<RealPos> &>( within_species_variances->getRevObject() ).getDagNode();
+//    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* var = static_cast<const ModelVector<RealPos> &>( within_species_variances->getRevObject() ).getDagNode();
+//    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* var2 = static_cast<const ModelVector<RealPos> &>( within_species_variances2->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector< RevBayesCore::RbVector<double> > >* var = static_cast<const ModelVector<ModelVector<RealPos> > &>( within_species_variances->getRevObject() ).getDagNode();
     const std::vector<RevBayesCore::Taxon>      &t  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
     
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* vcv = static_cast<const MatrixRealSymmetric&>( rate_matrix->getRevObject() ).getDagNode();
@@ -128,8 +130,10 @@ const MemberRules& Dist_PhyloMultivariateBrownianMultiSampleREML::getParameterRu
         rateMatrixTypes.push_back( MatrixReal::getClassTypeSpec() );
         dist_member_rules.push_back( new ArgumentRule( "rateMatrix", rateMatrixTypes, "The variance-covariance matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        dist_member_rules.push_back( new ArgumentRule( "withinSpeciesVariances" , ModelVector<RealPos>::getClassTypeSpec(), "The per species within-species variances.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        
+//        dist_member_rules.push_back( new ArgumentRule( "withinSpeciesVariances" , ModelVector<RealPos>::getClassTypeSpec(), "The per species per site within-species variances.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+//        dist_member_rules.push_back( new ArgumentRule( "withinSpeciesVariances2" , ModelVector<RealPos>::getClassTypeSpec(), "The per species per site within-species variances.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "withinSpeciesVariances" , ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), "The per species per site within-species variances.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+
         dist_member_rules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The vector of taxa which have species and individual names.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         
@@ -195,6 +199,10 @@ void Dist_PhyloMultivariateBrownianMultiSampleREML::setConstParameter(const std:
     else if ( name == "withinSpeciesVariances" )
     {
         within_species_variances = var;
+    }
+    else if ( name == "withinSpeciesVariances2" )
+    {
+        within_species_variances2 = var;
     }
     else if ( name == "taxa" )
     {

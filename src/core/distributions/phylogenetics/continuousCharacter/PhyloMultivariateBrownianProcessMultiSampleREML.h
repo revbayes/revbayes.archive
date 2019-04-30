@@ -19,7 +19,8 @@ namespace RevBayesCore {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
-        PhyloMultivariateBrownianProcessMultiSampleREML(const TypedDagNode<Tree> *tr, const TypedDagNode<MatrixReal> *c, const TypedDagNode< RbVector< double > > *v, const std::vector<Taxon> &ta, size_t ns );
+//        PhyloMultivariateBrownianProcessMultiSampleREML(const TypedDagNode<Tree> *tr, const TypedDagNode<MatrixReal> *c, const TypedDagNode< RbVector< double > > *v, const TypedDagNode< RbVector< double > > *v2, const std::vector<Taxon> &ta, size_t ns );
+        PhyloMultivariateBrownianProcessMultiSampleREML(const TypedDagNode<Tree> *tr, const TypedDagNode<MatrixReal> *c, const TypedDagNode< RbVector< RbVector< double > > > *v, const std::vector<Taxon> &ta, size_t ns );
         virtual                                                            ~PhyloMultivariateBrownianProcessMultiSampleREML(void);                                                                      //!< Virtual destructor
         
         // public member functions
@@ -33,7 +34,7 @@ namespace RevBayesCore {
         // virtual methods that may be overwritten, but then the derived class should call this methods
         double                                                              computeMeanForSpecies(const std::string &n, size_t i);
         double                                                              getNumberOfSamplesForSpecies(const std::string &n);
-        double                                                              getWithinSpeciesVariance(const std::string &n);
+        double                                                              getWithinSpeciesVariance(const std::string &n, size_t site);
         virtual void                                                        keepSpecialization(DagNode* affecter);
         void                                                                recursiveComputeLnProbability( const TopologyNode &node, size_t node_index );
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
@@ -46,13 +47,15 @@ namespace RevBayesCore {
         // Parameter management functions.
         virtual void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                                                //!< Swap a parameter
         
-        const TypedDagNode< RbVector< double > >*                           within_species_variances;
-        
+//        const TypedDagNode< RbVector< double > >*                           within_species_variances;
+//        const TypedDagNode< RbVector< double > >*                           within_species_variances2;
+        const TypedDagNode< RbVector< RbVector< double > > >*               within_species_variances;
+
         
         // the likelihoods
         std::vector<std::vector<double> >                                   partial_likelihoods;
         std::vector<std::vector<std::vector<double> > >                     contrasts;
-        std::vector<std::vector<double> >                                   contrast_uncertainty;
+        std::vector<std::vector<std::vector<double> > >                     contrast_uncertainty;
         std::vector<size_t>                                                 active_likelihood;
         
         // convenience variables available for derived classes too

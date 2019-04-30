@@ -36,9 +36,8 @@ namespace RevLanguage {
         
         RevPtr<const RevVariable>                                                       tree;
         RevPtr<const RevVariable>                                                       branch_rates;
-//        RevPtr<const RevVariable>                                                       site_rates;
         RevPtr<const RevVariable>                                                       within_species_variances;
-//        RevPtr<const RevVariable>                                                       n_sites;
+        RevPtr<const RevVariable>                                                       within_species_variances2;
         RevPtr<const RevVariable>                                                       rate_matrix;
         RevPtr<const RevVariable>                                                       taxa;                                                                                   //!< The taxons
         
