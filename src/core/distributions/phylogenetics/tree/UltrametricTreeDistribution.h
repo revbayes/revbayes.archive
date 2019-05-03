@@ -87,11 +87,12 @@ namespace RevBayesCore {
         void                                                attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times, double T);
         void                                                buildRandomBinaryHistory(std::vector<TopologyNode *> &tips);
         Split                                               collectTreeSample(const TopologyNode& n, RbBitSet& in, std::map<Split, double>& bl);
-        Split                                               collectSplits(const TopologyNode& n, RbBitSet& in, std::vector<Split>& s);
-        double                                              computeBranchRateLnProbability(const Tree &x, const std::string &newick, const std::vector<Split> &s, size_t index);
+        Split                                               collectSplits(const TopologyNode& n, RbBitSet& in, std::vector<Split>& s) const;
+        double                                              computeBranchRateLnProbability(const Tree &x, const std::string &newick, const std::vector<Split> &s, size_t index) const;
+        void                                                computeBranchRates(const Tree &x, const std::string &newick, const std::vector<Split> &s, size_t index, std::vector<double> &rates) const;
         void                                                prepareTreeSamples(const std::vector<Tree>& trees);
         void                                                simulateTree(void);
-                
+        
         // members
         TypedDistribution<Tree>*                            tree_prior;
         TypedDistribution<double>*                          rate_prior;
