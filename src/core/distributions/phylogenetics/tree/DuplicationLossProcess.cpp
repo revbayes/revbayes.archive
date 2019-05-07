@@ -81,6 +81,9 @@ double DuplicationLossProcess::computeLnProbability( void )
 
   if ( condition == "survival" )
     {
+      // BUG BUG BUG BUG.
+      // TODO: We have to use the ROOT OF THE GENE TREE, not the INDIVIDUAL TREE.
+      // This is the reason why we are off by 10 percent (2 instead of 2.2).
       ln_prob_dl -= log( 1.0 - extinction_probs[individual_tree->getValue().getNumberOfNodes()-1] );
     }
 
