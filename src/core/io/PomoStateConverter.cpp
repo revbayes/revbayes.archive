@@ -155,8 +155,9 @@ PomoState* PomoStateConverter::convertCounts(std::vector<double> &counts,
        // std::cout << counts[i] << ",";
     }
     //If the site is all gaps
-    if (counts[4] == 1.0) {
-        PomoState* pol = new PomoState();
+    if (counts[4] == 1.0)
+    {
+        PomoState* pol = new PomoState(4);
         pol->setStateByIndex((size_t)0);
         return pol;
     }

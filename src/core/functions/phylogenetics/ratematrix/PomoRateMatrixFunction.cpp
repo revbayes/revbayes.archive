@@ -87,7 +87,8 @@ void PomoRateMatrixFunction::swapParameterInternal(const DagNode *oldP, const Da
 }
 
 
-std::vector<double> PomoRateMatrixFunction::setMutationRates(const RateGenerator& mm) {
+std::vector<double> PomoRateMatrixFunction::setMutationRates(const RateGenerator& mm)
+{
     
     double age = 0.0;
     double rate = 1.0;

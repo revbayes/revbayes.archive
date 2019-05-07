@@ -9,8 +9,9 @@ using namespace RevBayesCore;
 
 /** Constructor */
 DiscreteCharacterState::DiscreteCharacterState(size_t n) : CharacterState(),
-weighted_(false),
-weights_(std::vector<double>(n,1.0/n))
+//    num_states( n ),
+    weighted(false),
+    weights(std::vector<double>(n,1.0/n))
 {
 
 
@@ -286,13 +287,13 @@ bool DiscreteCharacterState::isStateSet(size_t index) const
 
 bool DiscreteCharacterState::isWeighted( void ) const
 {
-    return weighted_;
+    return weighted;
 }
 
 
 void DiscreteCharacterState::setWeighted( bool tf )
 {
-    weighted_ = tf;
+    weighted = tf;
 
     return;
 }
@@ -329,7 +330,7 @@ size_t DiscreteCharacterState::getNumberOfStates(void) const
 
 
 
-const std::vector<double> DiscreteCharacterState::getWeights() const
+const std::vector<double>& DiscreteCharacterState::getWeights() const
 {
-    return weights_;
+    return weights;
 }
