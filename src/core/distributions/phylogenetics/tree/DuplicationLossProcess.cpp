@@ -27,13 +27,21 @@ DuplicationLossProcess::DuplicationLossProcess(const TypedDagNode<Tree> *it, con
   // Test that the origin time is older than the root age of the haplotype
   // tree.
   double org_time = origin->getValue();
-  double haplotype_root_age = individual_tree->getValue().getRoot().getAge();
+  TopologyNode haplotype_root_node = individual_tree->getValue().getRoot();
+  double haplotype_root_age = haplotype_root_node.getAge();
   if ( org_time < haplotype_root_age )
     {
       std::string err = "Origin time " + StringUtilities::to_string(org_time);
       err += " lower than root age of haplotype tree " + StringUtilities::to_string(haplotype_root_age);
       throw RbException(err);
     }
+
+  // TODO: For now, we set the origin time of the haplotype tree to the origin
+  // time of the duplication and loss process. In the future, we might remove
+  // the origin time parameter, and rather only use the haplotype origin time,
+  // which is certainly cleaner.
+  double hap_root_length = org_time - haplotype_root_age;
+  haplotype_root_node.setBranchLength(hap_root_length);
 
   // add the parameters to our set (in the base class) in that way other
   // classes can easily access the set of our parameters this will also ensure
@@ -81,9 +89,9 @@ double DuplicationLossProcess::computeLnProbability( void )
 
   if ( condition == "survival" )
     {
-      // BUG BUG BUG BUG.
-      // TODO: We have to use the ROOT OF THE GENE TREE, not the INDIVIDUAL TREE.
-      // This is the reason why we are off by 10 percent (2 instead of 2.2).
+      // NOTE: We have to use the ORIGIN OF THE GENE TREE, not the INDIVIDUAL
+      // TREE. For now, the origin of the haplotype is set to the origin of the
+      // gene trees. See constructor.
       ln_prob_dl -= log( 1.0 - extinction_probs[individual_tree->getValue().getNumberOfNodes()-1] );
     }
 
