@@ -1,7 +1,7 @@
 #ifndef RlMinEssStoppingRule_H
 #define RlMinEssStoppingRule_H
 
-#include "FileMonitor.h"
+#include "VariableMonitor.h"
 #include "RlAbstractConvergenceStoppingRule.h"
 #include "TypedDagNode.h"
 
