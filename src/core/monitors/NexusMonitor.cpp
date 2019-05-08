@@ -1,14 +1,6 @@
-/*
- * NexusMonitor.cpp
- *
- *  Created on: May 7, 2019
- *      Author: joellebs
- */
-
 #include "NexusMonitor.h"
 
 namespace RevBayesCore {
-
 
 NexusMonitor::NexusMonitor(TypedDagNode<Tree> *t, const std::vector<DagNode *> &n, bool np, unsigned long g,
                            const std::string &fname, bool ap, bool taxa) :

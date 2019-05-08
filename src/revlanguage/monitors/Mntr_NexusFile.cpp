@@ -1,10 +1,3 @@
-/*
- * MntrNexusFile.cpp
- *
- *  Created on: May 7, 2019
- *      Author: joellebs
- */
-
 #include "Mntr_NexusFile.h"
 
 #include <Ellipsis.h>
@@ -23,8 +16,7 @@ Mntr_NexusFile* Mntr_NexusFile::clone(void) const {
 }
 
 
-void Mntr_NexusFile::constructInternalObject( void )
-{
+void Mntr_NexusFile::constructInternalObject( void ) {
     // we free the memory first
     delete value;
 
@@ -50,14 +42,13 @@ void Mntr_NexusFile::constructInternalObject( void )
 }
 
 
-/** Get Rev type of object */
 const std::string& Mntr_NexusFile::getClassType(void) {
 
     static std::string rev_type = "Mntr_NexusFile";
     return rev_type;
 }
 
-/** Get class type spec describing type of object */
+
 const TypeSpec& Mntr_NexusFile::getClassTypeSpec(void) {
 
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
@@ -65,11 +56,6 @@ const TypeSpec& Mntr_NexusFile::getClassTypeSpec(void) {
 }
 
 
-/**
- * Get the Rev name for the constructor function.
- *
- * \return Rev name of constructor function.
- */
 std::string Mntr_NexusFile::getMonitorName( void ) const {
     // create a constructor function name variable that is the same for all instance of this class
     std::string c_name = "Nexus";
@@ -77,7 +63,6 @@ std::string Mntr_NexusFile::getMonitorName( void ) const {
 }
 
 
-/** Return member rules (no members) */
 const MemberRules& Mntr_NexusFile::getParameterRules(void) const {
 
     static MemberRules memberRules;
@@ -98,7 +83,7 @@ const MemberRules& Mntr_NexusFile::getParameterRules(void) const {
     return memberRules;
 }
 
-/** Get type spec */
+
 const TypeSpec& Mntr_NexusFile::getTypeSpec( void ) const {
 
     static TypeSpec type_spec = getClassTypeSpec();
@@ -112,7 +97,6 @@ void Mntr_NexusFile::printValue(std::ostream &o) const {
 }
 
 
-/** Set a member variable */
 void Mntr_NexusFile::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
 
     if ( name == "" ) {

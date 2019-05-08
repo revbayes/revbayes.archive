@@ -1,10 +1,3 @@
-/*
- * MntrNexusFile.h
- *
- *  Created on: May 7, 2019
- *      Author: joellebs
- */
-
 #ifndef SRC_REVLANGUAGE_MONITORS_MNTRNEXUSFILE_H_
 #define SRC_REVLANGUAGE_MONITORS_MNTRNEXUSFILE_H_
 
@@ -12,6 +5,9 @@
 
 namespace RevLanguage {
 
+/** @copybrief RevBayesCore::NexusMonitor
+ * @see Mntr_ExtendedNewickFile for output in table format
+**/
 class Mntr_NexusFile: public Monitor {
 
 public:
@@ -20,18 +16,18 @@ public:
     virtual Mntr_NexusFile*                     clone(void) const;
     void                                        constructInternalObject(void);  //!< Build a new internal NexusMonitor.
 
-    static const std::string&                   getClassType(void);  //!< Get Rev type
-    static const TypeSpec&                      getClassTypeSpec(void);  //!< Get class type spec
-    virtual const TypeSpec&                     getTypeSpec(void) const; //!< Get language type of the object
+    static const std::string&                   getClassType(void);
+    static const TypeSpec&                      getClassTypeSpec(void);
+    virtual const TypeSpec&                     getTypeSpec(void) const;
 
-    std::string                                 getMonitorName(void) const;  //!< Get the name used for the constructor function in Rev.
-    const MemberRules&                          getParameterRules(void) const;  //!< Get member rules (const)
+    std::string                                 getMonitorName(void) const;
+    const MemberRules&                          getParameterRules(void) const;
 
-    virtual void                                printValue(std::ostream& o) const;  //!< Print value (for user)
+    virtual void                                printValue(std::ostream& o) const;
 
 protected:
 
-    void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);   //!< Set member variable
+    void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);
 
     std::vector<RevPtr<const RevVariable> >     vars; //!< data associated with the tree
     RevPtr<const RevVariable>                   filename; //!< output file

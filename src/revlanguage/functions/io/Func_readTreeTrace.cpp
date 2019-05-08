@@ -416,6 +416,15 @@ TraceTree* Func_readTreeTrace::readTrees(const std::vector<std::string> &vector_
     return new TraceTree( data[0] );
 }
 
+/** Create tree trace from one or several Nexus file(s)
+ * @param fns vector of file names
+ * @param clock whether trees have a clock
+ * @param thin keep only every thin-th sample
+ * @return tree trace
+ * @see Func_readTrees::execute
+ *
+ * @note if multiple files are given, the traces will all be appended without regard for burnin
+ * */
 TraceTree *Func_readTreeTrace::readTreesNexus(const std::vector<string> &fns, bool clock, long thin) {
     RevBayesCore::TraceTree tt = RevBayesCore::TraceTree();
     tt.setParameterName("tree");

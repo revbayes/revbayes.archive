@@ -1,10 +1,3 @@
-/*
- * NexusMonitor.h
- *
- *  Created on: May 7, 2019
- *      Author: joellebs
- */
-
 #ifndef SRC_CORE_MONITORS_NEXUSMONITOR_H_
 #define SRC_CORE_MONITORS_NEXUSMONITOR_H_
 
@@ -14,6 +7,11 @@
 
 namespace RevBayesCore {
 
+/** @brief Monitor to output a distribution of trees in Nexus format.
+ * The provided branch- or node-specific variables will be output on the trees as metadata.
+ *
+ * @see ExtendedNewickTreeMonitor for output in table format
+* */
 class NexusMonitor: public AbstractFileMonitor {
 public:
     NexusMonitor(TypedDagNode<Tree> *t, const std::vector<DagNode*> &n, bool np, unsigned long g, const std::string &fname,
@@ -25,10 +23,10 @@ public:
     virtual void closeStream();
 
 protected:
-    bool isNodeParameter;
-    bool writeTaxa;
-    TypedDagNode<Tree>* tree;
-    std::vector<DagNode*> nodeVariables;
+    bool isNodeParameter;  //!< whether data is on the nodes or branches
+    bool writeTaxa;  //!< whether to write a taxa block
+    TypedDagNode<Tree>* tree;  //!< monitored tree
+    std::vector<DagNode*> nodeVariables;  //!< variables associated with the tree
 };
 
 } /* namespace RevBayesCore */
