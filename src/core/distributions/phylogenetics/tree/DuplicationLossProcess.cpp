@@ -68,12 +68,19 @@ double DuplicationLossProcess::computeLnProbability( void )
   // Test that the origin time is older than the root age of the haplotype
   // tree.
   double org_time = origin->getValue();
-  const TopologyNode &hap_root = individual_tree->getValue().getRoot();
-  double haplotype_root_age = hap_root.getAge();
+  TopologyNode haplotype_root_node = individual_tree->getValue().getRoot();
+  double haplotype_root_age = haplotype_root_node.getAge();
   if ( org_time < haplotype_root_age )
     {
       return RbConstants::Double::neginf;
     }
+
+  // TODO: For now, we set the origin time of the haplotype tree to the origin
+  // time of the duplication and loss process. In the future, we might remove
+  // the origin time parameter, and rather only use the haplotype origin time,
+  // which is certainly cleaner.
+  double hap_root_length = org_time - haplotype_root_age;
+  haplotype_root_node.setBranchLength(hap_root_length);
 
   // To be safe, we always reset the tip allications at the beginning of the
   // probability computation. We could check if it is sufficient to do so only
@@ -82,17 +89,18 @@ double DuplicationLossProcess::computeLnProbability( void )
 
   // Same for extinction probabilities.
   extinction_probs = std::vector<double>(individual_tree->getValue().getNumberOfNodes(), 0.0);
-  computeAllEs(hap_root);
+  computeAllEs(haplotype_root_node);
 
   // Now calculate the probability of observing the gene tree (recursively).
-  double ln_prob_dl = recursivelyComputeLnProbability( individual_tree->getValue().getRoot() );
+  double ln_prob_dl = recursivelyComputeLnProbability( haplotype_root_node );
 
   if ( condition == "survival" )
     {
       // NOTE: We have to use the ORIGIN OF THE GENE TREE, not the INDIVIDUAL
       // TREE. For now, the origin of the haplotype is set to the origin of the
       // gene trees. See constructor.
-      ln_prob_dl -= log( 1.0 - extinction_probs[individual_tree->getValue().getNumberOfNodes()-1] );
+      size_t root_index = haplotype_root_node.getIndex();
+      ln_prob_dl -= log( 1.0 - extinction_probs[root_index] );
     }
 
   return ln_prob_dl;
