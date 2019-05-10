@@ -1,7 +1,7 @@
 #ifndef RlMaxTimeStoppingRule_H
 #define RlMaxTimeStoppingRule_H
 
-#include "FileMonitor.h"
+#include "VariableMonitor.h"
 #include "RlStoppingRule.h"
 #include "TypedDagNode.h"
 
