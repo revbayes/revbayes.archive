@@ -58,4 +58,6 @@ src/revlanguage/meson.build
 src/cmd/meson.build
 doxygen/html/*
 doxygen/latex/*
-
+.cproject
+.project
+.settings/
