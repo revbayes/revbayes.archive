@@ -1,7 +1,7 @@
 #ifndef RlGewekeStoppingRule_H
 #define RlGewekeStoppingRule_H
 
-#include "FileMonitor.h"
+#include "VariableMonitor.h"
 #include "RlAbstractConvergenceStoppingRule.h"
 #include "TypedDagNode.h"
 

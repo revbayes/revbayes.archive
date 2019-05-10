@@ -8,7 +8,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-ProbabilityMonitor::ProbabilityMonitor(unsigned long g, const std::string &fname, const std::string &del) : AbstractFileMonitor(std::vector<DagNode *>(),g,fname,del)
+ProbabilityMonitor::ProbabilityMonitor(unsigned long g, const std::string &fname, const std::string &del) : VariableMonitor(std::vector<DagNode *>(),g,fname,del)
 {
     
     flatten = false;
