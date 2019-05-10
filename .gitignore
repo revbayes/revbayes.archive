@@ -58,4 +58,5 @@ src/revlanguage/meson.build
 src/cmd/meson.build
 doxygen/html/*
 doxygen/latex/*
+doxygen/DoxygenWarningLog.txt
 
