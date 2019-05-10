@@ -61,6 +61,37 @@ double RbStatistics::MultivariateNormal::lnPdfCovariance(const std::vector<doubl
     return lnPdfPrecision(mu, omega, x, scale);
 }
 
+
+/*!
+ * This function calculates the natural log of the probability density
+ * for a MultivariateNormal-distributed random variable.
+ *
+ * \brief Natural log of MultivariateNormal probability density.
+ * \param mu is a reference to a vector of doubles containing the mean
+ * \param omega0 is a reference to a precision matrix containing the covariance
+ * \param x is a reference to a vector of doubles containing the random variables.
+ * \return Returns the natural log of the probability density.
+ * \throws Does not throw an error.
+ */
+double RbStatistics::MultivariateNormal::lnPdfCovariance(const std::vector<double>& mu, const MatrixReal& sigma, const std::vector<double> &x, const std::vector<double> & scale)
+{
+    // we compute the precision matrix, which is the inverse of the covariance matrix
+    // and then simply call the lnPDF for the precision matrix.
+    // This simplifies the coding.
+    MatrixReal sigma_scaled = sigma;
+    for (size_t i=0; i<scale.size(); ++i)
+    {
+        for (size_t j=0; j<scale.size(); ++j)
+        {
+            sigma_scaled[i][j] = sigma[i][j]*scale[i]*scale[j];
+        }
+    }
+    sigma_scaled.setCholesky(true);
+    MatrixReal omega = sigma_scaled.computeInverse();
+    
+    return lnPdfPrecision(mu, omega, x, 1.0);
+}
+
 /*!
  * This function generates a MultivariateNormal-distributed random variable.
  *
