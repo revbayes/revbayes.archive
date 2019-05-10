@@ -56,3 +56,6 @@ src/core/meson.build
 src/libs/meson.build
 src/revlanguage/meson.build
 src/cmd/meson.build
+doxygen/html/*
+doxygen/latex/*
+
