@@ -1,4 +1,4 @@
-#include "PomoState.h"
+#include "PoMoState.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
