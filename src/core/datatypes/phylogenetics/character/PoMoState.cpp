@@ -17,18 +17,17 @@ using namespace RevBayesCore;
 
 /** Constructor that sets the observation and the other fields */
 PomoState::PomoState(size_t n, size_t vps, const std::string &s, const std::string &chr, size_t pos, const std::vector<double> &w) : DiscreteCharacterState( n + size_t(RbMath::kchoose2(n))*(vps-1) ),
-is_gap( false ),
-is_missing( false ),
-index_single_state( 0 ),
-num_observed_states( 0 ),
-virtual_population_size( vps ),
-num_raw_states( n ),
-num_pomo_states( n + size_t(RbMath::kchoose2(n))*(virtual_population_size-1) ),
-state( num_pomo_states ),
-chromosome( chr ),
-position( pos ),
-string_value(s)
-
+    is_gap( false ),
+    is_missing( false ),
+    index_single_state( 0 ),
+    num_observed_states( 0 ),
+    virtual_population_size( vps ),
+    num_raw_states( n ),
+    num_pomo_states( n + size_t(RbMath::kchoose2(n))*(virtual_population_size-1) ),
+    state( num_pomo_states ),
+    chromosome( chr ),
+    position( pos ),
+    string_value(s)
 {
     weights = w;
     

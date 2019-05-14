@@ -42,7 +42,8 @@ namespace RevBayesCore {
 
 
         size_t                                      N;						//!< Number of individuals in idealized population
-        size_t                                      matrixSize;             //!< Number of elements in a row or column of the rate matrix
+        size_t                                      matrix_size;            //!< Number of elements in a row or column of the rate matrix
+        size_t                                      num_raw_states;         //!< Number of elements in a row or column of the rate matrix
         std::vector < std::vector < double > >      mu;			            //!< Matrix of 12 mutation rates and 0s elsewhere
         std::vector < double >                      s;					    //!< Vector of 4 selection coefficients
         double                                      precision;              //!< Precision for exponentiation through repeated squaring
