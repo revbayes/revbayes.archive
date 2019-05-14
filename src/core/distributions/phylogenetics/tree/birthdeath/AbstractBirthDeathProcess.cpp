@@ -1,7 +1,5 @@
 #include "Clade.h"
 #include "AbstractBirthDeathProcess.h"
-#include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "RbException.h"
 #include "RbMathCombinatorialFunctions.h"
@@ -22,28 +20,25 @@ using namespace RevBayesCore;
  * The constructor connects the parameters of the birth-death process (DAG structure)
  * and initializes the probability density by computing the combinatorial constant of the tree structure.
  *
- * \param[in]    ra        Origin or time of the process.
- * \param[in]    cdt       The condition of the process (time/survival/nTaxa)
- * \param[in]    tn        Taxon names used during initialization.
- * \param[in]    c         Clade constraints.
+ * \param    ra        Origin or root age of the process.
+ * \param    cdt       The condition of the process (time/survival/nTaxa)
+ * \param    tn        Taxon names used during initialization.
+ * \param    uo        If true ra is the origin time otherwise the root age of the process.
  */
-AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> *ra, const std::string &cdt, const std::vector<Taxon> &tn, bool uo ) : AbstractRootedTreeDistribution( ra, tn, uo ),
+AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> *ra, const std::string &cdt, const std::vector<Taxon> &tn, bool uo )
+    : AbstractRootedTreeDistribution( ra, tn, uo ),
     condition( cdt )
-{
-    
-}
+{}
 
 
 AbstractBirthDeathProcess::~AbstractBirthDeathProcess(void)
-{
-    
-}
-
+{}
 
 
 /**
- * Compute the log-transformed probability of the current value under the current parameter values.
+ * Prepare and run the computation of the full log-likelihood of the divergence times.
  *
+ * @return log-probability
  */
 double AbstractBirthDeathProcess::computeLnProbabilityDivergenceTimes( void ) const
 {
@@ -78,26 +73,35 @@ double AbstractBirthDeathProcess::computeLnProbabilityDivergenceTimes( void ) co
 }
 
 
+/** The birth death density is derived for a (ranked) unlabeled oriented tree
+ * so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n-1} / n!
+ * see Gernhard 2008
+ *
+ * @return log of the computed factor
+ **/
 double AbstractBirthDeathProcess::lnProbTreeShape(void) const
 {
-    // the birth death density is derived for a (ranked) unlabeled oriented tree
-    // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n-1} / n!
-    // see Gernhard 2008
-
     return (value->getNumberOfTips() - 1) * RbConstants::LN2 - RbMath::lnFactorial( (int)value->getNumberOfTips() );
 }
 
 
 /**
  * Prepare the probability computation. Here we can pre-calculate some values for more
- * efficient probability calculation. The derived classes may want to do something ...
+ * efficient probability calculation. The derived classes may want to do something.
  */
 void AbstractBirthDeathProcess::prepareProbComputation( void ) const
-{
-    
-}
+{}
 
 
+/**
+ * Simulate divergence times under a birth-death process.
+ *
+ * @param n number of times to simulate
+ * @param origin start time of the process
+ * @param present stop time of the process
+ * @param min minimum value of the simulated times
+ * @return vector of simulated divergence times
+ **/
 std::vector<double> AbstractBirthDeathProcess::simulateDivergenceTimes(size_t n, double origin, double present, double min) const
 {
 

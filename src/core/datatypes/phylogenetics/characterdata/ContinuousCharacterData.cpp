@@ -110,7 +110,8 @@ void ContinuousCharacterData::concatenate(const ContinuousCharacterData &obsd, s
         
         try
         {
-            obsd.getIndexOfTaxon( n );
+            size_t index = obsd.getIndexOfTaxon( n );
+            used[index] = true;
         }
         catch(RbException &e)
         {

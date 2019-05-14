@@ -59,12 +59,12 @@ ContinuousCharacterData::~ContinuousCharacterData()
 }
 
 
-ContinuousCharacterData* ContinuousCharacterData::concatenate(const RevObject &d, std::string type) const
+void ContinuousCharacterData::concatenate(const RevObject &d, std::string type) const
 {
     const ContinuousCharacterData* tmp = dynamic_cast<const ContinuousCharacterData*>( &d );
     if ( tmp != NULL )
     {
-        return concatenate( *tmp, type );
+        concatenate( *tmp, type );
     }
     else
     {
@@ -74,13 +74,15 @@ ContinuousCharacterData* ContinuousCharacterData::concatenate(const RevObject &d
 
 
 
-ContinuousCharacterData* ContinuousCharacterData::concatenate(const ContinuousCharacterData &d, std::string type) const
+void ContinuousCharacterData::concatenate(const ContinuousCharacterData &d, std::string type) const
 {
-    ContinuousCharacterData* cloneObj = clone();
     
-    cloneObj->getDagNode()->getValue().concatenate( d.getValue(), type );
-    // return the copy
-    return cloneObj;
+    // we need to make this a constant DAG node so that we can actually modify the value
+    // otherwise the value might be overwritten again, e.g., if this is a deterministic node.
+    //    clone_obj->makeConstantValue();
+    
+    // now concatenate
+    getDagNode()->getValue().concatenate( d.getValue(), type );
 }
 
 

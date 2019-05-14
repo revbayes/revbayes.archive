@@ -19,7 +19,7 @@
 #include "RlTree.h"
 #include "StandardState.h"
 #include "RlSimplex.h"
-#include "PomoState.h"
+#include "PoMoState.h"
 #include "NaturalNumbersState.h"
 
 using namespace RevLanguage;

@@ -918,117 +918,112 @@ void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::
     sample_character_history = true;
     computeLnProbability();
 
-    for (size_t i = 0; i < num_states; i++) 
+    size_t attempts = 0;
+    bool success = false;
+    while (success == false)
     {
-        time_in_states[i] = 0.0;
-    }
+        if (attempts == 100000)
+        {
+            throw RbException("After 100000 attempts a character history could not be sampled with a non-zero probability. Try increasing nTimeSlices.");
+        }
 
-    // now begin the root-to-tip pass, drawing ancestral states for each time slice conditional on the start states
-    std::map<std::vector<unsigned>, double> eventMap;
-    std::vector<double> speciation_rates;
-    if ( use_cladogenetic_events == true )
-    {
-        // get cladogenesis event map (sparse speciation rate matrix)
-        eventMap = cladogenesis_matrix->getValue().getEventMap();
-    }
-    else
-    {
-        speciation_rates = lambda->getValue();
-    }
-    
-    // get the likelihoods of descendant nodes
-    const TopologyNode  &root               = value->getRoot();
-    size_t               node_index         = root.getIndex();
-    const TopologyNode  &left               = root.getChild(0);
-    size_t               left_index         = left.getIndex();
-    const state_type    &left_likelihoods   = node_partial_likelihoods[left_index][active_likelihood[left_index]];
-    const TopologyNode  &right              = root.getChild(1);
-    size_t               right_index        = right.getIndex();
-    const state_type    &right_likelihoods  = node_partial_likelihoods[right_index][active_likelihood[right_index]];
-    
-    // get root frequencies
-    const RbVector<double> &freqs = getRootFrequencies();
-    
-    std::map<std::vector<unsigned>, double> sample_probs;
-    double sample_probs_sum = 0.0;
-    std::map<std::vector<unsigned>, double>::iterator it;
-    
-    // calculate probabilities for each state
-    if ( use_cladogenetic_events == true )
-    {
-        // iterate over each cladogenetic event possible
-        // and initialize probabilities for each clado event
-        for (it = eventMap.begin(); it != eventMap.end(); it++)
+        for (size_t i = 0; i < num_states; i++) 
         {
-            const std::vector<unsigned>& states = it->first;
-            double speciation_rate = it->second;
-            
-            // we need to sample from the ancestor, left, and right states jointly,
-            // so keep track of the probability of each clado event
-            double prob = left_likelihoods[num_states + states[1]] * right_likelihoods[num_states + states[2]];
-            prob *= freqs[states[0]] * speciation_rate;
-            sample_probs[ states ] = prob;
-            sample_probs_sum += prob;
+            time_in_states[i] = 0.0;
         }
-    }
-    else
-    {
-        for (size_t i = 0; i < num_states; i++)
+
+        // now begin the root-to-tip pass, drawing ancestral states for each time slice conditional on the start states
+        std::map<std::vector<unsigned>, double> eventMap;
+        std::vector<double> speciation_rates;
+        if ( use_cladogenetic_events == true )
         {
-            double likelihood = left_likelihoods[num_states + i] * right_likelihoods[num_states + i] * speciation_rates[i];
-            std::vector<unsigned> states = boost::assign::list_of(i)(i)(i);
-            sample_probs[ states ] = likelihood * freqs[i];
-            sample_probs_sum += likelihood * freqs[i];
+            // get cladogenesis event map (sparse speciation rate matrix)
+            eventMap = cladogenesis_matrix->getValue().getEventMap();
         }
-    }
-    
-    // sample ancestor, left, and right character states from probs
-    size_t a = 0, l = 0, r = 0;
-    
-    if (sample_probs_sum == 0)
-    {
-        RandomNumberGenerator* rng = GLOBAL_RNG;
-        size_t u = rng->uniform01() * sample_probs.size();
-        size_t v = 0;
-        for (it = sample_probs.begin(); it != sample_probs.end(); it++)
+        else
         {
-            if (u < v)
-            {
-                const std::vector<unsigned>& states = it->first;
-                a = states[0];
-                l = states[1];
-                r = states[2];
-                break;
-            }
-            v++;
+            speciation_rates = lambda->getValue();
         }
-    }
-    else
-    {
-        RandomNumberGenerator* rng = GLOBAL_RNG;
-        double u = rng->uniform01() * sample_probs_sum;
         
-        for (it = sample_probs.begin(); it != sample_probs.end(); it++)
+        // get the likelihoods of descendant nodes
+        const TopologyNode  &root               = value->getRoot();
+        size_t               node_index         = root.getIndex();
+        const TopologyNode  &left               = root.getChild(0);
+        size_t               left_index         = left.getIndex();
+        const state_type    &left_likelihoods   = node_partial_likelihoods[left_index][active_likelihood[left_index]];
+        const TopologyNode  &right              = root.getChild(1);
+        size_t               right_index        = right.getIndex();
+        const state_type    &right_likelihoods  = node_partial_likelihoods[right_index][active_likelihood[right_index]];
+        
+        // get root frequencies
+        const RbVector<double> &freqs = getRootFrequencies();
+        
+        std::map<std::vector<unsigned>, double> sample_probs;
+        double sample_probs_sum = 0.0;
+        std::map<std::vector<unsigned>, double>::iterator it;
+        
+        // calculate probabilities for each state
+        if ( use_cladogenetic_events == true )
         {
-            u -= it->second;
-            if (u < 0.0)
+            // iterate over each cladogenetic event possible
+            // and initialize probabilities for each clado event
+            for (it = eventMap.begin(); it != eventMap.end(); it++)
             {
                 const std::vector<unsigned>& states = it->first;
-                a = states[0];
-                l = states[1];
-                r = states[2];
-                break;
+                double speciation_rate = it->second;
+                
+                // we need to sample from the ancestor, left, and right states jointly,
+                // so keep track of the probability of each clado event
+                double prob = left_likelihoods[num_states + states[1]] * right_likelihoods[num_states + states[2]];
+                prob *= freqs[states[0]] * speciation_rate;
+                sample_probs[ states ] = prob;
+                sample_probs_sum += prob;
             }
         }
+        else
+        {
+            for (size_t i = 0; i < num_states; i++)
+            {
+                double likelihood = left_likelihoods[num_states + i] * right_likelihoods[num_states + i] * speciation_rates[i];
+                std::vector<unsigned> states = boost::assign::list_of(i)(i)(i);
+                sample_probs[ states ] = likelihood * freqs[i];
+                sample_probs_sum += likelihood * freqs[i];
+            }
+        }
+        
+        // sample ancestor, left, and right character states from probs
+        size_t a = 0, l = 0, r = 0;
+        
+        if (sample_probs_sum != 0)
+        {
+            RandomNumberGenerator* rng = GLOBAL_RNG;
+            double u = rng->uniform01() * sample_probs_sum;
+            
+            for (it = sample_probs.begin(); it != sample_probs.end(); it++)
+            {
+                u -= it->second;
+                if (u < 0.0)
+                {
+                    const std::vector<unsigned>& states = it->first;
+                    a = states[0];
+                    l = states[1];
+                    r = states[2];
+                    break;
+                }
+            }
+        
+            // save the character history for the root
+            std::string* simmap_string = new std::string("{" + StringUtilities::toString(a) + "," + StringUtilities::toString( root.getBranchLength() ) + "}");
+            character_histories[node_index] = simmap_string;
+            
+            // recurse towards tips
+            bool success_l = recursivelyDrawStochasticCharacterMap(left, l, character_histories, set_amb_char_data);
+            bool success_r = recursivelyDrawStochasticCharacterMap(right, r, character_histories, set_amb_char_data);
+            success = success_l && success_r;
+        }
+        
+        ++attempts;
     }
-    
-    // save the character history for the root
-    std::string* simmap_string = new std::string("{" + StringUtilities::toString(a) + "," + StringUtilities::toString( root.getBranchLength() ) + "}");
-    character_histories[node_index] = simmap_string;
-    
-    // recurse towards tips
-    recursivelyDrawStochasticCharacterMap(left, l, character_histories, set_amb_char_data);
-    recursivelyDrawStochasticCharacterMap(right, r, character_histories, set_amb_char_data);
 
     Tree t = Tree(*value);
     t.clearNodeParameters();
@@ -1041,9 +1036,8 @@ void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::
 }
 
 
-void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string*>& character_histories, bool set_amb_char_data)
+bool StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string*>& character_histories, bool set_amb_char_data)
 {
-    
     size_t node_index = node.getIndex();
     std::vector<double> speciation_rates = calculateTotalSpeciationRatePerState();
     std::vector<double> extinction_rates = mu->getValue();
@@ -1098,9 +1092,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         }
         if ( probs_sum == 0.0 )
         {
-            RandomNumberGenerator* rng = GLOBAL_RNG;
-            double u = rng->uniform01() * num_states;
-            new_state = size_t(u);
+            return false;
         }
         else
         {
@@ -1296,21 +1288,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         
         if (sample_probs_sum == 0)
         {
-            RandomNumberGenerator* rng = GLOBAL_RNG;
-            size_t u = rng->uniform01() * sample_probs.size();
-            size_t v = 0;
-            for (it = sample_probs.begin(); it != sample_probs.end(); it++)
-            {
-                if (u < v)
-                {
-                    const std::vector<unsigned>& states = it->first;
-                    a = states[0];
-                    l = states[1];
-                    r = states[2];
-                    break;
-                }
-                v++;
-            }
+            return false;
         }
         else
         {
@@ -1384,9 +1362,11 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         average_extinction[node_index] = total_extinction_rate / num_dts;
         
         // recurse towards tips
-        recursivelyDrawStochasticCharacterMap(left, l, character_histories, set_amb_char_data);
-        recursivelyDrawStochasticCharacterMap(right, r, character_histories, set_amb_char_data);
+        bool success_l = recursivelyDrawStochasticCharacterMap(left, l, character_histories, set_amb_char_data);
+        bool success_r = recursivelyDrawStochasticCharacterMap(right, r, character_histories, set_amb_char_data);
+        return success_l && success_r;
     }
+    return true;
 }
 
 

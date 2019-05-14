@@ -1,7 +1,10 @@
-#ifndef Dist_FBDP_H
-#define Dist_FBDP_H
+#ifndef Dist_FBDRangeMatrix_H
+#define Dist_FBDRangeMatrix_H
 
-#include "RlBirthDeathProcess.h"
+#include "ModelVector.h"
+#include "PiecewiseConstantFossilizedBirthDeathRangeProcess.h"
+#include "RlMatrixReal.h"
+#include "RlTypedDistribution.h"
 
 namespace RevLanguage {
     
@@ -18,13 +21,13 @@ namespace RevLanguage {
      * @since 2014-01-26, version 1.0
      *c
      */
-    class Dist_FBDP : public BirthDeathProcess {
+    class Dist_FBDRangeMatrix : public TypedDistribution<MatrixReal > {
         
     public:
-        Dist_FBDP( void );
+        Dist_FBDRangeMatrix( void );
         
         // Basic utility functions
-        Dist_FBDP*                                              clone(void) const;                                                                       //!< Clone the object
+        Dist_FBDRangeMatrix*                                         clone(void) const;                                                                      //!< Clone the object
         static const std::string&                               getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                                  getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::vector<std::string>                                getDistributionFunctionAliases(void) const;                                             //!< Get the alternative names used for the constructor function in Rev.
@@ -34,7 +37,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::AbstractBirthDeathProcess*                createDistribution(void) const;
+        RevBayesCore::PiecewiseConstantFossilizedBirthDeathRangeProcess*                createDistribution(void) const;
         
     protected:
         
@@ -47,14 +50,11 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                               mu;                                                                                     //!< The extinction rate(s)
         RevPtr<const RevVariable>                               psi;                                                                                    //!< The fossilization rate(s)
         RevPtr<const RevVariable>                               rho;                                                                                    //!< The extant sampling proportion
-        RevPtr<const RevVariable>                               lambda_a;                                                                               //!< The anagenetic speciation rate(s)
-        RevPtr<const RevVariable>                               beta;                                                                                   //!< The symmetric speciation probability
         RevPtr<const RevVariable>                               timeline;                                                                               //!< The interval times
         RevPtr<const RevVariable>                               fossil_counts;                                                                          //!< The fossil counts
+        RevPtr<const RevVariable>                               taxa;                                                                                   //!< The taxa
+        RevPtr<const RevVariable>                               condition;                                                                              //!< The condition of the process
         RevPtr<const RevVariable>                               presence_absence;
-        RevPtr<const RevVariable>                               extended;
-        std::string                                             start_condition;                                                                        //!< The start condition of the process (rootAge/originAge)
-
     };
     
 }

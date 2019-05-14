@@ -1,6 +1,8 @@
 #include "DiscreteTaxonData.h"
 #include "DnaState.h"
-#include "PomoStateConverter.h"
+#include "PomoState4Converter.h"
+
+
 using namespace RevBayesCore;
 
 
@@ -9,23 +11,23 @@ using namespace RevBayesCore;
  *
  * The default constructor does nothing except allocating the object.
  */
-PomoStateConverter::PomoStateConverter( void )
+PomoState4Converter::PomoState4Converter( void )
 {
 
 }
 
 
 /**
- * Data converter from DNA into PomoState.
+ * Data converter from DNA into PomoState4.
  *
- * This function concverts a DNA matrix into a PomoState matrix of given virtualPopulationSize,
+ * This function concverts a DNA matrix into a PomoState4 matrix of given virtualPopulationSize,
  * using the given mapping between sequence name and species name.
  */
-HomologousDiscreteCharacterData<PomoState>* PomoStateConverter::convertData(
+HomologousDiscreteCharacterData<PomoState4>* PomoState4Converter::convertData(
                                                                                 const AbstractHomologousDiscreteCharacterData &d,
                                                                                 const unsigned int virtualPopulationSize,
                                                                                 const std::map<std::string, std::string> sequenceNameToSpeciesName) {
-    HomologousDiscreteCharacterData<PomoState>* data = new HomologousDiscreteCharacterData<PomoState> ();
+    HomologousDiscreteCharacterData<PomoState4>* data = new HomologousDiscreteCharacterData<PomoState4> ();
     //First, build a vector of frequencies according to the Pomo model
     std::vector<double> tempFreq (5, 0.0);
     std::vector< std::vector<double> > frequencies ( 4+ (virtualPopulationSize-1) * 6, tempFreq);
@@ -77,7 +79,7 @@ HomologousDiscreteCharacterData<PomoState>* PomoStateConverter::convertData(
     for (size_t i = 0 ; i < frequencies[j].size(); ++i) {
         std::cout << frequencies[j][i] << ",";
     }
-        PomoState* pol = new PomoState(virtualPopulationSize);
+        PomoState4* pol = new PomoState4(virtualPopulationSize);
         pol->setState((size_t) (j+1) );
         std::cout << "  "<<pol->getStringValue() <<std::endl;
     }*/
@@ -97,7 +99,7 @@ HomologousDiscreteCharacterData<PomoState>* PomoStateConverter::convertData(
     std::vector<double> counts (5, 0.0); //A C G T -
     std::vector<double> countsBackup (5, 0.0); //A C G T -
     for (std::map<std::string, std::vector<std::string> >::const_iterator it = speciesNameToSequenceNames.begin(); it != speciesNameToSequenceNames.end(); it++) {
-        DiscreteTaxonData<PomoState> tax (it->first);
+        DiscreteTaxonData<PomoState4> tax (it->first);
         for (size_t c = 0; c < d.getNumberOfCharacters(); ++c) {
             for (std::vector<std::string>::const_iterator seq = it->second.begin(); seq != it->second.end(); seq++) {
                 size_t index = d.getIndexOfTaxon(*seq);
@@ -122,7 +124,7 @@ HomologousDiscreteCharacterData<PomoState>* PomoStateConverter::convertData(
                 counts[chIndex]++;
             }
             //Now we have all the counts for this species,
-            //we need to use these counts to build a PomoState
+            //we need to use these counts to build a PomoState4
             tax.addCharacter(*convertCounts(counts, virtualPopulationSize, frequencies) );
             //Resetting counts
             counts = countsBackup;
@@ -137,7 +139,7 @@ HomologousDiscreteCharacterData<PomoState>* PomoStateConverter::convertData(
 }
 
 
-PomoState* PomoStateConverter::convertCounts(std::vector<double> &counts,
+PomoState4* PomoState4Converter::convertCounts(std::vector<double> &counts,
                                                            const unsigned int virtualPopulationSize,
                                                            std::vector< std::vector<double> > &frequencies) {
 
@@ -155,8 +157,9 @@ PomoState* PomoStateConverter::convertCounts(std::vector<double> &counts,
        // std::cout << counts[i] << ",";
     }
     //If the site is all gaps
-    if (counts[4] == 1.0) {
-        PomoState* pol = new PomoState();
+    if (counts[4] == 1.0)
+    {
+        PomoState4* pol = new PomoState4(4);
         pol->setStateByIndex((size_t)0);
         return pol;
     }
@@ -179,7 +182,7 @@ PomoState* PomoStateConverter::convertCounts(std::vector<double> &counts,
             }*/
         }
     }
-    PomoState* pol = new PomoState(virtualPopulationSize);
+    PomoState4* pol = new PomoState4(virtualPopulationSize);
     pol->setStateByIndex((size_t) (index+1) );
     std::cout << "polgetstringvalue:  "<<pol->getStringValue() <<std::endl;;
     return pol;

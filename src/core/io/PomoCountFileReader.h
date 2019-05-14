@@ -4,7 +4,7 @@
 #include "DelimitedDataReader.h"
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "HomologousDiscreteCharacterData.h"
-#include "PomoState.h"
+#include "PoMoState.h"
 
 #include <string>
 #include <vector>

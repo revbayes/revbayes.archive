@@ -1,6 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Dist_UltrametricTree.h"
+#include "Probability.h"
 #include "RealPos.h"
 #include "RlBoolean.h"
 #include "RlDistributionMemberFunction.h"
@@ -57,17 +58,18 @@ RevBayesCore::UltrametricTreeDistribution* Dist_UltrametricTree::createDistribut
     RevBayesCore::TypedDistribution<double>* rp                 = dynamic_cast<RevBayesCore::TypedDistribution<double>* >( rl_rate_prior.createDistribution() );
     
     RevBayesCore::TypedDagNode<double>* ra                      = static_cast<const RealPos &>( root_age->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* rbf                     = static_cast<const Probability &>( root_branch_fraction->getRevObject() ).getDagNode();
 
     const RevBayesCore::TraceTree& tt                           = static_cast<const TraceTree &>( trees->getRevObject() ).getValue();
 
-    RevBayesCore::Trace<double>* nt = NULL;
+    RevBayesCore::Trace<double>* sample_prior = NULL;
     if( density->getRevObject() != RevNullObject::getInstance() )
     {
-        nt = &static_cast<const Trace &>( density->getRevObject() ).getValue();
+        sample_prior = static_cast<const Trace &>( density->getRevObject() ).getValue().clone();
     }
 
     // create the internal distribution object
-    RevBayesCore::UltrametricTreeDistribution* dist = new RevBayesCore::UltrametricTreeDistribution(tp, rp, ra, tt, nt);
+    RevBayesCore::UltrametricTreeDistribution* dist = new RevBayesCore::UltrametricTreeDistribution(tp, rp, ra, rbf, tt, sample_prior);
     
     
     return dist;
@@ -143,6 +145,11 @@ MethodTable Dist_UltrametricTree::getDistributionMethods( void ) const
     sample_prob_arg_rules->push_back( new ArgumentRule( "log", RlBoolean::getClassTypeSpec(), "If we should return the log-transformed probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean( false ) ) );
     methods.addFunction( new DistributionMemberFunction<Dist_UltrametricTree, ModelVector<Real> >( "getSampleProbabilities", this->variable, sample_prob_arg_rules   ) );
     
+    // member functions
+    ArgumentRules* branch_rates_arg_rules = new ArgumentRules();
+    branch_rates_arg_rules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), "The index of the tree in the trace for which we want to get the branch rates.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new DistributionMemberFunction<Dist_UltrametricTree, ModelVector<RealPos> >( "getBranchRates", this->variable, branch_rates_arg_rules   ) );
+
     return methods;
 }
 
@@ -166,7 +173,8 @@ const MemberRules& Dist_UltrametricTree::getParameterRules(void) const
     {
         member_rules.push_back( new ArgumentRule( "treePrior", TypedDistribution<TimeTree>::getClassTypeSpec(), "The prior distribution for the time tree (divergence times).",   ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         member_rules.push_back( new ArgumentRule( "ratePrior", TypedDistribution<RealPos>::getClassTypeSpec(), "The prior distribution for the branch rates.",   ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        member_rules.push_back( new ArgumentRule( "rootAge", RealPos::getClassTypeSpec(), "The root age variable.",   ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        member_rules.push_back( new ArgumentRule( "rootAge", RealPos::getClassTypeSpec(), "The root age variable.",   ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        member_rules.push_back( new ArgumentRule( "rootBranchFraction", Probability::getClassTypeSpec(), "The fraction of how much of the root branch is assigned to the left subtree.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
         member_rules.push_back( new ArgumentRule( "trees", TraceTree::getClassTypeSpec(), "The trace of tree samples.",   ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         member_rules.push_back( new ArgumentRule( "density", Trace::getClassTypeSpec(), "Optional trace of probability density values for each tree.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
 
@@ -217,6 +225,10 @@ void Dist_UltrametricTree::setConstParameter(const std::string& name, const RevP
     else if ( name == "rootAge" )
     {
         root_age = var;
+    }
+    else if ( name == "rootBranchFraction" )
+    {
+        root_branch_fraction = var;
     }
     else if ( name == "density" )
     {

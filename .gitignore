@@ -7,7 +7,7 @@
 # Blacklist
 # ----------------------------------------------
 projects/cmake
-src/revlanguage/utils/GitVersion.cpp
+#src/revlanguage/utils/GitVersion.cpp
 src/revlanguage/constants.h
 src/ui/constants.h
 boost_1_55_0/bootstrap.log
@@ -56,3 +56,9 @@ src/core/meson.build
 src/libs/meson.build
 src/revlanguage/meson.build
 src/cmd/meson.build
+doxygen/html/*
+doxygen/latex/*
+doxygen/DoxygenWarningLog.txt
+.cproject
+.project
+.settings/

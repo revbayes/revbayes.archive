@@ -26,7 +26,8 @@ ReversiblePomoRateMatrixFunction::ReversiblePomoRateMatrixFunction(const TypedDa
 
 
 
-ReversiblePomoRateMatrixFunction::~ReversiblePomoRateMatrixFunction( void ) {
+ReversiblePomoRateMatrixFunction::~ReversiblePomoRateMatrixFunction( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 

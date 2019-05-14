@@ -5,16 +5,20 @@
 
 using namespace RevBayesCore;
 
-BinomialDistribution::BinomialDistribution(const TypedDagNode<long> *m, const TypedDagNode<double> *q) : TypedDistribution<long>( new long( 0 ) ),
-    n( m ),
-    p( q )
+/** BinomialDistribution Constructor
+ * @param n number of trials
+ * @param p the probability
+*/
+BinomialDistribution::BinomialDistribution(const TypedDagNode<long> *n, const TypedDagNode<double> *p) : TypedDistribution<long>( new long( 0 ) ),
+    n( n ),
+    p( p )
 {
     
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
     addParameter( n );
-    addParameter( q );
+    addParameter( p );
     
     *value = RbStatistics::Binomial::rv(n->getValue(), p->getValue(), *GLOBAL_RNG);
 }

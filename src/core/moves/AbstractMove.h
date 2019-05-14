@@ -18,10 +18,6 @@ namespace RevBayesCore {
      * The base class of all moves only provides the interface for the call to propose a new move.
      * All specifics are implemented in the derived classes.
      *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2014-03-26, version 1.0
-     *
      */
     class AbstractMove : public Move {
         

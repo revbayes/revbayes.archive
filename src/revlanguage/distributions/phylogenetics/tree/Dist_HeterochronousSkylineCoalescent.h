@@ -1,5 +1,5 @@
-#ifndef Dist_HeterochronousCoalescentSkyline_H
-#define Dist_HeterochronousCoalescentSkyline_H
+#ifndef Dist_HeterochronousSkylineCoalescent_H
+#define Dist_HeterochronousSkylineCoalescent_H
 
 #include "PiecewiseConstantHeterochronousCoalescent.h"
 #include "RlTypedDistribution.h"
@@ -8,7 +8,7 @@
 namespace RevLanguage {
     
     /**
-     * The RevLanguage wrapper of the Dist_HeterochronousCoalescentSkyline
+     * The RevLanguage wrapper of the Dist_HeterochronousSkylineCoalescent
      *
      * The RevLanguage wrapper of the skyline population size model HeterochronousCoalescent process connects
      * the variables/parameters of the process and creates the internal PiecewiseConstantPopulationHeterochronousCoalescent object.
@@ -20,13 +20,13 @@ namespace RevLanguage {
      * @since 2015-05-11, version 1.0
      *
      */
-    class Dist_HeterochronousCoalescentSkyline :  public TypedDistribution<TimeTree> {
+    class Dist_HeterochronousSkylineCoalescent :  public TypedDistribution<TimeTree> {
         
     public:
-        Dist_HeterochronousCoalescentSkyline( void );
+        Dist_HeterochronousSkylineCoalescent( void );
         
         // Basic utility functions
-        Dist_HeterochronousCoalescentSkyline*                       clone(void) const;                                                                      //!< Clone the object
+        Dist_HeterochronousSkylineCoalescent*                       clone(void) const;                                                                      //!< Clone the object
         static const std::string&                                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                                      getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::string                                                 getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.

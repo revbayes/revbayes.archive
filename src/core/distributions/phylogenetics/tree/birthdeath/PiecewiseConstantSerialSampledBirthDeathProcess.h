@@ -8,10 +8,10 @@
 #include <set>
 
 namespace RevBayesCore {
-    
+
     class Clade;
     class Taxon;
-    
+
     /**
      * @brief Piecewise-constant fossilized birth-death process with serially sampled fossils.
      *
@@ -31,7 +31,7 @@ namespace RevBayesCore {
      *
      */
     class PiecewiseConstantSerialSampledBirthDeathProcess : public AbstractBirthDeathProcess {
-        
+
     public:
         PiecewiseConstantSerialSampledBirthDeathProcess (const TypedDagNode<double> *ra,
                                                       const DagNode *s,
@@ -43,8 +43,11 @@ namespace RevBayesCore {
                                                       const TypedDagNode< RbVector<double> > *mt,
                                                       const TypedDagNode< RbVector<double> > *pt,
                                                       const TypedDagNode< RbVector<double> > *rt,
-                                                      const std::string &cdt, const std::vector<Taxon> &tn, bool uo );  //!< Constructor
-        
+                                                      const std::string &cdt,
+                                                      const std::vector<Taxon> &tn,
+                                                      bool uo,
+                                                      TypedDagNode<Tree> *t);  //!< Constructor
+
         // public member functions
         PiecewiseConstantSerialSampledBirthDeathProcess*   clone(void) const;                                         //!< Create an independent clone
 
@@ -71,7 +74,7 @@ namespace RevBayesCore {
         double                                          simulateDivergenceTime(double origin, double present) const;    //!< Simulate a speciation event.
         virtual std::vector<double>                     simulateDivergenceTimes(size_t n, double origin, double present, double min) const;                 //!< Simulate n speciation events.
         int                                             survivors(double t) const;                                 //!< Number of species alive at time t.
-        
+
         // members
         const TypedDagNode<double >*                    homogeneous_lambda;                                    //!< The homogeneous speciation rates.
         const TypedDagNode<RbVector<double> >*          heterogeneous_lambda;                                  //!< The heterogeneous speciation rates.
@@ -83,7 +86,7 @@ namespace RevBayesCore {
         const TypedDagNode<RbVector<double> >*          heterogeneous_rho;                                     //!< The heterogeneous extant sampling probs.
 
         const TypedDagNode<RbVector<double> >*          homogeneous_timeline;                                  //!< The times of the instantaneous rate change events.
-        
+
         const TypedDagNode<RbVector<double> >*          lambda_timeline;                                       //!< The times of the instantaneous speciation rate change events.
         const TypedDagNode<RbVector<double> >*          mu_timeline;                                           //!< The times of the instantaneous extinction rate change events.
         const TypedDagNode<RbVector<double> >*          psi_timeline;                                          //!< The times of the instantaneous serial sampling rate change events.

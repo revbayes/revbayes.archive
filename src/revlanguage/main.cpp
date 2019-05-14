@@ -43,8 +43,6 @@ variables_map parse_cmd_line(int argc, char* argv[])
 {
     using namespace po;
 
-size_t err = 0;
-
     // Put all options in one group for now.
     options_description general("Options");
     general.add_options()

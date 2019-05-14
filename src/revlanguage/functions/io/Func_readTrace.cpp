@@ -44,7 +44,8 @@ RevPtr<RevVariable> Func_readTrace::execute( void )
     
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager myFileManager( fn.getValue() );
-    if ( !myFileManager.testFile() || !myFileManager.testDirectory() ) {
+    if ( !myFileManager.testFile() || !myFileManager.testDirectory() )
+    {
         std::string errorStr = "";
         myFileManager.formatError( errorStr );
         throw( RbException(errorStr) );
@@ -63,7 +64,8 @@ RevPtr<RevVariable> Func_readTrace::execute( void )
         
     std::vector<RevBayesCore::TraceNumeric> data;
         
-    
+    long thinning = static_cast<const Natural&>( args[3].getVariable()->getRevObject() ).getValue();
+
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
     // that can be read.
@@ -83,6 +85,7 @@ RevPtr<RevVariable> Func_readTrace::execute( void )
         /* Initialize */
         std::string commandLine;
         RBOUT("Processing file \"" + fn.getValue() + "\"");
+        size_t n_samples = 0;
             
         /* Command-processing loop */
         while ( inFile.good() )
@@ -129,7 +132,17 @@ RevPtr<RevVariable> Func_readTrace::execute( void )
                     
                 continue;
             }
-                
+            
+            
+            // increase our sample counter
+            ++n_samples;
+            
+            // we need to check if we skip this sample in case of thinning.
+            if ( (n_samples-1) % thinning > 0 )
+            {
+                continue;
+            }
+            
             // adding values to the Tracess
             for (size_t j=0; j<columns.size(); j++)
             {
@@ -188,6 +201,7 @@ const ArgumentRules& Func_readTrace::getArgumentRules( void ) const
         burninTypes.push_back( Probability::getClassTypeSpec() );
         burninTypes.push_back( Integer::getClassTypeSpec() );
         argumentRules.push_back( new ArgumentRule( "burnin"   , burninTypes     , "The fraction/number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25) ) );
+        argumentRules.push_back( new ArgumentRule( "thinning", Natural::getClassTypeSpec(), "The frequency of samples to read, i.e., we will only used every n-th sample where n is defined by this argument.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural( 1l ) ) );
 
         rules_set = true;
     }
