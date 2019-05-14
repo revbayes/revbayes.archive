@@ -1,7 +1,7 @@
 #include "DiscreteTaxonData.h"
 #include "PomoCountFileReader.h"
 #include "PomoState4.h"
-#include "PomoState.h"
+#include "PoMoState.h"
 #include "RbFileManager.h"
 
 #include "RbConstants.h"

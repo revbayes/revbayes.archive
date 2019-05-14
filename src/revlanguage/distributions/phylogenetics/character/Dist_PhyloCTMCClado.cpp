@@ -12,7 +12,7 @@
 #include "RlString.h"
 #include "RlTree.h"
 #include "StandardState.h"
-#include "PomoState.h"
+#include "PoMoState.h"
 #include "NaturalNumbersState.h"
 
 using namespace RevLanguage;

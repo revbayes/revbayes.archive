@@ -1,4 +1,4 @@
-#include "RateMatrix_Pomo4.h"
+#include "RateMatrix_PoMo4.h"
 #include "MatrixReal.h"
 #include "RbException.h"
 #include "TransitionProbabilityMatrix.h"
