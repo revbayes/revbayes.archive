@@ -4,8 +4,8 @@
 #include "Model.h"
 #include "RbFileManager.h"
 
-#include <RbException.h>
-#include <RbVersion.h>
+#include "RbException.h"
+#include "RbVersion.h"
 
 using namespace RevBayesCore;
 

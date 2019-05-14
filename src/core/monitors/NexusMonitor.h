@@ -3,7 +3,7 @@
 
 #include "AbstractFileMonitor.h"
 
-#include <TypedDagNode.h>
+#include "TypedDagNode.h"
 
 namespace RevBayesCore {
 
