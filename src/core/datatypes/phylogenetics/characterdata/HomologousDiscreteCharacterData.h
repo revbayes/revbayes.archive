@@ -1503,6 +1503,10 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::maxInvariableBlo
         if ( invariant == true )
         {
             ++this_block_length;
+            if ( this_block_length > max_length )
+            {
+                max_length = this_block_length;
+            }
         }
         else
         {
@@ -1561,6 +1565,10 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::maxVariableBlock
         if ( invariant == false )
         {
             ++this_block_length;
+            if ( this_block_length > max_length )
+            {
+                max_length = this_block_length;
+            }
         }
         else
         {
@@ -1910,7 +1918,7 @@ double RevBayesCore::HomologousDiscreteCharacterData<charType>::varGcContent( bo
         double diff = gc_content[i] - mean_gc;
         var_gc += diff * diff;
     }
-    return var_gc / double(nt);
+    return var_gc / double(nt-1);
 }
 
 
@@ -1970,7 +1978,7 @@ double RevBayesCore::HomologousDiscreteCharacterData<charType>::varGcContentByCo
         double diff = gc_content[i] - mean_gc;
         var_gc += diff * diff;
     }
-    return var_gc / double(nt);
+    return var_gc / double(nt-1);
 }
 
 
