@@ -19,7 +19,7 @@
 #ifndef RlPomoState_H
 #define RlPomoState_H
 
-#include "PomoState.h"
+#include "PoMoState.h"
 #include "ModelObject.h"
 #include "TypedDagNode.h"
 

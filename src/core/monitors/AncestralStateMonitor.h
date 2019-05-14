@@ -1,7 +1,7 @@
 #ifndef AncestralStateMonitor_H
 #define AncestralStateMonitor_H
 
-#include "AbstractFileMonitor.h"
+#include "VariableMonitor.h"
 #include "Tree.h"
 #include "TypedDagNode.h"
 #include "StochasticNode.h"
@@ -32,7 +32,7 @@ namespace RevBayesCore {
      *
      */
     template<class characterType> 
-	class AncestralStateMonitor : public AbstractFileMonitor {
+    class AncestralStateMonitor : public VariableMonitor {
 	
     public:
         // Constructors and Destructors
@@ -74,7 +74,7 @@ using namespace RevBayesCore;
 
 /* Constructor */
 template<class characterType>
-AncestralStateMonitor<characterType>::AncestralStateMonitor(TypedDagNode<Tree> *t, DagNode* &ch, unsigned long g, const std::string &fname, const std::string &del) : AbstractFileMonitor(std::vector<DagNode*>(), g, fname, del, false, false, false),
+AncestralStateMonitor<characterType>::AncestralStateMonitor(TypedDagNode<Tree> *t, DagNode* &ch, unsigned long g, const std::string &fname, const std::string &del) : VariableMonitor(std::vector<DagNode*>(), g, fname, del, false, false, false),
     tree( t ),
     ctmc( ch ),
     stochastic_nodes_only( false )
@@ -99,7 +99,7 @@ AncestralStateMonitor<characterType>::AncestralStateMonitor(TypedDagNode<Tree> *
  * Copy constructor.
  */
 template<class characterType>
-AncestralStateMonitor<characterType>::AncestralStateMonitor( const AncestralStateMonitor &m) : AbstractFileMonitor( m ),
+AncestralStateMonitor<characterType>::AncestralStateMonitor( const AncestralStateMonitor &m) : VariableMonitor( m ),
     tree( m.tree ),
     ctmc( m.ctmc ),
     stochastic_nodes_only( m.stochastic_nodes_only )
@@ -236,7 +236,7 @@ void AncestralStateMonitor<characterType>::swapNode(DagNode *oldN, DagNode* newN
 		ctmc = newN;
 	}
 
-    AbstractFileMonitor::swapNode( oldN, newN );
+    VariableMonitor::swapNode( oldN, newN );
 	
 }
 

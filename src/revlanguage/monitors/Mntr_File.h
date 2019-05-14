@@ -18,7 +18,7 @@
 #ifndef Mntr_File_H
 #define Mntr_File_H
 
-#include "FileMonitor.h"
+#include "VariableMonitor.h"
 #include "RlMonitor.h"
 #include "TypedDagNode.h"
 
