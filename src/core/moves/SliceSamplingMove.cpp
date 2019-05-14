@@ -99,80 +99,84 @@ struct interval
   interval(bool hl,double l, bool hu, double u):has_lower_bound(hl),lower_bound(l),has_upper_bound(hu),upper_bound(u) {}
 };
 
+namespace  {
+
 /// This object allow computing the probability of the current point, and also store the variable's range
 class slice_function: public interval
 {
-  StochasticNode<double>* variable;
-  double lHeat;
-  double pHeat;
-  double prHeat;
-  RbOrderedSet<DagNode*> affectedNodes;
-  int num_evals;
+    StochasticNode<double>* variable;
+    double lHeat;
+    double pHeat;
+    double prHeat;
+    RbOrderedSet<DagNode*> affectedNodes;
+    int num_evals;
 
 public:
 
-  int get_num_evals() const {return num_evals;}
+    int get_num_evals() const {return num_evals;}
 
-  double operator()() 
-  {
-    double lnPrior = 0.0;
-    double lnLikelihood = 0.0;
-
-    // 1. compute the probability of the current value for each node
-    lnPrior += variable->getLnProbability();
-    
-    // 2. then we recompute the probability for all the affected nodes
-    for (RbOrderedSet<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
+    double operator()()
     {
-        if ( (*it)->isClamped() )
-            lnLikelihood += (*it)->getLnProbability();
-        else
-            lnPrior += (*it)->getLnProbability();
+        double lnPrior = 0.0;
+        double lnLikelihood = 0.0;
+
+        // 1. compute the probability of the current value for each node
+        lnPrior += variable->getLnProbability();
+
+        // 2. then we recompute the probability for all the affected nodes
+        for (RbOrderedSet<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it)
+        {
+            if ( (*it)->isClamped() )
+                lnLikelihood += (*it)->getLnProbability();
+            else
+                lnPrior += (*it)->getLnProbability();
+        }
+
+        // 3. exponentiate with the chain heat
+        double lnPosterior = pHeat * (lHeat * lnLikelihood + prHeat * lnPrior);
+
+        return lnPosterior;
     }
 
-    // 3. exponentiate with the chain heat
-    double lnPosterior = pHeat * (lHeat * lnLikelihood + prHeat * lnPrior);
+    double operator()(double x)
+    {
+        num_evals++;
 
-    return lnPosterior;
-  }
+        variable->getValue() = x;
 
-  double operator()(double x)
-  {
-    num_evals++;
+        // first we touch all the nodes
+        // that will set the flags for recomputation
+        variable->touch();
 
-    variable->getValue() = x;
+        assert( not variable->isClamped() );
 
-    // first we touch all the nodes
-    // that will set the flags for recomputation
-    variable->touch();
-    
-    assert( not variable->isClamped() );
+        double Pr_ = (*this)();
 
-    double Pr_ = (*this)();
-    
-    // call accept for each node  --  automatically includes affected nodes
-    variable->keep();
+        // call accept for each node  --  automatically includes affected nodes
+        variable->keep();
 
-    return Pr_;
-  }
+        return Pr_;
+    }
 
-  double current_value() const
-  {
-    return variable->getValue();
-  }
+    double current_value() const
+    {
+        return variable->getValue();
+    }
 
-  slice_function(StochasticNode<double> *n, double pr, double l, double p, bool pos_only=false)
-    :variable(n),
-     lHeat(l),
-     pHeat(p),
-     prHeat(pr),
-     num_evals(0)
-  {
-    variable->initiateGetAffectedNodes( affectedNodes );
+    slice_function(StochasticNode<double> *n, double pr, double l, double p, bool pos_only=false)
+        :variable(n),
+          lHeat(l),
+          pHeat(p),
+          prHeat(pr),
+          num_evals(0)
+    {
+        variable->initiateGetAffectedNodes( affectedNodes );
 
-    has_lower_bound = pos_only;
-  }
+        has_lower_bound = pos_only;
+    }
 };
+
+}
 
 std::pair<double,double> 
 find_slice_boundaries_stepping_out(double x0,slice_function& g,double logy, double w,int m)

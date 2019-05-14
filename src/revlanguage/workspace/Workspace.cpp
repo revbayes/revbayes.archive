@@ -270,6 +270,7 @@ void Workspace::initializeGlobalWorkspace( void )
     initializeDistGlobalWorkspace();
     initializeFuncGlobalWorkspace();
     initializeBasicGlobalWorkspace();
+    initializeDemographicFunctionGlobalWorkspace();
     
     initializeExtraHelp();
 

@@ -1,7 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Clade.h"
-#include "Dist_HeterochronousCoalescentSkyline.h"
+#include "Dist_HeterochronousSkylineCoalescent.h"
 #include "ModelVector.h"
 #include "Natural.h"
 #include "OptionRule.h"
@@ -23,7 +23,7 @@ using namespace RevLanguage;
  *
  * The default constructor does nothing except allocating the object.
  */
-Dist_HeterochronousCoalescentSkyline::Dist_HeterochronousCoalescentSkyline() : TypedDistribution<TimeTree>()
+Dist_HeterochronousSkylineCoalescent::Dist_HeterochronousSkylineCoalescent() : TypedDistribution<TimeTree>()
 {
     
 }
@@ -35,9 +35,9 @@ Dist_HeterochronousCoalescentSkyline::Dist_HeterochronousCoalescentSkyline() : T
  *
  * \return A new copy of the process.
  */
-Dist_HeterochronousCoalescentSkyline* Dist_HeterochronousCoalescentSkyline::clone( void ) const
+Dist_HeterochronousSkylineCoalescent* Dist_HeterochronousSkylineCoalescent::clone( void ) const
 {
-    return new Dist_HeterochronousCoalescentSkyline(*this);
+    return new Dist_HeterochronousSkylineCoalescent(*this);
 }
 
 
@@ -51,7 +51,7 @@ Dist_HeterochronousCoalescentSkyline* Dist_HeterochronousCoalescentSkyline::clon
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::PiecewiseConstantHeterochronousCoalescent* Dist_HeterochronousCoalescentSkyline::createDistribution( void ) const
+RevBayesCore::PiecewiseConstantHeterochronousCoalescent* Dist_HeterochronousSkylineCoalescent::createDistribution( void ) const
 {
     
     // get the parameters
@@ -79,10 +79,10 @@ RevBayesCore::PiecewiseConstantHeterochronousCoalescent* Dist_HeterochronousCoal
  *
  * \return The class' name.
  */
-const std::string& Dist_HeterochronousCoalescentSkyline::getClassType( void )
+const std::string& Dist_HeterochronousSkylineCoalescent::getClassType( void )
 {
     
-    static std::string rev_type = "Dist_HeterochronousCoalescentSkyline";
+    static std::string rev_type = "Dist_HeterochronousSkylineCoalescent";
     
     return rev_type;
 }
@@ -93,7 +93,7 @@ const std::string& Dist_HeterochronousCoalescentSkyline::getClassType( void )
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& Dist_HeterochronousCoalescentSkyline::getClassTypeSpec( void )
+const TypeSpec& Dist_HeterochronousSkylineCoalescent::getClassTypeSpec( void )
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
@@ -109,7 +109,7 @@ const TypeSpec& Dist_HeterochronousCoalescentSkyline::getClassTypeSpec( void )
  *
  * \return Rev name of constructor function.
  */
-std::string Dist_HeterochronousCoalescentSkyline::getDistributionFunctionName( void ) const
+std::string Dist_HeterochronousSkylineCoalescent::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
     std::string d_name = "HeterochronousCoalescentSkyline";
@@ -128,7 +128,7 @@ std::string Dist_HeterochronousCoalescentSkyline::getDistributionFunctionName( v
  *
  * \return The member rules.
  */
-const MemberRules& Dist_HeterochronousCoalescentSkyline::getParameterRules(void) const
+const MemberRules& Dist_HeterochronousSkylineCoalescent::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
@@ -162,7 +162,7 @@ const MemberRules& Dist_HeterochronousCoalescentSkyline::getParameterRules(void)
  *
  * \return The type spec of this object.
  */
-const TypeSpec& Dist_HeterochronousCoalescentSkyline::getTypeSpec( void ) const
+const TypeSpec& Dist_HeterochronousSkylineCoalescent::getTypeSpec( void ) const
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -181,7 +181,7 @@ const TypeSpec& Dist_HeterochronousCoalescentSkyline::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_HeterochronousCoalescentSkyline::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Dist_HeterochronousSkylineCoalescent::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "theta" )

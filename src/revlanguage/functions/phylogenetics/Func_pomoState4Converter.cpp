@@ -1,25 +1,17 @@
-
-//
-//  Func_pomoStateConverter.cpp
-//  RevBayesCore
-//
-//  Created by Bastien Boussau on 22/8/14.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
-#include "Func_pomoStateConverter.h"
+#include "Func_pomoState4Converter.h"
 #include "ModelVector.h"
 #include "Natural.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlDeterministicNode.h"
 #include "RlTaxon.h"
-#include "PomoStateConverter.h"
+#include "PomoState4Converter.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
 
 /** default constructor */
-Func_pomoStateConverter::Func_pomoStateConverter( void ) : Procedure( ) {
+Func_pomoState4Converter::Func_pomoState4Converter( void ) : Procedure( )
+{
     
 }
 
@@ -30,20 +22,20 @@ Func_pomoStateConverter::Func_pomoStateConverter( void ) : Procedure( ) {
  *
  * \return A new copy of the process.
  */
-Func_pomoStateConverter* Func_pomoStateConverter::clone( void ) const {
+Func_pomoState4Converter* Func_pomoState4Converter::clone( void ) const {
     
-    return new Func_pomoStateConverter( *this );
+    return new Func_pomoState4Converter( *this );
 }
 
 
-RevPtr<RevVariable> Func_pomoStateConverter::execute() {
+RevPtr<RevVariable> Func_pomoState4Converter::execute() {
     
     const RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* aln = static_cast<const AbstractHomologousDiscreteCharacterData&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode< long >* n = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
 
 
-    RevBayesCore::PomoStateConverter* c = new RevBayesCore::PomoStateConverter(  );
+    RevBayesCore::PomoState4Converter* c = new RevBayesCore::PomoState4Converter(  );
     
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::Taxon> >* taxa  = static_cast< const ModelVector<Taxon> &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     
@@ -61,7 +53,7 @@ RevPtr<RevVariable> Func_pomoStateConverter::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& Func_pomoStateConverter::getArgumentRules( void ) const
+const ArgumentRules& Func_pomoState4Converter::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
@@ -81,16 +73,16 @@ const ArgumentRules& Func_pomoStateConverter::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_pomoStateConverter::getClassType(void)
+const std::string& Func_pomoState4Converter::getClassType(void)
 {
     
-    static std::string rev_type = "Func_pomoStateConverter";
+    static std::string rev_type = "Func_pomoState4Converter";
     
 	return rev_type;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_pomoStateConverter::getClassTypeSpec(void)
+const TypeSpec& Func_pomoState4Converter::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
@@ -102,17 +94,17 @@ const TypeSpec& Func_pomoStateConverter::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-std::string Func_pomoStateConverter::getFunctionName( void ) const
+std::string Func_pomoState4Converter::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "pomoStateConvert";
+    std::string f_name = "pomoState4Convert";
     
     return f_name;
 }
 
 
 /* Get return type */
-const TypeSpec& Func_pomoStateConverter::getReturnType( void ) const
+const TypeSpec& Func_pomoState4Converter::getReturnType( void ) const
 {
     
     static TypeSpec return_typeSpec = AbstractHomologousDiscreteCharacterData::getClassTypeSpec();
@@ -121,7 +113,7 @@ const TypeSpec& Func_pomoStateConverter::getReturnType( void ) const
 }
 
 
-const TypeSpec& Func_pomoStateConverter::getTypeSpec( void ) const {
+const TypeSpec& Func_pomoState4Converter::getTypeSpec( void ) const {
     
     static TypeSpec type_spec = getClassTypeSpec();
     

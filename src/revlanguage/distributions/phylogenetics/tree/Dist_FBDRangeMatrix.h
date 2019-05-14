@@ -1,5 +1,5 @@
-#ifndef Dist_FBDPRange_H
-#define Dist_FBDPRange_H
+#ifndef Dist_FBDRangeMatrix_H
+#define Dist_FBDRangeMatrix_H
 
 #include "ModelVector.h"
 #include "PiecewiseConstantFossilizedBirthDeathRangeProcess.h"
@@ -21,13 +21,13 @@ namespace RevLanguage {
      * @since 2014-01-26, version 1.0
      *c
      */
-    class Dist_FBDPRange : public TypedDistribution<MatrixReal > {
+    class Dist_FBDRangeMatrix : public TypedDistribution<MatrixReal > {
         
     public:
-        Dist_FBDPRange( void );
+        Dist_FBDRangeMatrix( void );
         
         // Basic utility functions
-        Dist_FBDPRange*                                         clone(void) const;                                                                      //!< Clone the object
+        Dist_FBDRangeMatrix*                                         clone(void) const;                                                                      //!< Clone the object
         static const std::string&                               getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                                  getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::vector<std::string>                                getDistributionFunctionAliases(void) const;                                             //!< Get the alternative names used for the constructor function in Rev.

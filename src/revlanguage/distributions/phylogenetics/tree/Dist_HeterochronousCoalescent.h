@@ -1,7 +1,7 @@
 #ifndef Dist_HeterochronousCoalescent_H
 #define Dist_HeterochronousCoalescent_H
 
-#include "ConstantPopulationHeterochronousCoalescent.h"
+#include "HeterochronousCoalescent.h"
 #include "RlTypedDistribution.h"
 #include "RlTimeTree.h"
 
@@ -20,7 +20,7 @@ namespace RevLanguage {
      * @since 2015-03-05, version 1.0
      *
      */
-    class Dist_HeterochronousCoalescent :  public TypedDistribution<TimeTree> {
+    class Dist_HeterochronousCoalescent : public TypedDistribution<TimeTree> {
         
     public:
         Dist_HeterochronousCoalescent( void );
@@ -29,13 +29,14 @@ namespace RevLanguage {
         Dist_HeterochronousCoalescent*                              clone(void) const;                                                                      //!< Clone the object
         static const std::string&                                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                                      getClassTypeSpec(void);                                                                 //!< Get class type spec
+        std::vector<std::string>                                    getDistributionFunctionAliases(void) const;                                             //!< Get the alternative names used for the constructor function in Rev.
         std::string                                                 getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
         const TypeSpec&                                             getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
         const MemberRules&                                          getParameterRules(void) const;                                                          //!< Get member rules (const)
         
         
         // Distribution functions you have to override
-        RevBayesCore::ConstantPopulationHeterochronousCoalescent*   createDistribution(void) const;                                                         //!< Create an internal object of the diveristy-dependent pure-birth process.
+        RevBayesCore::HeterochronousCoalescent*                     createDistribution(void) const;                                                         //!< Create an internal object of the diveristy-dependent pure-birth process.
         
     protected:
         
@@ -47,8 +48,9 @@ namespace RevLanguage {
         // members
         RevPtr<const RevVariable>                                   taxa;                                                                                   //!< The taxon names that will be applied to the initally simulated tree
         RevPtr<const RevVariable>                                   constraints;                                                                            //!< Topological constraints that will be used for calibrations
-        RevPtr<const RevVariable>                                   theta;
-        
+        RevPtr<const RevVariable>                                   change_points;
+        RevPtr<const RevVariable>                                   demographies;
+
     };
     
 }

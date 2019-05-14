@@ -106,6 +106,16 @@ void StandardState::setGapState( bool tf )
 void StandardState::setMissingState( bool tf )
 {
     is_missing = tf;
+    
+    if ( is_missing == true )
+    {
+        for (size_t i=0; i<getNumberOfStates(); ++i)
+        {
+            state.set(i);
+        }
+        num_observed_states = getNumberOfStates();
+    }
+    
 }
 
 

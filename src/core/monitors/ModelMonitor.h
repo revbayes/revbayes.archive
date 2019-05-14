@@ -1,7 +1,7 @@
 #ifndef ModelMonitor_H
 #define ModelMonitor_H
 
-#include "AbstractFileMonitor.h"
+#include "VariableMonitor.h"
 
 #include <string>
 #include <vector>
@@ -23,7 +23,7 @@ namespace RevBayesCore {
      * @since 2012-06-21, version 1.0
      *
      */
-    class ModelMonitor : public AbstractFileMonitor {
+    class ModelMonitor : public VariableMonitor {
         
     public:
         // Constructors and Destructors

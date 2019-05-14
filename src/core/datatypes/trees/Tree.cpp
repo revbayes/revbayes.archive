@@ -1638,6 +1638,46 @@ void Tree::setTaxonObject(const std::string& current_name, const Taxon& new_taxo
 }
 
 
+void Tree::unroot( void )
+{
+    
+    if ( isRooted() == true )
+    {
+        
+        // get the root node because we need to make this tree unrooted (for topology comparison)
+        TopologyNode *old_root = &getRoot();
+        
+        // make the tree use branch lengths instead of ages
+        old_root->setUseAges(false, true);
+        
+        size_t child_index = 0;
+        if ( old_root->getChild(child_index).isTip() == true )
+        {
+            child_index = 1;
+        }
+        TopologyNode *new_root = &old_root->getChild( child_index );
+        TopologyNode *second_child = &old_root->getChild( (child_index == 0 ? 1 : 0) );
+        
+        double bl_first = new_root->getBranchLength();
+        double bl_second = second_child->getBranchLength();
+        
+        old_root->removeChild( new_root );
+        old_root->removeChild( second_child );
+        new_root->setParent( NULL );
+        new_root->addChild( second_child );
+        second_child->setParent( new_root );
+        
+        second_child->setBranchLength( bl_first + bl_second );
+        
+        // finally we need to set the new root to our tree copy
+        setRooted( false );
+        setRoot( new_root, true);
+        
+    }
+    
+}
+
+
 // Write this object into a file in its default format.
 void Tree::writeToFile( const std::string &dir, const std::string &fn ) const
 {

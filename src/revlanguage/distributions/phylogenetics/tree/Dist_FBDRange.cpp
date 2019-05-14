@@ -1,7 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Clade.h"
-#include "Dist_FBDP.h"
+#include "Dist_FBDRange.h"
 #include "ModelVector.h"
 #include "Natural.h"
 #include "OptionRule.h"
@@ -21,7 +21,7 @@ using namespace RevLanguage;
  *
  * The default constructor does nothing except allocating the object.
  */
-Dist_FBDP::Dist_FBDP() : BirthDeathProcess()
+Dist_FBDRange::Dist_FBDRange() : BirthDeathProcess()
 {
     
 }
@@ -33,9 +33,9 @@ Dist_FBDP::Dist_FBDP() : BirthDeathProcess()
  *
  * \return A new copy of the process.
  */
-Dist_FBDP* Dist_FBDP::clone( void ) const
+Dist_FBDRange* Dist_FBDRange::clone( void ) const
 {
-    return new Dist_FBDP(*this);
+    return new Dist_FBDRange(*this);
 }
 
 
@@ -49,7 +49,7 @@ Dist_FBDP* Dist_FBDP::clone( void ) const
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::AbstractBirthDeathProcess* Dist_FBDP::createDistribution( void ) const
+RevBayesCore::AbstractBirthDeathProcess* Dist_FBDRange::createDistribution( void ) const
 {
     
     // get the parameters
@@ -106,7 +106,7 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_FBDP::createDistribution( void ) c
  *
  * \return The class' name.
  */
-const std::string& Dist_FBDP::getClassType( void )
+const std::string& Dist_FBDRange::getClassType( void )
 {
     
     static std::string rev_type = "Dist_FBDRP";
@@ -120,7 +120,7 @@ const std::string& Dist_FBDP::getClassType( void )
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& Dist_FBDP::getClassTypeSpec( void )
+const TypeSpec& Dist_FBDRange::getClassTypeSpec( void )
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
@@ -134,7 +134,7 @@ const TypeSpec& Dist_FBDP::getClassTypeSpec( void )
  *
  * \return Rev aliases of constructor function.
  */
-std::vector<std::string> Dist_FBDP::getDistributionFunctionAliases( void ) const
+std::vector<std::string> Dist_FBDRange::getDistributionFunctionAliases( void ) const
 {
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
@@ -151,7 +151,7 @@ std::vector<std::string> Dist_FBDP::getDistributionFunctionAliases( void ) const
  *
  * \return Rev name of constructor function.
  */
-std::string Dist_FBDP::getDistributionFunctionName( void ) const
+std::string Dist_FBDRange::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
     std::string d_name = "FossilizedBirthDeathRange";
@@ -170,7 +170,7 @@ std::string Dist_FBDP::getDistributionFunctionName( void ) const
  *
  * \return The member rules.
  */
-const MemberRules& Dist_FBDP::getParameterRules(void) const
+const MemberRules& Dist_FBDRange::getParameterRules(void) const
 {
     
     static MemberRules dist_member_rules;
@@ -220,7 +220,7 @@ const MemberRules& Dist_FBDP::getParameterRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& Dist_FBDP::getTypeSpec( void ) const
+const TypeSpec& Dist_FBDRange::getTypeSpec( void ) const
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -239,7 +239,7 @@ const TypeSpec& Dist_FBDP::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_FBDP::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Dist_FBDRange::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     if ( name == "lambda" )
     {

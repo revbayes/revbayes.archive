@@ -10,7 +10,7 @@ using namespace RevBayesCore;
 
 
 /* Constructor for state dependent birth death process */
-StochasticBranchRateMonitor::StochasticBranchRateMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, const std::string &del) : AbstractFileMonitor(ch, g, fname, del, false, false, false),
+StochasticBranchRateMonitor::StochasticBranchRateMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, const std::string &del) : VariableMonitor(ch, g, fname, del, false, false, false),
     cdbdp( ch )
 {
     // the cdbdp is both the tree and character evolution model
@@ -22,7 +22,7 @@ StochasticBranchRateMonitor::StochasticBranchRateMonitor(StochasticNode<Tree>* c
 /**
  * Copy constructor.
  */
-StochasticBranchRateMonitor::StochasticBranchRateMonitor( const StochasticBranchRateMonitor &m) : AbstractFileMonitor( m ),
+StochasticBranchRateMonitor::StochasticBranchRateMonitor( const StochasticBranchRateMonitor &m) : VariableMonitor( m ),
     cdbdp( m.cdbdp )
 {
     
@@ -163,7 +163,7 @@ void StochasticBranchRateMonitor::swapNode(DagNode *oldN, DagNode* newN)
         cdbdp = static_cast< StochasticNode<Tree> *>( newN );
     }
     
-    AbstractFileMonitor::swapNode( oldN, newN );
+    VariableMonitor::swapNode( oldN, newN );
     
 }
 

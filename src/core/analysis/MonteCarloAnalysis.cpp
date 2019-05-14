@@ -187,7 +187,6 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
     
     
     // Run the chain
-    size_t num_stars = 0;
     for (size_t k=1; k<=generations; ++k)
     {
         

@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the declaration of the RevLanguage pomoStateConverter, which
+ * This file contains the declaration of the RevLanguage pomoState4Converter, which
  * is used to convert a DNA alignment into a POMO alignment.
  *
- * @brief Declaration and implementation of pomoStateConverter
+ * @brief Declaration and implementation of pomoState4Converter
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
@@ -11,12 +11,12 @@
  * @license GPL version 3
  * @version 1.0
  *
- * $Id: Func_pomoStateConverter.h 1406 2012-04-20 02:06:14Z Boussau $
+ * $Id: Func_pomoState4Converter.h 1406 2012-04-20 02:06:14Z Boussau $
  */
 
 
-#ifndef Func_pomoStateConverter_H
-#define Func_pomoStateConverter_H
+#ifndef Func_pomoState4Converter_H
+#define Func_pomoState4Converter_H
 
 #include "Procedure.h"
 
@@ -24,13 +24,13 @@
 
 namespace RevLanguage {
     
-    class Func_pomoStateConverter : public Procedure {
+    class Func_pomoState4Converter : public Procedure {
         
     public:
-        Func_pomoStateConverter( void );
+        Func_pomoState4Converter( void );
         
         // Basic utility functions
-        Func_pomoStateConverter*                        clone(void) const;                                          //!< Clone the object
+        Func_pomoState4Converter*                        clone(void) const;                                          //!< Clone the object
         static const std::string&                       getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                     //!< Get class type spec
         std::string                                     getFunctionName(void) const;                                //!< Get the primary name of the function in Rev

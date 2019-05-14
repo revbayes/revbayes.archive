@@ -1,5 +1,7 @@
 #include "DiscreteTaxonData.h"
 #include "PomoCountFileReader.h"
+#include "PomoState4.h"
+#include "PomoState.h"
 #include "RbFileManager.h"
 
 #include "RbConstants.h"
@@ -37,18 +39,22 @@ PomoCountFileReader::PomoCountFileReader(const std::string &fn, const size_t vir
 
 	// The second line should look like this:
 	//CHROM  POS  Sheep    BlackSheep  RedSheep  Wolf     RedWolf
-	if (chars[start+1][0] != "CHROM" || chars[1][1] != "POS" || chars[1].size() != numberOfFields) {
+	if (chars[start+1][0] != "CHROM" || chars[1][1] != "POS" || chars[1].size() != numberOfFields)
+    {
 		throw RbException( "File "+fn+" is not a proper Pomo Counts file: second line is not correct, it should be similar to \nCHROM POS Sheep BlackSheep RedSheep Wolf RedWolf\n.");
 	}
-	else {
-		for (size_t i = start+2; i < 2 + numberOfPopulations_; ++i ) {
+	else
+    {
+		for (size_t i = start+2; i < 2 + numberOfPopulations_; ++i )
+        {
 			names_.push_back(chars[1][i]);
 		}
 	}
 
 	// Setting the taxon names in the data matrix
 	std::map<std::string, DiscreteTaxonData<PomoState> > nameToTaxonData;
-	for (size_t i = 0; i < names_.size(); ++i ) {
+	for (size_t i = 0; i < names_.size(); ++i )
+    {
 		DiscreteTaxonData<PomoState> tax (names_[i]);
 		nameToTaxonData.insert(std::pair< std::string, DiscreteTaxonData<PomoState> >(names_[i], tax) );
 	}
@@ -64,9 +70,14 @@ PomoCountFileReader::PomoCountFileReader(const std::string &fn, const size_t vir
 	// 	speciesToSites[names_[j]] = sites;
 	// }
 
+    std::vector<std::string> tmp_res;
+    StringUtilities::stringSplit(chars[2][2], ",", tmp_res);
+    size_t num_states = tmp_res.size();
+    
 	for (size_t i = 2; i < chars.size(); ++i)
 	{
-		if (chars[i].size() != numberOfFields) {
+		if (chars[i].size() != numberOfFields)
+        {
 			throw RbException( "File "+fn+" is not a proper Pomo Counts file: line "+ i + " is not correct, it does not have "+ numberOfFields + " space-separated fields.");
 		}
 
@@ -81,35 +92,46 @@ PomoCountFileReader::PomoCountFileReader(const std::string &fn, const size_t vir
 		{
 
 			std::cout << "State: " << chars[i][j] <<std::endl;
-			PomoState pState (chars[i][j], chromosome, position, virtualPopulationSize_ );
-
-			nameToTaxonData.at(names_[j-2]).addCharacter( pState);
-
+            if ( num_states == 4 )
+            {
+                PomoState4 pState (chars[i][j], chromosome, position, virtualPopulationSize_ );
+                nameToTaxonData.at(names_[j-2]).addCharacter( pState);
+            }
+            else
+            {
+                PomoState pState (num_states, virtualPopulationSize_, chars[i][j], chromosome, position );
+                nameToTaxonData.at(names_[j-2]).addCharacter( pState);
+            }
 		}
 	}
 
 	// We have finished all lines, we fill up the data matrix
-	for (std::map<std::string, DiscreteTaxonData<PomoState> >::iterator tax = nameToTaxonData.begin(); tax != nameToTaxonData.end(); ++tax ) {
+	for (std::map<std::string, DiscreteTaxonData<PomoState> >::iterator tax = nameToTaxonData.begin(); tax != nameToTaxonData.end(); ++tax )
+    {
 	 	matrix_->addTaxonData(tax->second);
 	}
 
 	return ;
 }
 
-const size_t PomoCountFileReader::getNumberOfPopulations( void ){
+const size_t PomoCountFileReader::getNumberOfPopulations( void )
+{
 	return numberOfPopulations_;
 }
 
-const size_t PomoCountFileReader::getNumberOfSites( void ){
+const size_t PomoCountFileReader::getNumberOfSites( void )
+{
 	return numberOfSites_;
 }
 
-HomologousDiscreteCharacterData<PomoState>* PomoCountFileReader::getMatrix( void ){
+HomologousDiscreteCharacterData<PomoState>* PomoCountFileReader::getMatrix( void )
+{
 
 	return matrix_;
 
 }
 
-const size_t PomoCountFileReader::getVirtualPopulationSize( void ){
+const size_t PomoCountFileReader::getVirtualPopulationSize( void )
+{
 	return virtualPopulationSize_;
 }
