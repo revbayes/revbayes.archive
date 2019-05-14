@@ -2,7 +2,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Ellipsis.h"
-#include "FileMonitor.h"
+#include "VariableMonitor.h"
 #include "ModelVector.h"
 #include "Mntr_File.h"
 #include "Natural.h"
@@ -59,7 +59,7 @@ void Mntr_File::constructInternalObject( void )
     bool app = static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
     bool wv = static_cast<const RlBoolean &>( version->getRevObject() ).getValue();
     
-    value = new RevBayesCore::FileMonitor(n, (unsigned long)g, fn, sep, pp, l, pr, app, wv);
+    value = new RevBayesCore::VariableMonitor(n, (unsigned long)g, fn, sep, pp, l, pr, app, wv);
 }
 
 /** Get Rev type of object */

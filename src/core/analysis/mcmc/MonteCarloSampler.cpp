@@ -1,5 +1,5 @@
 #include "DagNode.h"
-#include "FileMonitor.h"
+#include "VariableMonitor.h"
 #include "MonteCarloSampler.h"
 #include "MoveSchedule.h"
 #include "RandomMoveSchedule.h"

@@ -5,44 +5,31 @@
 
 namespace RevBayesCore {
     
-    /**
-     * @file
-     * This file contains the declaration of the random variable class for constant rate birth-death process.
-     *
-     * @brief Declaration of the constant rate Birth-Death process class.
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2014-01-17, version 1.0
-     *
-     */
+
+     /** @brief Abstract base class for birth-rate processes. */
     class AbstractBirthDeathProcess : public AbstractRootedTreeDistribution {
         
     public:
-        AbstractBirthDeathProcess(const TypedDagNode<double> *ra, const std::string &cdt, const std::vector<Taxon> &tn, bool uo = false );
-        
+        AbstractBirthDeathProcess(const TypedDagNode<double> *ra, const std::string &cdt, const std::vector<Taxon> &tn, bool uo = false );      
         
         virtual ~AbstractBirthDeathProcess(void);
         // pure virtual member functions
-        virtual AbstractBirthDeathProcess*                  clone(void) const = 0;                                                                              //!< Create an independent clone
-        
-        
+        virtual AbstractBirthDeathProcess*                  clone(void) const = 0;
         
     protected:
         // pure virtual helper functions
-        virtual double                                      computeLnProbabilityTimes(void) const = 0;                                                          //!< Compute the log-transformed probability of the current value.
-        virtual double                                      lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const = 0;                             //!< Compute the log-transformed probability of the number of taxa.
-        virtual double                                      lnProbTreeShape(void) const;
-        virtual double                                      pSurvival(double start, double end) const = 0;                                                      //!< Compute the probability of survival of the process (without incomplete taxon sampling).
-        virtual void                                        prepareProbComputation(void) const;
-
+        virtual double                                      computeLnProbabilityTimes(void) const = 0;  //!< Compute the log-transformed probability of the current value.
+        virtual double                                      lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const = 0;     //!< Compute the log-transformed probability of the number of taxa.
+        virtual double                                      lnProbTreeShape(void) const;    //!< Compute the log-transformed probability of the tree shape.
+        virtual double                                      pSurvival(double start, double end) const = 0;  //!< Compute the probability of survival of the process.
+        virtual void                                        prepareProbComputation(void) const;     //!< Prepare likelihood calculation
         
         // helper functions
-        double                                              computeLnProbabilityDivergenceTimes(void) const;                                                    //!< Compute the log-transformed probability of the current value.
-        virtual std::vector<double>                         simulateDivergenceTimes(size_t n, double origin, double present, double min) const;                 //!< Simulate n speciation events.
+        double                                              computeLnProbabilityDivergenceTimes(void) const;    //!< Compute the log-transformed probability of divergence times.
+        virtual std::vector<double>                         simulateDivergenceTimes(size_t n, double origin, double present, double min) const;     //!< Simulate n speciation events.
         
         // members
-        std::string                                         condition;                                                                                          //!< The condition of the process (none/survival/#taxa).
+        std::string                                         condition;  //!< The condition of the process (none/survival/#taxa).
     };
     
 }
