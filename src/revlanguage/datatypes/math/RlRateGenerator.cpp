@@ -12,6 +12,7 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RlBoolean.h"
+#include "RlMemberFunction.h"
 #include "RlRateGenerator.h"
 #include "RlRateMatrix.h"
 
@@ -80,7 +81,15 @@ const TypeSpec& RateGenerator::getTypeSpec(void) const {
 }
 
 void RateGenerator::initMethods(void) {
-    ; // do nothing
+    
+    
+    // member functions
+    ArgumentRules* transitionProbabilityArgRules = new ArgumentRules();
+    transitionProbabilityArgRules->push_back( new ArgumentRule( "rate", RealPos::getClassTypeSpec(), "The rate of the process (or duration of the process assuming rate=1).", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    transitionProbabilityArgRules->push_back( new ArgumentRule( "startAge", RealPos::getClassTypeSpec(), "The start age of the process.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(1.0) ) );
+    transitionProbabilityArgRules->push_back( new ArgumentRule( "endAge", RealPos::getClassTypeSpec(), "The end age of the process.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.0) ) );
+    methods.addFunction( new MemberFunction<RateGenerator, ModelVector<ModelVector<RealPos> > >( "getTransitionProbabilities", this, transitionProbabilityArgRules   ) );
+    
 }
 
 /**

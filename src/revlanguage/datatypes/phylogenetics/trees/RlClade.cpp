@@ -74,11 +74,11 @@ void Clade::constructInternalObject( void )
     bool neg = static_cast<const RlBoolean &>( is_negative_constraint->getRevObject() ).getValue();
 
     // now allocate a new Clade
-    std::vector<RevBayesCore::Taxon> n;
+    std::set<RevBayesCore::Taxon> n_set;
     for (std::vector<RevPtr<const RevVariable> >::iterator it = names.begin(); it != names.end(); ++it)
     {
         RevBayesCore::Taxon t = RevBayesCore::Taxon(static_cast<const RlString &>( (*it)->getRevObject() ).getValue());
-        n.push_back( t );
+        n_set.insert( t );
     }
 
     // now add names to new clade
@@ -89,9 +89,8 @@ void Clade::constructInternalObject( void )
         for (size_t i=0; i<tmp.size(); ++i)
         {
             RevBayesCore::Taxon t = RevBayesCore::Taxon( tmp.getElement(i)->getValue() );
-            n.push_back( t );
+            n_set.insert( t );
         }
-
     }
 
     // now allocate a new Clade
@@ -110,8 +109,16 @@ void Clade::constructInternalObject( void )
         for (size_t i=0; i<taxa.size(); ++i)
         {
             const RevBayesCore::Taxon &t = taxa[i];
-            n.push_back( t );
+            n_set.insert( t );
         }
+    }
+    
+    
+    // convert to vector
+    std::vector<RevBayesCore::Taxon> n;
+    for (std::set<RevBayesCore::Taxon>::iterator it = n_set.begin(); it != n_set.end(); it++)
+    {
+        n.push_back( *it );
     }
 
 
