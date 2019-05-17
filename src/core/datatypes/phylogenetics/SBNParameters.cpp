@@ -317,8 +317,6 @@ void SBNParameters::countAllSubsplits(std::map<std::pair<Subsplit,Subsplit>,doub
 
     // Define parent-child pair for current rooting
     std::pair<Subsplit,Subsplit> this_parent_child;
-    this_parent_child.first = per_node_subsplit[(*it)->getParent()->getIndex()];
-    this_parent_child.second = per_node_subsplit[index];
 
     // If this edge is internal, cases 1-6 apply
     // If this edge is a pendant edge, cases 1-2 do not apply
@@ -374,6 +372,9 @@ void SBNParameters::countAllSubsplits(std::map<std::pair<Subsplit,Subsplit>,doub
 
     }
     // Handle current rooting
+    this_parent_child.first = per_node_subsplit[(*it)->getParent()->getIndex()];
+    this_parent_child.second = per_node_subsplit[index];
+
     // Get weight and increment
     double weight = 1 - ttr[index];
     incrementParentChildCount(parent_child_counts,this_parent_child,weight);
