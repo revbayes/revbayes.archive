@@ -133,6 +133,49 @@ Subsplit::Subsplit( const std::vector<Taxon> &c1, const std::vector<Taxon> &c2, 
     }
 }
 
+/**
+ * Constructor from bitsets.
+ */
+Subsplit::Subsplit( RbBitSet &clade_1_bitset, RbBitSet &clade_2_bitset ) :
+    bitset(),
+    is_fake( false )
+{
+
+    // bitset representations and check that X and Y are disjoint
+    bool disjoint = true;
+    for (size_t i=0; i<clade_1_bitset.size(); ++i)
+    {
+      if ( clade_1_bitset[i] && clade_2_bitset[i] )
+      {
+        disjoint = false;
+        break;
+      }
+    }
+
+    if (!disjoint)
+    {
+      throw(RbException("Cannot create subsplit from non-disjoint clades."));
+    }
+
+    // Order clades
+    if ( clade_1_bitset < clade_2_bitset )
+    {
+      bitset.first = clade_1_bitset;
+      bitset.second = clade_2_bitset;
+    }
+    else
+    {
+      bitset.first = clade_2_bitset;
+      bitset.second = clade_1_bitset;
+    }
+
+    // // Check if we made a fake subsplit
+    // if ( clade_1_bitset.getNumberSetBits() == 1 && clade_2_bitset.getNumberSetBits() == 1 && clade_1_bitset.getFirstSetBit() == clade_2_bitset.getFirstSetBit() )
+    // {
+    //   is_fake = true;
+    // }
+}
+
 Subsplit& Subsplit::operator=(const Subsplit &s)
 {
   if (this != &s)
@@ -242,6 +285,143 @@ Subsplit* Subsplit::clone(void) const
     return new Subsplit(*this);
 }
 
+/*
+ * Gives us all the parent-child subsplit pairs that will replace this one on the equivalent edge in a tree rerooted to a specific edge
+ *
+ * return: vector of parent-child pairs
+ */
+std::vector<std::pair<Subsplit,Subsplit> > Subsplit::getAllParentChildGivenNewRoot(const Subsplit &parent, const Subsplit &child) const
+{
+    //TODO: There are 3 subsplits that we use twice in our new pairs, we should only make each once
+    //      s_y and s_z are nice for conceptual tracking and readable code, adding them slows us down
+
+    std::vector<std::pair<Subsplit,Subsplit> > all_flipped; // Each subsplit in this vector will be in the order parent-child
+
+    std::pair<Subsplit,Subsplit> flipped; // This will be in the order parent-child
+
+    // Define the sets of taxa we need
+
+    // Children clades of child subsplit
+    RbBitSet s_y = child.bitset.first;
+    RbBitSet s_z = child.bitset.second;
+
+    // Child subsplit
+    RbBitSet s = s_y | s_z;
+
+    // Everyone but child subsplit
+    RbBitSet not_s = ~s;
+
+    // Whole clade of parent
+    RbBitSet t = parent.asCladeBitset();
+
+    // Sister group of s in t
+    RbBitSet t_not_s = t & not_s;
+
+    // All taxa not in the clade defined by parent
+    RbBitSet not_t = ~t;
+
+    // Re-root to a branch in clade y of subsplit s
+    flipped.first = Subsplit(s_z,not_s);
+    flipped.second = Subsplit(t_not_s,not_t);
+
+    all_flipped.push_back(flipped);
+
+    // Re-root to a branch in clade z of subsplit s
+    flipped.first = Subsplit(s_y,not_s);
+    flipped.second = Subsplit(t_not_s,not_t);
+
+    all_flipped.push_back(flipped);
+
+    // Re-root to a branch in clade not-s of subsplit t (sister of s in t)
+    flipped.first = Subsplit(not_t,s);
+    flipped.second = child;
+
+    all_flipped.push_back(flipped);
+
+    // Re-root to this edge, track clade s as child
+    flipped.first = Subsplit(s,not_s);
+    flipped.second = child;
+
+    all_flipped.push_back(flipped);
+
+    // Re-root to this edge, track clade of everyone but s as child
+    flipped.first = Subsplit(s,not_s);
+    flipped.second = Subsplit(t_not_s,not_t);
+
+    all_flipped.push_back(flipped);
+
+    return all_flipped;
+}
+
+/*
+ * Gives us the parent-child subsplit that will replace this one on the equivalent edge in a tree rerooted to a specific edge
+ *
+ * return: parent-child pair
+ */
+std::pair<Subsplit,Subsplit> Subsplit::getParentChildGivenNewRoot(const Subsplit &parent, const Subsplit &child, const std::string &root_to) const
+{
+
+    std::pair<Subsplit,Subsplit> flipped; // This will be in the order parent-child
+
+    // Define the sets of taxa we need
+
+    // Children clades of child subsplit
+    RbBitSet s_y = child.bitset.first;
+    RbBitSet s_z = child.bitset.second;
+
+    // Child subsplit
+    RbBitSet s = s_y | s_z;
+
+    // Everyone but child subsplit
+    RbBitSet not_s = ~s;
+
+    // Whole clade of parent
+    RbBitSet t = parent.asCladeBitset();
+
+    // Sister group of s in t
+    RbBitSet t_not_s = t & not_s;
+
+    // All taxa not in the clade defined by parent
+    RbBitSet not_t = ~t;
+
+    // Re-root to a branch in clade y of subsplit s
+    if (root_to == "s_y")
+    {
+      flipped.first = Subsplit(s_z,not_s);
+      flipped.second = Subsplit(t_not_s,not_t);
+    }
+    // Re-root to a branch in clade z of subsplit s
+    else if (root_to == "s_z")
+    {
+      flipped.first = Subsplit(s_y,not_s);
+      flipped.second = Subsplit(t_not_s,not_t);
+    }
+    // Re-root to a branch in clade not-s of subsplit t (sister of s in t)
+    else if (root_to == "t_{-s}")
+    {
+      flipped.first = Subsplit(not_t,s);
+      flipped.second = child;
+    }
+    // Re-root to this edge, track clade s as child
+    else if (root_to == "e1")
+    {
+      flipped.first = Subsplit(s,not_s);
+      flipped.second = child;
+    }
+    // Re-root to this edge, track clade of everyone but s as child
+    else if (root_to == "e2")
+    {
+      flipped.first = Subsplit(s,not_s);
+      flipped.second = Subsplit(t_not_s,not_t);
+    }
+    else
+    {
+      throw(RbException("Invalid re-rooting in reorientParentChild"));
+    }
+
+    return flipped;
+}
+
 /**
  * Get clade Y.
  *
@@ -336,6 +516,20 @@ bool Subsplit::isCompatible(const Subsplit &s) const
 bool Subsplit::isFake() const
 {
     return is_fake;
+}
+
+
+/**
+ * If this clade is one side of a root split, make the full root subsplit.
+ *
+ * \return    true/false
+ */
+Subsplit Subsplit::rootSplitFromClade(RbBitSet &c) const
+{
+  RbBitSet c2 = c;
+  ~c2;
+
+  return(Subsplit(c,c2));
 }
 
 /**

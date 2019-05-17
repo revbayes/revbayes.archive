@@ -58,8 +58,7 @@ namespace RevBayesCore {
         bool                                isValid(void) const;
 
         // Functions for learning SBNs
-        void                                incrementParentChildCounts(std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts, Tree& tree, double &weight);
-        void                                incrementRootSplitCounts(std::map<Subsplit,double>& root_split_counts, Tree& tree, double &weight);
+        void                                countAllSubsplits(std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts, std::map<Subsplit,double>& root_split_counts, std::map<Subsplit,double>& q, Tree& tree);
         bool                                isValidCPD(std::vector<std::pair<Subsplit,double> >& cpd, Subsplit& parent) const;
         bool                                isValidRootDistribution(void) const;
         void                                normalizeCPDForSubsplit(std::vector<std::pair<Subsplit,double> >& cpd, Subsplit& parent);
@@ -70,6 +69,11 @@ namespace RevBayesCore {
         void                                learnUnconstrainedSBNSA( std::vector<Tree> &trees, double &alpha );
         void                                learnUnconstrainedSBNEM( std::vector<Tree> &trees, double &alpha );
 
+        // Helper functions for learning SBNs
+        void                                addTreeToAllParentChildCounts(std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts, Tree& tree, double &weight);
+        void                                addTreeToAllRootSplitCounts(std::map<Subsplit,double>& root_split_counts, Tree& tree, double &weight);
+        void                                incrementParentChildCount(std::map<Subsplit,double>& root_split_counts, double &weight);
+        void                                incrementRootSplitCount(std::map<Subsplit,double>& root_split_counts, double &weight);
       private:
         // members
         size_t                                         num_taxa; // The number of taxa in the tree the SBN describes

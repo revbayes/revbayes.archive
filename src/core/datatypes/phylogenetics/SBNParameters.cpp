@@ -259,34 +259,131 @@ bool SBNParameters::isValid(void) const
   return true;
 }
 
-void SBNParameters::incrementParentChildCounts(std::map<std::pair<Subsplit,Subsplit>,double> &parent_child_counts, Tree& tree, double &weight)
+void SBNParameters::countAllSubsplits(std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts, std::map<Subsplit,double>& root_split_counts, std::map<Subsplit,double>& q, Tree& tree)
 {
-  std::vector<std::pair<Subsplit,Subsplit> > these_parent_child_subsplits = tree.getAllSubsplitParentChildPairs(taxa);
-  for (size_t j=0; j<these_parent_child_subsplits.size(); ++j)
-  {
-    if ( parent_child_counts.count(these_parent_child_subsplits[j]) == 0 )
-    {
-      parent_child_counts[these_parent_child_subsplits[j]] = weight;
-    }
-    else
-    {
-      parent_child_counts[these_parent_child_subsplits[j]] += weight;
-    }
-  }
-}
+  // Prep for tip to root pass
+  std::string order = "postorder";
+  tree.orderNodesForTraversal(order);
+  const std::vector<TopologyNode*> &postorder_nodes = tree.getNodes();
 
-void SBNParameters::incrementRootSplitCounts(std::map<Subsplit,double>& root_split_counts, Tree& tree, double &weight)
-{
-  Subsplit this_root_split;
-  this_root_split = tree.getRootSubsplit(taxa);
-  if ( root_split_counts.count(this_root_split) == 0 )
+  // Get all node's subsplits (we will need these repeatedly)
+  std::vector<Subsplit> per_node_subsplit = std::vector<Subsplit>(tree.getNumberOfNodes(),Subsplit());
+  for (std::vector<TopologyNode*>::const_iterator it = postorder_nodes.begin(); it != postorder_nodes.end(); ++it)
   {
-    root_split_counts[this_root_split] = weight;
+    size_t i = (*it)->getIndex();
+    per_node_subsplit[i] = (*it)->getSubsplit(taxa);
   }
-  else
+
+  // For storing sum of rooting probabilities from tip through this branch.
+  std::vector<double> ttr = std::vector<double>(tree.getNumberOfNodes(),0.0);
+
+  // Tip to root pass, here we accumulate cumulative rooting probabilities and add to root split counters
+  for (std::vector<TopologyNode*>::const_iterator it = postorder_nodes.begin(); it != postorder_nodes.end(); ++it)
   {
-    root_split_counts[this_root_split] += weight;
+    size_t index = (*it)->getIndex();
+    std::vector<int> children = (*it)->getChildrenIndices();
+
+    RbBitSet c = per_node_subsplit[index].asCladeBitset();
+    Subsplit root_on_edge = per_node_subsplit[index].rootSplitFromClade(c);
+
+    double this_root_q = q[root_on_edge];
+
+    // Accumulate cumulative probability
+    if ((*it)->isTip())
+    {
+      ttr[index] = this_root_q;
+    }
+    else {
+      ttr[index] = this_root_q + ttr[children[0]] + ttr[children[1]];
+    }
+
+    // Increment root counts
+    incrementRootSplitCount(root_split_counts,root_on_edge,this_root_q);
+
   }
+
+
+  // Root to tip pass (this is where the fun starts)
+  order = "preorder";
+  tree.orderNodesForTraversal(order);
+  const std::vector<TopologyNode*> &preorder_nodes = tree.getNodes();
+
+  // Loop over edges of tree (exploit equivalency between an edge and the node that edge subtends)
+  // The root has no edge so there is nothing to do for the root, so we skip it
+  for (std::vector<TopologyNode*>::const_iterator it = preorder_nodes.begin()+1; it != preorder_nodes.end(); ++it)
+  {
+    size_t index = (*it)->getIndex();
+    std::vector<int> children = (*it)->getChildrenIndices();
+
+    // Define parent-child pair for current rooting
+    std::pair<Subsplit,Subsplit> this_parent_child;
+    this_parent_child.first = per_node_subsplit[(*it)->getParent()->getIndex()];
+    this_parent_child.second = per_node_subsplit[index];
+
+    // If this edge is internal, cases 1-6 apply
+    // If this edge is a pendant edge, cases 1-2 do not apply
+    // If this edge descends from the root, cases 3-5 do not apply
+
+    if (!((*it)->isTip()))
+    {
+      // Root to s_y
+      this_parent_child = cases[0];
+
+      // Get weight
+      double weight = ttr[children[0]];
+      incrementParentChildCount(parent_child_counts,this_parent_child,weight);
+
+      // Root to s_z
+      this_parent_child = cases[1];
+
+      // Get weight
+      double weight = ttr[children[1]];
+      incrementParentChildCount(parent_child_counts,this_parent_child,weight);
+
+    }
+    if (!((*it)->getParent()->isRoot())) // Parent is not root
+    {
+      // Root to not-s
+      this_parent_child = cases[2];
+
+      // Find index of not-s
+      std::vector<int> my_parents_children = (*it)->getChildrenIndices();
+      size_t sibling = 0;
+      if (index == my_parents_children[0])
+      {
+        sibling = 1;
+      }
+
+      // Get weight
+      double weight = ttr[sibling];
+      incrementParentChildCount(parent_child_counts,this_parent_child,weight);
+
+      // Root to this edge (track s)
+      this_parent_child = cases[3];
+
+      // Get weight (simply q of this branch)
+      double weight = ttr[index] - ttr[chilren[0]] - ttr[chilren[1]];
+
+      incrementParentChildCount(parent_child_counts,this_parent_child,weight);
+
+      // Root to this edge (track not-s)
+      this_parent_child = cases[4];
+
+      // Weight is same as for last case
+      incrementParentChildCount(parent_child_counts,this_parent_child,weight);
+
+    }
+    // Handle current rooting
+    // Get weight and increment
+    double weight = 1 - ttr[index];
+    incrementParentChildCount(parent_child_counts,this_parent_child,weight);
+
+    // Get all cases for this edge (not counting current rooting)
+    std::vector<std::pair<Subsplit,Subsplit> > cases = per_node_subsplit[index].getAllParentChildGivenNewRoot(this_parent_child.first,this_parent_child.second);
+
+  }
+
+
 }
 
 void SBNParameters::makeCPDs(std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts)
@@ -524,8 +621,8 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
   // then consolidate into our master list
   for (size_t i=0; i<trees.size(); ++i)
   {
-    incrementRootSplitCounts(root_split_counts, trees[i], weight);
-    incrementParentChildCounts(parent_child_counts, trees[i], weight);
+    incrementAllRootSplitCounts(root_split_counts, trees[i], weight);
+    incrementAllParentChildCounts(parent_child_counts, trees[i], weight);
 
     // Get branch lengths
     const std::vector<TopologyNode*> tree_nodes = trees[i].getNodes();
@@ -727,6 +824,62 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
     throw(RbException("learnRootedUnconstrainedSBN produced an invalid SBNParameters object."));
   }
 
+}
+
+// Takes a tree in with weight (can be for multiple trees or for q(root)), keeps rooting intact, adds all parent-child subsplits found in this tree to master list of counts
+void SBNParameters::addTreeToAllParentChildCounts(std::map<std::pair<Subsplit,Subsplit>,double> &parent_child_counts, Tree& tree, double &weight)
+{
+  std::vector<std::pair<Subsplit,Subsplit> > these_parent_child_subsplits = tree.getAllSubsplitParentChildPairs(taxa);
+  for (size_t j=0; j<these_parent_child_subsplits.size(); ++j)
+  {
+    if ( parent_child_counts.count(these_parent_child_subsplits[j]) == 0 )
+    {
+      parent_child_counts[these_parent_child_subsplits[j]] = weight;
+    }
+    else
+    {
+      parent_child_counts[these_parent_child_subsplits[j]] += weight;
+    }
+  }
+}
+
+// Takes a tree in with weight (can be for multiple trees or for q(root)), keeps rooting intact, adds the root split to master list of counts
+void SBNParameters::addTreeToAllRootSplitCounts(std::map<Subsplit,double>& root_split_counts, Tree& tree, double &weight)
+{
+  Subsplit this_root_split;
+  this_root_split = tree.getRootSubsplit(taxa);
+  if ( root_split_counts.count(this_root_split) == 0 )
+  {
+    root_split_counts[this_root_split] = weight;
+  }
+  else
+  {
+    root_split_counts[this_root_split] += weight;
+  }
+}
+
+void SBNParameters::incrementParentChildCount(std::map<std::pair<Subsplit,Subsplit>,double> &parent_child_counts, std::pair<Subsplit,Subsplit> &this_parent_child, double &weight)
+{
+  if ( parent_child_counts.count(this_parent_child) == 0 )
+  {
+    parent_child_counts[these_parent_child_subsplits[j]] = weight;
+  }
+  else
+  {
+    parent_child_counts[these_parent_child_subsplits[j]] += weight;
+  }
+
+}
+void SBNParameters::incrementRootSplitCount(std::map<Subsplit,double>& root_split_counts, Subsplit &this_root_split, double &weight)
+{
+  if ( root_split_counts.count(this_root_split) == 0 )
+  {
+    root_split_counts[this_root_split] = weight;
+  }
+  else
+  {
+    root_split_counts[this_root_split] += weight;
+  }
 }
 
 
