@@ -92,7 +92,7 @@ RevPtr<RevVariable> SyntaxAssignment::evaluateContent( Environment& env, bool dy
 //            static_cast< SyntaxIndexOperation *>( lhsExpression )->updateVariable( env, the_slot->getName() );
 //        }
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         // we need to remove the variable
         env.eraseVariable( the_slot->getName() );

@@ -168,7 +168,7 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
                     // we need to store the new simulated data
                     the_node->writeToFile(sim_directory_name);
                 }
-                catch (RbException e)
+                catch (RbException &e)
                 {
                     
                     std::cerr << "Problem in Posterior Predictive Simulation:" << std::endl;

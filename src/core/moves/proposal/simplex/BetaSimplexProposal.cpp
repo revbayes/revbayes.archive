@@ -146,7 +146,7 @@ double BetaSimplexProposal::propose( Simplex &value )
         // include the Jacobian for the scaling of the other values
         ln_Hastings_ratio += (cats - 2) * log(scaling_factor_other_values) - (cats - 1) * log(sum);
     }
-    catch (RbException e)
+	catch (RbException &e)
     {
         ln_Hastings_ratio = RbConstants::Double::neginf;
     }
