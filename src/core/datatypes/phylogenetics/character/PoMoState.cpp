@@ -96,7 +96,7 @@ void PomoState::populateWeightedStatesForMonoallelicState(size_t ind_first, int 
         
     }
     else  {
-        throw RbException( "Pomo string state not correct. We found "+ std::to_string(ind_first)  );
+        throw RbException( "Pomo string state not correct. We found "+ StringUtilities::to_string(ind_first)  );
     }
     
     for (size_t i =0; i < weights.size(); ++i)
