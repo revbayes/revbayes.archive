@@ -156,10 +156,6 @@ void GMRFHyperpriorGibbsMove::performGibbsMove( void )
 
     double n = normals.size() + 1.0; // The field has one more cell than it has increments
 
-    // Get random number generator
-    RandomNumberGenerator* rng = GLOBAL_RNG;
-
-
     // get global scale and sample auxiliary variable
     double eta = global_scale->getValue();
 
