@@ -143,6 +143,8 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
                             size_t idx = ancestral_state_traces_lookup[tip_index_end_str];
                             tip_state_trace = &ancestral_state_traces[idx];
                         }
+                        else
+                            throw RbException("Can't find tip_state_trace!");
                         const std::vector<std::string>& tip_state_vector = tip_state_trace->getValues();
                         std::string state_str = tip_state_vector[index_sample];
   
