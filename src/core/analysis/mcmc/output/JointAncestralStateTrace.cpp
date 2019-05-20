@@ -246,6 +246,8 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
                 }
             }
         }
+        if (not parent_ancestral_state_trace)
+            throw RbException("Can't find parent_ancestral_state_trace");
         
         // get the sampled ancestral state for this iteration
         const std::vector<std::string>& ancestral_state_vector_end = ancestral_state_trace_end_state->getValues();
@@ -1653,6 +1655,8 @@ void JointAncestralStateTrace::summarizeCharacterMaps(Tree input_tree, std::stri
                         break;
                     }
                 }
+                if (not character_map_trace)
+                    throw RbException("Couldn't find character_map_trace!");
                 
                 // get the sampled character history for the child for this iteration
                 const std::vector<std::string>& ancestralstate_vector_child = character_map_trace->getValues();
