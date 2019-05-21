@@ -215,7 +215,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
 {
     // variable declarations and initialization
     double lnProbTimes = 0.0;
-    double process_time = getOriginAge();
+    //    double process_time = getOriginAge(); // Sebastian: currently unused.
     size_t num_initial_lineages = 0;
     TopologyNode* root = &value->getRoot();
 
@@ -360,7 +360,6 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
         lnProbTimes += log(phi[index]) + log(1 - r[index]);
 
     }
-// std::cout << "computed (iv); lnProbability = " << lnProbTimes << std::endl;
 
     // add the burst bifurcation age terms (v)
     for (size_t i = 0; i < timeline.size(); ++i)
@@ -371,10 +370,9 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
             lnProbTimes += event_bifurcation_times[i].size() * log(lambda_event[i]);
             int active_lineages_at_t = survivors(timeline[i]); //A(t_{\rho_i})
             int A_minus_K = active_lineages_at_t - int(event_bifurcation_times[i].size());
-            lnProbTimes += log(pow(lambda_event[i],A_minus_K)*E(i,timeline[i])+pow(1.0 - lambda_event[i],A_minus_K));
+            lnProbTimes += log(pow(2*lambda_event[i]*E(i,timeline[i]),A_minus_K)+pow(1.0 - lambda_event[i],A_minus_K));
         }
     }
-// std::cout << "computed (v); lnProbability = " << lnProbTimes << std::endl;
 
     // add the non-burst bifurcation age terms (vi)
     for (size_t i = 0; i < serial_bifurcation_times.size(); ++i)
@@ -388,7 +386,6 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
         size_t index = findIndex(t);
         lnProbTimes += log( lambda[index] );
     }
-// std::cout << "computed (vi); lnProbability = " << lnProbTimes << std::endl;
 
     // Compute probabilities of branch segments on all branches
     for (size_t i=0; i<num_nodes; ++i)
