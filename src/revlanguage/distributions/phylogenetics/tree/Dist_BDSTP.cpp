@@ -127,13 +127,13 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_BDSTP::createDistribution( void ) 
         RevBayesCore::DagNode* t   = r->getRevObject().getDagNode();
         // birth burst
         RevBayesCore::DagNode* b_e = NULL;
-        if (Lambda->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ))
+        if (Lambda->getRevObject().isType( ModelVector<Probability>::getClassTypeSpec() ))
         {
           b_e = Lambda->getRevObject().getDagNode();
         }
         // death burst (mass extinction)
         RevBayesCore::DagNode* d_e = NULL;
-        if (Lambda->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ))
+        if (Mu->getRevObject().isType( ModelVector<Probability>::getClassTypeSpec() ))
         {
           d_e = Mu->getRevObject().getDagNode();
         }
