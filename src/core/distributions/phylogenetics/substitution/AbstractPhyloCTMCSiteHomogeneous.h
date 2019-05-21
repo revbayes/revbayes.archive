@@ -86,7 +86,7 @@ namespace RevBayesCore {
         // non-virtual
         void                                                                bootstrap(void);
         virtual double                                                      computeLnProbability(void);
-        virtual std::vector<charType>										drawAncestralStatesForNode(const TopologyNode &n);
+        virtual std::vector<charType>									  drawAncestralStatesForNode(const TopologyNode &n);
         virtual void                                                        drawJointConditionalAncestralStates(std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates);
         virtual void                                                        drawStochasticCharacterMap(std::vector<std::string*>& character_histories, size_t site, bool use_simmap_default=true);
         void                                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;     //!< Map the member methods to internal function calls
@@ -99,7 +99,7 @@ namespace RevBayesCore {
         void                                                                setMcmcMode(bool tf);                                                                       //!< Change the likelihood computation to or from MCMC mode.
         void                                                                setValue(AbstractHomologousDiscreteCharacterData *v, bool f=false);                                   //!< Set the current value, e.g. attach an observation (clamp)
         virtual void                                                        tipDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
-        void																updateMarginalNodeLikelihoods(void);
+        void	                                                                updateMarginalNodeLikelihoods(void);
         const TypedDagNode<Tree>*                                           getTree(void);
 
         void                                                                setClockRate(const TypedDagNode< double > *r);
