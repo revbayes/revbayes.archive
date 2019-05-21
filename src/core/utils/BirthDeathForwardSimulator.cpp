@@ -862,7 +862,7 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age, SI
         TopologyNode &n = my_tree->getNode(i);
         if ( n.isTip() == true )
         {
-            n.setName("Tip_"+ StringUtilities::toString(i) );
+            n.setName("Tip_"+ StringUtilities::toString(i+1) );
         }
     }
     
