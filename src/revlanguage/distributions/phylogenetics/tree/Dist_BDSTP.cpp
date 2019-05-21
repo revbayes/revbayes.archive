@@ -268,8 +268,8 @@ const MemberRules& Dist_BDSTP::getParameterRules(void) const
 
         std::vector<TypeSpec> other_event_paramTypes;
         other_event_paramTypes.push_back( ModelVector<Probability>::getClassTypeSpec() );
-        dist_member_rules.push_back( new ArgumentRule( "Lambda",  other_event_paramTypes, "The episodic death burst (mass extinction) survival probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        dist_member_rules.push_back( new ArgumentRule( "Mu",      other_event_paramTypes, "The episodic birth burst probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "Lambda",  other_event_paramTypes, "The episodic birth burst probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "Mu",      other_event_paramTypes, "The episodic death burst (mass extinction) survival probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         std::vector<TypeSpec> event_sampling_paramTypes;
         event_sampling_paramTypes.push_back( Probability::getClassTypeSpec() );
