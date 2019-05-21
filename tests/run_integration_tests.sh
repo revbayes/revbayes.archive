@@ -1,5 +1,20 @@
 #!/bin/bash
 
+if [ -z "$1" ] ; then
+    printf "Please supply the full path to rb as first argument.\n\n"
+    printf "Examples:\n"
+    printf '  ./run_integration_tests.sh "$(readlink -f ../projects/cmake/rb)"\n'
+    printf '  ./run_integration_tests.sh "$PWD/../projects/cmake/rb"\n'
+    printf '  ./run_integration_tests.sh mpirun -np 4 "$(readlink -f ../projects/cmake/rb)"\n'
+    exit 101
+fi
+    
+
+if [ ! $@ --help >/dev/null 2>&1 ] ; then
+    printf "RevBayes command '$@' seems not to work!"
+    exit 102
+fi
+
 tests=()
 status=()
 
@@ -14,7 +29,7 @@ for t in test_*; do
 
     printf "\n\n#### Running test: $testname\n\n"
     cd $t
-    
+
     rm -rf output data
     ln -s ../data data
 
@@ -44,7 +59,9 @@ for t in test_*; do
 done
 
 printf "\n\n#### Checking output from tests... \n"
+xfailed=0
 failed=0
+pass=0
 i=0
 while [  $i -lt ${#tests[@]} ]; do
     t=${tests[$i]}
@@ -67,12 +84,18 @@ while [  $i -lt ${#tests[@]} ]; do
 
     # failure if we have an error message
     if [ ${#errs[@]} -gt 0 ]; then
-        ((failed++))
-        printf ">>>> Test failed: $t\n"
+        if [ -f XFAIL ] ; then
+            ((xfailed++))
+            printf ">>>> Test failed: $t (expected)\n"
+        else
+            ((failed++))
+            printf ">>>> Test failed: $t\n"
+        fi
         for errmsg in "${errs[@]}"; do
             printf "\t$errmsg\n"
         done
     else
+        ((pass++))
         printf "#### Test passed: $t\n"
     fi
 
@@ -83,8 +106,9 @@ done
 
 
 if [ $failed -gt 0 ]; then
-    printf "\n\n#### Warning! $failed tests failed.\n\n"
+    printf "\n\n#### Warning! unexpected failures: $failed   expected failures: $xfailed   total tests: $i\n\n"
     exit 113
 else
+    printf "\n\n#### Success! unexpected failures: $failed   expected failures: $xfailed   total tests: $i\n\n"
     printf "\n\n#### All tests passed.\n\n"
 fi
