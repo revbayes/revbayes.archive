@@ -21,8 +21,7 @@ for t in test_*; do
     res=0
     # run the test scripts
     for f in scripts/*; do
-        ../../projects/cmake/rb -b $f # print output so we can see any error messages
-#        mpirun -np 4 ../../projects/cmake/rb-mpi -b $f # print output so we can see any error messages
+        $@ -b $f # print output so we can see any error messages
         res="$?"
         if [ $res = 1 ]; then
             res="error: $f"
