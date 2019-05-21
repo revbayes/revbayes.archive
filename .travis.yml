@@ -101,7 +101,7 @@ script:
 # Build
   - cd projects/cmake
   - mkdir build
-  - ./regenerate.sh -boost false
+  - ./regenerate.sh -boost false -travis true
   - cd build
   - cmake . -DINTERNAL_BOOST=OFF
   - make -j4
