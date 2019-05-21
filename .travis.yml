@@ -59,6 +59,9 @@ matrix:
     - os: linux
       dist: xenial
       compiler: clang++
+      env:
+        - CXX_COMPILER=/usr/bin/clang++
+        - C_COMPILER=/usr/bin/clang
       addons:
         apt:
           sources:
