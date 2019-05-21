@@ -9,6 +9,7 @@ echo $HERE
 boost="true"
 debug="false"
 mac="false"
+travis="false"
 win="false"
 mpi="false"
 gentoo="false"
@@ -159,6 +160,13 @@ echo "JUPYTER!"
 echo '
 add_definitions(-DRB_XCODE)
 '  >> "$HERE/CMakeLists.txt"
+fi
+
+if [ "$travis" = "true" ]
+then
+    echo 'set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g0")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g0")
+' >> "$HERE/CMakeLists.txt"
 fi
 
 echo '
