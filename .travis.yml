@@ -16,7 +16,9 @@ matrix:
           - boost1.67
     - os: linux
       dist: xenial
-      env: CXX_COMPILER=g++-6
+      env:
+        - CXX_COMPILER=/usr/bin/g++-6
+        - C_COMPILER=/usr/bin/gcc-6
       addons:
         apt:
           sources:
@@ -28,7 +30,9 @@ matrix:
           - boost1.67
     - os: linux
       dist: xenial
-      env: CXX_COMPILER=g++-7
+      env:
+        - CXX_COMPILER=/usr/bin/g++-7
+        - C_COMPILER=/usr/bin/gcc-7
       addons:
         apt:
           sources:
@@ -40,7 +44,9 @@ matrix:
           - boost1.67
     - os: linux
       dist: xenial
-      env: CXX_COMPILER=g++-8
+      env:
+        - CXX_COMPILER=/usr/bin/g++-8
+        - C_COMPILER=/usr/bin/gcc-8
       addons:
         apt:
           sources:
@@ -71,8 +77,8 @@ matrix:
 
 before_install:
   # We need to re-export CC and CXX here, because travis exports CXX=g++ or clang++ AFTER we set CXX.
-  - if [ -n "${C_COMPILER}" ]; then export CC="${C_COMPILER}"; fi
-  - if [ -n "${CXX_COMPILER}" ]; then export CXX="${CXX_COMPILER}"; fi
+  - if [ -n "${C_COMPILER}" ]; then sudo update-alternatives --install /usr/bin/gcc  gcc "${C_COMPILER}"  90; fi
+  - if [ -n "${CXX_COMPILER}" ]; then sudo update-alternatives --install /usr/bin/g++  g++ "${CXX_COMPILER}"  90; fi
 
 script:
 # Build
