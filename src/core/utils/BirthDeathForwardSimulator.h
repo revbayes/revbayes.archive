@@ -21,6 +21,9 @@ namespace RevBayesCore {
     class BirthDeathForwardSimulator {
         
     public:
+        
+        enum SIM_CONDITION { TIME, SURVIVAL, ROOT };
+
         BirthDeathForwardSimulator();
         
         // setters
@@ -35,8 +38,8 @@ namespace RevBayesCore {
         void                                    setSpeciationRate( const std::vector<std::vector< double > > &l );
         void                                    setTimeline( const std::vector< double > &t );
 
-        Tree*                                   simulateTreeConditionTaxa( size_t n ) const;
-        Tree*                                   simulateTreeConditionTime( double t ) const;
+//        Tree*                                   simulateTreeConditionTaxa( size_t n ) const;
+        Tree*                                   simulateTreeConditionTime( double t, SIM_CONDITION cdt ) const;
 
     private:
         
