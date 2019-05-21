@@ -124,12 +124,12 @@ public:
         lnPrior += variable->getLnProbability();
 
         // 2. then we recompute the probability for all the affected nodes
-        for (RbOrderedSet<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it)
+        for (auto& node: affectedNodes)
         {
-            if ( (*it)->isClamped() )
-                lnLikelihood += (*it)->getLnProbability();
+            if ( node->isClamped() )
+                lnLikelihood += node->getLnProbability();
             else
-                lnPrior += (*it)->getLnProbability();
+                lnPrior += node->getLnProbability();
         }
 
         // 3. exponentiate with the chain heat
