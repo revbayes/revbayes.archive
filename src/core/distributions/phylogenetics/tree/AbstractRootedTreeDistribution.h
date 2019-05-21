@@ -9,14 +9,7 @@
 namespace RevBayesCore {
     
     /**
-     * @file
-     * This file contains the declaration of the random variable class for constant rate birth-death process.
-     *
-     * @brief Declaration of the constant rate Birth-Death process class.
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2016-01-26, version 1.0
+     * Constant rate Birth-Death process.
      *
      */
     class AbstractRootedTreeDistribution : public TypedDistribution<Tree> {

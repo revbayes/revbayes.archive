@@ -23,7 +23,7 @@
 #include "StandardState.h"
 #include "RnaState.h"
 #include "AminoAcidState.h"
-#include "PomoState.h"
+#include "PoMoState.h"
 
 using namespace RevLanguage;
 
