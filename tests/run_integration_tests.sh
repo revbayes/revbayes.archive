@@ -10,8 +10,8 @@ if [ -z "$1" ] ; then
 fi
     
 
-if [ ! $@ --help >/dev/null 2>&1 ] ; then
-    printf "RevBayes command '$@' seems not to work!"
+if ! "$@" --help > /dev/null 2>&1 ; then
+    echo "RevBayes command '$@' seems not to work!\n"
     exit 102
 fi
 
@@ -36,7 +36,7 @@ for t in test_*; do
     res=0
     # run the test scripts
     for f in scripts/*; do
-        $@ -b $f # print output so we can see any error messages
+        "$@" -b $f # print output so we can see any error messages
         res="$?"
         if [ $res = 1 ]; then
             res="error: $f"
