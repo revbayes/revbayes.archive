@@ -246,8 +246,6 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
                 }
             }
         }
-        if (not parent_ancestral_state_trace)
-            throw RbException("Can't find parent_ancestral_state_trace");
         
         // get the sampled ancestral state for this iteration
         const std::vector<std::string>& ancestral_state_vector_end = ancestral_state_trace_end_state->getValues();
@@ -258,6 +256,9 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
         std::string sampled_parent_state = "";
         if ( conditional == true && root == false && parent_trace_found == true )
         {
+            if (not parent_ancestral_state_trace)
+                throw RbException("Can't find parent_ancestral_state_trace");
+
             const std::vector<std::string>& parent_ancestral_state_vector = parent_ancestral_state_trace->getValues();
             sampled_parent_state = getSiteState( parent_ancestral_state_vector[j], site );
             
