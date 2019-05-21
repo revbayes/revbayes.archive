@@ -35,11 +35,23 @@ namespace RevBayesCore {
         void                                    setSpeciationRate( const std::vector<std::vector< double > > &l );
         void                                    setTimeline( const std::vector< double > &t );
 
-        Tree*                                   simulateTreeConditionTaxa( size_t n );
-        Tree*                                   simulateTreeConditionTime( double t );
+        Tree*                                   simulateTreeConditionTaxa( size_t n ) const;
+        Tree*                                   simulateTreeConditionTime( double t ) const;
 
     private:
         
+        bool                                    checkParameters(void) const;
+        size_t                                  getNumberOfCategories( void ) const;
+        double                                  getLambdaProbability( size_t i, size_t n ) const;
+        std::vector<double>                     getLambdaRate( size_t i, size_t n ) const;
+        double                                  getMuProbability( size_t i, size_t n ) const;
+        std::vector<double>                     getMuRate( size_t i, size_t n ) const;
+        double                                  getPhiProbability( size_t i, size_t n ) const;
+        std::vector<double>                     getPhiRate( size_t i, size_t n ) const;
+        double                                  getRProbability( size_t i, size_t n ) const;
+        std::vector<double>                     getRRate( size_t i, size_t n ) const;
+        std::vector<double>                     getRootCategoryProbabilities( size_t n ) const;
+
         std::vector<std::vector< double > >     lambda;
         std::vector<std::vector< double > >     Lambda;
         std::vector<std::vector< double > >     mu;

@@ -16,10 +16,415 @@ BirthDeathForwardSimulator::BirthDeathForwardSimulator( void )
 }
 
 
-Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age)
+bool BirthDeathForwardSimulator::checkParameters( void ) const
 {
+    
     size_t NUM_TIME_INTERVALS = timeline.size();
-    size_t NUM_CATEGORIES = lambda[0].size();
+    
+    if ( lambda.size() != NUM_TIME_INTERVALS )
+    {
+        throw RbException("You need to provide the same number of time intervals as speciation rates.");
+    }
+
+//    if ( mu.size() != NUM_TIME_INTERVALS )
+//    {
+//        throw RbException("You need to provide the same number of time intervals as extinction rates.");
+//    }
+//
+//    if ( phi.size() != NUM_TIME_INTERVALS )
+//    {
+//        throw RbException("You need to provide the same number of time intervals as fossilization rates.");
+//    }
+//
+//    if ( r.size() != NUM_TIME_INTERVALS )
+//    {
+//        throw RbException("You need to provide the same number of time intervals as treatment probabilities.");
+//    }
+
+    size_t NUM_CATEGORIES = getNumberOfCategories();
+    
+//    if ( root_cat_probability.size() != NUM_CATEGORIES )
+//    {
+//        throw RbException("You need to provide the same number of categories for the root state probability as all other categories.");
+//    }
+    
+    for ( size_t i=0; i<NUM_TIME_INTERVALS; ++i )
+    {
+        
+    }
+    
+    return true;
+}
+
+
+size_t BirthDeathForwardSimulator::getNumberOfCategories( void ) const
+{
+    
+    if ( lambda.size() > 0 )
+    {
+        return lambda[0].size();
+    }
+    else
+    {
+        return 0;
+    }
+    
+}
+
+
+double BirthDeathForwardSimulator::getLambdaProbability( size_t index, size_t n ) const
+{
+    if ( Lambda.size() > index )
+    {
+        if ( Lambda[index].size() > n )
+        {
+            return Lambda[index][n];
+        }
+        else if ( Lambda[index].size() == 1 )
+        {
+            return Lambda[index][0];
+        }
+        else
+        {
+            throw RbException("Problem in the birth-death simulation: We could not get the speciation event probabilities.");
+        }
+    }
+    else if ( Lambda.size() == 1 )
+    {
+        if ( Lambda[0].size() > n )
+        {
+            return Lambda[0][n];
+        }
+        else if ( Lambda[0].size() == 1 )
+        {
+            return Lambda[0][0];
+        }
+        else
+        {
+            throw RbException("Problem in the birth-death simulation: We could not get the speciation event probabilities.");
+        }
+    }
+    else
+    {
+        throw RbException("Problem in the birth-death simulation: We could not get the speciation event probabilities.");
+    }
+}
+
+
+std::vector<double> BirthDeathForwardSimulator::getLambdaRate( size_t index, size_t n ) const
+{
+    if ( lambda.size() > index )
+    {
+        if ( lambda[index].size() > 1 || lambda[index].size() == n )
+        {
+            return lambda[index];
+        }
+        else if ( lambda[index].size() == 1 )
+        {
+            return std::vector<double>(n, lambda[index][0] );
+        }
+        else
+        {
+            throw RbException("Problem in the birth-death simulation: We could not get the speciation rates.");
+        }
+    }
+    else if ( lambda.size() == 1 )
+    {
+        if ( lambda[0].size() > 1 || lambda[index].size() == n )
+        {
+            return lambda[0];
+        }
+        else if ( lambda[0].size() == 1 )
+        {
+            return std::vector<double>(n, lambda[0][0] );
+        }
+        else
+        {
+            throw RbException("Problem in the birth-death simulation: We could not get the speciation rates.");
+        }
+    }
+    else
+    {
+        throw RbException("Problem in the birth-death simulation: We could not get the speciation rates.");
+    }
+    
+}
+
+
+double BirthDeathForwardSimulator::getMuProbability( size_t index, size_t n ) const
+{
+    
+    if ( Mu.size() > index )
+    {
+        if ( Mu[index].size() > n )
+        {
+            return Mu[index][n];
+        }
+        else if ( Mu[index].size() == 1 )
+        {
+            return Mu[index][0];
+        }
+        else
+        {
+            throw RbException("Problem in the birth-death simulation: We could not get the extinction event probabilities.");
+        }
+    }
+    else if ( Mu.size() == 1 )
+    {
+        if ( Mu[0].size() > n )
+        {
+            return Mu[0][n];
+        }
+        else if ( Mu[0].size() == 1 )
+        {
+            return Mu[0][0];
+        }
+        else
+        {
+            throw RbException("Problem in the birth-death simulation: We could not get the extinction event probabilities.");
+        }
+    }
+    else
+    {
+        throw RbException("Problem in the birth-death simulation: We could not get the extinction event probabilities.");
+    }
+    
+}
+
+
+std::vector<double> BirthDeathForwardSimulator::getMuRate( size_t index, size_t n ) const
+{
+    
+    if ( mu.size() > index )
+    {
+        if ( mu[index].size() > 1 || mu[index].size() == n )
+        {
+            return mu[index];
+        }
+        else if ( mu[index].size() == 1 )
+        {
+            return std::vector<double>(n, mu[index][0] );
+        }
+        else
+        {
+            throw RbException("Problem in the birth-death simulation: We could not get the extinction rates.");
+        }
+    }
+    else if ( mu.size() == 1 )
+    {
+        if ( mu[0].size() > 1 || mu[index].size() == n )
+        {
+            return mu[0];
+        }
+        else if ( mu[0].size() == 1 )
+        {
+            return std::vector<double>(n, mu[0][0] );
+        }
+        else
+        {
+            throw RbException("Problem in the birth-death simulation: We could not get the extinction rates.");
+        }
+    }
+    else
+    {
+        throw RbException("Problem in the birth-death simulation: We could not get the extinction rates.");
+    }
+    
+}
+
+
+double BirthDeathForwardSimulator::getPhiProbability( size_t index, size_t n ) const
+{
+    
+    if ( Phi.size() > index )
+    {
+        if ( Phi[index].size() > n )
+        {
+            return Phi[index][n];
+        }
+        else if ( Phi[index].size() == 1 )
+        {
+            return Phi[index][0];
+        }
+        else
+        {
+            throw RbException("Problem in the birth-death simulation: We could not get the sampling event probabilities.");
+        }
+    }
+    else if ( Phi.size() == 1 )
+    {
+        if ( Phi[0].size() > n )
+        {
+            return Phi[0][n];
+        }
+        else if ( Phi[0].size() == 1 )
+        {
+            return Phi[0][0];
+        }
+        else
+        {
+            throw RbException("Problem in the birth-death simulation: We could not get the sampling event probabilities.");
+        }
+    }
+    else
+    {
+        throw RbException("Problem in the birth-death simulation: We could not get the sampling event probabilities.");
+    }
+    
+}
+
+
+std::vector<double> BirthDeathForwardSimulator::getPhiRate( size_t index, size_t n ) const
+{
+    
+    if ( phi.size() > index )
+    {
+        if ( phi[index].size() > 1 || phi[index].size() == n )
+        {
+            return phi[index];
+        }
+        else if ( phi[index].size() == 1 )
+        {
+            return std::vector<double>(n, phi[index][0] );
+        }
+        else
+        {
+            throw RbException("Problem in the birth-death simulation: We could not get the sampling rate.");
+        }
+    }
+    else if ( phi.size() == 1 )
+    {
+        if ( phi[0].size() > 1 || phi[index].size() == n )
+        {
+            return phi[0];
+        }
+        else if ( phi[0].size() == 1 )
+        {
+            return std::vector<double>(n, phi[0][0] );
+        }
+        else
+        {
+            throw RbException("Problem in the birth-death simulation: We could not get the sampling rate.");
+        }
+    }
+    else
+    {
+        throw RbException("Problem in the birth-death simulation: We could not get the sampling rate.");
+    }
+    
+}
+
+
+double BirthDeathForwardSimulator::getRProbability( size_t index, size_t n ) const
+{
+    
+    if ( R.size() > index )
+    {
+        if ( R[index].size() > n )
+        {
+            return R[index][n];
+        }
+        else if ( R[index].size() == 1 )
+        {
+            return R[index][0];
+        }
+        else
+        {
+            throw RbException("Problem in the birth-death simulation: We could not get the treatment event probabilities.");
+        }
+    }
+    else if ( R.size() == 1 )
+    {
+        if ( R[0].size() > n )
+        {
+            return R[0][n];
+        }
+        else if ( R[0].size() == 1 )
+        {
+            return R[0][0];
+        }
+        else
+        {
+            throw RbException("Problem in the birth-death simulation: We could not get the treatment event probabilities.");
+        }
+    }
+    else
+    {
+        throw RbException("Problem in the birth-death simulation: We could not get the treament event probabilities.");
+    }
+    
+}
+
+
+std::vector<double> BirthDeathForwardSimulator::getRRate( size_t index, size_t n ) const
+{
+    
+    if ( r.size() > index )
+    {
+        if ( r[index].size() > 1 || r[index].size() == n )
+        {
+            return r[index];
+        }
+        else if ( r[index].size() == 1 )
+        {
+            return std::vector<double>(n, r[index][0] );
+        }
+        else
+        {
+            throw RbException("Problem in the birth-death simulation: We could not get the treatment rate.");
+        }
+    }
+    else if ( r.size() == 1 )
+    {
+        if ( r[0].size() > 1 || r[index].size() == n )
+        {
+            return r[0];
+        }
+        else if ( r[0].size() == 1 )
+        {
+            return std::vector<double>(n, r[0][0] );
+        }
+        else
+        {
+            throw RbException("Problem in the birth-death simulation: We could not get the treatment rate.");
+        }
+    }
+    else
+    {
+        throw RbException("Problem in the birth-death simulation: We could not get the treatment rate.");
+    }
+    
+}
+
+
+std::vector<double> BirthDeathForwardSimulator::getRootCategoryProbabilities( size_t n ) const
+{
+    if ( root_cat_probability.size() == n )
+    {
+        return root_cat_probability;
+    }
+    else if ( root_cat_probability.size() == 1 )
+    {
+        return std::vector<double>(n, root_cat_probability[0] );
+    }
+    else
+    {
+        throw RbException("Problem in the birth-death simulation: We could not get the root category probabilities.");
+    }
+    
+}
+
+
+Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age) const
+{
+    
+    if ( checkParameters() == false )
+    {
+        
+    }
+    
+    size_t NUM_TIME_INTERVALS = timeline.size();
+    size_t NUM_CATEGORIES = getNumberOfCategories();
     
     RandomNumberGenerator *rng = GLOBAL_RNG;
     
@@ -39,10 +444,11 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age)
     
     // draw the index of the root category
     size_t root_cat_index = 0;
+    std::vector<double> root_cat_probs = getRootCategoryProbabilities( NUM_CATEGORIES );
     double u = rng->uniform01();
-    while ( root_cat_index < NUM_CATEGORIES && u > root_cat_probability[root_cat_index] )
+    while ( root_cat_index < NUM_CATEGORIES && u > root_cat_probs[root_cat_index] )
     {
-        u -= root_cat_probability[root_cat_index];
+        u -= root_cat_probs[root_cat_index];
         ++root_cat_index;
     }
     
@@ -64,10 +470,10 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age)
     active_nodes_in_actegories[root_cat_index].insert( left  );
     active_nodes_in_actegories[root_cat_index].insert( right );
     
-    std::vector<double> current_lambda   = lambda[current_time_index];
-    std::vector<double> current_mu       = mu[current_time_index];
-    std::vector<double> current_phi      = phi[current_time_index];
-    std::vector<double> current_r        = r[current_time_index];
+    std::vector<double> current_lambda   = getLambdaRate(current_time_index, NUM_CATEGORIES);
+    std::vector<double> current_mu       = getMuRate(current_time_index, NUM_CATEGORIES);
+    std::vector<double> current_phi      = getPhiRate(current_time_index, NUM_CATEGORIES);
+    std::vector<double> current_r        = getRRate(current_time_index, NUM_CATEGORIES);
     
     double current_lambda_total     = 0;
     double current_mu_total         = 0;
@@ -96,7 +502,7 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age)
             for ( size_t i=0; i<NUM_CATEGORIES; ++i )
             {
                 // (1) a burst event
-                double this_burst_prob = Lambda[current_time_index][i];
+                double this_burst_prob = getLambdaProbability(current_time_index, i);
                 if ( this_burst_prob > 0.0 )
                 {
                     std::set<TopologyNode*> old_active_nodes_in_category = active_nodes_in_actegories[i];
@@ -129,7 +535,7 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age)
                 
                 
                 // (2) a mass-extinction event
-                double this_mass_extinction_prob = Mu[current_time_index][i];
+                double this_mass_extinction_prob = getMuProbability(current_time_index, i);
                 if ( this_mass_extinction_prob < 1.0 )
                 {
                     std::set<TopologyNode*> old_active_nodes_in_category = active_nodes_in_actegories[i];
@@ -155,10 +561,10 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age)
                 
                 
                 // (3) a sampling event
-                double this_sampling_prob = Phi[current_time_index][i];
+                double this_sampling_prob = getPhiProbability(current_time_index, i);
                 if ( this_sampling_prob > 0.0 )
                 {
-                    double this_sampling_extinction_prob = R[current_time_index][i];
+                    double this_sampling_extinction_prob = getRProbability(current_time_index, i);
                     std::set<TopologyNode*> old_active_nodes_in_category = active_nodes_in_actegories[i];
                     for ( std::set<TopologyNode*>::const_iterator it=old_active_nodes_in_category.begin(); it!=old_active_nodes_in_category.end(); ++it)
                     {
@@ -196,10 +602,10 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age)
             if ( current_time_index < NUM_TIME_INTERVALS )
             {
                 // update all the rate summaries
-                current_lambda   = lambda[current_time_index];
-                current_mu       = mu[current_time_index];
-                current_phi      = phi[current_time_index];
-                current_r        = r[current_time_index];
+                current_lambda   = getLambdaRate(current_time_index, NUM_CATEGORIES);
+                current_mu       = getMuRate(current_time_index, NUM_CATEGORIES);
+                current_phi      = getPhiRate(current_time_index, NUM_CATEGORIES);
+                current_r        = getRRate(current_time_index, NUM_CATEGORIES);
             
                 current_num_active_nodes = 0;
             
@@ -431,6 +837,16 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age)
     // build and return the tree
     Tree *my_tree = new Tree();
     my_tree->setRoot(root, true);
+    
+    size_t num_nodes = my_tree->getNumberOfNodes();
+    for (size_t i=0; i<num_nodes; ++i)
+    {
+        TopologyNode &n = my_tree->getNode(i);
+        if ( n.isTip() == true )
+        {
+            n.setName("Tip_"+ StringUtilities::toString(i) );
+        }
+    }
     
     return my_tree;
 }
