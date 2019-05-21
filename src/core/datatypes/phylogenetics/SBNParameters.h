@@ -58,7 +58,7 @@ namespace RevBayesCore {
         bool                                isValid(void) const;
 
         // Functions for learning SBNs
-        void                                countAllSubsplits(std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts, std::map<Subsplit,double>& root_split_counts, std::map<Subsplit,double>& q, Tree& tree);
+        void                                countAllSubsplits(Tree& tree, std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts, std::map<Subsplit,double>& root_split_counts, std::map<Subsplit,double>& q, bool doSA);
         bool                                isValidCPD(std::vector<std::pair<Subsplit,double> >& cpd, Subsplit& parent) const;
         bool                                isValidRootDistribution(void) const;
         void                                normalizeCPDForSubsplit(std::vector<std::pair<Subsplit,double> >& cpd, Subsplit& parent);
@@ -66,12 +66,13 @@ namespace RevBayesCore {
         void                                makeRootSplits(std::map<Subsplit,double>& root_split_counts);
         void                                learnRootedUnconstrainedSBN( std::vector<Tree>& trees );
         void                                learnTimeCalibratedSBN( std::vector<Tree>& trees );
-        void                                learnUnconstrainedSBNSA( std::vector<Tree> &trees, double &alpha );
+        void                                learnUnconstrainedSBNSA( std::vector<Tree> &trees );
         void                                learnUnconstrainedSBNEM( std::vector<Tree> &trees, double &alpha );
 
         // Helper functions for learning SBNs
         void                                addTreeToAllParentChildCounts(std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts, Tree& tree, double &weight);
         void                                addTreeToAllRootSplitCounts(std::map<Subsplit,double>& root_split_counts, Tree& tree, double &weight);
+        void                                fitBranchLengthDistributions(void);
         void                                incrementParentChildCount(std::map<Subsplit,double>& root_split_counts, double &weight);
         void                                incrementRootSplitCount(std::map<Subsplit,double>& root_split_counts, double &weight);
       private:

@@ -259,12 +259,14 @@ bool SBNParameters::isValid(void) const
   return true;
 }
 
-void SBNParameters::countAllSubsplits(std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts, std::map<Subsplit,double>& root_split_counts, std::map<Subsplit,double>& q, Tree& tree)
+void SBNParameters::countAllSubsplits(Tree& tree, std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts, std::map<Subsplit,double>& root_split_counts, std::map<Subsplit,double>& q, bool doSA)
 {
   // Prep for tip to root pass
   std::string order = "postorder";
   tree.orderNodesForTraversal(order);
   const std::vector<TopologyNode*> &postorder_nodes = tree.getNodes();
+
+  double one_over_n_branches = 1.0 / (2.0 * tree.getNumberOfNodes() - 4.0); // 1 over the number of branches in an unrooted tree
 
   // Get all node's subsplits (we will need these repeatedly)
   std::vector<Subsplit> per_node_subsplit = std::vector<Subsplit>(tree.getNumberOfNodes(),Subsplit());
@@ -286,7 +288,7 @@ void SBNParameters::countAllSubsplits(std::map<std::pair<Subsplit,Subsplit>,doub
     RbBitSet c = per_node_subsplit[index].asCladeBitset();
     Subsplit root_on_edge = per_node_subsplit[index].rootSplitFromClade(c);
 
-    double this_root_q = q[root_on_edge];
+    double this_root_q = doSA ? one_over_n_branches : q[root_on_edge];
 
     // Accumulate cumulative probability
     if ((*it)->isTip())
@@ -615,8 +617,6 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
   // For unrooted trees, the weight will be less than 1, and may vary (in the EM algorithm)
   double weight = 1.0;
 
-  std::map<RbBitSet,std::vector<double> > branch_length_observations;
-
   // Loop over all trees
   // for each, get all root splits and subsplit parent-child relationships
   // then consolidate into our master list
@@ -625,6 +625,101 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
     incrementAllRootSplitCounts(root_split_counts, trees[i], weight);
     incrementAllParentChildCounts(parent_child_counts, trees[i], weight);
 
+  }
+
+  // Turn root split counts into a distribution on the root split
+  makeRootSplits(root_split_counts);
+
+  // Turn parent-child subsplit counts into CPDs
+  makeCPDs(parent_child_counts);
+
+  if ( !isValid() )
+  {
+    throw(RbException("learnRootedUnconstrainedSBN produced an invalid SBNParameters object."));
+  }
+
+}
+
+void SBNParameters::learnUnconstrainedSBNSA( std::vector<Tree> &trees )
+{
+  // To store counts
+  std::map<Subsplit,double> root_split_counts;
+  std::map<std::pair<Subsplit,Subsplit>,double> parent_child_counts;
+
+  // Run counting
+  for (size_t i=0; i<trees.size(); ++i)
+  {
+    countAllSubsplits(Tree& tree, std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts, std::map<Subsplit,double>& root_split_counts, std::map<Subsplit,double>& q, bool doSA);
+  }
+
+  // Turn root split counts into a distribution on the root split
+  makeRootSplits(root_split_counts);
+
+  // Turn parent-child subsplit counts into CPDs
+  makeCPDs(parent_child_counts);
+
+  // Handle branch lengths
+  fitBranchLengthDistributions();
+
+}
+
+void SBNParameters::learnUnconstrainedSBNEM( std::vector<Tree> &trees, double &alpha )
+{
+
+  // Initialize parameters to SA values
+  // This will handle the branch lengths for us, we don't need to touch them again
+  learnUnconstrainedSBNSA(trees);
+
+  // // run EM, start on E-step because we have parameters from M-step
+  // bool terminate = false;
+  // while ( !terminate )
+  // {
+  //   // E-step, compute q and m
+  //
+  //   // M-step, compute p
+  //
+  // }
+}
+
+// Takes a tree in with weight (can be for multiple trees or for q(root)), keeps rooting intact, adds all parent-child subsplits found in this tree to master list of counts
+void SBNParameters::addTreeToAllParentChildCounts(std::map<std::pair<Subsplit,Subsplit>,double> &parent_child_counts, Tree& tree, double &weight)
+{
+  std::vector<std::pair<Subsplit,Subsplit> > these_parent_child_subsplits = tree.getAllSubsplitParentChildPairs(taxa);
+  for (size_t j=0; j<these_parent_child_subsplits.size(); ++j)
+  {
+    if ( parent_child_counts.count(these_parent_child_subsplits[j]) == 0 )
+    {
+      parent_child_counts[these_parent_child_subsplits[j]] = weight;
+    }
+    else
+    {
+      parent_child_counts[these_parent_child_subsplits[j]] += weight;
+    }
+  }
+}
+
+// Takes a tree in with weight (can be for multiple trees or for q(root)), keeps rooting intact, adds the root split to master list of counts
+void SBNParameters::addTreeToAllRootSplitCounts(std::map<Subsplit,double>& root_split_counts, Tree& tree, double &weight)
+{
+  Subsplit this_root_split;
+  this_root_split = tree.getRootSubsplit(taxa);
+  if ( root_split_counts.count(this_root_split) == 0 )
+  {
+    root_split_counts[this_root_split] = weight;
+  }
+  else
+  {
+    root_split_counts[this_root_split] += weight;
+  }
+}
+
+void SBNParameters::fitBranchLengthDistributions(void)
+{
+  std::map<RbBitSet,std::vector<double> > branch_length_observations;
+
+  // Loop over all trees
+  for (size_t i=0; i<trees.size(); ++i)
+  {
     // Get branch lengths
     const std::vector<TopologyNode*> tree_nodes = trees[i].getNodes();
     for (size_t i=0; i<tree_nodes.size(); ++i)
@@ -639,146 +734,137 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
       }
     }
 
+  // // Turn branch length observations into empirical distributions
+  // std::pair<RbBitSet,std::vector<double> > clade_edge_observations;
+  // BOOST_FOREACH(clade_edge_observations, branch_length_observations) {
+  //
+  //   if (clade_edge_observations.second.size() > 1)
+  //   {
+  //
+  //     sort(clade_edge_observations.second.begin(),clade_edge_observations.second.end());
+  //     double obs_min = clade_edge_observations.second[0];
+  //     double obs_max = clade_edge_observations.second[clade_edge_observations.second.size()-1];
+  //
+  //     // This works because if there are 2 data points it gives us a single interval, otherwise we'd need exception handling
+  //     int n_intervals = floor(sqrt(clade_edge_observations.second.size()));
+  //
+  //     double bin_width = (obs_max - obs_min)/n_intervals;
+  //
+  //     // Initilize vector of breaks
+  //     std::vector<double> breaks;
+  //     for (size_t i=0; i<n_intervals; ++i)
+  //     {
+  //       breaks.push_back(obs_min + i * bin_width);
+  //     }
+  //     breaks.push_back(obs_max);
+  //
+  //     // Initialize probs to 0 in case there are empty intervals
+  //     std::vector<double> probs = std::vector<double>(n_intervals,0.0);
+  //
+  //     // The contribution of a single data point is 1/n to the probability mass of a cell
+  //     double one_over_n = 1.0 / clade_edge_observations.second.size();
+  //
+  //     // Loop over all data points, count number in each bin and add probability
+  //     size_t current_left = 0;
+  //     size_t current_right = 1;
+  //     for (size_t i=0; i<(clade_edge_observations.second.size()-1); ++i) // Leave out the last data point, handle later
+  //     {
+  //       // Point is in bounds, add to the interval
+  //       if (clade_edge_observations.second[i] < breaks[current_right])
+  //       {
+  //         probs[current_left] += one_over_n;
+  //       }
+  //       // Point is out of bounds, find the interval it's in and add it
+  //       else {
+  //         while (clade_edge_observations.second[i] >= breaks[current_right])
+  //         {
+  //           current_right += 1;
+  //         }
+  //         current_left = current_right - 1;
+  //         probs[current_left] += one_over_n;
+  //       }
+  //     }
+  //
+  //     // We haven't yet counted the last data point
+  //     probs[n_intervals-1] += one_over_n;
+  //
+  //     double s = 0.0;
+  //     for (size_t i=0; i<probs.size(); ++i)
+  //     {
+  //       s += probs[i];
+  //     }
+  //     if (s > 1.0001 || s < 0.9999) {
+  //       std::cout << "sum of probs is " << s << std::endl;
+  //     }
+  //
+  //     std::pair<std::vector<double>,std::vector<double> > these_params;
+  //     these_params.first = probs;
+  //     these_params.second = breaks;
+  //
+  //     edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
+  //   }
+  //   else
+  //   {
+  //     std::vector<double> probs = std::vector<double>(1,1.0);
+  //     std::vector<double> breaks;
+  //     breaks.push_back(clade_edge_observations.second[0]*0.95);
+  //     breaks.push_back(clade_edge_observations.second[0]*1.05);
+  //
+  //     std::pair<std::vector<double>,std::vector<double> > these_params;
+  //     these_params.first = probs;
+  //     these_params.second = breaks;
+  //     edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
+  //   }
+  // }
 
-  }
 
-  // Turn root split counts into a distribution on the root split
-  makeRootSplits(root_split_counts);
-
-  // Turn parent-child subsplit counts into CPDs
-  makeCPDs(parent_child_counts);
-
-  // Turn branch length observations into empirical distributions
+  // Turn branch length observations into lognormal distributions
   std::pair<RbBitSet,std::vector<double> > clade_edge_observations;
   BOOST_FOREACH(clade_edge_observations, branch_length_observations) {
-
-    if (clade_edge_observations.second.size() > 1)
+    // std::cout << "Learning branch distribution for clade " << clade_edge_observations.first << ", observations are:" << std::endl;
+    if (clade_edge_observations.second.size() > 2)
     {
-
-      sort(clade_edge_observations.second.begin(),clade_edge_observations.second.end());
-      double obs_min = clade_edge_observations.second[0];
-      double obs_max = clade_edge_observations.second[clade_edge_observations.second.size()-1];
-
-      // This works because if there are 2 data points it gives us a single interval, otherwise we'd need exception handling
-      int n_intervals = floor(sqrt(clade_edge_observations.second.size()));
-
-      double bin_width = (obs_max - obs_min)/n_intervals;
-
-      // Initilize vector of breaks
-      std::vector<double> breaks;
-      for (size_t i=0; i<n_intervals; ++i)
+      // TODO: if we are going to keep using lognormal via MLE, there are more efficient ways to get the logmean and logsd
+      // Get mean/sd of log of observations
+      double log_mean;
+      for (size_t i=0; i<clade_edge_observations.second.size(); ++i)
       {
-        breaks.push_back(obs_min + i * bin_width);
+        // Branch lengths x such that c++ returns log(x) = -inf are possible, replace with smallest representable number instead
+        double log_x = log(clade_edge_observations.second[i]);
+        log_mean += log_x == RbConstants::Double::neginf ? RbConstants::Double::min : log_x;
+// std::cout << log_x << ",";
       }
-      breaks.push_back(obs_max);
+// std::cout << std::endl;
+      log_mean /= clade_edge_observations.second.size();
 
-      // Initialize probs to 0 in case there are empty intervals
-      std::vector<double> probs = std::vector<double>(n_intervals,0.0);
-
-      // The contribution of a single data point is 1/n to the probability mass of a cell
-      double one_over_n = 1.0 / clade_edge_observations.second.size();
-
-      // Loop over all data points, count number in each bin and add probability
-      size_t current_left = 0;
-      size_t current_right = 1;
-      for (size_t i=0; i<(clade_edge_observations.second.size()-1); ++i) // Leave out the last data point, handle later
+      double log_sd;
+      for (size_t i=0; i<clade_edge_observations.second.size(); ++i)
       {
-        // Point is in bounds, add to the interval
-        if (clade_edge_observations.second[i] < breaks[current_right])
-        {
-          probs[current_left] += one_over_n;
-        }
-        // Point is out of bounds, find the interval it's in and add it
-        else {
-          while (clade_edge_observations.second[i] >= breaks[current_right])
-          {
-            current_right += 1;
-          }
-          current_left = current_right - 1;
-          probs[current_left] += one_over_n;
-        }
+        double log_x = log(clade_edge_observations.second[i]);
+        log_sd += log_x == RbConstants::Double::neginf ? pow(RbConstants::Double::min - log_mean,2.0) : pow(log_x - log_mean,2.0);
       }
+      log_sd /= clade_edge_observations.second.size();
+      log_sd = sqrt(log_sd);
 
-      // We haven't yet counted the last data point
-      probs[n_intervals-1] += one_over_n;
-
-      double s = 0.0;
-      for (size_t i=0; i<probs.size(); ++i)
-      {
-        s += probs[i];
-      }
-      if (s > 1.0001 || s < 0.9999) {
-        std::cout << "sum of probs is " << s << std::endl;
-      }
-
-      std::pair<std::vector<double>,std::vector<double> > these_params;
-      these_params.first = probs;
-      these_params.second = breaks;
+      // Approximate edge-length distribution using lognormal, use MLE parameters
+      std::pair<double,double> these_params;
+      these_params.first = log_mean;
+      these_params.second = log_sd;
 
       edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
+
     }
     else
     {
-      std::vector<double> probs = std::vector<double>(1,1.0);
-      std::vector<double> breaks;
-      breaks.push_back(clade_edge_observations.second[0]*0.95);
-      breaks.push_back(clade_edge_observations.second[0]*1.05);
+      // Basically no information on edge length distribution
+      // Approximate edge-length distribution using a lognormal resembling an exponential(10)
+      std::pair<double,double> these_params;
+      these_params.first = -2.8;
+      these_params.second = 1.0;
 
-      std::pair<std::vector<double>,std::vector<double> > these_params;
-      these_params.first = probs;
-      these_params.second = breaks;
       edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
     }
   }
-
-
-//   // Turn branch length observations into lognormal distributions
-//   std::pair<RbBitSet,std::vector<double> > clade_edge_observations;
-//   BOOST_FOREACH(clade_edge_observations, branch_length_observations) {
-//     // std::cout << "Learning branch distribution for clade " << clade_edge_observations.first << ", observations are:" << std::endl;
-//     if (clade_edge_observations.second.size() > 2)
-//     {
-//       // TODO: if we are going to keep using lognormal via MLE, there are more efficient ways to get the logmean and logsd
-//       // Get mean/sd of log of observations
-//       double log_mean;
-//       for (size_t i=0; i<clade_edge_observations.second.size(); ++i)
-//       {
-//         // Branch lengths x such that c++ returns log(x) = -inf are possible, replace with smallest representable number instead
-//         double log_x = log(clade_edge_observations.second[i]);
-//         log_mean += log_x == RbConstants::Double::neginf ? RbConstants::Double::min : log_x;
-// // std::cout << log_x << ",";
-//       }
-// // std::cout << std::endl;
-//       log_mean /= clade_edge_observations.second.size();
-//
-//       double log_sd;
-//       for (size_t i=0; i<clade_edge_observations.second.size(); ++i)
-//       {
-//         double log_x = log(clade_edge_observations.second[i]);
-//         log_sd += log_x == RbConstants::Double::neginf ? pow(RbConstants::Double::min - log_mean,2.0) : pow(log_x - log_mean,2.0);
-//       }
-//       log_sd /= clade_edge_observations.second.size();
-//       log_sd = sqrt(log_sd);
-//
-//       // Approximate edge-length distribution using lognormal, use MLE parameters
-//       std::pair<double,double> these_params;
-//       these_params.first = log_mean;
-//       these_params.second = log_sd;
-//
-//       edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
-//
-//     }
-//     else
-//     {
-//       // Basically no information on edge length distribution
-//       // Approximate edge-length distribution using a lognormal resembling an exponential(10)
-//       std::pair<double,double> these_params;
-//       these_params.first = -2.8;
-//       these_params.second = 1.0;
-//
-//       edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
-//     }
-//   }
 
   // // Turn branch length observations into gamma distributions
   // std::pair<RbBitSet,std::vector<double> > clade_edge_observations;
@@ -820,45 +906,7 @@ void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
   //   }
   // }
 
-  if ( !isValid() )
-  {
-    throw(RbException("learnRootedUnconstrainedSBN produced an invalid SBNParameters object."));
-  }
-
 }
-
-// Takes a tree in with weight (can be for multiple trees or for q(root)), keeps rooting intact, adds all parent-child subsplits found in this tree to master list of counts
-void SBNParameters::addTreeToAllParentChildCounts(std::map<std::pair<Subsplit,Subsplit>,double> &parent_child_counts, Tree& tree, double &weight)
-{
-  std::vector<std::pair<Subsplit,Subsplit> > these_parent_child_subsplits = tree.getAllSubsplitParentChildPairs(taxa);
-  for (size_t j=0; j<these_parent_child_subsplits.size(); ++j)
-  {
-    if ( parent_child_counts.count(these_parent_child_subsplits[j]) == 0 )
-    {
-      parent_child_counts[these_parent_child_subsplits[j]] = weight;
-    }
-    else
-    {
-      parent_child_counts[these_parent_child_subsplits[j]] += weight;
-    }
-  }
-}
-
-// Takes a tree in with weight (can be for multiple trees or for q(root)), keeps rooting intact, adds the root split to master list of counts
-void SBNParameters::addTreeToAllRootSplitCounts(std::map<Subsplit,double>& root_split_counts, Tree& tree, double &weight)
-{
-  Subsplit this_root_split;
-  this_root_split = tree.getRootSubsplit(taxa);
-  if ( root_split_counts.count(this_root_split) == 0 )
-  {
-    root_split_counts[this_root_split] = weight;
-  }
-  else
-  {
-    root_split_counts[this_root_split] += weight;
-  }
-}
-
 void SBNParameters::incrementParentChildCount(std::map<std::pair<Subsplit,Subsplit>,double> &parent_child_counts, std::pair<Subsplit,Subsplit> &this_parent_child, double &weight)
 {
   if ( parent_child_counts.count(this_parent_child) == 0 )
