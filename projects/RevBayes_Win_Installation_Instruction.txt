@@ -2,7 +2,7 @@ RevBayes compilation under Windows 10
 
 I. First you need to get some necessary software:
 
-Download and install cygwin. Make sure you include the following packages:
+Download and install 64-bit cygwin (setup-x86_64.exe). Make sure you include the following packages:
 
 cmake                                   3.6.2-1
 cmake-debuginfo                         3.6.2-1
