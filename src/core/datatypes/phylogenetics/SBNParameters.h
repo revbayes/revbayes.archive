@@ -59,6 +59,7 @@ namespace RevBayesCore {
 
         // Functions for learning SBNs
         void                                countAllSubsplits(Tree& tree, std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts, std::map<Subsplit,double>& root_split_counts, std::map<Subsplit,double>& q, bool doSA);
+        void                                fitBranchLengthDistributions(std::vector<Tree> &trees);
         bool                                isValidCPD(std::vector<std::pair<Subsplit,double> >& cpd, Subsplit& parent) const;
         bool                                isValidRootDistribution(void) const;
         void                                normalizeCPDForSubsplit(std::vector<std::pair<Subsplit,double> >& cpd, Subsplit& parent);
@@ -72,9 +73,8 @@ namespace RevBayesCore {
         // Helper functions for learning SBNs
         void                                addTreeToAllParentChildCounts(std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts, Tree& tree, double &weight);
         void                                addTreeToAllRootSplitCounts(std::map<Subsplit,double>& root_split_counts, Tree& tree, double &weight);
-        void                                fitBranchLengthDistributions(void);
-        void                                incrementParentChildCount(std::map<Subsplit,double>& root_split_counts, double &weight);
-        void                                incrementRootSplitCount(std::map<Subsplit,double>& root_split_counts, double &weight);
+        void                                incrementParentChildCount(std::map<std::pair<Subsplit,Subsplit>,double> &parent_child_counts, std::pair<Subsplit,Subsplit> &this_parent_child, double &weight);
+        void                                incrementRootSplitCount(std::map<Subsplit,double>& root_split_counts, Subsplit &this_root_split, double &weight);
       private:
         // members
         size_t                                         num_taxa; // The number of taxa in the tree the SBN describes
