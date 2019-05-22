@@ -1,8 +1,8 @@
 #include "AbstractHomologousDiscreteCharacterData.h"
+#include "BranchHeterogeneousMorphospeciationProcess.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "Clade.h"
 #include "HomologousDiscreteCharacterData.h"
-#include "MorphospeciationProcess.h"
 #include "DeterministicNode.h"
 #include "MatrixReal.h"
 #include "RandomNumberFactory.h"
@@ -28,7 +28,7 @@ using namespace RevBayesCore;
  * The constructor connects the parameters of the birth-death process (DAG structure)
  * and initializes the probability density by computing the combinatorial constant of the tree structure.
  */
-MorphospeciationProcess::MorphospeciationProcess(const TypedDagNode<double> *age,
+BranchHeterogeneousMorphospeciationProcess::BranchHeterogeneousMorphospeciationProcess(const TypedDagNode<double> *age,
                                                    const TypedDagNode<double> *asym,
                                                    const TypedDagNode<double> *ana,
                                                    const TypedDagNode<double> *ext,
@@ -54,8 +54,8 @@ MorphospeciationProcess::MorphospeciationProcess(const TypedDagNode<double> *age
     active_likelihood( std::vector<bool>(5, 0) ),
     changed_nodes( std::vector<bool>(5, false) ),
     dirty_nodes( std::vector<bool>(5, true) ),
-    node_partial_likelihoods( std::vector<std::vector<std::vector<double> > >(5, std::vector<std::vector<double> >(2,std::vector<double>(2*ext->getValue().size(),0))) ),
-    scaling_factors( std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(num_nodes, std::vector<double>(num_sites, 0.0) ) ) ),
+    node_partial_likelihoods( std::vector<std::vector<std::vector<std::vector<std::vector<double> > > > >(1, std::vector<std::vector<std::vector<std::vector<double> > > >(2, std::vector<std::vector<std::vector<double> > >(1, std::vector<std::vector<double> >(num_sites, std::vector<double>(num_states, 0.0))))) ),
+    scaling_factors( std::vector<std::vector< std::vector<double> > >(1, std::vector<std::vector<double> >(2, std::vector<double>(num_sites, 0.0) ) ) ),
     use_origin( uo ),
     process_age( age ),
     lambda(asym),
@@ -99,9 +99,9 @@ MorphospeciationProcess::MorphospeciationProcess(const TypedDagNode<double> *age
  *
  * \return A new copy of myself
  */
-MorphospeciationProcess* MorphospeciationProcess::clone( void ) const
+BranchHeterogeneousMorphospeciationProcess* BranchHeterogeneousMorphospeciationProcess::clone( void ) const
 {
-    MorphospeciationProcess* tmp = new MorphospeciationProcess( *this );
+    BranchHeterogeneousMorphospeciationProcess* tmp = new BranchHeterogeneousMorphospeciationProcess( *this );
     tmp->getValue().getTreeChangeEventHandler().addListener(tmp);
     return tmp;
 }
@@ -112,7 +112,7 @@ MorphospeciationProcess* MorphospeciationProcess::clone( void ) const
  * TreeChangeEventHandler, we need to remove ourselves as a reference and possibly delete tau
  * when we die. All other parameters are handled by others.
  */
-MorphospeciationProcess::~MorphospeciationProcess( void )
+BranchHeterogeneousMorphospeciationProcess::~BranchHeterogeneousMorphospeciationProcess( void )
 {
     // We don't delete the params, because they might be used somewhere else too. The model needs to do that!
 
@@ -125,7 +125,7 @@ MorphospeciationProcess::~MorphospeciationProcess( void )
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
  */
-double MorphospeciationProcess::computeLnProbability( void )
+double BranchHeterogeneousMorphospeciationProcess::computeLnProbability( void )
 {
     
     // check that the ages are in correct chronological order
@@ -215,7 +215,7 @@ double MorphospeciationProcess::computeLnProbability( void )
 }
 
 
-void MorphospeciationProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t node_index)
+void BranchHeterogeneousMorphospeciationProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t node_index)
 {
     updateTransitionProbabilities(node_index);
     
@@ -375,7 +375,7 @@ void MorphospeciationProcess::computeNodeProbability(const RevBayesCore::Topolog
                     }
                 }
 
-                scaling_factors[active_likelihood[node_index]][node_index][i] = log(max[i]);
+                scaling_factors[node_index][active_likelihood[node_index]][i] = log(max[i]);
 
                 if ( node.isTip() == false )
                 {
@@ -383,7 +383,7 @@ void MorphospeciationProcess::computeNodeProbability(const RevBayesCore::Topolog
                     size_t                      left_index      = left.getIndex();
                     const TopologyNode          &right          = node.getChild(1);
                     size_t                      right_index     = right.getIndex();
-                    scaling_factors[active_likelihood[node_index]][node_index][i] += scaling_factors[active_likelihood[left_index]][left_index][i] + scaling_factors[active_likelihood[right_index]][right_index][i];
+                    scaling_factors[node_index][active_likelihood[node_index]][i] += scaling_factors[left_index][active_likelihood[left_index]][i] + scaling_factors[right_index][active_likelihood[right_index]][i];
                 }
             }
         }
@@ -392,7 +392,7 @@ void MorphospeciationProcess::computeNodeProbability(const RevBayesCore::Topolog
 }
 
 
-double MorphospeciationProcess::computeRootLikelihood( void )
+double BranchHeterogeneousMorphospeciationProcess::computeRootLikelihood( void )
 {
     // get the likelihoods of descendant nodes
     const TopologyNode     &root            = value->getRoot();
@@ -479,16 +479,16 @@ double MorphospeciationProcess::computeRootLikelihood( void )
             }
         }
 
-        scaling_factors[active_likelihood[node_index]][node_index][i] = scaling_factors[active_likelihood[left_index]][left_index][i] + scaling_factors[active_likelihood[right_index]][right_index][i];
+        scaling_factors[node_index][active_likelihood[node_index]][i] = scaling_factors[left_index][active_likelihood[left_index]][i] + scaling_factors[right_index][active_likelihood[right_index]][i];
 
-        lnProb += log(site_prob) + scaling_factors[active_likelihood[node_index]][node_index][i];
+        lnProb += log(site_prob) + scaling_factors[node_index][active_likelihood[node_index]][i];
     }
     
     return lnProb - num_sites * ( log(num_states) + log(num_site_rates) );
 }
 
 
-void MorphospeciationProcess::fireTreeChangeEvent( const RevBayesCore::TopologyNode &n, const unsigned& m )
+void BranchHeterogeneousMorphospeciationProcess::fireTreeChangeEvent( const RevBayesCore::TopologyNode &n, const unsigned& m )
 {
     // call a recursive flagging of all node above (closer to the root) and including this node
     recursivelyFlagNodeDirty( n );
@@ -496,13 +496,13 @@ void MorphospeciationProcess::fireTreeChangeEvent( const RevBayesCore::TopologyN
 }
 
 
-const RevBayesCore::AbstractHomologousDiscreteCharacterData& MorphospeciationProcess::getCharacterData() const
+const RevBayesCore::AbstractHomologousDiscreteCharacterData& BranchHeterogeneousMorphospeciationProcess::getCharacterData() const
 {
     return static_cast<TreeDiscreteCharacterData*>(this->value)->getCharacterData();
 }
 
 
-void MorphospeciationProcess::recursivelyFlagNodeDirty( const RevBayesCore::TopologyNode &n ) {
+void BranchHeterogeneousMorphospeciationProcess::recursivelyFlagNodeDirty( const RevBayesCore::TopologyNode &n ) {
 
     // we need to flag this node and all ancestral nodes for recomputation
     size_t index = n.getIndex();
@@ -531,7 +531,7 @@ void MorphospeciationProcess::recursivelyFlagNodeDirty( const RevBayesCore::Topo
 }
 
 
-RevLanguage::RevPtr<RevLanguage::RevVariable> MorphospeciationProcess::executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found)
+RevLanguage::RevPtr<RevLanguage::RevVariable> BranchHeterogeneousMorphospeciationProcess::executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found)
 {    
     if (name == "clampCharData")
     {
@@ -579,7 +579,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> MorphospeciationProcess::executePr
 }
 
 
-void MorphospeciationProcess::executeMethod(const std::string &name, const std::vector<const DagNode *> &args, RbVector<double> &rv) const
+void BranchHeterogeneousMorphospeciationProcess::executeMethod(const std::string &name, const std::vector<const DagNode *> &args, RbVector<double> &rv) const
 {
    
     throw RbException("The character dependent birth-death process does not have a member method called '" + name + "'.");
@@ -591,7 +591,7 @@ void MorphospeciationProcess::executeMethod(const std::string &name, const std::
  * Get the affected nodes by a change of this node.
  * If the root age has changed than we need to call get affected again.
  */
-void MorphospeciationProcess::getAffected(RbOrderedSet<DagNode *> &affected, RevBayesCore::DagNode *affecter)
+void BranchHeterogeneousMorphospeciationProcess::getAffected(RbOrderedSet<DagNode *> &affected, RevBayesCore::DagNode *affecter)
 {
     
     if ( affecter == process_age)
@@ -602,7 +602,7 @@ void MorphospeciationProcess::getAffected(RbOrderedSet<DagNode *> &affected, Rev
 }
 
 
-double MorphospeciationProcess::getOriginAge( void ) const
+double BranchHeterogeneousMorphospeciationProcess::getOriginAge( void ) const
 {
 
     return process_age->getValue();
@@ -613,7 +613,7 @@ double MorphospeciationProcess::getOriginAge( void ) const
  * By default, the root age is assumed to be equal to the origin time.
  * This should be overridden if a distinct root age is needed
  */
-double MorphospeciationProcess::getRootAge( void ) const
+double BranchHeterogeneousMorphospeciationProcess::getRootAge( void ) const
 {
 
     if (use_origin)
@@ -635,7 +635,7 @@ double MorphospeciationProcess::getRootAge( void ) const
 /**
  * Keep the current value and reset some internal flags. Nothing to do here.
  */
-void MorphospeciationProcess::keepSpecialization(DagNode *affecter)
+void BranchHeterogeneousMorphospeciationProcess::keepSpecialization(DagNode *affecter)
 {
     
     if ( affecter == process_age )
@@ -657,7 +657,7 @@ void MorphospeciationProcess::keepSpecialization(DagNode *affecter)
 }
 
 
-double MorphospeciationProcess::lnProbTreeShape(void) const
+double BranchHeterogeneousMorphospeciationProcess::lnProbTreeShape(void) const
 {
     // the birth death divergence times density is derived for a (ranked) unlabeled oriented tree
     // so we convert to a (ranked) labeled non-oriented tree probability by multiplying by 2^{n+m-1} / n!
@@ -675,7 +675,7 @@ double MorphospeciationProcess::lnProbTreeShape(void) const
 /**
  * Redraw the current value. We delegate this to the simulate method.
  */
-void MorphospeciationProcess::redrawValue( void )
+void BranchHeterogeneousMorphospeciationProcess::redrawValue( void )
 {
     size_t attempts = 0;    
     //while (attempts < 100000)
@@ -726,7 +726,7 @@ void MorphospeciationProcess::redrawValue( void )
  * Restore the current value and reset some internal flags.
  * If the root age variable has been restored, then we need to change the root age of the tree too.
  */
-void MorphospeciationProcess::restoreSpecialization(DagNode *affecter)
+void BranchHeterogeneousMorphospeciationProcess::restoreSpecialization(DagNode *affecter)
 {
     
     if ( affecter == process_age )
@@ -765,7 +765,7 @@ void MorphospeciationProcess::restoreSpecialization(DagNode *affecter)
 }
 
 
-void MorphospeciationProcess::setNumberOfTimeSlices( double n )
+void BranchHeterogeneousMorphospeciationProcess::setNumberOfTimeSlices( double n )
 {
     
     NUM_TIME_SLICES = n;
@@ -774,7 +774,7 @@ void MorphospeciationProcess::setNumberOfTimeSlices( double n )
 }
 
 
-void MorphospeciationProcess::setSiteRates(const TypedDagNode< RbVector< double > > *r)
+void BranchHeterogeneousMorphospeciationProcess::setSiteRates(const TypedDagNode< RbVector< double > > *r)
 {
 
     // remove the old parameter first
@@ -815,7 +815,7 @@ void MorphospeciationProcess::setSiteRates(const TypedDagNode< RbVector< double 
 /**
  * Set the current value.
  */
-void MorphospeciationProcess::setValue(Tree *v, bool f )
+void BranchHeterogeneousMorphospeciationProcess::setValue(Tree *v, bool f )
 {
     if (v->isBinary() == false)
     {
@@ -867,7 +867,7 @@ void MorphospeciationProcess::setValue(Tree *v, bool f )
 /**
  *
  */
-bool MorphospeciationProcess::simulateTree( size_t attempts )
+bool BranchHeterogeneousMorphospeciationProcess::simulateTree( size_t attempts )
 {
 
     if ( use_origin == true && condition_on_num_tips == false )
@@ -1405,7 +1405,7 @@ bool MorphospeciationProcess::simulateTree( size_t attempts )
  * \param[in]    oldP      Pointer to the old parameter.
  * \param[in]    newP      Pointer to the new parameter.
  */
-void MorphospeciationProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+void BranchHeterogeneousMorphospeciationProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if ( oldP == process_age )
@@ -1444,7 +1444,7 @@ void MorphospeciationProcess::swapParameterInternal(const DagNode *oldP, const D
  * Touch the current value and reset some internal flags.
  * If the root age variable has been restored, then we need to change the root age of the tree too.
  */
-void MorphospeciationProcess::touchSpecialization(DagNode *affecter, bool touchAll)
+void BranchHeterogeneousMorphospeciationProcess::touchSpecialization(DagNode *affecter, bool touchAll)
 {
     
     if ( affecter == process_age )
@@ -1482,7 +1482,7 @@ void MorphospeciationProcess::touchSpecialization(DagNode *affecter, bool touchA
 }
 
 
-void MorphospeciationProcess::updateTransitionProbabilities(size_t node_idx)
+void BranchHeterogeneousMorphospeciationProcess::updateTransitionProbabilities(size_t node_idx)
 {
     const TopologyNode* node = this->value->getNodes()[node_idx];
 
@@ -1516,13 +1516,11 @@ void MorphospeciationProcess::updateTransitionProbabilities(size_t node_idx)
 /**
  * Wrapper function for the ODE time stepper function.
  */
-void MorphospeciationProcess::numericallyIntegrateProcess(double begin_age, double end_age, double rate, state_type &transition_probs) const
+void BranchHeterogeneousMorphospeciationProcess::numericallyIntegrateProcess(double begin_age, double end_age, double rate, state_type &transition_probs) const
 {
-    Morphospeciation_ODE ode = Morphospeciation_ODE( this->num_sites, this->num_states, lambda->getValue(), lambda_a->getValue(), mu->getValue(), psi->getValue(), rho->getValue(), rate);
-
     //    double dt = root_age->getValue() / NUM_TIME_SLICES * 10;
     typedef boost::numeric::odeint::runge_kutta_dopri5< state_type > stepper_type;
-    boost::numeric::odeint::integrate_adaptive( make_controlled( 1E-7, 1E-7, stepper_type() ) , ode , transition_probs, begin_age , end_age , dt );
+    boost::numeric::odeint::integrate_adaptive( make_controlled( 1E-7, 1E-7, stepper_type() ) , *this , transition_probs, begin_age , end_age , dt );
 
     // catch negative extinction probabilities that can result from
     // rounding errors in the ODE stepper
@@ -1537,16 +1535,83 @@ void MorphospeciationProcess::numericallyIntegrateProcess(double begin_age, doub
 }
 
 
+void BranchHeterogeneousMorphospeciationProcess::operator()(const state_type &x, state_type &dxdt, const double t)
+{
+    // catch negative extinction probabilities that can result from
+    // rounding errors in the ODE stepper
+    state_type safe_x = x;
+    for (size_t i = 0; i < num_states; ++i)
+    {
+        safe_x[i] = ( x[i] < 0.0 ? 0.0 : x[i] );
+    }
+
+    double age = 0.0;
+    for (size_t i = 0; i < num_states; ++i)
+    {
+
+        // no event
+        double no_event_rate = lambda->getValue() + lambda_a->getValue() + mu->getValue() + psi->getValue();
+
+        dxdt[i] = - no_event_rate * safe_x[i];
+
+        dxdt[i] += lambda->getValue() * p(t) * safe_x[i];
+
+        // anagenetic state change
+        for (size_t j = 0; j < num_states; ++j)
+        {
+            double total = 0.0;
+
+            if ( i != j )
+            {
+                total += safe_x[j];
+            }
+
+            dxdt[i] += total * (lambda->getValue() * p(t) + lambda_a->getValue()) / double(num_states - 1);
+        }
+
+        dxdt[i] /= double(num_sites);
+
+    } // end for num_states
+
+}
+
+
+/**
+ * p(t)
+ */
+double BranchHeterogeneousMorphospeciationProcess::p( double dt ) const
+{
+    if ( dt == 0) return 1.0;
+
+    // get the parameters
+    double b = lambda->getValue();
+    double d = mu->getValue();
+    double f = psi->getValue();
+    double r = rho->getValue();
+
+    double diff = b - d - f;
+
+    double A = sqrt( diff*diff + 4.0*b*f);
+    double B = - (diff - 2 * b * r) / A;
+
+    double ln_e = -A*dt;
+
+    double tmp = (1.0 + B) + exp(ln_e)*(1.0 - B);
+
+    return (b + d + f - A * ((1.0+B)-exp(ln_e)*(1.0-B))/tmp)/(2.0*b);
+}
+
+
 /**
  * Resize various vectors depending on the current number of nodes.
  */
-void MorphospeciationProcess::resizeVectors()
+void BranchHeterogeneousMorphospeciationProcess::resizeVectors()
 {
     size_t num_nodes = value->getNumberOfNodes();
 
     active_likelihood = std::vector<bool>(num_nodes, false);
     changed_nodes = std::vector<bool>(num_nodes, false);
     dirty_nodes = std::vector<bool>(num_nodes, true);
-    node_partial_likelihoods = std::vector<std::vector<std::vector<double> > >(num_nodes, std::vector<std::vector<double> >(2,std::vector<double>(2*num_states,0)));
-    scaling_factors = std::vector<std::vector<std::vector<double> > >(2, std::vector<double>(num_nodes, std::vector<double>(num_sites, 0.0) ) );
+    node_partial_likelihoods = std::vector<std::vector<std::vector<std::vector<std::vector<double> > > > >(num_nodes, std::vector<std::vector<std::vector<std::vector<double> > > >(2, std::vector<std::vector<std::vector<double> > >(num_site_rates, std::vector<std::vector<double> >(num_sites, std::vector<double>(num_states, 0.0)))));
+    scaling_factors = std::vector<std::vector<std::vector<double> > >(num_nodes, std::vector<double>(2, std::vector<double>(num_sites, 0.0) ) );
 }

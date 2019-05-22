@@ -53,6 +53,8 @@ namespace RevBayesCore {
         double                                          getIntervalTime( size_t index ) const;
         double                                          getSpeciationRate( size_t index ) const;
 
+        size_t                                          l(double t) const;                                     //!< Find the index so that times[index-1] < t < times[index]
+
     protected:
         virtual void                                    updateStartEndTimes() const = 0;
         virtual double                                  computeLnProbabilityRanges() const;
@@ -61,7 +63,6 @@ namespace RevBayesCore {
         void                                            swapParameterInternal(const DagNode *oldP, const DagNode *newP);                //!< Swap a parameter
 
         // helper functions
-        size_t                                          l(double t) const;                                     //!< Find the index so that times[index-1] < t < times[index]
         double                                          p(size_t i, double t) const;
         virtual double                                  q(size_t i, double t, bool tilde = false) const;
         virtual double                                  integrateQ(size_t i, double t) const;

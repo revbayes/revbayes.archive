@@ -1,5 +1,5 @@
-#ifndef MorphospeciationProcess_H
-#define MorphospeciationProcess_H
+#ifndef BranchHeterogeneousMorphospeciationProcess_H
+#define BranchHeterogeneousMorphospeciationProcess_H
 
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "TreeDiscreteCharacterData.h"
@@ -13,6 +13,7 @@
 #include "RevVariable.h"
 #include "RlString.h"
 
+typedef std::vector< double > state_type;
 
 #include <vector>
 
@@ -28,10 +29,10 @@ namespace RevBayesCore {
      * Will Freyman 6/22/16
      *
      */
-    class MorphospeciationProcess : public TypedDistribution<Tree>, public TreeChangeEventListener, public MemberObject< RbVector<double> > {
+    class BranchHeterogeneousMorphospeciationProcess : public TypedDistribution<Tree>, public TreeChangeEventListener, public MemberObject< RbVector<double> > {
         
     public:
-        MorphospeciationProcess(const TypedDagNode<double> *root,
+        BranchHeterogeneousMorphospeciationProcess(const TypedDagNode<double> *root,
                                   const TypedDagNode<double> *asym,
                                   const TypedDagNode<double> *ana,
                                   const TypedDagNode<double> *ext,
@@ -51,8 +52,11 @@ namespace RevBayesCore {
                                   bool condition_on_tree);
         
         // pure virtual member functions
-        virtual MorphospeciationProcess*                                clone(void) const;
-        virtual                                                         ~MorphospeciationProcess(void);                                                                     //!< Virtual destructor
+        virtual BranchHeterogeneousMorphospeciationProcess*             clone(void) const;
+        virtual                                                         ~BranchHeterogeneousMorphospeciationProcess(void);                                                                     //!< Virtual destructor
+
+        void                                                            operator() ( const state_type &x , state_type &dxdt , const double t );
+        double                                                          p( double t ) const;                //!< p(t)
 
         double                                                          computeLnProbability(void);
         void                                                            fireTreeChangeEvent(const TopologyNode &n, const unsigned& m=0);                                    //!< The tree has changed and we want to know which part.
