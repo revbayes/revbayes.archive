@@ -12,9 +12,9 @@ namespace RevBayesCore {
     class Taxon;
     
     /**
-     * @brief Piecewise-constant fossilized birth-death process with serially sampled fossils.
+     * @brief Piecewise-constant morphospeciation process with serially sampled fossils.
      *
-     * The piecewise-constant birth-death process has constant rates for each time interval.
+     * The piecewise-constant morphospeciation process has constant rates for each time interval.
      * At the end of each time interval there may be an abrupt rate-shift (jump) for each
      * of the rates. Additionally, there may be sampling at the end of each interval.
      * Finally, fossils are sampled with rate psi, the others (fossils and extant taxa) are
@@ -22,11 +22,6 @@ namespace RevBayesCore {
      *
      * We assume that the rate vectors have one more element than the rate-change vectors.
      * Thus, one rate-change means always two interval, two rate-changes three interval, and so on.
-     *
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Walker Pett)
-     * @since 2014-03-18, version 1.0
      *
      */
     class PiecewiseConstantMorphospeciationProcess : public PiecewiseConstantFossilizedBirthDeathProcess {

@@ -22,11 +22,6 @@ namespace RevBayesCore {
      * We assume that the rate vectors have one more element than the rate-change vectors.
      * Thus, one rate-change means always two interval, two rate-changes three interval, and so on.
      *
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Walker Pett)
-     * @since 2014-03-18, version 1.0
-     *
      */
     class PiecewiseConstantFossilizedBirthDeathProcess : public AbstractBirthDeathProcess, public AbstractPiecewiseConstantFossilizedRangeProcess {
         
