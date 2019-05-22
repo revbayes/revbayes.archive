@@ -29,7 +29,7 @@ mingw64-x86_64-pango1.0                 1.40.14-1
 Notes about the versions:
 
 Boost and CMake:
-It's important that the version of Boost that you use be supported by the version of CMake that you use. At the time this was written CMake 3.6 was the stable version in Cygwin, so mingw64-x86_64-boost had to be downgraded to 1.60.0-2
+It's important that the version of Boost that you use be supported by the version of CMake that you use. At the time this was written (RevBayes v1.0.11) CMake 3.6 was the stable version in Cygwin, so mingw64-x86_64-boost had to be downgraded to 1.60.0-2
 
 https://stackoverflow.com/questions/42123509/cmake-finds-boost-but-the-imported-targets-not-available-for-boost-version
 
@@ -51,3 +51,42 @@ cd projects/cmake
 bash build-win.sh
 or the RevStudio version
 bash build-win.sh -cmd true 
+
+IIII. Library whack-a-mole
+
+When you try to run the executable you will likely get an error about missing libraries. 
+
+Make a new directory and put the executable in it. 
+
+Then find the library from the error message in /usr/x86_64-w64-mingw32/sys-root/mingw/include/ and copy it to the directory you put the exectuable in. Repeat this until you stop getting error messages. 
+
+At the time this was written (RevBayes v1.0.11), this consisted of:
+
+iconv.dll
+libatk-1.0-0.dll
+libbz2-1.dll
+libcairo-2.dll
+libexpat-1.dll
+libffi-6.dll
+libfontconfig-1.dll
+libfreetype-6.dll
+libgcc_s_seh-1.dll
+libgdk_pixbuf-2.0-0.dll
+libgdk-win32-2.0-0.dll
+libgio-2.0-0.dll
+libglib-2.0-0.dll
+libgmodule-2.0-0.dll
+libgobject-2.0-0.dll
+libgtk-win32-2.0-0.dll
+libharfbuzz-0.dll
+libintl-8.dll
+libpango-1.0-0.dll
+libpangocairo-1.0-0.dll
+libpangoft2-1.0-0.dll
+libpangowin32-1.0-0.dll
+libpcre-1.dll
+libpixman-1-0.dll
+libpng16-16.dll
+libstdc++-6.dll
+libwinpthread-1.dll
+zlib1.dll
