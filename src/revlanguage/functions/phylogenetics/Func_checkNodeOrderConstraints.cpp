@@ -49,7 +49,7 @@ RevBayesCore::TypedFunction<RevBayesCore::Boolean>* Func_checkNodeOrderConstrain
         RevBayesCore::CheckNodeOrderConstraintsFunction* f = new RevBayesCore::CheckNodeOrderConstraintsFunction( tau, c );
         return f;
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         std::cerr << e.getMessage() << std::endl;
     }

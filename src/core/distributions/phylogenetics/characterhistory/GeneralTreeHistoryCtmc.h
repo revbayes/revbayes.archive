@@ -216,7 +216,10 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeRootLikelihood(con
     std::vector<double> rf = getRootFrequencies();
     for (size_t i = 0; i < counts.size(); i++)
     {
-        lnP += counts[i] * log( rf[i] );
+        // skip unused states
+        if (counts[i] != 0) {
+            lnP += counts[i] * log( rf[i] );
+        }
     }
 
     return lnP;

@@ -90,7 +90,7 @@ RevPtr<RevVariable> MemberProcedure::execute( void )
             the_node->touch();
         }
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         // we do nothing ...
     }

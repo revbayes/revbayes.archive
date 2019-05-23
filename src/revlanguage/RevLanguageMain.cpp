@@ -34,7 +34,7 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
     {
         RevLanguage::ModuleSystem::getModuleSystem().loadModules( RbSettings::userSettings().getModuleDir() );
     }    
-    catch ( RbException e )
+    catch (RbException &e)
     {
         std::cout << e.getMessage() << std::endl;
     }

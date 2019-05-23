@@ -250,7 +250,7 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateContent( Environment& env, boo
             
             delete f;
         }
-        catch (RbException e)
+        catch (RbException &e)
         {
             // We are trying to find a member function
         

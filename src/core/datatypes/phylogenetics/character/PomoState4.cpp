@@ -3,6 +3,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "RbMathCombinatorialFunctions.h"
+#include "StringUtilities.h"
 
 #include <assert.h>
 #include <sstream>
@@ -209,7 +210,7 @@ void PomoState4::populateWeightedStatesForMonoallelicState(int id1, int sum) {
     }
   }
   else  {
-    throw RbException( "Pomo string state not correct. We found "+ id1  );
+    throw RbException( "Pomo string state not correct. We found "+ StringUtilities::to_string(id1)  );
   }
 
   for (size_t i =0; i < weights.size(); ++i) {

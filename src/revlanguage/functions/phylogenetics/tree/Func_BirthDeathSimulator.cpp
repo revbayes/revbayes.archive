@@ -246,7 +246,7 @@ RevPtr<RevVariable> Func_BirthDeathSimulator::execute( void )
     double time = static_cast<const RealPos &>( args[arg_index].getVariable()->getRevObject() ).getValue();
     
     // the time tree object (topology + times)
-    RevBayesCore::Tree *my_tree = simulator.simulateTreeConditionTime( time );
+    RevBayesCore::Tree *my_tree = simulator.simulateTreeConditionTime( time, RevBayesCore::BirthDeathForwardSimulator::ROOT );
     
     return new RevVariable( new TimeTree( my_tree ) );
 }

@@ -717,7 +717,7 @@ void UltrametricTreeDistribution::swapParameterInternal( const DagNode *oldP, co
     {
         rate_prior->swapParameter(oldP, newP);
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         
     }
@@ -726,7 +726,7 @@ void UltrametricTreeDistribution::swapParameterInternal( const DagNode *oldP, co
     {
         tree_prior->swapParameter(oldP, newP);
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         
     }

@@ -2,9 +2,8 @@
 #include "DagNode.h"
 #include "Monitor.h"
 #include "Model.h"
-#include "RbFileManager.h"
-
 #include "RbException.h"
+#include "RbFileManager.h"
 #include "RbVersion.h"
 
 using namespace RevBayesCore;

@@ -1,0 +1,1 @@
+../cmake/generate_version_number.sh

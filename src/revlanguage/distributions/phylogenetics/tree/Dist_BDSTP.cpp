@@ -127,13 +127,13 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_BDSTP::createDistribution( void ) 
         RevBayesCore::DagNode* t   = r->getRevObject().getDagNode();
         // birth burst
         RevBayesCore::DagNode* b_e = NULL;
-        if (Lambda->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ))
+        if (Lambda->getRevObject().isType( ModelVector<Probability>::getClassTypeSpec() ))
         {
           b_e = Lambda->getRevObject().getDagNode();
         }
         // death burst (mass extinction)
         RevBayesCore::DagNode* d_e = NULL;
-        if (Lambda->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ))
+        if (Mu->getRevObject().isType( ModelVector<Probability>::getClassTypeSpec() ))
         {
           d_e = Mu->getRevObject().getDagNode();
         }
@@ -268,8 +268,8 @@ const MemberRules& Dist_BDSTP::getParameterRules(void) const
 
         std::vector<TypeSpec> other_event_paramTypes;
         other_event_paramTypes.push_back( ModelVector<Probability>::getClassTypeSpec() );
-        dist_member_rules.push_back( new ArgumentRule( "Lambda",  other_event_paramTypes, "The episodic death burst (mass extinction) survival probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        dist_member_rules.push_back( new ArgumentRule( "Mu",      other_event_paramTypes, "The episodic birth burst probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "Lambda",  other_event_paramTypes, "The episodic birth burst probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "Mu",      other_event_paramTypes, "The episodic death burst (mass extinction) survival probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         std::vector<TypeSpec> event_sampling_paramTypes;
         event_sampling_paramTypes.push_back( Probability::getClassTypeSpec() );

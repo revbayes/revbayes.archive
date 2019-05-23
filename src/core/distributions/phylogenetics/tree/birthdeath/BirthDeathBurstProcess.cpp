@@ -171,10 +171,10 @@ double BirthDeathBurstProcess::computeLnProbabilityTimes( void ) const
     // add the log probability for the burst event
     if ( num_lineages_burst_at_event > 0 )
     {
-        lnProbTimes += log(burst_prob)     * num_lineages_burst_at_event;
+        lnProbTimes += log(burst_prob) * num_lineages_burst_at_event;
     }
     
-    lnProbTimes += log( pow(1.0-burst_prob, num_lineages_alive_at_burst) + pow(burst_prob*pZero(burst_time), num_lineages_alive_at_burst) );
+    lnProbTimes += log( pow(1.0-burst_prob, num_lineages_alive_at_burst-num_lineages_burst_at_event) + pow(2*burst_prob*pZero(burst_time), num_lineages_alive_at_burst-num_lineages_burst_at_event) );
     
     // condition on survival
     if ( condition == "survival")
@@ -419,17 +419,30 @@ double BirthDeathBurstProcess::lnQ(double t) const
     }
     else
     {
-        double B_tmp = ((1.0 - 2.0*(1.0-sampling)) * birth + death ) /  A;
-        double E_tmp = birth + death - A * (1.0 + B_tmp - exp(-A*t_b) * (1.0-B_tmp)) / (1.0+B_tmp+exp(-A*t_b)*(1.0-B_tmp));
-        E_tmp /= (2*birth);
-        B = ((1.0 - 2.0*((1.0-burst)*E_tmp+burst*E_tmp*E_tmp)) * birth + death ) /  A;
-        B = B_tmp;
+        double B_previous = ((1.0 - 2.0*(1.0-sampling)) * birth + death ) /  A;
+        double E_previous = birth + death - A * (1.0 + B_previous - exp(-A*t_b) * (1.0-B_previous)) / (1.0+B_previous+exp(-A*t_b)*(1.0-B_previous));
+        E_previous /= (2*birth);
+
+        B = ((1.0 - 2.0*((1.0-burst)*E_previous+burst*E_previous*E_previous)) * birth + death ) /  A;
+//        B = B_tmp;
 //        std::cerr << B << " - " << B_tmp << std::endl;
         
-        D = 4.0*exp(-A*t);
-        double tmp = 1.0 + B + exp(-A*t)*(1.0-B);
-        D /= (tmp*tmp);
+//        D = 4.0*exp(-A*t);
+//        double tmp = 1.0 + B + exp(-A*t)*(1.0-B);
+//        D /= (tmp*tmp);
         
+        double lnD_previous = 2*RbConstants::LN2 + (-A*t_b);
+        lnD_previous -= 2 * log(1 + B_previous + exp(-A * t_b) * (1 - B_previous));
+        
+        double this_lnD = lnD_previous;
+        this_lnD += log(1-burst+2*burst*E_previous);
+
+        // D <- D * 4 * exp(-A*(next_t-current_t))
+        // D <- D / ( 1+B+exp(-A*(next_t-current_t))*(1-B) )^2
+        this_lnD += 2*RbConstants::LN2 + (-A * (t - t_b));
+        this_lnD -= 2 * log(1 + B + exp(-A * (t - t_b)) * (1 - B));
+
+        return this_lnD;
 //        double D_tb_a = 4.0*exp(-A*t_b);
 //        double tmp_tb_a = 1.0 + B + exp(-A*t_b)*(1.0-B);
 //        D_tb_a /= (tmp_tb_a*tmp_tb_a);

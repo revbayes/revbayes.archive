@@ -112,7 +112,7 @@ double BetaProbabilityProposal::propose( double &value )
         
         ln_Hastins_ratio = backward - forward;
     }
-    catch (RbException e)
+	catch (RbException &e)
     {
         ln_Hastins_ratio = RbConstants::Double::neginf;
     }

@@ -207,9 +207,6 @@ void HSRFOrder2HyperpriorsGibbsMove::performGibbsMove( void )
 {
 //    std::cout << "Hello from HSRFOrder2HyperpriorsGibbsMove::performGibbsMove( void )" << std::endl;
 
-    // Get random number generator
-    RandomNumberGenerator* rng = GLOBAL_RNG;
-
     // get global scale
     double eta_squared = std::pow(global_scale->getValue(),2.0);
 
