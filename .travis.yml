@@ -6,30 +6,6 @@ matrix:
   include:
     - os: linux
       dist: xenial
-      addons:
-        apt:
-          sources:
-          - sourceline: 'ppa:mhier/libboost-latest'
-          packages:
-          - g++-5
-          - pandoc
-          - boost1.67
-    - os: linux
-      dist: xenial
-      env:
-        - CXX_COMPILER=/usr/bin/g++-6
-        - C_COMPILER=/usr/bin/gcc-6
-      addons:
-        apt:
-          sources:
-          - ubuntu-toolchain-r-test
-          - sourceline: 'ppa:mhier/libboost-latest'
-          packages:
-          - g++-6
-          - pandoc
-          - boost1.67
-    - os: linux
-      dist: xenial
       env:
         - CXX_COMPILER=/usr/bin/g++-7
         - C_COMPILER=/usr/bin/gcc-7
