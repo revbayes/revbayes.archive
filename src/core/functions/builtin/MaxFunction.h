@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the maximum function for Vectors.
- *
- * @brief Declaration of the deterministic variable for maximum.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-07-06, version 1.0
- * @interface TypedDagNode
- *
- * $Id$
- */
-
-
-
 #ifndef MaxFunction_H
 #define MaxFunction_H
 
@@ -27,6 +8,11 @@
 #include <vector>
 
 namespace RevBayesCore {
+    
+    /**
+     * @brief Declaration of the deterministic variable for maximum.
+     * The function returns the maximum value within a vector or matrix of doubles
+     */
     
     class MaxFunction : public TypedFunction<double> {
         
@@ -40,11 +26,12 @@ namespace RevBayesCore {
         void                                                update(void);
         
     protected:
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Implementation of swaping parameters
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Implementation of swapping parameters
         
     private:
         
         // members
+        //!<
         bool                                                matrix;
         const DagNode*                                      vals;
         

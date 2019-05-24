@@ -13,11 +13,11 @@ using namespace RevBayesCore;
  * Default constructor.
  * The default constructor does nothing except allocating the object.
  *
- * \param[in]   x    The startiing value for the process
- * \param[in]   t    The equilibrium value of the process
- * \param[in]   a    The strength of the spring
- * \param[in]   s    The standard deviation 
- * \param[in]   ti   The time during which the process is applied
+ * @param   x    The starting value for the process
+ * @param   t    The equilibrium value of the process
+ * @param   a    The strength of the spring
+ * @param   s    The standard deviation
+ * @param   ti   The time during which the process is applied
  */
 OrnsteinUhlenbeckProcess::OrnsteinUhlenbeckProcess(const TypedDagNode<double> *x, const TypedDagNode<double> *t, const TypedDagNode<double> *a, const TypedDagNode<double> *s, const TypedDagNode<double> *ti) : ContinuousDistribution( new double( 0.0 ) ),
     x0( x ),
@@ -117,6 +117,8 @@ double OrnsteinUhlenbeckProcess::getMin( void ) const
  * \param[in]   p   The probability for which the quantile should be computed.
  *
  * \return    The quantile.
+ *
+ * @todo This is not yet implemented
  */
 double OrnsteinUhlenbeckProcess::quantile(double p) const
 {
