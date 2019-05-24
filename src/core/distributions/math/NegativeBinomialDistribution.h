@@ -7,17 +7,13 @@
 namespace RevBayesCore {
     
     /**
-     * @brief Binomial distribution class.
+     * @brief NegativeBinomial distribution class.
      *
-     * The Binomial distribution represents a family of distributions defined
-     * on the natural number. The Binomial distribution has 2 parameters:
-     *   n .. the number of trials
+     * The Negative Binomial distribution represents a family of distributions defined
+     * on the natural number. The distribution represents the probability of a given number of successes before n failures  The Binomial distribution has 2 parameters:
+     *   r .. the number of trials
      *   p .. the probability of success
      * Instances of this class can be associated to stochastic variables.
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2013-04-12, version 1.0
      *
      */
     class NegativeBinomialDistribution : public TypedDistribution<long> {
