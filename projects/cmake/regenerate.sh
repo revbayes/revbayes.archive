@@ -164,8 +164,8 @@ fi
 
 if [ "$travis" = "true" ]
 then
-    echo 'set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g0")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g0")
+    echo 'set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g0 -O2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g0 -O2")
 ' >> "$HERE/CMakeLists.txt"
 fi
 
