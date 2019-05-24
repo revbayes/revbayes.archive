@@ -303,6 +303,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
             lnProbTimes += ln_sampling_event_prob;
         }
     }
+    // std::cout << "computed (ii); lnProbability = " << lnProbTimes << std::endl;
 
     // add the serial tip age terms (iii)
     for (size_t i = 0; i < serial_tip_ages.size(); ++i)
@@ -422,7 +423,8 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
 
             lnProbTimes -= lnD(interval_t_o,t_o);
             lnProbTimes += lnD(interval_t_end,t_end);
-
+            // std::cout << "    computing (vii); t_o = " << t_o << "; t_end = " << t_end << "; lnD(interval_t_o,t_o) = " << lnD(interval_t_o,t_o) << "; lnD(interval_t_end,t_end) = " << lnD(interval_t_end,t_end) << std::endl;
+            // std::cout << "lnProbTimes is now " << lnProbTimes << std::endl;
         }
     }
 
@@ -607,7 +609,8 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnD(size_t i, double t) const
     if ( t < DBL_EPSILON )
     {
         // TODO: this can't be right, if phi_event[0] = 0 this will blow up
-        return log(phi_event[0]);
+        // return log(phi_event[0]);
+        return phi_event[0] <= DBL_EPSILON ? 0.0 : log(phi_event[0]);
     }
     else
     {
@@ -617,15 +620,19 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnD(size_t i, double t) const
         {
             // D <- D * (1-this_p_s) * (1-this_p_d) * (1-this_p_b + 2*this_p_b*E)
             this_lnD_i = lnD_previous[i];
+            // std::cout << "this_lnD_i is now " << this_lnD_i << std::endl;
             this_lnD_i += log(1.0-phi_event[i]) + log(1.0-mu_event[i]) + log(1-lambda_event[i]+2*lambda_event[i]*E_previous[i]);
+            // std::cout << "this_lnD_i is now " << this_lnD_i << std::endl;
         }
         else
         {
-            this_lnD_i = log(phi_event[0]);
+            this_lnD_i = phi_event[0] <= DBL_EPSILON ? 0.0 : log(phi_event[0]);
+            // std::cout << "this_lnD_i is now " << this_lnD_i << std::endl;
         }
         // D <- D * 4 * exp(-A*(next_t-current_t))
         // D <- D / ( 1+B+exp(-A*(next_t-current_t))*(1-B) )^2
         this_lnD_i += 2*RbConstants::LN2 + (-A_i[i] * (t - s));
+        // std::cout << "this_lnD_i is now " << this_lnD_i << std::endl;
         this_lnD_i -= 2 * log(1 + B_i[i] + exp(-A_i[i] * (t - s)) * (1 - B_i[i]));
 
         return this_lnD_i;
@@ -672,7 +679,7 @@ size_t EpisodicBirthDeathSamplingTreatmentProcess::findIndex(double t) const
             return i;
         }
     }
-    
+
     return timeline.size() - 1;
 
     // // Binary search for interval because std::upper_bound isn't cooperating
@@ -914,7 +921,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void ) 
     for (size_t i=1; i<timeline.size(); ++i)
     {
         t = timeline[i];
-        
+
         // first, we need to compute E and D at the end of the previous interval
         E_previous[i] = E(i-1, t);
         lnD_previous[i] = lnD(i-1, t);
