@@ -59,18 +59,18 @@ then
 
     if [ "$mac" = "true" ]
     then
-        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
+        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization
         ./b2 link=static
     elif [ "$win" = "true" ]
     then
-        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals --with-toolset=mingw
+        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization --with-toolset=mingw
         ./b2 link=static
     elif [ "$gentoo" = "true" ]
     then
-        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
+        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization
         ./b2 link=static --ignore-site-config
     else
-        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
+        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization
         ./b2 link=static
     fi
 
@@ -183,7 +183,6 @@ find_package(Boost
 COMPONENTS regex
 program_options
 thread
-signals
 system
 filesystem
 date_time
