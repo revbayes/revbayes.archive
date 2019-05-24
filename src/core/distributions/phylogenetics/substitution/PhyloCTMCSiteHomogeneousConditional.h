@@ -948,7 +948,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::updateCorrecti
         // start by filling the likelihood vector for the children of the root
         if ( node.isTip() )
         {
-            this->updateTransitionProbabilities(nodeIndex, node.getBranchLength() );
+            this->updateTransitionProbabilities(nodeIndex );
             computeTipCorrection( node, nodeIndex );
         }
         else if ( node.getNumberOfChildren() == 2 ) // rooted trees have two children for the root
@@ -964,7 +964,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::updateCorrecti
                 computeRootCorrection( nodeIndex, leftIndex, rightIndex );
             else
             {
-                this->updateTransitionProbabilities(nodeIndex, node.getBranchLength() );
+                this->updateTransitionProbabilities( nodeIndex );
                 computeInternalNodeCorrection( node, nodeIndex, leftIndex, rightIndex );
             }
 
@@ -985,7 +985,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::updateCorrecti
                 computeRootCorrection( nodeIndex, leftIndex, rightIndex, middleIndex );
             else
             {
-                this->updateTransitionProbabilities(nodeIndex, node.getBranchLength() );
+                this->updateTransitionProbabilities( nodeIndex );
                 computeInternalNodeCorrection( node, nodeIndex, leftIndex, rightIndex, middleIndex );
             }
 
@@ -1156,7 +1156,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::simulate( cons
         const TopologyNode &child = *(*it);
 
         // update the transition probability matrix
-        this->updateTransitionProbabilities( child.getIndex(), child.getBranchLength() );
+        this->updateTransitionProbabilities( child.getIndex() );
 
         unsigned long cp = parentState.getStateIndex();
 
