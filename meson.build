@@ -40,7 +40,7 @@ endif
 
 boost_modules = [ 'regex',
                   'program_options',
-                  'thread','signals',
+                  'thread',
                   'system',
                   'filesystem',
                   'date_time',
@@ -67,7 +67,6 @@ endif
 
 ####
 subdir('src')
-subdir('tests')
 
 ############# executables #################
 core = static_library('rb-core',
@@ -117,4 +116,5 @@ if get_option('studio')
 
 endif
 
+subdir('tests')
 

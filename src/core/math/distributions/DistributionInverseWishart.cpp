@@ -50,7 +50,7 @@ double RbStatistics::InverseWishart::pdf(const MatrixReal &sigma0, size_t df, co
 double RbStatistics::InverseWishart::lnPdf(const MatrixReal &sigma0, size_t df, const MatrixReal &z)
 {
     
-    if ( !z.isPositive() )
+    if ( !z.isPositiveDefinite() )
     {
         return RbConstants::Double::neginf;
     }
@@ -190,7 +190,7 @@ double RbStatistics::InverseWishart::lnPdf(const std::vector<double>& kappa, siz
     
     size_t dim = z.getDim();
     
-    if ( z.isPositive() == false )
+    if ( z.isPositiveDefinite() == false )
     {
         return RbConstants::Double::neginf;
     }
@@ -295,7 +295,7 @@ double RbStatistics::InverseWishart::lnPdf(double kappa, size_t df, const Matrix
     
     size_t dim = z.getDim();
     
-    if ( !z.isPositive() )
+    if ( !z.isPositiveDefinite() )
     {
         return RbConstants::Double::neginf;
     }

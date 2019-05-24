@@ -78,12 +78,12 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
         parent_node_index = summary_nodes[node_index]->getParent().getIndex();
     }
     
-    size_t sample_clade_index;
-    size_t parent_sample_clade_index;
-    AncestralStateTrace* ancestral_state_trace_end_state;
-    AncestralStateTrace* ancestral_state_trace_start_1;
-    AncestralStateTrace* ancestral_state_trace_start_2;
-    AncestralStateTrace* parent_ancestral_state_trace;
+    size_t sample_clade_index = -1;
+    size_t parent_sample_clade_index = -1;
+    AncestralStateTrace* ancestral_state_trace_end_state = NULL;
+    AncestralStateTrace* ancestral_state_trace_start_1 = NULL;
+    AncestralStateTrace* ancestral_state_trace_start_2 = NULL;
+    AncestralStateTrace* parent_ancestral_state_trace = NULL;
     bool trace_found_end_state = false;
     bool trace_found_start_1 = false;
     bool trace_found_start_2 = false;
@@ -256,6 +256,9 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
         std::string sampled_parent_state = "";
         if ( conditional == true && root == false && parent_trace_found == true )
         {
+            if (not parent_ancestral_state_trace)
+                throw RbException("Can't find parent_ancestral_state_trace");
+
             const std::vector<std::string>& parent_ancestral_state_vector = parent_ancestral_state_trace->getValues();
             sampled_parent_state = getSiteState( parent_ancestral_state_vector[j], site );
             
@@ -964,8 +967,8 @@ void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node
     size_t sample_clade_index;
     bool trace_found = false;
     bool parent_trace_found = false;
-    AncestralStateTrace* ancestralstate_trace;
-    AncestralStateTrace* parent_trace;
+    AncestralStateTrace* ancestralstate_trace = NULL;
+    AncestralStateTrace* parent_trace = NULL;
     
     std::vector< std::vector< std::pair<size_t, double> > > branch_maps_all = std::vector< std::vector< std::pair<size_t, double> > >();
     std::vector< std::vector< std::pair<size_t, double> > > branch_maps_conditional = std::vector< std::vector< std::pair<size_t, double> > >();
@@ -1031,6 +1034,7 @@ void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node
                     }
                 }
             }
+            assert(parent_trace);
             
             // get the sampled character history for the parent for this iteration
             const std::vector<std::string>& parent_vector = parent_trace->getValues();
@@ -1060,6 +1064,7 @@ void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node
                 }
             }
         }
+        assert(ancestralstate_trace);
         
         // get the sampled character history for this iteration
         const std::vector<std::string>& ancestralstate_vector = ancestralstate_trace->getValues();
@@ -1428,7 +1433,7 @@ void JointAncestralStateTrace::summarizeCharacterMaps(Tree input_tree, std::stri
     {
         size_t sample_clade_index = i;
         trace_found = false;
-        AncestralStateTrace* character_map_trace;
+        AncestralStateTrace* character_map_trace = NULL;
         std::vector<std::string> ancestralstate_vector;
         
         // loop through all the stochastic character map samples
@@ -1653,6 +1658,8 @@ void JointAncestralStateTrace::summarizeCharacterMaps(Tree input_tree, std::stri
                         break;
                     }
                 }
+                if (not character_map_trace)
+                    throw RbException("Couldn't find character_map_trace!");
                 
                 // get the sampled character history for the child for this iteration
                 const std::vector<std::string>& ancestralstate_vector_child = character_map_trace->getValues();

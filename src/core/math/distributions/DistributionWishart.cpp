@@ -57,7 +57,7 @@ double RbStatistics::Wishart::lnPdf(const MatrixReal &omega0, size_t df, const M
 //    omega0.update();
 //    z.update();
     
-    if (! z.isPositive() )
+    if (! z.isPositiveDefinite() )
     {
          return RbConstants::Double::neginf;
     }
@@ -161,7 +161,7 @@ double RbStatistics::Wishart::lnPdf(double kappa, size_t df, const MatrixReal &z
 //    z.update();
     int dim = int(z.getDim());
     
-    if ( !z.isPositive() )
+    if ( !z.isPositiveDefinite() )
     {
         return RbConstants::Double::neginf;
     }

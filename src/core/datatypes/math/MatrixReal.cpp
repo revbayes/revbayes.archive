@@ -489,17 +489,22 @@ bool MatrixReal::isDiagonal(void) const
 }
 
 
-bool MatrixReal::isPositive( void )  const
+bool MatrixReal::isPositiveDefinite( bool semi )  const
 {
 
     update();
+
+    if ( use_cholesky_decomp )
+    {
+        return semi ? cholesky_decomp->checkPositiveSemidefinite() : cholesky_decomp->checkPositiveDefinite();
+    }
 
     const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
 
     bool pos = true;
     for (size_t i=0; i<n_rows; i++)
     {
-        pos &= (eigenval[i] > 0);
+        pos &= semi ? (eigenval[i] >= 0) : (eigenval[i] > 0);
     }
 
     return pos;

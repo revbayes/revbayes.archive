@@ -153,9 +153,6 @@ const std::string& HSRFUnevenGridHyperpriorsGibbsMove::getMoveName( void ) const
 void HSRFUnevenGridHyperpriorsGibbsMove::performGibbsMove( void )
 {
 //    std::cout << "Hello from HSRFUnevenGridHyperpriorsGibbsMove::performGibbsMove( void )" << std::endl;
-
-    // Get random number generator
-    RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get global scale
     double eta_squared = std::pow(global_scale->getValue(),2.0);

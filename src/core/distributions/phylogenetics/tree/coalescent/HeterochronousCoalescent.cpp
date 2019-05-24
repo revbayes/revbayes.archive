@@ -367,7 +367,7 @@ void HeterochronousCoalescent::swapParameterInternal(const DagNode *oldP, const 
                 // if the statement succeeded and didn't throw an error, then the distribution had this parameter
                 found = true;
             }
-            catch ( RbException e )
+            catch (RbException &e)
             {
                 // do nothing because we actually do not know who had the parameter
             }

@@ -92,9 +92,6 @@ double MirrorMultiplierProposal::doProposal( void )
 {
     ++nTried;
 
-    // Get random number generator
-    RandomNumberGenerator* rng     = GLOBAL_RNG;
-
     double &val = variable->getValue();
 
     // copy value
