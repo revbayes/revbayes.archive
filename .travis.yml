@@ -58,6 +58,20 @@ matrix:
           - boost1.67
     - os: linux
       dist: xenial
+      env:
+        - CXX_COMPILER=/usr/bin/g++-9
+        - C_COMPILER=/usr/bin/gcc-9
+      addons:
+        apt:
+          sources:
+          - ubuntu-toolchain-r-test
+          - sourceline: 'ppa:mhier/libboost-latest'
+          packages:
+          - g++-9
+          - pandoc
+          - boost1.67
+    - os: linux
+      dist: xenial
       compiler: clang++
       env:
         - CXX_COMPILER=/usr/bin/clang++
