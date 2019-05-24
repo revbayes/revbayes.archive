@@ -1,6 +1,7 @@
 #include "RateMatrix_Pomo.h"
 #include "MatrixReal.h"
 #include "RbException.h"
+#include "RbMathCombinatorialFunctions.h"
 #include "TransitionProbabilityMatrix.h"
 
 #include <cmath>
@@ -8,34 +9,33 @@
 
 using namespace RevBayesCore;
 
-/** Construct rate matrix with n states */
-RateMatrix_Pomo::RateMatrix_Pomo(size_t n) : AbstractRateMatrix( n ), N( 10 ), matrixSize( n )
-{
-    std::vector<double> temp (4, 0.0);
-    for (size_t i = 0; i<4 ; ++i)
-    {
-        mu.push_back(temp);
-        s.push_back(1.0);
-    }
-    update();
-}
-
 /** Construct rate matrix with n states, virtual population size, mutation rates, selection coefficients */
-RateMatrix_Pomo::RateMatrix_Pomo(size_t n, const size_t vps, const std::vector<double> &mr, const std::vector<double> &sc) : AbstractRateMatrix( n ), N( vps ), matrixSize( n )
+RateMatrix_Pomo::RateMatrix_Pomo(size_t n, size_t vps, const std::vector<double> &mr, const std::vector<double> &sc) : AbstractRateMatrix( n + size_t(RbMath::kchoose2(n))*(vps-1) ),
+    N( vps ),
+    matrix_size( n + size_t(RbMath::kchoose2(n))*(vps-1) ),
+    num_raw_states( n )
 {
-    std::vector<double> temp (4, 0.0);
-    for (size_t i = 0; i<4 ; ++i)
+    std::vector<double> temp (n, 0.0);
+    for (size_t i = 0; i<n ; ++i)
     {
         mu.push_back(temp);
         s.push_back(1.0);
     }
-    setMutationRates(mr);
-    setSelectionCoefficients(sc);
+    
+    if ( mr.size() > 0 )
+    {
+        setMutationRates(mr);
+    }
+    if ( sc.size() > 0 )
+    {
+        setSelectionCoefficients(sc);
+    }
+    
     update();
 }
 
 /** Construct rate matrix with n states, a matrix of mutation rates, and a vector of selection coefficients */
-RateMatrix_Pomo::RateMatrix_Pomo(size_t n,  const size_t vps, const RateGenerator &mm, const std::vector<double> sc)  : AbstractRateMatrix( n ), N( vps ), matrixSize( n )
+RateMatrix_Pomo::RateMatrix_Pomo(size_t n, size_t vps, const RateGenerator &mm, const std::vector<double> sc)  : AbstractRateMatrix( n ), N( vps ), matrix_size( n )
 {
     std::vector<double> temp (4, 0.0);
     for (size_t i = 0; i<4 ; ++i)
@@ -87,16 +87,16 @@ void RateMatrix_Pomo::buildRateMatrix(void)
     double N2 = 1.0;//(double) (N*N);
     int Nminus1 = (int)N-1;
     double Nminus1d = (double) Nminus1;
-    for (size_t i = 0 ; i < 4; i++) 
+    for (size_t i = 0 ; i < num_raw_states; i++)
     {
         mu[i][i] = 0.0;
     }
     
     // calculate the transition probabilities
-    for (size_t i=0; i< matrixSize; i++)
+    for (size_t i=0; i< matrix_size; i++)
     {
         //The first 4 states are the monomorphic states; we can't directly change from one into another one
-        for (size_t j=0; j< matrixSize; j++) 
+        for (size_t j=0; j< matrix_size; j++)
         {
             (*the_rate_matrix)[i][j] = 0.0;
         }
@@ -288,37 +288,37 @@ void RateMatrix_Pomo::buildRateMatrix(void)
     
     //In the first 4 rows/columns, the diagonal is defined such that the sum by line is 1.
    /* double sum = 0.0;
-    for (size_t i=0; i< matrixSize; i++)
+    for (size_t i=0; i< matrix_size; i++)
     {
         sum += (*the_rate_matrix)[0][i];
     }
     (*the_rate_matrix)[0][0] = 0-sum;
     
     sum = 0.0;
-    for (size_t i=0; i< matrixSize; i++)
+    for (size_t i=0; i< matrix_size; i++)
     {
         sum += (*the_rate_matrix)[1][i];
     }
     (*the_rate_matrix)[1][1] = 0-sum;
     
     sum = 0.0;
-    for (size_t i=0; i< matrixSize; i++)
+    for (size_t i=0; i< matrix_size; i++)
     {
         sum += (*the_rate_matrix)[2][i];
     }
     (*the_rate_matrix)[2][2] = 0-sum;
     
     sum = 0.0;
-    for (size_t i=0; i< matrixSize; i++)
+    for (size_t i=0; i< matrix_size; i++)
     {
         sum += (*the_rate_matrix)[3][i];
     }
     (*the_rate_matrix)[3][3] = 0-sum;*/
     
     /*
-    for (size_t i=0; i< matrixSize; i++)
+    for (size_t i=0; i< matrix_size; i++)
     {
-        for (size_t j=0; j< matrixSize; j++)
+        for (size_t j=0; j< matrix_size; j++)
         {
         (*the_rate_matrix)[i][j] *= (double) N;
         }
@@ -335,7 +335,7 @@ void RateMatrix_Pomo::buildRateMatrix(void)
 
     
     //Then we remove the identity matrix
-  /*  for (size_t i=0; i< matrixSize; i++)
+  /*  for (size_t i=0; i< matrix_size; i++)
     {
         (*the_rate_matrix)[i][i] = (*the_rate_matrix)[i][i] - 1 ;
     }*/
@@ -376,21 +376,21 @@ void RateMatrix_Pomo::computeExponentialMatrixByRepeatedSquaring(double t,  Tran
     //first, multiply the matrix by the right scalar
     //2^10 = 1024
     double tOver2s = t/(1024);
-    for ( size_t i = 0; i < matrixSize; i++ )
+    for ( size_t i = 0; i < matrix_size; i++ )
     {
-        for ( size_t j = 0; j < matrixSize; j++ )
+        for ( size_t j = 0; j < matrix_size; j++ )
         {
             P[i][j] = (*the_rate_matrix)[i][j] * tOver2s; 
         }
     }
     
     //Add the identity matrix:
-     for ( size_t i = 0; i < matrixSize; i++ )
+     for ( size_t i = 0; i < matrix_size; i++ )
      {
          P[i][i] += 1;
      }
      //Now we can do the multiplications
-     TransitionProbabilityMatrix P2 (matrixSize);
+     TransitionProbabilityMatrix P2 (matrix_size);
      squareMatrix (P, P2); //P2 at power 2
      squareMatrix (P2, P); //P at power 4
      squareMatrix (P, P2); //P2 at power 8
@@ -408,12 +408,12 @@ void RateMatrix_Pomo::computeExponentialMatrixByRepeatedSquaring(double t,  Tran
 inline void RateMatrix_Pomo::squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const
 {
     //Could probably use boost::ublas here, for the moment we do it ourselves.
-    for ( size_t i = 0; i < matrixSize; i++ )
+    for ( size_t i = 0; i < matrix_size; i++ )
     {
-        for ( size_t j = 0; j < matrixSize; j++ )
+        for ( size_t j = 0; j < matrix_size; j++ )
         {
             P2.getElement ( i, j ) = 0;
-            for ( size_t k = 0; k < matrixSize; k++ )
+            for ( size_t k = 0; k < matrix_size; k++ )
             {
                 P2.getElement ( i, j ) += P.getElement ( i, k ) * P.getElement ( k, j );
                 
@@ -451,18 +451,19 @@ void RateMatrix_Pomo::update( void )
 void RateMatrix_Pomo::setMutationRates(const std::vector<double>& mr)
 {
 
-    mu[0][1] = mr[0];
-    mu[0][2] = mr[1];
-    mu[0][3] = mr[2];
-    mu[1][0] = mr[3];
-    mu[1][2] = mr[4];
-    mu[1][3] = mr[5];
-    mu[2][0] = mr[6];
-    mu[2][1] = mr[7];
-    mu[2][3] = mr[8];
-    mu[3][0] = mr[9];
-    mu[3][1] = mr[10];
-    mu[3][2] = mr[11];
+    size_t index = 0;
+    for (size_t i=0; i<num_raw_states; ++i)
+    {
+        for (size_t j=0; j<num_raw_states; ++j)
+        {
+            if ( i!=j )
+            {
+                mu[i][j] = mr[index];
+                ++index;
+            }
+        }
+    }
+    
 }
 
 
@@ -471,18 +472,18 @@ void RateMatrix_Pomo::setMutationRates(const RateGenerator& mm)
     
     double age = 0.0;
     double rate = 1.0;
-    mu[0][1] = mm.getRate(0,1,age,rate);
-    mu[0][2] = mm.getRate(0,2,age,rate);
-    mu[0][3] = mm.getRate(0,3,age,rate);
-    mu[1][0] = mm.getRate(1,0,age,rate);
-    mu[1][2] = mm.getRate(1,2,age,rate);
-    mu[1][3] = mm.getRate(1,3,age,rate);
-    mu[2][0] = mm.getRate(2,0,age,rate);
-    mu[2][1] = mm.getRate(2,1,age,rate);
-    mu[2][3] = mm.getRate(2,3,age,rate);
-    mu[3][0] = mm.getRate(3,0,age,rate);
-    mu[3][1] = mm.getRate(3,1,age,rate);
-    mu[3][2] = mm.getRate(3,2,age,rate);
+    
+    for (size_t i=0; i<num_raw_states; ++i)
+    {
+        for (size_t j=0; j<num_raw_states; ++j)
+        {
+            if ( i!=j )
+            {
+                mu[i][j] = mm.getRate(i,j,age,rate);
+            }
+        }
+    }
+    
 }
 
 

@@ -27,7 +27,7 @@ void MethodTable::insertInheritedMethods( const MethodTable& inheritedMethods )
         {
             addFunction( the_function );
         }
-        catch ( RbException )
+        catch (RbException &)
         {
             
         }

@@ -24,7 +24,7 @@
 #	include <dirent.h>
 #   include <unistd.h>
 #   include <windows.h>
-#   include "Shlwapi.h"
+#   include <shlwapi.h>
 #else
 #	include <dirent.h>
 #   include <unistd.h>

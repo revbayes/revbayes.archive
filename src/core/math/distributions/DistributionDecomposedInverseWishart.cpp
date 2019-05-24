@@ -56,7 +56,7 @@ double RbStatistics::DecomposedInverseWishart::lnPdf(double nu, const MatrixReal
 
     size_t k = r.getDim();
     
-    if ( r.isPositive() == false )
+    if ( r.isPositiveDefinite() == false )
         {
         return RbConstants::Double::neginf;
         }

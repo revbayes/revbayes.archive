@@ -1,7 +1,7 @@
 #ifndef ProbabilityMonitor_H
 #define ProbabilityMonitor_H
 
-#include "AbstractFileMonitor.h"
+#include "VariableMonitor.h"
 
 #include <string>
 #include <vector>
@@ -21,7 +21,7 @@ namespace RevBayesCore {
      * @since 2012-06-21, version 1.0
      *
      */
-    class ProbabilityMonitor : public AbstractFileMonitor {
+    class ProbabilityMonitor : public VariableMonitor {
         
     public:
         // Constructors and Destructors

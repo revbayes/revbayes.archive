@@ -49,6 +49,7 @@ namespace RevLanguage {
     private:
         
         TraceTree*                          readTrees(const std::vector<std::string> &fns, const std::string &d, bool clock, long thin);
+        TraceTree*                          readTreesNexus(const std::vector<std::string> &fns, bool clock, long thin);  //!< Read tree trace from Nexus file(s)
     };
     
 }

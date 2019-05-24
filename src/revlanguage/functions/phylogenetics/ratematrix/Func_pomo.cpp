@@ -13,7 +13,8 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_pomo::Func_pomo( void ) : TypedFunction<RateMatrix>( ) {
+Func_pomo::Func_pomo( void ) : TypedFunction<RateMatrix>( )
+{
     
 }
 
@@ -24,7 +25,8 @@ Func_pomo::Func_pomo( void ) : TypedFunction<RateMatrix>( ) {
  *
  * \return A new copy of the process.
  */
-Func_pomo* Func_pomo::clone( void ) const {
+Func_pomo* Func_pomo::clone( void ) const
+{
     
     return new Func_pomo( *this );
 }

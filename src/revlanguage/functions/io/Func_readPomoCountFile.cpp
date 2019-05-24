@@ -42,6 +42,7 @@ RevPtr<RevVariable> Func_readPomoCountFile::execute( void )
 	// get the information from the arguments for reading the file
 	const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
 	RevBayesCore::TypedDagNode<long>* virtualPopulationSize = static_cast<const Integer &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<long>* n_states = static_cast<const Integer &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
 
 	RevBayesCore::PomoCountFileReader* pcfr = new RevBayesCore::PomoCountFileReader( fn.getValue(), virtualPopulationSize->getValue(), ' ' );
 
@@ -57,19 +58,20 @@ RevPtr<RevVariable> Func_readPomoCountFile::execute( void )
 const ArgumentRules& Func_readPomoCountFile::getArgumentRules( void ) const
 {
 
-	static ArgumentRules argumentRules = ArgumentRules();
+	static ArgumentRules argument_rules = ArgumentRules();
 	static bool rules_set = false;
 
-	if (!rules_set)
+	if ( rules_set == false )
 	{
-		argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "Relative or absolute name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-		argumentRules.push_back( new ArgumentRule( "virtualPopulationSize", Natural::getClassTypeSpec()                                , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+		argument_rules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "Relative or absolute name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+		argument_rules.push_back( new ArgumentRule( "virtualPopulationSize", Natural::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argument_rules.push_back( new ArgumentRule( "numStates", Natural::getClassTypeSpec(), "The number of states (e.g. 4 for A,C,G and T).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(4) ) );
 
 		rules_set = true;
 
 	}
 
-	return argumentRules;
+	return argument_rules;
 }
 
 
