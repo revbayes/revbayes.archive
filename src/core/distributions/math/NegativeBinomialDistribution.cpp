@@ -7,7 +7,7 @@ using namespace RevBayesCore;
 
 /** NegatvieBinomialDistribution Constructor
  * @param m the number of failures
- * @param q
+ * @param q the probability of success
  *
  */
 

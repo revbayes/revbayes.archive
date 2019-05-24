@@ -10,9 +10,10 @@ namespace RevBayesCore {
      * @brief NegativeBinomial distribution class.
      *
      * The Negative Binomial distribution represents a family of distributions defined
-     * on the natural number. The distribution represents the probability of a given number of successes before n failures  The Binomial distribution has 2 parameters:
-     *   r .. the number of trials
-     *   p .. the probability of success
+     * on the natural number. The family of distributions represent the probability of a given number of successes before n failures  The Negative Binomial distribution has 2 parameters:
+     * @param p the probability of success
+     * @param n the number of failures
+     *
      * Instances of this class can be associated to stochastic variables.
      *
      */
