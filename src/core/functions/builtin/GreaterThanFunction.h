@@ -36,7 +36,7 @@ namespace RevBayesCore {
     
 }
 
-/** Greater-than of two variables: l > r
+/** Constructor for assessing l > r
  * @param l the left value in the statement
  * @param r the right value in the statement
  */
