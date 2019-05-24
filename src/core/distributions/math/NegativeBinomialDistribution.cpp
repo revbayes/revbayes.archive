@@ -5,6 +5,12 @@
 
 using namespace RevBayesCore;
 
+/** NegatvieBinomialDistribution Constructor
+ * @param m the number of failures
+ * @param q
+ *
+ */
+
 NegativeBinomialDistribution::NegativeBinomialDistribution(const TypedDagNode<long> *m, const TypedDagNode<double> *q) : TypedDistribution<long>( new long( 0 ) ),
     r( m ),
     p( q )
