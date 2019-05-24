@@ -74,8 +74,8 @@ matrix:
       dist: xenial
       compiler: clang++
       env:
-        - CXX_COMPILER=/usr/bin/clang++
-        - C_COMPILER=/usr/bin/clang
+        - CXX_COMPILER=/usr/local/clang-7.0.0/bin/clang++
+        - C_COMPILER=/usr/local/clang-7.0.0/bin/clang
       addons:
         apt:
           sources:
