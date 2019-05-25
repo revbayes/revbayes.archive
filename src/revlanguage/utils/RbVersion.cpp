@@ -37,6 +37,9 @@ std::string RbVersion::getHeader( void ) const
     header += "\n";
     header += "RevBayes version (" + getVersion() + ")\n";
     header += "Build from " + getGitBranch() + " (" + getGitCommit() + ") on " + getDate() + "\n";
+#ifdef RB_MPI
+    header += "MPI enabled.\n";
+#endif
     header += "\n";
     header += "Visit the website www.RevBayes.com for more information about RevBayes.\n";
     header += "\n";
