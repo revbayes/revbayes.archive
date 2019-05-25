@@ -13,8 +13,9 @@ namespace RevBayesCore {
      * to values between the min and the max.
      * Instances of this class can be associated to stochastic variables.
      *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     *The distribution has 2 parameters:
+     *@param min the lower bound of the distribution
+     *@param max the upper bound of the distribution
      *
      */
     class UniformDistribution : public ContinuousDistribution {

@@ -40,7 +40,7 @@ endif
 
 boost_modules = [ 'regex',
                   'program_options',
-                  'thread','signals',
+                  'thread',
                   'system',
                   'filesystem',
                   'date_time',

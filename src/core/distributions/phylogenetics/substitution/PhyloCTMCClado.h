@@ -70,8 +70,6 @@ namespace RevBayesCore {
         size_t                                              cladoNodeOffset;
         size_t                                              cladoMixtureOffset;
         size_t                                              cladoSiteOffset;
-        size_t                                              cladoNodeOffsetMarginal;
-        size_t                                              cladoSiteOffsetMarginal;
 
 
     private:
@@ -1594,7 +1592,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
         
         if (events.size() == 0)
         {
-            RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(nodeIdx, brlen);
+            RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(nodeIdx);
         }
         else
         {
@@ -1650,7 +1648,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
             }
 
             // last interval
-            RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(nodeIdx, dt);
+            RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(nodeIdx);
             rm->calculateTransitionProbabilities( event_age, endAge,  rate, this->transition_prob_matrices[0] );
             tp *= this->transition_prob_matrices[0];
             
@@ -1660,7 +1658,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
     }
     else
     {
-        RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(nodeIdx, brlen);
+        RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(nodeIdx);
     }
 }
 

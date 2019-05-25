@@ -2,8 +2,8 @@
 
 using namespace RevBayesCore;
 
-/**
- * Constructor. Here we simply set up the parameter dependencies.
+/** MeanFunction of a RbVector Constructor
+ * @param v the vector of values
  */
 MeanFunction::MeanFunction(const TypedDagNode< RbVector<double> > *v) : TypedFunction<double>( new double(0.0) ),
     vals( v )
