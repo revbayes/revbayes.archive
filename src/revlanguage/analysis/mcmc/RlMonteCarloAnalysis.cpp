@@ -93,7 +93,7 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         bool prior = static_cast<const RlBoolean &>( args[3].getVariable()->getRevObject() ).getValue();
         if ( prior == true )
         {
-            value->runPriorSampler( gen, rules );
+            value->runPriorSampler( gen, rules, tuning_interval );
         }
         else
         {

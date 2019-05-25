@@ -62,7 +62,7 @@ namespace RevBayesCore {
 #else
         void                                                run(size_t k, RbVector<StoppingRule> r, size_t ti, bool verbose=true);
 #endif
-        void                                                runPriorSampler(size_t k, RbVector<StoppingRule> r);
+        void                                                runPriorSampler(size_t k, RbVector<StoppingRule> r, size_t ti);
         void                                                setModel(Model *m, bool redraw);
         
     protected:
