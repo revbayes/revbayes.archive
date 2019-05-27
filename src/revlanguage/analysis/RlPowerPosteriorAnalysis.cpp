@@ -30,7 +30,7 @@ PowerPosteriorAnalysis::PowerPosteriorAnalysis() : WorkspaceToCoreWrapperObject<
     ArgumentRules* run_arg_rules = new ArgumentRules();
     run_arg_rules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     run_arg_rules->push_back( new ArgumentRule("burninFraction", Probability::getClassTypeSpec(), "The fraction of samples to discard.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25) ) );
-    run_arg_rules->push_back( new ArgumentRule("preburninGenerations", Natural::getClassTypeSpec(), "The number of generations to run as pre-burnin when parameter tuning is done.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(-1) ) );
+    run_arg_rules->push_back( new ArgumentRule("preburninGenerations", Natural::getClassTypeSpec(), "The number of generations to run as pre-burnin when parameter tuning is done.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
     run_arg_rules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100) ) );
     methods.addFunction( new MemberProcedure( "run", RlUtils::Void, run_arg_rules) );
 
@@ -116,11 +116,10 @@ RevPtr<RevVariable> PowerPosteriorAnalysis::executeMethod(std::string const &nam
         // get the member with give index
         long gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         double burn_frac = static_cast<const Probability &>( args[1].getVariable()->getRevObject() ).getValue();
-        long preburn_gen_tmp = static_cast<const Natural &>( args[2].getVariable()->getRevObject() ).getValue();
         size_t preburn_gen = gen;
-        if ( preburn_gen_tmp >= 0 )
+        if ( args[2].getVariable()->getRevObject() != RevNullObject::getInstance() )
         {
-            preburn_gen = preburn_gen_tmp;
+            preburn_gen = static_cast<const Natural &>( args[2].getVariable()->getRevObject() ).getValue();
         }
         size_t tune_int = static_cast<const Natural &>( args[3].getVariable()->getRevObject() ).getValue();
         value->runAll( size_t(gen), burn_frac, preburn_gen, tune_int );
