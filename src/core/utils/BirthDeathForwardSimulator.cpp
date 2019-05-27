@@ -795,7 +795,7 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age, SI
         }
     
         bool complete_tree = !true;
-        bool prune = complete_tree == false && current_num_active_nodes > 0 && ( condition == SIM_CONDITION::ROOT && current_num_active_nodes >= 2 );
+        bool prune = complete_tree == false && current_num_active_nodes > 0 && ( condition == ROOT && current_num_active_nodes >= 2 );
         // now prune away all the extinct nodes
         if ( prune == true )
         {
@@ -839,12 +839,12 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age, SI
         
         }
         
-        if ( condition == SIM_CONDITION::SURVIVAL and current_num_active_nodes <= 1 )
+        if ( condition == SURVIVAL and current_num_active_nodes <= 1 )
         {
             delete root;
             root = NULL;
         }
-        else if ( condition == SIM_CONDITION::ROOT and root->getAge() < start_age )
+        else if ( condition == ROOT and root->getAge() < start_age )
         {
             delete root;
             root = NULL;
