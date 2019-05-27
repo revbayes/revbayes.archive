@@ -135,6 +135,8 @@ std::string NaturalNumbersState::getStringValue(void) const
             }
         }
         tmp += ")";
+        
+        return tmp;
     }
     
     return boost::lexical_cast<std::string>(index_single_state);
