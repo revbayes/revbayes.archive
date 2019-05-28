@@ -429,8 +429,9 @@ TraceTree *Func_readTreeTrace::readTreesNexus(const std::vector<string> &fns, bo
     RevBayesCore::TraceTree tt = RevBayesCore::TraceTree();
     tt.setParameterName("tree");
 
-    for(std::string fn : fns) {
-
+    for (size_t i=0; i<fns.size(); ++i)
+    {
+        const std::string fn = fns[i];
         // get the global instance of the NCL reader and clear warnings from its warnings buffer
         RevBayesCore::NclReader reader = RevBayesCore::NclReader();
 
@@ -442,7 +443,9 @@ TraceTree *Func_readTreeTrace::readTreesNexus(const std::vector<string> &fns, bo
             tmp = *reader.readBranchLengthTrees( fn );
         }
         int nsamples = 0;
-        for(RevBayesCore::Tree* t : tmp) {
+        for (size_t j=0; j<tmp.size(); ++j)
+        {
+            RevBayesCore::Tree* t = tmp[i];
             if(nsamples % thin == 0) tt.addObject(t);
             nsamples++;
         }
