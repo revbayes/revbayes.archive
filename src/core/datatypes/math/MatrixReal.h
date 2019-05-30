@@ -20,7 +20,6 @@
 
 #include "Cloneable.h"
 #include "MemberObject.h"
-#include "MatrixReal.h"
 #include "RbVector.h"
 
 #include <cstddef>
