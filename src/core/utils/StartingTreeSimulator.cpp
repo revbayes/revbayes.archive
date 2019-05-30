@@ -284,6 +284,8 @@ void StartingTreeSimulator::simulateClade( std::set<TopologyNode*> &nodes) const
         }
     }
     
+    std::set<TopologyNode*> current_nodes;
+    std::multimap<double,TopologyNode*> serial_nodes;
     for (std::set<TopologyNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); ++it)
     {
         TopologyNode *this_node = *it;
@@ -291,10 +293,12 @@ void StartingTreeSimulator::simulateClade( std::set<TopologyNode*> &nodes) const
         if ( a > min_age )
         {
             serial_times.push_back(a);
+            serial_nodes.insert( std::pair<double, TopologyNode*>(a, this_node) );
         }
         else
         {
             ++num_taxa_at_present;
+            current_nodes.insert( this_node );
         }
     }
     
@@ -317,10 +321,11 @@ void StartingTreeSimulator::simulateClade( std::set<TopologyNode*> &nodes) const
     double theta = 1.0;
     
     // the current age of the process
-    double sim_age = 0.0;
+    double sim_age = min_age;
     
     // draw a time for each speciation event condition on the time of the process
-    while ( nodes.size() > 1)
+    size_t num_events_to_draw = nodes.size() - 1;
+    while ( num_events_to_draw > 0)
     {
         bool valid = false;
         do
@@ -341,20 +346,25 @@ void StartingTreeSimulator::simulateClade( std::set<TopologyNode*> &nodes) const
                 sim_age = serial_times[index_serial_time];
                 ++index_serial_time;
                 ++j;
+                
+                std::multimap<double,TopologyNode*>::iterator it = serial_nodes.begin();
+                current_nodes.insert( it->second );
+                serial_nodes.erase( it );
+                
             }
         } while ( valid == false );
         
-        size_t left_index = size_t( nodes.size() * rng->uniform01() );
-        std::set<TopologyNode*>::iterator left_it = nodes.begin();
+        size_t left_index = size_t( current_nodes.size() * rng->uniform01() );
+        std::set<TopologyNode*>::iterator left_it = current_nodes.begin();
         std::advance(left_it, left_index);
         TopologyNode *left = *left_it;
-        nodes.erase( left_it );
+        current_nodes.erase( left_it );
         
-        size_t right_index = size_t( nodes.size() * rng->uniform01() );
-        std::set<TopologyNode*>::iterator right_it = nodes.begin();
+        size_t right_index = size_t( current_nodes.size() * rng->uniform01() );
+        std::set<TopologyNode*>::iterator right_it = current_nodes.begin();
         std::advance(right_it, right_index);
         TopologyNode *right = *right_it;
-        nodes.erase( right_it );
+        current_nodes.erase( right_it );
         
         TopologyNode *parent = new TopologyNode();
         parent->addChild( left );
@@ -363,10 +373,14 @@ void StartingTreeSimulator::simulateClade( std::set<TopologyNode*> &nodes) const
         right->setParent( parent );
         
         parent->setAge( sim_age );
-        nodes.insert( parent );
+        current_nodes.insert( parent );
 
         --j;
+        --num_events_to_draw;
         
     }
+    
+    nodes.clear();
+    nodes.insert( *(current_nodes.begin()) );
     
 }
