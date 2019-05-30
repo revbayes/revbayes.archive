@@ -101,6 +101,7 @@
 #include "Func_pomoRootFrequencies.h"
 #include "Func_readPomoCountFile.h"
 #include "Func_pruneTree.h"
+#include "Func_simStartingTree.h"
 #include "Func_simTree.h"
 #include "Func_simCompleteTree.h"
 #include "Func_stitchTree.h"
@@ -373,6 +374,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_pomoRootFrequencies()                             );
         addFunction( new Func_pruneTree()                                       );
         addFunction( new Func_readPomoCountFile()                               );
+        addFunction( new Func_simStartingTree()                                 );
         addFunction( new Func_simTree()                                         );
         addFunction( new Func_simCompleteTree()                                 );
         addFunction( new Func_stitchTree()                                      );
