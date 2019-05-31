@@ -27,8 +27,8 @@ namespace RevBayesCore {
 
     public:
                                                     Split(void);                                                            //! Default constructor: empty Split
-                                                    Split(const std::vector<Taxon> &c1, const std::vector<Taxon> &n );                                                //!< Default constructor: fake Split
-                                                    Split(const std::vector<Taxon> &c1, const std::vector<Taxon> &c2, const std::vector<Taxon> &n );                               //!< Default constructor: real Split
+                                                    Split(const std::vector<Taxon> &c, const std::vector<Taxon> &n );      //!< constructor: real Split
+                                                    Split(RbBitSet &c);                               //!< Constructor from bitset representation of a clade
 
         virtual                                    ~Split(void) {}
 

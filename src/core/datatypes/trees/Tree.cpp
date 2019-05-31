@@ -594,6 +594,7 @@ const std::vector<std::vector<double> > Tree::getAdjacencyMatrix(void) const
 
 std::vector<std::pair<Subsplit,Subsplit> > Tree::getAllSubsplitParentChildPairs(const std::vector<Taxon>& ordered_taxa) const
 {
+  // TODO: here (and elsewhere we loop over tree nodes) we should consider a postorder traversal to tag all nodes with their subsplits efficiently
 
   std::vector<std::pair<Subsplit,Subsplit> > all_pairs;
 

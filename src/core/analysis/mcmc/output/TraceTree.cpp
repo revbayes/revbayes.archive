@@ -1296,8 +1296,12 @@ SBNParameters TraceTree::learnUnconstrainedSBN(void)
   // SBNParameters sbn = SBNParameters(ordered_taxa);
   SBNParameters sbn(ordered_taxa);
 
+  // Are trees rooted?
+  rooted = objectAt(0).isRooted();
+
   // Get trees as vector to pass to learning function
   std::vector<Tree> trees;
+
   for (size_t i = burnin; i < size(); ++i)
   {
       // const Tree &tree = objectAt(i);
@@ -1310,7 +1314,7 @@ SBNParameters TraceTree::learnUnconstrainedSBN(void)
   }
   else
   {
-    throw(RbException("Learning of unrooted trees not supported."));
+    sbn.learnUnconstrainedSBNSA(trees);
   }
 
     return sbn;

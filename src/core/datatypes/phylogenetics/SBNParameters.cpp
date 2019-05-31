@@ -20,6 +20,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
+#include "Split.h"
 #include "SBNParameters.h"
 
 #include <cmath>
@@ -400,12 +401,43 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees)
     const std::vector<TopologyNode*> tree_nodes = trees[i].getNodes();
     for (size_t i=0; i<tree_nodes.size(); ++i)
     {
-      if (!tree_nodes[i]->isRoot())
+      if ( (!tree_nodes[i]->isRoot()) && (!tree_nodes[i]->getParent().isRoot()))
       {
-        Subsplit this_split = tree_nodes[i]->getSubsplit(taxa);
-        RbBitSet this_clade = this_split.asCladeBitset();
+        Subsplit this_subsplit = tree_nodes[i]->getSubsplit(taxa);
+        RbBitSet this_split = this_subsplit.asCladeBitset();
 
-        (branch_length_observations[this_clade]).push_back(tree_nodes[i]->getBranchLength());
+        // Polarize split if needed (fewer than half the bits should be set)
+        if ((this_split.getNumberSetBits() > size_t(std::floor(this_split.size()/2.0))) )
+        {
+          this_split = ~this_split;
+        }
+        // If even, and half bits are set, make sure first bit is 1
+        else if ( size_t(this_split.size() % 2) == 0 && (this_split.getNumberSetBits() == size_t(std::floor(this_split.size()/2.0))) && this_split[0] == 0)
+        {
+          this_split = ~this_split;
+        }
+
+        (branch_length_observations[this_split]).push_back(tree_nodes[i]->getBranchLength());
+      }
+      // We're representing an unrooted tree as rooted, so we must account for the fact that the two edges descending from the root are really one edge
+      else if (tree_nodes[i]->isRoot())
+      {
+        // Get split from left descendant
+        Subsplit this_subsplit = tree_nodes[i]->getChild(0).getSubsplit(taxa);
+        RbBitSet this_split = this_subsplit.asCladeBitset();
+
+        // Polarize split if needed (fewer than half the bits should be set)
+        if ((this_split.getNumberSetBits() > size_t(std::floor(this_split.size()/2.0))) )
+        {
+          this_split = ~this_split;
+        }
+        // If even, and half bits are set, make sure first bit is 1
+        else if ( size_t(this_split.size() % 2) == 0 && (this_split.getNumberSetBits() == size_t(std::floor(this_split.size()/2.0))) && this_split[0] == 0)
+        {
+          this_split = ~this_split;
+        }
+
+        (branch_length_observations[this_split]).push_back(tree_nodes[i]->getChild(0).getBranchLength() + tree_nodes[i]->getChild(1).getBranchLength());
 
       }
     }
@@ -848,7 +880,7 @@ void SBNParameters::learnUnconstrainedSBNSA( std::vector<Tree> &trees )
   // Run counting
   for (size_t i=0; i<trees.size(); ++i)
   {
-    countAllSubsplits(trees[i], parent_child_counts, root_split_counts, q, true);
+    countAllSubsplits(this_tree, parent_child_counts, root_split_counts, q, true);
   }
 
   // Turn root split counts into a distribution on the root split

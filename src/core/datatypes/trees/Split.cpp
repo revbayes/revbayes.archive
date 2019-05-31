@@ -64,6 +64,33 @@ Split::Split( const std::vector<Taxon> &c, const std::vector<Taxon> &n ) :
 
 }
 
+/**
+ * Constructor from bitset representation of vector of taxa.
+ */
+Split::Split( RbBitSet &c ) :
+    bitset()
+{
+
+    bitset = c;
+
+    // Polarize if needed, for comparison we forbid splits with >50% 1s
+    if ( bitset.getNumberSetBits() > size_t(std::floor(bitset.size()/2.0)) )
+
+
+    {
+      bitset = ~bitset;
+    }
+    // For a split with 50% 1s, we make sure the first bit is a 1 (00110 -> 11001)
+    else if ( size_t(bitset.size() % 2) == 0 && (bitset.getNumberSetBits() == size_t(std::floor(bitset.size()/2.0))) )
+    {
+      if ( bitset[0] == 0 )
+      {
+        bitset = ~bitset;
+      }
+    }
+
+}
+
 Split& Split::operator=(const Split &s)
 {
   if (this != &s)
