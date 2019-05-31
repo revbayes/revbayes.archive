@@ -131,13 +131,14 @@ namespace RevBayesCore {
         void                                                reroot(TopologyNode &n, bool reindex);
         void                                                removeDuplicateTaxa(void);
         void                                                renameNodeParameter(const std::string &old_name, const std::string &new_name);
+        TopologyNode&                                       reverseParentChild(TopologyNode &n);                                                                //!< Reverse the parent child relationship.
         void                                                setNegativeConstraint(bool);
         void                                                setRoot(TopologyNode* r, bool reindex);                                                             //!< Set the root and bootstrap the Tree from it
         void                                                setRooted(bool tf);
         void                                                setTaxonIndices(const TaxonMap &tm);                                                                //!< Set the indices of the taxa from the taxon map
         void                                                setTaxonName(const std::string& currentName, const std::string& newName);                           //!< Change the name of a taxon
-        void                                                setTaxonObject(const std::string& currentName, const Taxon &newName);                           //!< Change the name of a taxon
-        TopologyNode&                                       reverseParentChild(TopologyNode &n);                                                                //!< Reverse the parent child relationship.
+        void                                                setTaxonObject(const std::string& currentName, const Taxon &newName);                               //!< Change the name of a taxon
+        void                                                unroot(void);                                                                                       //!< Unroot the tree, if it was previously rooted.
 
     protected:
 

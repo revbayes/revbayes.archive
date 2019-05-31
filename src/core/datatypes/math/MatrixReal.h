@@ -20,7 +20,6 @@
 
 #include "Cloneable.h"
 #include "MemberObject.h"
-#include "MatrixReal.h"
 #include "RbVector.h"
 
 #include <cstddef>
@@ -96,7 +95,7 @@ namespace RevBayesCore {
         MatrixReal                              getTranspose(void);
         RbVector<double>                        getUpperTriangle(void) const;
         bool                                    isDiagonal(void) const;
-        bool                                    isPositive() const;
+        bool                                    isPositiveDefinite(bool semi = false) const;
         bool                                    isSquareMatrix(void) const;
         bool                                    isSymmetric(void) const;
         bool                                    isUsingCholesky(void) const { return use_cholesky_decomp; }

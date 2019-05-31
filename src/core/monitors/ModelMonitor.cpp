@@ -8,7 +8,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-ModelMonitor::ModelMonitor(unsigned long g, const std::string &fname, const std::string &del) : AbstractFileMonitor(std::vector<DagNode *>(),g,fname,del),
+ModelMonitor::ModelMonitor(unsigned long g, const std::string &fname, const std::string &del) : VariableMonitor(std::vector<DagNode *>(),g,fname,del),
     stochastic_nodes_only( false )
 {
     

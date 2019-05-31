@@ -920,7 +920,8 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::sumRootLikel
 }
 
 template<class charType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::resizeLikelihoodVectors( void ) {
+void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::resizeLikelihoodVectors( void )
+{
 
     RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::resizeLikelihoodVectors();
     
@@ -947,7 +948,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::updateCorrecti
         // start by filling the likelihood vector for the children of the root
         if ( node.isTip() )
         {
-            this->updateTransitionProbabilities(nodeIndex, node.getBranchLength() );
+            this->updateTransitionProbabilities(nodeIndex );
             computeTipCorrection( node, nodeIndex );
         }
         else if ( node.getNumberOfChildren() == 2 ) // rooted trees have two children for the root
@@ -963,7 +964,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::updateCorrecti
                 computeRootCorrection( nodeIndex, leftIndex, rightIndex );
             else
             {
-                this->updateTransitionProbabilities(nodeIndex, node.getBranchLength() );
+                this->updateTransitionProbabilities( nodeIndex );
                 computeInternalNodeCorrection( node, nodeIndex, leftIndex, rightIndex );
             }
 
@@ -984,7 +985,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::updateCorrecti
                 computeRootCorrection( nodeIndex, leftIndex, rightIndex, middleIndex );
             else
             {
-                this->updateTransitionProbabilities(nodeIndex, node.getBranchLength() );
+                this->updateTransitionProbabilities( nodeIndex );
                 computeInternalNodeCorrection( node, nodeIndex, leftIndex, rightIndex, middleIndex );
             }
 
@@ -1012,17 +1013,20 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::redrawValue( v
     // create a new character data object
     this->value = new HomologousDiscreteCharacterData<charType>();
 
-    size_t numTips = this->tau->getValue().getNumberOfTips();
+    size_t num_tips = this->tau->getValue().getNumberOfTips();
     size_t num_nodes = this->tau->getValue().getNumberOfNodes();
 
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
     const TopologyNode &root = this->tau->getValue().getRoot();
-    size_t rootIndex = this->tau->getValue().getRoot().getIndex();
+    size_t root_index = this->tau->getValue().getRoot().getIndex();
 
-    updateCorrections(root, rootIndex);
+    // for safety, we resize the likelihood vectors here
+    resizeLikelihoodVectors();
+    
+    updateCorrections(root, root_index);
 
-    std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData<charType> >(numTips, DiscreteTaxonData<charType>( Taxon("") ) );
+    std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData<charType> >(num_tips, DiscreteTaxonData<charType>( Taxon("") ) );
 
     /*// first sample a total number of characters (M) from the marginal posterior:
     // M - N | N ~ NegBinomial(N+1, exp(lnCorrection) )
@@ -1045,7 +1049,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::redrawValue( v
         size_t rateIndex = 0;
 
         double tmp = 0.0;
-        while(tmp < u){
+        while(tmp < u)
+        {
             tmp += perMaskMixtureCorrections[rateIndex];
             if (tmp < u)
                 rateIndex++;
@@ -1069,7 +1074,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::redrawValue( v
         std::vector<charType> siteData(num_nodes, charType(this->num_chars));
 
         // create the character
-        charType &c = siteData[rootIndex];
+        charType &c = siteData[root_index];
         c.setToFirstState();
         // draw the state
         double u = rng->uniform01();
@@ -1101,7 +1106,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::redrawValue( v
         }
 
         // add the taxon data to the character data
-        for (size_t t = 0; t < numTips; ++t)
+        for (size_t t = 0; t < num_tips; ++t)
         {
             taxa[t].addCharacter(siteData[t]);
         }
@@ -1151,7 +1156,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::simulate( cons
         const TopologyNode &child = *(*it);
 
         // update the transition probability matrix
-        this->updateTransitionProbabilities( child.getIndex(), child.getBranchLength() );
+        this->updateTransitionProbabilities( child.getIndex() );
 
         unsigned long cp = parentState.getStateIndex();
 

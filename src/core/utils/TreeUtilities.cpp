@@ -568,7 +568,7 @@ void RevBayesCore::TreeUtilities::climbUpTheTree(const TopologyNode& node, boost
             climbUpTheTree(node.getParent(), pathFromNodeToRoot);
         }
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         throw e;
     }
@@ -587,7 +587,7 @@ double RevBayesCore::TreeUtilities::getAgeOfMRCARecursive(const TopologyNode& no
             return getAgeOfMRCARecursive( node.getParent(), pathFromOtherNodeToRoot );
         }
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         throw e;
     }

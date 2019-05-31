@@ -1,5 +1,6 @@
 #!/bin/sh
-HERE=$(pwd)/build
+HERE="$(pwd)/build"
+mkdir -p "${HERE}"
 echo $HERE
 
 #################
@@ -8,17 +9,19 @@ echo $HERE
 boost="true"
 debug="false"
 mac="false"
+travis="false"
 win="false"
 mpi="false"
+gentoo="false"
 help="false"
 jupyter="false"
 
 # parse command line arguments
 while echo $1 | grep ^- > /dev/null; do
-# intercept help while parsing "-key value" pairs
-if [ "$1" = "--help" ] || [ "$1" = "-h" ]
-then
-echo '
+    # intercept help while parsing "-key value" pairs
+    if [ "$1" = "--help" ] || [ "$1" = "-h" ]
+    then
+        echo '
 The minimum steps to build RevBayes after running this script is:
 cmake .
 make
@@ -33,13 +36,13 @@ Command line options are:
 '
 # secret test option
 # -jupyter        <true|false>    : set to true if you want ot buikd the jupyter version. Defaults to false.
-exit
-fi
+        exit
+    fi
 
-# parse pairs
-eval $( echo $1 | sed 's/-//g' | tr -d '\012')=$2
-shift
-shift
+    # parse pairs
+    eval $( echo $1 | sed 's/-//g' | tr -d '\012')=$2
+    shift
+    shift
 done
 
 
@@ -49,27 +52,31 @@ done
 
 if [ "$boost" = "true" ]
 then
-echo 'Building boost libraries'
-echo 'you can turn this off with argument "-boost false"'
+    echo 'Building boost libraries'
+    echo 'you can turn this off with argument "-boost false"'
 
-cd ../../boost_1_60_0
-rm ./project-config.jam*  # clean up from previous runs
+    cd ../../boost_1_60_0
+    rm ./project-config.jam*  # clean up from previous runs
 
-if [ "$mac" = "true" ]
-then
-./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
-./b2 link=static
-elif [ "$win" = "true" ]
-then
-./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals --with-toolset=mingw
-./b2 link=static
+    if [ "$mac" = "true" ]
+    then
+        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization
+        ./b2 link=static
+    elif [ "$win" = "true" ]
+    then
+        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization --with-toolset=mingw
+        ./b2 link=static
+    elif [ "$gentoo" = "true" ]
+    then
+        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization
+        ./b2 link=static --ignore-site-config
+    else
+        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization
+        ./b2 link=static
+    fi
+
 else
-./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
-./b2 link=static
-fi
-
-else
-echo 'not building boost libraries'
+    echo 'not building boost libraries'
 fi
 
 
@@ -103,7 +110,7 @@ echo '
 # We should ultimiately remove -Wno-reorder -Wno-unused-variable -Wno-unused-but-set-variable
 # But there are so many of them we cant see the really bad warnings.
 # So, disable those warnings for now.
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -Wall -msse -msse2 -msse3 -Wno-sign-compare -Wno-reorder -Wno-unused-variable -Wno-unused-but-set-variable")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -Wall -msse -msse2 -msse3")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -Wall")
 '  >> "$HERE/CMakeLists.txt"
 elif [ "$mac" = "true" ]
@@ -155,6 +162,13 @@ add_definitions(-DRB_XCODE)
 '  >> "$HERE/CMakeLists.txt"
 fi
 
+if [ "$travis" = "true" ]
+then
+    echo 'set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g0 -O2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g0 -O2")
+' >> "$HERE/CMakeLists.txt"
+fi
+
 echo '
 # Add extra CMake libraries into ./CMake
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake ${CMAKE_MODULE_PATH})
@@ -162,18 +176,21 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake ${CMAKE_MODULE_PATH})
 # Set source root relate to project file
 set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../src)
 
+option(INTERNAL_BOOST "Use the version of boost shipped with revbayes" ON)
 
+if (INTERNAL_BOOST)
+   SET(BOOST_ROOT "../../../boost_1_60_0")
+   SET(BOOST_LIBRARY "../../../boost_1_60_0/stage/lib")
+   SET(Boost_NO_SYSTEM_PATHS ON)
+   SET(Boost_USE_STATIC_RUNTIME ON)
+   SET(Boost_USE_STATIC_LIBS ON)
+endif()
 
-SET(BOOST_ROOT ../../../boost_1_60_0)
-SET(BOOST_LIBRARY ../../../boost_1_60_0/stage/lib)
-SET(Boost_USE_STATIC_RUNTIME true)
-SET(Boost_USE_STATIC_LIBS ON)
 find_package(Boost
 1.60.0
 COMPONENTS regex
 program_options
 thread
-signals
 system
 filesystem
 date_time
@@ -212,6 +229,7 @@ fi
 
 if [ "$mpi" = "true" ]
 then
+echo "set executable"
 echo '
 add_executable(rb-mpi ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 
@@ -247,18 +265,10 @@ PKG_CHECK_MODULES(GTK REQUIRED gtk+-2.0)
 
 # Setup CMake to use GTK+, tell the compiler where to look for headers
 # and to the linker where to look for libraries
-if [ "$win" = "true" ]
-then
-echo '
-INCLUDE_DIRECTORIES( /mingw64/include/gtk-2.0;/mingw64/lib/gtk-2.0/include;/mingw64/include/pango-1.0;/mingw64/include/fribidi;/mingw64/include/cairo;/mingw64/include/atk-1.0;/mingw64/include/cairo;/mingw64/include/pixman-1;/mingw64/include;/mingw64/include/freetype2;/mingw64/include;/mingw64/include/harfbuzz;/mingw64/include/libpng16;/mingw64/include/gdk-pixbuf-2.0;/mingw64/include/libpng16;/mingw64/include;/mingw64/include/glib-2.0;/mingw64/lib/glib-2.0/include;/mingw64/include )
-LINK_DIRECTORIES( /mingw64/lib )
-' >> $HERE/CMakeLists.txt
-else
 echo '
 INCLUDE_DIRECTORIES(${GTK_INCLUDE_DIRS})
 LINK_DIRECTORIES(${GTK_LIBRARY_DIRS})
 ' >> $HERE/CMakeLists.txt
-fi
 
 echo '
 # Add other flags to the compiler
@@ -269,30 +279,9 @@ ADD_EXECUTABLE(RevStudio ${PROJECT_SOURCE_DIR}/cmd/main.cpp)
 ' >> $HERE/CMakeLists.txt
 
 # Link the target to the GTK+ libraries
-if [ "$win" = "true" ]
-then
-echo '
-TARGET_LINK_LIBRARIES(RevStudio rb-cmd-lib rb-parser rb-core libs ${Boost_LIBRARIES}
-"/mingw64/lib/libgtk-win32-2.0.dll.a"
-"/mingw64/lib/libgdk-win32-2.0.dll.a"
-"/mingw64/lib/libpangowin32-1.0.dll.a"
-"/mingw64/lib/libpangocairo-1.0.dll.a"
-"/mingw64/lib/libpango-1.0.dll.a"
-"/mingw64/lib/libfribidi.dll.a"
-"/mingw64/lib/libatk-1.0.dll.a"
-"/mingw64/lib/libcairo.dll.a"
-"/mingw64/lib/libgdk_pixbuf-2.0.dll.a"
-"/mingw64/lib/libgio-2.0.dll.a"
-"/mingw64/lib/libgobject-2.0.dll.a"
-"/mingw64/lib/libglib-2.0.dll.a"
-"/mingw64/lib/libintl.dll.a"
-)
-' >> $HERE/CMakeLists.txt
-else
 echo '
 TARGET_LINK_LIBRARIES(RevStudio rb-cmd-lib rb-parser rb-core libs ${Boost_LIBRARIES} ${GTK_LIBRARIES})
 ' >> $HERE/CMakeLists.txt
-fi
 
 echo '
 SET_TARGET_PROPERTIES(RevStudio PROPERTIES PREFIX "../")

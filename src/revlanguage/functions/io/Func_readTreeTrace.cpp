@@ -51,12 +51,14 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
     size_t arg_index_separator = 3;
     size_t arg_index_burnin    = 4;
     size_t arg_index_thinning  = 5;
+    size_t arg_index_nexus  = 6;
 
     // get the information from the arguments for reading the file
     const std::string&  treetype = static_cast<const RlString&>( args[arg_index_tree_type].getVariable()->getRevObject() ).getValue();
     const std::string&  sep      = static_cast<const RlString&>( args[arg_index_separator].getVariable()->getRevObject() ).getValue();
     long                thin     = static_cast<const Natural&>( args[arg_index_thinning].getVariable()->getRevObject() ).getValue();
-    
+    bool nexus = static_cast<RlBoolean&>(args[arg_index_nexus].getVariable()->getRevObject()).getValue();
+
     std::vector<std::string> vectorOfFileNames;
     
     if ( args[0].getVariable()->getRevObject().isType( ModelVector<RlString>::getClassTypeSpec() ) )
@@ -117,7 +119,8 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
     TraceTree *rv;
     if ( treetype == "clock" )
     {
-        rv = readTrees(vectorOfFileNames, sep, true, thin);
+        if(nexus) rv = readTreesNexus(vectorOfFileNames, true, thin);
+        else rv = readTrees(vectorOfFileNames, sep, true, thin);
     }
     else if ( treetype == "non-clock" )
     {
@@ -126,8 +129,9 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
         {
             og = static_cast<const Clade &>( args[arg_index_outgroup].getVariable()->getRevObject() ).getValue();
         }
-        
-        rv = readTrees(vectorOfFileNames, sep, false, thin);
+
+        if(nexus) rv = readTreesNexus(vectorOfFileNames, false, thin);
+        else rv = readTrees(vectorOfFileNames, sep, false, thin);
     }
     else
     {
@@ -182,6 +186,8 @@ const ArgumentRules& Func_readTreeTrace::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "burnin"   , burninTypes     , "The fraction/number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25) ) );
 
         argumentRules.push_back( new ArgumentRule( "thinning", Natural::getClassTypeSpec(), "The frequency of samples to read, i.e., we will only used every n-th sample where n is defined by this argument.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural( 1l ) ) );
+
+        argumentRules.push_back( new ArgumentRule( "nexus", RlBoolean::getClassTypeSpec(), "Whether the file to read is in NEXUS format.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false)) );
 
         rules_set = true;
     }
@@ -392,10 +398,10 @@ TraceTree* Func_readTreeTrace::readTrees(const std::vector<std::string> &vector_
                 //            // re-root the tree so that we can compare the the trees
                 //            tau->reroot( outgroup );
                 
-//                if ( outgroup.size() > 0 )
-//                {
-//                    //                tau->reroot( outgroup, false );
-//                }
+                //                if ( outgroup.size() > 0 )
+                //                {
+                //                    //                tau->reroot( outgroup, false );
+                //                }
             }
             
             t.addObject( tau );
@@ -408,6 +414,44 @@ TraceTree* Func_readTreeTrace::readTrees(const std::vector<std::string> &vector_
     }
     
     return new TraceTree( data[0] );
+}
+
+/** Create tree trace from one or several Nexus file(s)
+ * @param fns vector of file names
+ * @param clock whether trees have a clock
+ * @param thin keep only every thin-th sample
+ * @return tree trace
+ * @see Func_readTrees::execute
+ *
+ * @note if multiple files are given, the traces will all be appended without regard for burnin
+ * */
+TraceTree *Func_readTreeTrace::readTreesNexus(const std::vector<string> &fns, bool clock, long thin) {
+    RevBayesCore::TraceTree tt = RevBayesCore::TraceTree();
+    tt.setParameterName("tree");
+
+    for (size_t i=0; i<fns.size(); ++i)
+    {
+        const std::string fn = fns[i];
+        // get the global instance of the NCL reader and clear warnings from its warnings buffer
+        RevBayesCore::NclReader reader = RevBayesCore::NclReader();
+
+        std::vector<RevBayesCore::Tree*> tmp;
+        if ( clock ) {
+            tmp = reader.readTimeTrees( fn );
+        }
+        else {
+            tmp = *reader.readBranchLengthTrees( fn );
+        }
+        int nsamples = 0;
+        for (size_t j=0; j<tmp.size(); ++j)
+        {
+            RevBayesCore::Tree* t = tmp[i];
+            if(nsamples % thin == 0) tt.addObject(t);
+            nsamples++;
+        }
+    }
+
+    return new TraceTree(tt);
 }
 
 

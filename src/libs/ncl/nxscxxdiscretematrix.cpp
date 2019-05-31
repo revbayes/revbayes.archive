@@ -259,17 +259,17 @@ void NxsTransposeCompressedMatrix(
         pattern_counts->resize(npatterns);
     if (patternWeights)
         patternWeights->resize(npatterns);
-	for (unsigned p = 0; p < npatterns; ++p)
-		{
-		const NxsCharacterPattern & pattern = compressedTransposedMatrix[p];
-		const std::vector<NxsCDiscreteState_t> & states = pattern.stateCodes;
-		for (unsigned t = 0; t < ntaxa; ++t)
-		    matrix[t][p] = states[t];
+    for (unsigned p = 0; p < npatterns; ++p)
+    {
+	const NxsCharacterPattern & pattern = compressedTransposedMatrix[p];
+	const std::vector<NxsCDiscreteState_t> & states = pattern.stateCodes;
+	for (unsigned t = 0; t < ntaxa; ++t)
+	    matrix[t][p] = states[t];
         if (pattern_counts)
             (*pattern_counts)[p] = pattern.count;
         if (patternWeights)
             (*patternWeights)[p] = pattern.sumOfPatternWeights;
-		}
+    }
 }
 
 NxsCXXDiscreteMatrix::NxsCXXDiscreteMatrix(const NxsCharactersBlock & cb, bool gapsToMissing, const NxsUnsignedSet * toInclude, bool standardizeCoding)

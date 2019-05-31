@@ -202,7 +202,7 @@ double DirichletSimplexProposal::doProposal( void )
             lnProposalRatio  = RbStatistics::Dirichlet::lnPdf(alphaReverse, x) - RbStatistics::Dirichlet::lnPdf(alphaForward, z); // Hastings Ratio
             lnProposalRatio += (n - nCategories - 1) * log(factor); // Jacobian
         }
-        catch (RbException e)
+		catch (RbException &e)
         {
             lnProposalRatio = RbConstants::Double::neginf;
         }
@@ -247,7 +247,7 @@ double DirichletSimplexProposal::doProposal( void )
             // finally, we calculate the log of the Hastings ratio
             lnProposalRatio = RbStatistics::Dirichlet::lnPdf(alphaReverse, curVal) - RbStatistics::Dirichlet::lnPdf(alphaForward, newVal);
         }
-        catch (RbException e)
+		catch (RbException &e)
         {
             lnProposalRatio = RbConstants::Double::neginf;
         }
@@ -343,5 +343,7 @@ void DirichletSimplexProposal::tune( double rate )
         alpha *= (2.0 - rate/p);
     }
     
+    // set a hard maximum of 100
+    alpha = fmin(100, alpha);
 }
 

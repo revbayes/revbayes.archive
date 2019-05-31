@@ -1,5 +1,5 @@
 #include "DagNode.h"
-#include "FileMonitor.h"
+#include "VariableMonitor.h"
 #include "MonteCarloSampler.h"
 #include "MoveSchedule.h"
 #include "PowerPosteriorAnalysis.h"
@@ -108,7 +108,6 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
     
     
     // Run the chain
-    size_t numStars = 0;
     for (size_t k=1; k<=generations; k++)
     {
         if ( process_active == true )
@@ -161,7 +160,7 @@ void PowerPosteriorAnalysis::initMPI( void )
 }
 
 
-void PowerPosteriorAnalysis::runAll(size_t gen)
+void PowerPosteriorAnalysis::runAll(size_t gen, double burnin_fraction, size_t pre_burnin_generations, size_t tuning_interval)
 {
 
 //    initMPI();
@@ -194,7 +193,7 @@ void PowerPosteriorAnalysis::runAll(size_t gen)
     {
     
         // run the i-th stone
-        runStone(i, gen);
+        runStone(i, gen, burnin_fraction, pre_burnin_generations, tuning_interval);
         
     }
     
@@ -211,7 +210,7 @@ void PowerPosteriorAnalysis::runAll(size_t gen)
 
 
 
-void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
+void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen, double burnin_fraction, size_t pre_burnin_generations, size_t tuning_interval)
 {
     
     // create the directory if necessary
@@ -233,7 +232,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     sampler->reset();
 
     
-    size_t burnin = size_t( ceil( 0.25*gen ) );
+    size_t burnin = size_t( ceil( burnin_fraction*gen ) );
     
     size_t printInterval = size_t( round( fmax(1,gen/40.0) ) );
     size_t digits = size_t( ceil( log10( powers.size() ) ) );
@@ -257,6 +256,19 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     ss << "_stone_" << idx;
     sampler->addFileMonitorExtension( ss.str(), false);
     
+    // let's do a pre-burnin
+    for (size_t k=1; k<=pre_burnin_generations; k++)
+    {
+        
+        sampler->nextCycle(false);
+        
+        // check for autotuning
+        if ( k % tuning_interval == 0 && k != pre_burnin_generations )
+        {
+            sampler->tune();
+        }
+        
+    }
     
     // Monitor
     sampler->startMonitors(gen, false);

@@ -50,7 +50,7 @@ moves[mvi++] = mvScale(psi,lambda=0.1,weight=1)
 moves[mvi++] = mvScale(psi,lambda=0.01,weight=1)
 
 ### Define the tree-prior distribution as the fossilized birth-death process ###
-fbd_dist = dnFBDP(origin=origin_time, lambda=speciation_rate, mu=extinction_rate, psi=psi, rho=1.0, taxa=taxa)
+fbd_dist = dnFBDRP(origin=origin_time, lambda=speciation_rate, mu=extinction_rate, psi=psi, rho=1.0, taxa=taxa)
 
 # The will be a random variable of a constrained topology distribution that is governed by the FBD #
 # this distribution will generate FBD trees that match the monophyly constraints defined above #

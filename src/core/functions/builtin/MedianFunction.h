@@ -17,11 +17,6 @@ namespace RevBayesCore {
      *   y = x[ (x.size()-1)/2 ]                             if x.size() is even
      *   y = (x[ (x.size()-1)/2 ]+x[ x.size()/2 ]) / 2       otherwise
      *
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since Version 1.0, 2014-07-04
-     *
      */
     class MedianFunction : public TypedFunction<double> {
         

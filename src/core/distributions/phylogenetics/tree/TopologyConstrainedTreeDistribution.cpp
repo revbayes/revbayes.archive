@@ -175,12 +175,12 @@ double TopologyConstrainedTreeDistribution::computeLnProbability( void )
     recursivelyUpdateClades( value->getRoot() );
     
     // first check if the current tree matches the clade constraints
-    if ( !matchesConstraints() )
+    if ( matchesConstraints() == false )
     {
         return RbConstants::Double::neginf;
     }
     
-    if ( !matchesBackbone() )
+    if ( matchesBackbone() == false )
     {
         return RbConstants::Double::neginf;
     }
@@ -355,7 +355,7 @@ bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
     {
         
         std::vector<Clade> constraints;
-        if (monophyly_constraints[i].isOptionalMatch())
+        if ( monophyly_constraints[i].isOptionalMatch() == true )
         {
             constraints = monophyly_constraints[i].getOptionalConstraints();
         }
@@ -370,7 +370,7 @@ bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
             
             std::vector<RbBitSet>::iterator it = std::find(active_clades.begin(), active_clades.end(), constraints[j].getBitRepresentation() );
             
-            if (it != active_clades.end() && !constraints[j].isNegativeConstraint() )
+            if (it != active_clades.end() && constraints[j].isNegativeConstraint() == false )
             {
                 constraint_satisfied[j] = true;
             }
@@ -384,15 +384,17 @@ bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
         bool any_satisfied = false;
         for (size_t j = 0; j < constraint_satisfied.size(); j++)
         {
-            if (constraint_satisfied[j])
+            if ( constraint_satisfied[j] == true )
             {
                 any_satisfied = true;
                 break;
             }
         }
-        if (!any_satisfied)
-            return false;
         
+        if ( any_satisfied == false )
+        {
+            return false;
+        }
     }
     
     return true;

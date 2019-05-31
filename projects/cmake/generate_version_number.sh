@@ -1,5 +1,6 @@
 #!/bin/sh
 
+echo "Generating version numbers in GitVersion.cpp"
 echo "#include \"GitVersion.h\"" > GitVersion.cpp
 #echo "const char *build_git_sha = \"$(git rev-parse HEAD)\";" >> GitVersion.cpp
 echo "const char *build_git_sha = \"$(git describe --abbrev=6 --always)\";" >> GitVersion.cpp

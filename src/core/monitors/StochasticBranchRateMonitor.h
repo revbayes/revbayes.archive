@@ -2,7 +2,7 @@
 #define RevBayes_development_branch_StochasticBranchRateMonitor_h
 
 #include "StateDependentSpeciationExtinctionProcess.h"
-#include "AbstractFileMonitor.h"
+#include "VariableMonitor.h"
 #include "TypedDagNode.h"
 #include "StochasticNode.h"
 
@@ -15,7 +15,7 @@ namespace RevBayesCore {
     /**
      * Monitor to print out the time spent in each state during an SSE stochastically mapped character history.
      */
-    class StochasticBranchRateMonitor : public AbstractFileMonitor {
+    class StochasticBranchRateMonitor : public VariableMonitor {
         
     public:
         

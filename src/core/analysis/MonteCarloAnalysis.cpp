@@ -187,7 +187,6 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
     
     
     // Run the chain
-    size_t num_stars = 0;
     for (size_t k=1; k<=generations; ++k)
     {
         
@@ -718,7 +717,7 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
 
 
 
-void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingRule> rules )
+void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingRule> rules, size_t tuning_interval )
 {
     
     // get the current generation
@@ -836,6 +835,14 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingR
                 
                 // Monitor
                 runs[i]->monitor(gen);
+                
+                // check for autotuning
+                if ( tuning_interval != 0 && (gen % tuning_interval) == 0 )
+                {
+                    
+                    runs[i]->tune();
+                    
+                }
             }
 
         }
