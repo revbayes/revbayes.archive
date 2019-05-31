@@ -290,6 +290,10 @@ void StartingTreeSimulator::simulateClade( std::set<TopologyNode*> &nodes) const
     {
         TopologyNode *this_node = *it;
         double a = this_node->getAge();
+        if ( this_node->isTip() == true )
+        {
+            a = this_node->getTaxon().getAgeRange().getMax();
+        }
         if ( a > min_age )
         {
             serial_times.push_back(a);

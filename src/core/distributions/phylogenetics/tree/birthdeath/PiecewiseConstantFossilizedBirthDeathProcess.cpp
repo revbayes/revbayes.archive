@@ -156,14 +156,14 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
                 }
             }
             // y == d
-            else if ( d_i[i] != taxa[i].getAgeRange().getMin() )
+            else if ( fabs(d_i[i] - taxa[i].getAgeRange().getMin()) > 1E-5 )
             {
                 return RbConstants::Double::neginf;
             }
 
             // if the tip is a sampling event in the past
             // replace observed extinction time with unobserved extinction time
-            if( d_i[i] > 0.0 )
+            if ( d_i[i] > 0.0 )
             {
                 lnProb -= death[di];
                 lnProb += log( fossil[di] ) + log( p(d_i[i], di) );
@@ -258,6 +258,7 @@ void PiecewiseConstantFossilizedBirthDeathProcess::simulateClade(std::vector<Top
         if( n[i]->isTip() )
         {
             double min = n[i]->getTaxon().getAgeRange().getMin();
+            double max = n[i]->getTaxon().getAgeRange().getMax();
 
             // in the extended tree, tip ages are extinction times
             if( extended )
