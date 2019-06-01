@@ -552,6 +552,7 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
  */
 void Tree::fillNodesByPhylogeneticTraversal(TopologyNode* node)
 {
+// std::cout << "filling node " << node->getIndex() << "; it has " << node->getNumberOfChildren() << " children and node->isTip() == " << node->isTip() << std::endl;
     // now call this function recursively for all your children
     for (size_t i=0; i<node->getNumberOfChildren(); i++)
     {
@@ -1235,6 +1236,69 @@ void Tree::makeInternalNodesBifurcating(bool reindex)
 
 }
 
+// Makes an unrooted tree a rooted tree
+// We start with this tree
+//  ___ A (child[0])
+// |___ B (child[1])
+// |___ C (child[2])
+//
+// We end with this tree
+// ___ A
+//|  _ B
+//|_|
+//  |_ C
+void Tree::makeRooted(bool reindex)
+{
+    // std::cout << "hello from Tree::makeRooted()" << std::endl;
+    if (rooted || root->getChildrenIndices().size() != 3)
+    {
+      throw(RbException("Cannot add a root to a rooted tree."));
+    }
+
+    // Root's children
+    TopologyNode* a = &root->getChild(0);
+    TopologyNode* b = &root->getChild(1);
+    TopologyNode* c = &root->getChild(2);
+
+    // std::cout << "got all children" << std::endl;
+    // root->removeAllChildren();
+    root->removeChild(b);
+    root->removeChild(c);
+
+    // std::cout << "root has no kids now" << std::endl;
+    // Topology at new node
+    TopologyNode *new_node = new TopologyNode( getNumberOfNodes()+1 );
+    // TopologyNode* new_node = root;
+    // new_node->setIndex(num_nodes + 1);
+    // std::cout << "new node exists, has index " << new_node->getIndex() << std::endl;
+    new_node->addChild(b);
+    new_node->addChild(c);
+
+    b->setParent(new_node);
+    c->setParent(new_node);
+
+    // new_node->addChild(b);
+    // new_node->addChild(c);
+
+    // std::cout << "new node stole root's kids" << std::endl;
+    // Topology at root
+    // root->addChild(a);
+    root->addChild(new_node);
+    new_node->setParent(root);
+
+    // std::cout << "root adopted new node" << std::endl;
+    // Misc cleanup
+    new_node->setBranchLength(0.0,false);
+    new_node->setNodeType(false,false,true);
+    root->setNodeType(false,true,false);
+    rooted = true;
+    num_nodes++;
+
+    // std::cout << "about to set root" << std::endl;
+    // we need to reset the root so that the vector of nodes get filled again with the new number of nodes
+    setRoot( &getRoot(), reindex );
+
+}
 
 // method to order nodes by their existing index
 // used when reading in tree with existing node indexes we need to keep
@@ -1698,16 +1762,16 @@ void Tree::setTaxonObject(const std::string& current_name, const Taxon& new_taxo
 
 void Tree::unroot( void )
 {
-    
+
     if ( isRooted() == true )
     {
-        
+
         // get the root node because we need to make this tree unrooted (for topology comparison)
         TopologyNode *old_root = &getRoot();
-        
+
         // make the tree use branch lengths instead of ages
         old_root->setUseAges(false, true);
-        
+
         size_t child_index = 0;
         if ( old_root->getChild(child_index).isTip() == true )
         {
@@ -1715,24 +1779,24 @@ void Tree::unroot( void )
         }
         TopologyNode *new_root = &old_root->getChild( child_index );
         TopologyNode *second_child = &old_root->getChild( (child_index == 0 ? 1 : 0) );
-        
+
         double bl_first = new_root->getBranchLength();
         double bl_second = second_child->getBranchLength();
-        
+
         old_root->removeChild( new_root );
         old_root->removeChild( second_child );
         new_root->setParent( NULL );
         new_root->addChild( second_child );
         second_child->setParent( new_root );
-        
+
         second_child->setBranchLength( bl_first + bl_second );
-        
+
         // finally we need to set the new root to our tree copy
         setRooted( false );
         setRoot( new_root, true);
-        
+
     }
-    
+
 }
 
 
