@@ -181,6 +181,68 @@ void Mcmc::addMonitor(const Monitor &m)
 }
 
 
+Mcmc* Mcmc::clone( void ) const
+{
+    
+    return new Mcmc( *this );
+}
+
+
+void Mcmc::checkpoint( void ) const
+{
+    // initialize variables
+    std::string separator = "\t";
+    bool flatten = false;
+    
+    RbFileManager f = RbFileManager(checkpoint_file_name);
+    f.createDirectoryForFile();
+    
+    // open the stream to the file
+    std::fstream out_stream;
+    out_stream.open( f.getFullFileName().c_str(), std::fstream::out);
+    
+
+    // first, we write the names of the variables
+    for (std::vector<DagNode *>::const_iterator it=variable_nodes.begin(); it!=variable_nodes.end(); ++it)
+    {
+        // add a separator before every new element
+        out_stream << separator;
+        
+        const DagNode* the_node = *it;
+        
+        // print the header
+        if (the_node->getName() != "")
+        {
+            the_node->printName(out_stream,separator, -1, true, flatten);
+        }
+        else
+        {
+            out_stream << "Unnamed";
+        }
+        
+    }
+    
+    
+    // second, we write the values of the variables
+    for (std::vector<DagNode*>::const_iterator i = variable_nodes.begin(); i != variable_nodes.end(); ++i)
+    {
+        // add a separator before every new element
+        out_stream << separator;
+        
+        // get the node
+        DagNode *node = *i;
+        
+        // print the value
+        node->printValue(out_stream, separator, -1, false, false, flatten);
+    }
+    
+    
+    // clean up
+    out_stream.close();
+
+}
+
+
 /**
  * Disable all screen monitors. This means we simply delete it.
  */
@@ -204,13 +266,6 @@ void Mcmc::disableScreenMonitor( bool all, size_t rep )
         
     }
     
-}
-
-
-Mcmc* Mcmc::clone( void ) const
-{
-    
-    return new Mcmc( *this );
 }
 
 
@@ -354,10 +409,10 @@ std::vector<Mcmc::tuningInfo> Mcmc::getMovesTuningInfo(void)
     // iterate over the moves
     for (size_t i = 0; i < moves.size(); ++i)
     {
-        moves_tuningInfo[i].num_tried_current_period = moves[i].getNumberTriedCurrentPeriod();
-        moves_tuningInfo[i].num_tried_total = moves[i].getNumberTriedTotal();
+        moves_tuningInfo[i].num_tried_current_period    = moves[i].getNumberTriedCurrentPeriod();
+        moves_tuningInfo[i].num_tried_total             = moves[i].getNumberTriedTotal();
         moves_tuningInfo[i].num_accepted_current_period = moves[i].getNumberAcceptedCurrentPeriod();
-        moves_tuningInfo[i].num_accepted_total = moves[i].getNumberAcceptedTotal();
+        moves_tuningInfo[i].num_accepted_total          = moves[i].getNumberAcceptedTotal();
         
         double tmp_tuningParameter = moves[i].getMoveTuningParameter();
         
@@ -573,6 +628,8 @@ void Mcmc::initializeSampler( bool prior_only )
     }
     
     generation = 0;
+    
+    resetVariableDagNodes();
 }
 
 
@@ -738,6 +795,7 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
         
     }
     
+    resetVariableDagNodes();
 }
 
 
@@ -806,6 +864,57 @@ void Mcmc::reset( void )
 
 
 /**
+ * Reset the currently monitored DAG nodes by extracting the DAG nodes from the StochasticVariable again
+ * and store this in the set of DAG nodes.
+ */
+void Mcmc::resetVariableDagNodes( void )
+{
+    
+    // for savety we empty our dag nodes
+    variable_nodes.clear();
+    
+    if ( model != NULL )
+    {
+        // we only want to have each nodes once
+        // this should by default happen by here we check again
+        std::set<std::string> var_names;
+        
+        const std::vector<DagNode*> &n = model->getDagNodes();
+        for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it)
+        {
+            
+            DagNode *the_node = *it;
+            
+            // only non clamped variables
+            if ( the_node->isClamped() == false )
+            {
+                if ( the_node->isStochastic() && the_node->isHidden() == false )
+                {
+                    const std::string &name = the_node->getName();
+                    if ( var_names.find( name ) == var_names.end() )
+                    {
+                        variable_nodes.push_back( the_node );
+                        var_names.insert( name );
+                    }
+                    else
+                    {
+#ifdef DEBUG_SEBASTIAN
+                        std::cerr << "Trying to add variable with name '" << name << "' twice." << std::endl;
+#endif
+                    }
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+}
+
+
+/**
  * Set the active PID of this specific MCMC simulation.
  */
 void Mcmc::setActivePIDSpecialized(size_t a, size_t n)
@@ -852,6 +961,12 @@ void Mcmc::setChainActive(bool tf)
 void Mcmc::setChainLikelihoodHeat(double h)
 {
     chain_likelihood_heat = h;
+}
+
+
+void Mcmc::setCheckpointFile(const std::string &f)
+{
+    checkpoint_file_name = f;
 }
 
 

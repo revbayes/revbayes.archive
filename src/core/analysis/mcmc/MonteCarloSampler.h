@@ -38,13 +38,14 @@ namespace RevBayesCore {
     public:
         MonteCarloSampler(void);
         MonteCarloSampler(const MonteCarloSampler &m);
-        virtual                                ~MonteCarloSampler(void);                            //!< Virtual destructor
+        virtual                                ~MonteCarloSampler(void);                                    //!< Virtual destructor
                 
         // pure virtual public methods
         virtual void                            addFileMonitorExtension(const std::string &s, bool dir) = 0;
         virtual void                            addMonitor(const Monitor &m) = 0;
         virtual void                            disableScreenMonitor(bool all, size_t rep) = 0;             //!< Disable/remove all screen monitors
         virtual MonteCarloSampler*              clone(void) const = 0;
+        virtual void                            checkpoint(void) const = 0;                                 //!< Perform checkpointing by writing the current values to a file.
 //        virtual void                            run(size_t g) = 0;
         virtual void                            finishMonitors(size_t n, MonteCarloAnalysisOptions::TraceCombinationTypes ct) = 0; //!< Finish the monitors
         virtual const Model&                    getModel(void) const = 0;
@@ -58,6 +59,7 @@ namespace RevBayesCore {
         virtual void                            redrawStartingValues(void) = 0;                             //!< Redraw the starting values.
         virtual void                            removeMonitors(void) = 0;
         virtual void                            reset(void) = 0;                                            //!< Reset the sampler for a new run.
+        virtual void                            setCheckpointFile(const std::string &f) = 0;
         virtual void                            setLikelihoodHeat(double v) = 0;                            //!< Set the heating temparature of the likelihood of the chain
 //        virtual void                            setMasterSampler(bool tf) = 0;                            //!< Set whether this one is the master.
         virtual void                            setModel(Model *m, bool redraw) = 0;

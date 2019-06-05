@@ -40,7 +40,7 @@ AbstractFileMonitor::AbstractFileMonitor(const AbstractFileMonitor &f) : Monitor
     working_file_name   = f.working_file_name;
     append              = f.append;
     flatten             = f.flatten;
-    write_version        = f.write_version;
+    write_version       = f.write_version;
     
     if ( f.out_stream.is_open() == true )
     {

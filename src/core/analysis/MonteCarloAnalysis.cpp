@@ -289,6 +289,114 @@ const Model& MonteCarloAnalysis::getModel( void ) const
 }
 
 
+void MonteCarloAnalysis::initializeFromCheckpoint(const std::string &f)
+{
+//    size_t n_samples = traces[0].size();
+    size_t last_generation = 0;
+//    size_t n_traces = traces.size();
+    
+    std::vector<std::string> parameter_names;
+    std::vector<std::string> parameter_values;
+    
+    
+    // check that the file/path name has been correctly specified
+    RevBayesCore::RbFileManager fm( f );
+    if ( !fm.testFile() || !fm.testDirectory() )
+    {
+        std::string errorStr = "";
+        fm.formatError( errorStr );
+        throw( RbException(errorStr) );
+    }
+    
+    bool hasHeaderBeenRead = false;
+    
+    // Open file
+    std::ifstream inFile( fm.getFullFileName().c_str() );
+    
+    if ( !inFile )
+    {
+        throw RbException( "Could not open file \"" + f + "\"" );
+    }
+    
+    // Initialize
+    std::string commandLine;
+    std::string delimiter = "\t";
+    
+    // our variable to store the current line of the file
+    std::string line;
+    
+    // Command-processing loop
+    while ( inFile.good() )
+    {
+        
+        // Read a line
+        fm.safeGetline( inFile, line );
+        
+        // skip empty lines
+        //line = stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if (line.length() == 0)
+        {
+            continue;
+        }
+        
+        
+        // removing comments
+        if (line[0] == '#')
+        {
+            continue;
+        }
+        
+        break;
+        
+    }
+    
+    // we assume the parameter names at the first line of the file
+    StringUtilities::stringSplit(line, delimiter, parameter_names);
+    
+    // we assume the parameter values at the second line of the file
+    StringUtilities::stringSplit(line, delimiter, parameter_values);
+    
+    
+    
+
+    size_t n_parameters = parameter_names.size();
+    std::vector<DagNode*> nodes = getModel().getDagNodes();
+    
+    for ( size_t i = 0; i < n_parameters; ++i )
+    {
+        std::string parameter_name = parameter_names[i];
+        
+        // iterate over all DAG nodes (variables)
+        for ( size_t j = 0; j < nodes.size(); ++j )
+        {
+            if ( nodes[j]->getName() == parameter_name )
+            {
+                // set the value for the variable with the last sample in the trace
+                nodes[j]->setValueFromString( parameter_values[i] );
+                break;
+            }
+        }
+    }
+    
+    for (size_t i = 0; i < replicates; ++i)
+    {
+        // set iteration num for all runs
+        runs[i]->setCurrentGeneration( last_generation );
+        
+        RbVector<Monitor>& monitors = runs[i]->getMonitors();
+        for (size_t j = 0; j < monitors.size(); ++j)
+        {
+            if ( monitors[j].isFileMonitor() )
+            {
+                // set file monitors to append
+                AbstractFileMonitor* m = dynamic_cast< AbstractFileMonitor *>( &monitors[j] );
+                m->setAppend(true);
+            }
+        }
+    }
+}
+
+
 void MonteCarloAnalysis::initializeFromTrace( RbVector<ModelTrace> traces )
 {
     size_t n_samples = traces[0].size();
@@ -534,9 +642,9 @@ void MonteCarloAnalysis::resetReplicates( void )
 
 
 #ifdef RB_MPI
-void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, const MPI_Comm &analysis_comm, size_t tuning_interval, bool verbose )
+void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, const MPI_Comm &analysis_comm, size_t tuning_interval, const std::string &checkpoint_file, size_t checkpoint_interval, bool verbose )
 #else
-void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, size_t tuning_interval, bool verbose )
+void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, size_t tuning_interval, const std::string &checkpoint_file, size_t checkpoint_interval, bool verbose )
 #endif
 {
     
@@ -548,6 +656,7 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         if ( runs[i] != NULL )
         {
             gen = runs[i]->getCurrentGeneration();
+            runs[i]->setCheckpointFile( checkpoint_file );
         }
         
     }
@@ -658,6 +767,14 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
                 {
                     
                     runs[i]->tune();
+                    
+                }
+                
+                // check for autotuning
+                if ( checkpoint_interval != 0 && (gen % checkpoint_interval) == 0 )
+                {
+                    
+                    runs[i]->checkpoint();
                     
                 }
                 

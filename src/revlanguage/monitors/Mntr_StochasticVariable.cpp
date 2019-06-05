@@ -39,7 +39,7 @@ void Mntr_StochasticVariable::constructInternalObject( void )
     // now allocate a new sliding move
     const std::string&                  fn      = static_cast<const RlString &>( filename->getRevObject() ).getValue();
     const std::string&                  sep     = static_cast<const RlString &>( separator->getRevObject() ).getValue();
-    int                                 g       = static_cast<const Natural  &>( printgen->getRevObject() ).getValue();
+    long                                g       = static_cast<const Natural  &>( printgen->getRevObject() ).getValue();
     bool                                ap      = static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
     bool                                wv      = static_cast<const RlBoolean &>( version->getRevObject() ).getValue();
     RevBayesCore::StochasticVariableMonitor *m = new RevBayesCore::StochasticVariableMonitor((unsigned long)g, fn, sep);

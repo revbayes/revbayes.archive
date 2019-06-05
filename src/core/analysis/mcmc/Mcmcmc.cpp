@@ -21,20 +21,20 @@
 using namespace RevBayesCore;
 
 Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor> &mn, std::string sT, size_t nc, size_t si, double dt, size_t ntries, bool th, double tht, std::string sm, std::string smo) : MonteCarloSampler( ),
-num_chains(nc),
-schedule_type(sT),
-current_generation(0),
-burnin_generation(0),
-generation(0),
-swap_interval(si),
-swap_interval2(0),
-active_chain_index( 0 ),
-delta( dt ),
-tune_heat(th),
-tune_heat_target(tht),
-useNeighborSwapping(true),
-useRandomSwapping(false),
-swap_mode(smo)
+    num_chains(nc),
+    schedule_type(sT),
+    current_generation(0),
+    burnin_generation(0),
+    generation(0),
+    swap_interval(si),
+    swap_interval2(0),
+    active_chain_index( 0 ),
+    delta( dt ),
+    tune_heat(th),
+    tune_heat_target(tht),
+    useNeighborSwapping(true),
+    useRandomSwapping(false),
+    swap_mode(smo)
 {
     
     // initialize container sizes
@@ -173,6 +173,22 @@ double Mcmcmc::computeBeta(double d, size_t idx)
 Mcmcmc* Mcmcmc::clone(void) const
 {
     return new Mcmcmc(*this);
+}
+
+
+void Mcmcmc::checkpoint( void ) const
+{
+    
+    for (size_t i = 0; i < num_chains; ++i)
+    {
+        
+        if ( chains[i] != NULL )
+        {
+            chains[i]->checkpoint();
+        }
+        
+    }
+    
 }
 
 
@@ -1027,6 +1043,24 @@ void Mcmcmc::startMonitors(size_t num_cycles, bool reopen)
         if ( chains[i] != NULL )
         {
             chains[i]->startMonitors( num_cycles, reopen );
+        }
+        
+    }
+    
+}
+
+
+void Mcmcmc::setCheckpointFile(const std::string &f)
+{
+    RbFileManager fm = RbFileManager(f);
+
+    for (size_t j = 0; j < num_chains; ++j)
+    {
+        
+        if ( chains[j] != NULL )
+        {
+            std::string chain_file_name = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + "_chain_" + j + "." + fm.getFileExtension();
+            chains[j]->setCheckpointFile( chain_file_name );
         }
         
     }
