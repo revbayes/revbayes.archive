@@ -161,6 +161,16 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         
         return NULL;
     }
+    else if ( name == "initializeFromCheckpoint")
+    {
+        found = true;
+        
+        const std::string &checkpoint_filename = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
+        
+        value->initializeFromCheckpoint( checkpoint_filename );
+        
+        return NULL;
+    }
     
     return RevObject::executeMethod( name, args, found );
 }
@@ -258,9 +268,13 @@ void MonteCarloAnalysis::initializeMethods()
     operatorSummaryArgRules->push_back( new ArgumentRule( "currentPeriod" , RlBoolean::getClassTypeSpec(), "Should the operator summary (number of tries and acceptance, and the acceptance ratio) of only the current period (i.e., after the last tuning) be printed?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
     methods.addFunction( new MemberProcedure( "operatorSummary", RlUtils::Void, operatorSummaryArgRules) );
     
-    ArgumentRules* initializeTraceArgRules = new ArgumentRules();
-    initializeTraceArgRules->push_back( new ArgumentRule("trace", WorkspaceVector<ModelTrace>::getClassTypeSpec(), "The sample trace object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-    methods.addFunction( new MemberProcedure( "initializeFromTrace", RlUtils::Void, initializeTraceArgRules) );
+    ArgumentRules* initialize_trace_arg_rules = new ArgumentRules();
+    initialize_trace_arg_rules->push_back( new ArgumentRule("trace", WorkspaceVector<ModelTrace>::getClassTypeSpec(), "The sample trace object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "initializeFromTrace", RlUtils::Void, initialize_trace_arg_rules) );
+    
+    ArgumentRules* initialize_checkpoint_arg_rules = new ArgumentRules();
+    initialize_checkpoint_arg_rules->push_back( new ArgumentRule("checkpointFile", RlString::getClassTypeSpec(), "The checkpoint filename.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "initializeFromCheckpoint", RlUtils::Void, initialize_checkpoint_arg_rules) );
     
 }
 

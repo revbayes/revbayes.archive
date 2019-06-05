@@ -308,8 +308,6 @@ void MonteCarloAnalysis::initializeFromCheckpoint(const std::string &f)
         throw( RbException(errorStr) );
     }
     
-    bool hasHeaderBeenRead = false;
-    
     // Open file
     std::ifstream inFile( fm.getFullFileName().c_str() );
     
@@ -378,6 +376,8 @@ void MonteCarloAnalysis::initializeFromCheckpoint(const std::string &f)
         }
     }
     
+    
+    // we also need to tell our monitors to append after the last sample
     for (size_t i = 0; i < replicates; ++i)
     {
         // set iteration num for all runs
@@ -672,6 +672,13 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
                 // set the filename for the MCMC object
                 runs[i]->setCheckpointFile( run_checkpoint_file );
             }
+            else if ( checkpoint_file != "" )
+            {
+                // set the filename for the MCMC object
+                runs[i]->setCheckpointFile( checkpoint_file );
+                
+            }
+            
         }
         
     }
