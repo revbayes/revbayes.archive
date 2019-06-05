@@ -662,9 +662,13 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         if ( runs[i] != NULL && runs[i]->getCurrentGeneration() == 0 )
         {
             
-            runs[i]->writeMonitorHeaders();
+            runs[i]->writeMonitorHeaders( false );
             runs[i]->monitor(0);
             
+        }
+        else if ( runs[i] != NULL )
+        {
+            runs[i]->writeMonitorHeaders( runs[i]->getCurrentGeneration() > 0 );
         }
         
     }
@@ -861,7 +865,7 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingR
         if ( runs[i] != NULL && runs[i]->getCurrentGeneration() == 0 )
         {
             
-            runs[i]->writeMonitorHeaders();
+            runs[i]->writeMonitorHeaders( false );
             runs[i]->monitor(0);
             
         }

@@ -79,7 +79,7 @@ namespace RevBayesCore {
         void                                                setScheduleType(const std::string &s);                                                  //!< Set the type of the move schedule
         void                                                startMonitors(size_t numCycles, bool reopen);                                           //!< Start the monitors
         void                                                tune(void);                                                                             //!< Tune the sampler and its moves.
-        void                                                writeMonitorHeaders(void);                                                              //!< Write the headers of the monitors
+        void                                                writeMonitorHeaders(bool screen_only);                                                              //!< Write the headers of the monitors
         
         
     protected:

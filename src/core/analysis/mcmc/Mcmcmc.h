@@ -62,7 +62,7 @@ namespace RevBayesCore {
         void                                    setNumberOfProcesses(size_t i);                                                 //!< Set the number of processes for this replication.
         void                                    startMonitors(size_t numCycles, bool reopen);                                   //!< Start the monitors
         void                                    tune(void);                                                                     //!< Tune the sampler and its moves.
-        void                                    writeMonitorHeaders(void);                                                      //!< Write the headers of the monitors.
+        void                                    writeMonitorHeaders(bool screen_only);                                                      //!< Write the headers of the monitors.
 
         
     protected:

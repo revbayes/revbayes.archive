@@ -255,12 +255,12 @@ void Mcmc::checkpoint( void ) const
     // assemble the new filename
     std::string mcmc_checkpoint_file_name = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + "_mcmc." + fm.getFileExtension();
     
-    RbFileManager f_mcmc = RbFileManager(mcmc_checkpoint_file_name);
-    f_mcmc.createDirectoryForFile();
+    RbFileManager fm_mcmc = RbFileManager(mcmc_checkpoint_file_name);
+    fm_mcmc.createDirectoryForFile();
     
     // open the stream to the file
     std::fstream out_stream_mcmc;
-    out_stream_mcmc.open( f_mcmc.getFullFileName().c_str(), std::fstream::out);
+    out_stream_mcmc.open( fm_mcmc.getFullFileName().c_str(), std::fstream::out);
     
     out_stream_mcmc << "iter = " << generation << std::endl;
     
@@ -268,7 +268,34 @@ void Mcmc::checkpoint( void ) const
     out_stream_mcmc.close();
     
     
-
+    /////////
+    // Next we also write the moves information into a file
+    /////////
+    
+    // assemble the new filename
+    std::string moves_checkpoint_file_name = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + "_moves." + fm.getFileExtension();
+    
+    RbFileManager fm_moves = RbFileManager(moves_checkpoint_file_name);
+    fm_moves.createDirectoryForFile();
+    
+    // open the stream to the file
+    std::fstream out_stream_moves;
+    out_stream_moves.open( fm_moves.getFullFileName().c_str(), std::fstream::out);
+    
+    for (size_t i = 0; i < moves.size(); ++i)
+    {
+        out_stream_moves << moves[i].getMoveName();
+        out_stream_moves << "(variable="                << moves[i].getDagNodes()[0]->getName();
+        out_stream_moves << ",num_tried_current="       << moves[i].getNumberTriedCurrentPeriod();
+        out_stream_moves << ",num_tried_total="         << moves[i].getNumberTriedTotal();
+        out_stream_moves << ",num_accepted_current="    << moves[i].getNumberAcceptedCurrentPeriod();
+        out_stream_moves << ",num_accepted_total="      << moves[i].getNumberAcceptedTotal();
+        out_stream_moves << ",tuning_value="            << moves[i].getMoveTuningParameter();
+        out_stream_moves << ")" << std::endl;
+    }
+    
+    // clean up
+    out_stream_moves.close();
 }
 
 
@@ -750,6 +777,7 @@ void Mcmc::initializeSamplerFromCheckpoint( void )
             {
                 // set the value for the variable with the last sample in the trace
                 nodes[j]->setValueFromString( parameter_values[i] );
+                nodes[j]->keep();
                 break;
             }
         }
@@ -1277,7 +1305,7 @@ void Mcmc::startMonitors( size_t num_cycles, bool reopen )
 /**
  * Write the header for each of the monitors.
  */
-void Mcmc::writeMonitorHeaders( void )
+void Mcmc::writeMonitorHeaders( bool screen_monitor_only )
 {
     
     // Open the output file and print headers
@@ -1287,7 +1315,11 @@ void Mcmc::writeMonitorHeaders( void )
         // if this chain is active, print the header
         if ( chain_active == true && process_active == true )
         {
-            monitors[i].printHeader();
+            if ( monitors[i].isScreenMonitor() == true || screen_monitor_only == false )
+            {
+                monitors[i].printHeader();
+            }
+            
         }
         
     }

@@ -1838,7 +1838,7 @@ void Mcmcmc::updateChainState(size_t j)
 /**
  * Start the monitors at the beginning of a run which will simply delegate this call to each chain.
  */
-void Mcmcmc::writeMonitorHeaders( void )
+void Mcmcmc::writeMonitorHeaders( bool screen_monitor_only )
 {
     
     // Monitor
@@ -1847,7 +1847,7 @@ void Mcmcmc::writeMonitorHeaders( void )
         
         if ( chains[i] != NULL )
         {
-            chains[i]->writeMonitorHeaders();
+            chains[i]->writeMonitorHeaders( screen_monitor_only );
         }
         
     }
