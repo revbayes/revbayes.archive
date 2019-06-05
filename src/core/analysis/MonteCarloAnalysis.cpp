@@ -656,7 +656,22 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         if ( runs[i] != NULL )
         {
             gen = runs[i]->getCurrentGeneration();
-            runs[i]->setCheckpointFile( checkpoint_file );
+            
+            // also set the filename for checkpointing
+            if ( replicates > 1 && checkpoint_file != "" )
+            {
+                
+                // create the run specific appendix
+                std::stringstream ss;
+                ss << "_run_" << (i+1);
+                
+                // assemble the new filename
+                RbFileManager fm = RbFileManager(checkpoint_file);
+                std::string run_checkpoint_file = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + ss.str() + "." + fm.getFileExtension();
+
+                // set the filename for the MCMC object
+                runs[i]->setCheckpointFile( run_checkpoint_file );
+            }
         }
         
     }
