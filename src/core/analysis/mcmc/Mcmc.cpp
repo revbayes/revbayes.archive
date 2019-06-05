@@ -194,12 +194,12 @@ void Mcmc::checkpoint( void ) const
     std::string separator = "\t";
     bool flatten = false;
     
-    RbFileManager f = RbFileManager(checkpoint_file_name);
-    f.createDirectoryForFile();
+    RbFileManager fm = RbFileManager(checkpoint_file_name);
+    fm.createDirectoryForFile();
     
     // open the stream to the file
     std::fstream out_stream;
-    out_stream.open( f.getFullFileName().c_str(), std::fstream::out);
+    out_stream.open( fm.getFullFileName().c_str(), std::fstream::out);
     
 
     // first, we write the names of the variables
@@ -246,6 +246,28 @@ void Mcmc::checkpoint( void ) const
     
     // clean up
     out_stream.close();
+    
+    
+    /////////
+    // Now we also write the MCMC information into a file
+    /////////
+
+    // assemble the new filename
+    std::string mcmc_checkpoint_file_name = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + "_mcmc." + fm.getFileExtension();
+    
+    RbFileManager f_mcmc = RbFileManager(mcmc_checkpoint_file_name);
+    f_mcmc.createDirectoryForFile();
+    
+    // open the stream to the file
+    std::fstream out_stream_mcmc;
+    out_stream_mcmc.open( f_mcmc.getFullFileName().c_str(), std::fstream::out);
+    
+    out_stream_mcmc << "iter = " << generation << std::endl;
+    
+    // clean up
+    out_stream_mcmc.close();
+    
+    
 
 }
 
