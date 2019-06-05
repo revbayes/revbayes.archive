@@ -662,6 +662,148 @@ void Mcmc::initializeSampler( bool prior_only )
 }
 
 
+void Mcmc::initializeSamplerFromCheckpoint( void )
+{
+    
+    //    size_t n_samples = traces[0].size();
+    size_t last_generation = 0;
+    //    size_t n_traces = traces.size();
+    
+    std::vector<std::string> parameter_names;
+    std::vector<std::string> parameter_values;
+    
+    
+    // check that the file/path name has been correctly specified
+    RevBayesCore::RbFileManager fm( checkpoint_file_name );
+    if ( !fm.testFile() || !fm.testDirectory() )
+    {
+        std::string errorStr = "";
+        fm.formatError( errorStr );
+        throw( RbException(errorStr) );
+    }
+    
+    // Open file
+    std::ifstream inFile( fm.getFullFileName().c_str() );
+    
+    if ( !inFile )
+    {
+        throw RbException( "Could not open file \"" + checkpoint_file_name + "\"" );
+    }
+    
+    // Initialize
+    std::string commandLine;
+    std::string delimiter = "\t";
+    
+    // our variable to store the current line of the file
+    std::string line;
+    
+    // Command-processing loop
+    while ( inFile.good() )
+    {
+        
+        // Read a line
+        fm.safeGetline( inFile, line );
+        
+        // skip empty lines
+        //line = stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if (line.length() == 0)
+        {
+            continue;
+        }
+        
+        
+        // removing comments
+        if (line[0] == '#')
+        {
+            continue;
+        }
+        
+        break;
+        
+    }
+    
+    // we assume the parameter names at the first line of the file
+    StringUtilities::stringSplit(line, delimiter, parameter_names);
+    
+    // Read a line
+    fm.safeGetline( inFile, line );
+    
+    // we assume the parameter values at the second line of the file
+    StringUtilities::stringSplit(line, delimiter, parameter_values);
+    
+    // clean up
+    inFile.close();
+    
+    
+    
+    size_t n_parameters = parameter_names.size();
+    std::vector<DagNode*> nodes = getModel().getDagNodes();
+    
+    for ( size_t i = 0; i < n_parameters; ++i )
+    {
+        std::string parameter_name = parameter_names[i];
+        
+        // iterate over all DAG nodes (variables)
+        for ( size_t j = 0; j < nodes.size(); ++j )
+        {
+            if ( nodes[j]->getName() == parameter_name )
+            {
+                // set the value for the variable with the last sample in the trace
+                nodes[j]->setValueFromString( parameter_values[i] );
+                break;
+            }
+        }
+    }
+    
+    // assemble the new filename
+    std::string mcmc_checkpoint_file_name = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + "_mcmc." + fm.getFileExtension();
+    
+    RbFileManager fm_mcmc = RbFileManager(mcmc_checkpoint_file_name);
+    fm_mcmc.createDirectoryForFile();
+    
+    // Open file
+    std::ifstream in_file_mcmc( fm_mcmc.getFullFileName().c_str() );
+
+    std::string line_mcmc;
+    std::map<std::string, std::string> mcmc_pars;
+    // Command-processing loop
+    while ( in_file_mcmc.good() )
+    {
+        
+        // Read a line
+        fm_mcmc.safeGetline( in_file_mcmc, line_mcmc );
+        
+        if ( line_mcmc != "" )
+        {
+            std::vector<std::string> key_value;
+            StringUtilities::stringSplit(line_mcmc, " = ", key_value);
+
+            mcmc_pars.insert( std::make_pair<std::string, std::string>(key_value[0],key_value[1]) );
+        }
+        
+    }
+    last_generation = StringUtilities::asIntegerNumber( mcmc_pars["iter"] );
+    
+    // clean up
+    in_file_mcmc.close();
+    
+    
+    // we also need to tell our monitors to append after the last sample
+    // set iteration num
+    setCurrentGeneration( last_generation );
+        
+    for (size_t j = 0; j < monitors.size(); ++j)
+    {
+        if ( monitors[j].isFileMonitor() )
+        {
+            // set file monitors to append
+            AbstractFileMonitor* m = dynamic_cast< AbstractFileMonitor *>( &monitors[j] );
+            m->setAppend(true);
+        }
+    }
+    
+}
+
 
 void Mcmc::initializeMonitors(void)
 {

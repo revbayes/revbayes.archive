@@ -111,13 +111,13 @@ Mcmcmc::Mcmcmc(const Mcmcmc &m) : MonteCarloSampler(m)
         
     }
     
-    chain_values         = m.chain_values;
-    chain_heats          = m.chain_heats;
-    chain_moves_tuningInfo = m.chain_moves_tuningInfo;
+    chain_values            = m.chain_values;
+    chain_heats             = m.chain_heats;
+    chain_moves_tuningInfo  = m.chain_moves_tuningInfo;
     
-    burnin_generation    = m.burnin_generation;
-    current_generation   = m.current_generation;
-    base_chain           = m.base_chain->clone();
+    burnin_generation       = m.burnin_generation;
+    current_generation      = m.current_generation;
+    base_chain              = m.base_chain->clone();
     
 }
 
@@ -321,7 +321,7 @@ void Mcmcmc::initializeChains(void)
             chain_heats[i] = b;
         }
         
-        chain_moves_tuningInfo[i] = base_chain->getMovesTuningInfo();
+        chain_moves_tuningInfo[i]       = base_chain->getMovesTuningInfo();
         
         size_t active_pid_for_chain     = size_t( floor( i     * processors_per_chain ) + active_PID);
         size_t num_processer_for_chain  = size_t( floor( (i+1) * processors_per_chain ) + active_PID) - active_pid_for_chain;
@@ -365,6 +365,23 @@ void Mcmcmc::initializeSampler( bool priorOnly )
         {
             chains[i]->initializeSampler( priorOnly );
         }
+    }
+    
+}
+
+
+
+void Mcmcmc::initializeSamplerFromCheckpoint( void )
+{
+    
+    for (size_t i = 0; i < num_chains; ++i)
+    {
+            
+        if ( chains[i] != NULL )
+        {
+            chains[i]->checkpoint();
+        }
+        
     }
     
 }
@@ -571,7 +588,7 @@ void Mcmcmc::printMoveSummary(std::ostream &o, size_t chainId, size_t moveId, Mo
     
     // print the number of tries
     int t_length = 9;
-    const size_t num_tried_current_period = chain_moves_tuningInfo[chainId][moveId].num_tried_current_period;
+    const size_t num_tried_current_period       = chain_moves_tuningInfo[chainId][moveId].num_tried_current_period;
     if (num_tried_current_period > 0) t_length -= (int)log10(num_tried_current_period);
     for (int i = 0; i < t_length; ++i)
     {
@@ -582,7 +599,7 @@ void Mcmcmc::printMoveSummary(std::ostream &o, size_t chainId, size_t moveId, Mo
     
     // print the number of accepted
     int a_length = 9;
-    const size_t num_accepted_current_period = chain_moves_tuningInfo[chainId][moveId].num_accepted_current_period;
+    const size_t num_accepted_current_period        = chain_moves_tuningInfo[chainId][moveId].num_accepted_current_period;
     if (num_accepted_current_period > 0) a_length -= (int)log10(num_accepted_current_period);
     
     for (int i = 0; i < a_length; ++i)
@@ -1532,7 +1549,7 @@ void Mcmcmc::swapNeighborChains(void)
             if ( chains[i] != NULL )
             {
                 chains[i]->setChainPosteriorHeat( chain_heats[i] );
-                chains[i]->setMovesTuningInfo(chain_moves_tuningInfo[i]);
+                chains[i]->setMovesTuningInfo( chain_moves_tuningInfo[i] );
                 chains[i]->setChainActive( chain_heats[i] == 1.0 );
             }
         }
