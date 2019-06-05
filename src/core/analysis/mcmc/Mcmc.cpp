@@ -221,6 +221,7 @@ void Mcmc::checkpoint( void ) const
         }
         
     }
+    out_stream << std::endl;
     
     
     // second, we write the values of the variables
