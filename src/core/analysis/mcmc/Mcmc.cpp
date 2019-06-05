@@ -830,6 +830,86 @@ void Mcmc::initializeSamplerFromCheckpoint( void )
         }
     }
     
+    
+    
+    /////////
+    // Next we also write the moves information into a file
+    /////////
+    std::string moves_checkpoint_file_name = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + "_moves." + fm.getFileExtension();
+    
+    RbFileManager fm_moves = RbFileManager(moves_checkpoint_file_name);
+    fm_moves.createDirectoryForFile();
+    
+    // Open file
+    std::ifstream in_file_moves( fm_moves.getFullFileName().c_str() );
+    
+    std::string line_moves;
+    std::vector<std::string> stored_move_info;
+    // Command-processing loop
+    while ( in_file_moves.good() )
+    {
+        
+        // Read a line
+        fm_moves.safeGetline( in_file_moves, line_moves );
+        
+        if ( line_moves != "" )
+        {
+            stored_move_info.push_back( line_moves );
+        }
+        
+    }
+    
+    if ( moves.size() != stored_move_info.size() )
+    {
+        throw RbException("The number of stored moves from the checkpoint file doesn't match the number of moves for this MCMC analysis.");
+    }
+    
+    for (size_t i = 0; i < moves.size(); ++i)
+    {
+        std::vector<std::string> tokens;
+        StringUtilities::stringSplit( stored_move_info[i], "(", tokens);
+        
+        if ( moves[i].getMoveName() != tokens[0] )
+        {
+            throw RbException("The order of the moves from the checkpoint file does not match.");
+        }
+        
+        std::string tmp_values = tokens[1].substr(0,tokens[1].size()-1);
+        std::vector<std::string> values;
+        StringUtilities::stringSplit( tmp_values, ",", values);
+        
+        std::vector<std::string> key_value;
+        StringUtilities::stringSplit( values[0], "=", key_value);
+        if ( moves[i].getDagNodes()[0]->getName() != key_value[1] )
+        {
+            throw RbException("The order of the moves from the checkpoint file does not match. A move working on node '" + moves[i].getDagNodes()[0]->getName() + "' received a stored counterpart working on node '" + values[0] + "'.");
+        }
+        
+        key_value.clear();
+        StringUtilities::stringSplit( values[1], "=", key_value);
+        moves[i].setNumberTriedCurrentPeriod( StringUtilities::asIntegerNumber(key_value[1]) );
+        
+        key_value.clear();
+        StringUtilities::stringSplit( values[2], "=", key_value);
+        moves[i].setNumberTriedTotal( StringUtilities::asIntegerNumber(key_value[1]) );
+        
+        key_value.clear();
+        StringUtilities::stringSplit( values[3], "=", key_value);
+        moves[i].setNumberAcceptedCurrentPeriod( StringUtilities::asIntegerNumber(key_value[1]) );
+        
+        key_value.clear();
+        StringUtilities::stringSplit( values[4], "=", key_value);
+        moves[i].setNumberAcceptedTotal( StringUtilities::asIntegerNumber(key_value[1]) );
+        
+        key_value.clear();
+        StringUtilities::stringSplit( values[5], "=", key_value);
+        moves[i].setMoveTuningParameter( atof(key_value[1].c_str()) );
+        
+    }
+    
+    // clean up
+    in_file_moves.close();
+    
 }
 
 
