@@ -228,7 +228,7 @@ void Mcmc::checkpoint( void ) const
     
     
     // second, we write the values of the variables
-    for (std::vector<DagNode*>::const_iterator i = variable_nodes.begin(); i != variable_nodes.end(); ++i)
+    for (std::vector<DagNode*>::const_iterator it = variable_nodes.begin(); it != variable_nodes.end(); ++it)
     {
         // add a separator before every new element
         if ( it != variable_nodes.begin() )
@@ -237,7 +237,7 @@ void Mcmc::checkpoint( void ) const
         }
         
         // get the node
-        DagNode *node = *i;
+        DagNode *node = *it;
         
         // print the value
         node->printValue(out_stream, separator, -1, false, false, flatten);
