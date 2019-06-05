@@ -806,7 +806,7 @@ void Mcmc::initializeSamplerFromCheckpoint( void )
             std::vector<std::string> key_value;
             StringUtilities::stringSplit(line_mcmc, " = ", key_value);
 
-            mcmc_pars.insert( std::make_pair<std::string, std::string>(key_value[0],key_value[1]) );
+            mcmc_pars.insert( std::pair<std::string, std::string>(key_value[0],key_value[1]) );
         }
         
     }
