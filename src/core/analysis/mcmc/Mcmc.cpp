@@ -206,7 +206,10 @@ void Mcmc::checkpoint( void ) const
     for (std::vector<DagNode *>::const_iterator it=variable_nodes.begin(); it!=variable_nodes.end(); ++it)
     {
         // add a separator before every new element
-        out_stream << separator;
+        if ( it != variable_nodes.begin() )
+        {
+            out_stream << separator;
+        }
         
         const DagNode* the_node = *it;
         
@@ -228,7 +231,10 @@ void Mcmc::checkpoint( void ) const
     for (std::vector<DagNode*>::const_iterator i = variable_nodes.begin(); i != variable_nodes.end(); ++i)
     {
         // add a separator before every new element
-        out_stream << separator;
+        if ( it != variable_nodes.begin() )
+        {
+            out_stream << separator;
+        }
         
         // get the node
         DagNode *node = *i;
