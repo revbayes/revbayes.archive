@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "RbException.h"
 #include "RbFileManager.h"
+#include "RbSettings.h"
 #include "RbVersion.h"
 
 using namespace RevBayesCore;
@@ -112,6 +113,10 @@ void VariableMonitor::monitor(unsigned long gen)
 
         // print the iteration number first
         out_stream << gen;
+        
+        std::streamsize previousPrecision = out_stream.precision();
+        std::ios_base::fmtflags previousFlags = out_stream.flags();
+        out_stream.precision(RbSettings::userSettings().getOutputPrecision());
 
         if ( posterior == true )
         {
@@ -160,6 +165,9 @@ void VariableMonitor::monitor(unsigned long gen)
             }
             out_stream << pp;
         }
+        
+        out_stream.setf(previousFlags);
+        out_stream.precision(previousPrecision);
 
         monitorVariables( gen );
 

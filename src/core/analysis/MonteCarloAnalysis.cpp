@@ -289,6 +289,39 @@ const Model& MonteCarloAnalysis::getModel( void ) const
 }
 
 
+void MonteCarloAnalysis::initializeFromCheckpoint(const std::string &checkpoint_file)
+{
+    
+    for (size_t i = 0; i < replicates; ++i)
+    {
+        // first, set the checkpoint filename for the run
+        if ( replicates > 1 && checkpoint_file != "" )
+        {
+            
+            // create the run specific appendix
+            std::stringstream ss;
+            ss << "_run_" << (i+1);
+            
+            // assemble the new filename
+            RbFileManager fm = RbFileManager(checkpoint_file);
+            std::string run_checkpoint_file = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + ss.str() + "." + fm.getFileExtension();
+            
+            // set the filename for the MCMC object
+            runs[i]->setCheckpointFile( run_checkpoint_file );
+        }
+        else if ( checkpoint_file != "" )
+        {
+            // set the filename for the MCMC object
+            runs[i]->setCheckpointFile( checkpoint_file );
+            
+        }
+        
+        // then, initialize the sample for that replicate
+        runs[i]->initializeSamplerFromCheckpoint();
+    }
+}
+
+
 void MonteCarloAnalysis::initializeFromTrace( RbVector<ModelTrace> traces )
 {
     size_t n_samples = traces[0].size();
@@ -534,9 +567,9 @@ void MonteCarloAnalysis::resetReplicates( void )
 
 
 #ifdef RB_MPI
-void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, const MPI_Comm &analysis_comm, size_t tuning_interval, bool verbose )
+void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, const MPI_Comm &analysis_comm, size_t tuning_interval, const std::string &checkpoint_file, size_t checkpoint_interval, bool verbose )
 #else
-void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, size_t tuning_interval, bool verbose )
+void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, size_t tuning_interval, const std::string &checkpoint_file, size_t checkpoint_interval, bool verbose )
 #endif
 {
     
@@ -548,6 +581,29 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         if ( runs[i] != NULL )
         {
             gen = runs[i]->getCurrentGeneration();
+            
+            // also set the filename for checkpointing
+            if ( replicates > 1 && checkpoint_file != "" )
+            {
+                
+                // create the run specific appendix
+                std::stringstream ss;
+                ss << "_run_" << (i+1);
+                
+                // assemble the new filename
+                RbFileManager fm = RbFileManager(checkpoint_file);
+                std::string run_checkpoint_file = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + ss.str() + "." + fm.getFileExtension();
+
+                // set the filename for the MCMC object
+                runs[i]->setCheckpointFile( run_checkpoint_file );
+            }
+            else if ( checkpoint_file != "" )
+            {
+                // set the filename for the MCMC object
+                runs[i]->setCheckpointFile( checkpoint_file );
+                
+            }
+            
         }
         
     }
@@ -606,9 +662,13 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         if ( runs[i] != NULL && runs[i]->getCurrentGeneration() == 0 )
         {
             
-            runs[i]->writeMonitorHeaders();
+            runs[i]->writeMonitorHeaders( false );
             runs[i]->monitor(0);
             
+        }
+        else if ( runs[i] != NULL )
+        {
+            runs[i]->writeMonitorHeaders( runs[i]->getCurrentGeneration() > 0 );
         }
         
     }
@@ -658,6 +718,14 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
                 {
                     
                     runs[i]->tune();
+                    
+                }
+                
+                // check for autotuning
+                if ( checkpoint_interval != 0 && (gen % checkpoint_interval) == 0 )
+                {
+                    
+                    runs[i]->checkpoint();
                     
                 }
                 
@@ -797,7 +865,7 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingR
         if ( runs[i] != NULL && runs[i]->getCurrentGeneration() == 0 )
         {
             
-            runs[i]->writeMonitorHeaders();
+            runs[i]->writeMonitorHeaders( false );
             runs[i]->monitor(0);
             
         }
