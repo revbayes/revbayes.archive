@@ -38,9 +38,9 @@ RevPtr<RevVariable> Func_combineCharacter::execute( void )
     const AbstractHomologousDiscreteCharacterData& a = static_cast<const AbstractHomologousDiscreteCharacterData &>( args[0].getVariable()->getRevObject() );
     const AbstractHomologousDiscreteCharacterData& b = static_cast<const AbstractHomologousDiscreteCharacterData &>( args[1].getVariable()->getRevObject() );
         
-    size_t n = 2;
-    RevBayesCore::AbstractHomologousDiscreteCharacterData *trans_data = a.getValue().expandCharacters( n );
-//    RevBayesCore::AbstractHomologousDiscreteCharacterData *trans_data = a.getValue().combineCharacter( b );
+//    size_t n = 2;
+//    RevBayesCore::AbstractHomologousDiscreteCharacterData *trans_data = a.getValue().expandCharacters( n );
+    RevBayesCore::AbstractHomologousDiscreteCharacterData *trans_data = a.getValue().combineCharacters( b.getValue() );
     
     return new RevVariable( new AbstractHomologousDiscreteCharacterData(trans_data) );
 }
