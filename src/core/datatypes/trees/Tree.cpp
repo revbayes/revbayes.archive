@@ -1342,7 +1342,7 @@ std::vector<TopologyNode*>& Tree::orderNodesForTraversal(std::string &order)
   }
   else if (order == "preorder")
   {
-    root->recursivelySortNodesByPostorder(visited,node_indices);
+    root->recursivelySortNodesByPreorder(visited,node_indices);
   }
   else
   {
@@ -1351,14 +1351,18 @@ std::vector<TopologyNode*>& Tree::orderNodesForTraversal(std::string &order)
 
   // Put nodes in order given by node_indices
   std::vector<TopologyNode*> nodes_copy = std::vector<TopologyNode*>(nodes.size());
-  return nodes;
+
+  // std::cout << "sorted nodes by " << order << std::endl;
   for (int i = 0; i < nodes.size(); i++)
   {
       nodes_copy[i] = nodes[node_indices[i]];
+      // std::cout << node_indices[i] << ", ";
   }
+  // std::cout << std::endl;
 
   nodes = nodes_copy;
 
+  return nodes;
 }
 
 
@@ -1795,6 +1799,7 @@ void Tree::unroot( void )
         setRooted( false );
         setRoot( new_root, true);
 
+std::cout << "unrooting tree, now root has this many children: " << root->getChildrenIndices().size() << std::endl;
     }
 
 }

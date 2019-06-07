@@ -86,7 +86,7 @@ SBNParameters& SBNParameters::operator=( const SBNParameters &sbn )
 }
 
 // std::map<RbBitSet,std::pair<double,double> >& SBNParameters::getEdgeLengthDistributionParameters(void)
-std::map<RbBitSet,std::pair<std::vector<double>,std::vector<double> > >& SBNParameters::getEdgeLengthDistributionParameters(void)
+std::map<RbBitSet,std::pair<double,double> >& SBNParameters::getEdgeLengthDistributionParameters(void)
 {
   return edge_length_distribution_parameters;
 }
@@ -281,18 +281,30 @@ void SBNParameters::countAllSubsplits(Tree& tree, std::map<std::pair<Subsplit,Su
   std::vector<double> ttr = std::vector<double>(tree.getNumberOfNodes(),0.0);
 
   // Tip to root pass, here we accumulate cumulative rooting probabilities and add to root split counters
+  // On each edge (the edge subtending the node we're visiting) we need the probability of rooting to the split this edge induces
   for (std::vector<TopologyNode*>::const_iterator it = postorder_nodes.begin(); it != postorder_nodes.end(); ++it)
   {
     size_t index = (*it)->getIndex();
+
     std::vector<int> children = (*it)->getChildrenIndices();
 
-    RbBitSet c = per_node_subsplit[index].asCladeBitset();
-    Subsplit root_on_edge = per_node_subsplit[index].rootSplitFromClade(c);
+    Subsplit root_on_edge;
+
+    if ( !((*it)->isRoot()) )
+    {
+      RbBitSet c = per_node_subsplit[index].asCladeBitset();
+      root_on_edge = per_node_subsplit[index].rootSplitFromClade(c);
+    }
+    else
+    {
+      root_on_edge = per_node_subsplit[index];
+    }
 
     double this_root_q = doSA ? one_over_n_branches : q[root_on_edge];
 
     // Accumulate cumulative probability
-    if ((*it)->isTip())
+    // if ((*it)->isTip() || (*it)->isRoot())
+    if ( !((*it)->isInternal()) )
     {
       ttr[index] = this_root_q;
     }
@@ -305,7 +317,6 @@ void SBNParameters::countAllSubsplits(Tree& tree, std::map<std::pair<Subsplit,Su
 
   }
 
-
   // Root to tip pass (this is where the fun starts)
   order = "preorder";
   tree.orderNodesForTraversal(order);
@@ -315,43 +326,57 @@ void SBNParameters::countAllSubsplits(Tree& tree, std::map<std::pair<Subsplit,Su
   // The root has no edge so there is nothing to do for the root, so we skip it
   for (std::vector<TopologyNode*>::const_iterator it = preorder_nodes.begin()+1; it != preorder_nodes.end(); ++it)
   {
+    // std::cout << ">>>working on a root/internal/tip node " << ((*it)->isRoot()) << "/" << ((*it)->isInternal()) << "/" << ((*it)->isTip()) << std::endl;
+    // std::cout << ">The node's subsplit is " << per_node_subsplit[(*it)->getIndex()] << std::endl;
+    // std::cout << ">The node's parent's subsplit is " << per_node_subsplit[(*it)->getParent().getIndex()] << std::endl;
+
     size_t index = (*it)->getIndex();
     std::vector<int> children = (*it)->getChildrenIndices();
 
-    // Define parent-child pair for current rooting
+    // Define parent-child pair for current rooting (parent first, child second)
     std::pair<Subsplit,Subsplit> this_parent_child;
-
-    // Get all cases for this edge (not counting current rooting)
-    std::vector<std::pair<Subsplit,Subsplit> > cases = per_node_subsplit[index].getAllParentChildGivenNewRoot(this_parent_child.first,this_parent_child.second);
+    this_parent_child.first = per_node_subsplit[(*it)->getParent().getIndex()];
+    this_parent_child.second = per_node_subsplit[index];
 
     // If this edge is internal, cases 1-6 apply
     // If this edge is a pendant edge, cases 1-2 do not apply
-    // If this edge descends from the root, cases 3-5 do not apply
+    // If this edge descends from the root, we only need to consider it as-is
+    // We handle case 6, the current rooting, first as it applies to all
+    this_parent_child.first = per_node_subsplit[(*it)->getParent().getIndex()];
+    this_parent_child.second = per_node_subsplit[index];
 
-    if (!((*it)->isTip()))
-    {
-      // Root to s_y
-      this_parent_child = cases[0];
+    // Get weight and increment
+    double weight = 1 - ttr[index];
+    incrementParentChildCount(parent_child_counts,this_parent_child,weight);
 
-      // Get weight
-      double weight = ttr[children[0]];
-      incrementParentChildCount(parent_child_counts,this_parent_child,weight);
-
-      // Root to s_z
-      this_parent_child = cases[1];
-
-      // Get weight
-      weight = ttr[children[1]];
-      incrementParentChildCount(parent_child_counts,this_parent_child,weight);
-
-    }
     if (!((*it)->getParent().isRoot())) // Parent is not root
     {
+      // Get all cases for this edge (not counting current rooting)
+      std::vector<std::pair<Subsplit,Subsplit> > cases = per_node_subsplit[index].getAllParentChildGivenNewRoot(this_parent_child.first,this_parent_child.second);
+
+      if (!((*it)->isTip()))
+      {
+        // Root to s_y
+        this_parent_child = cases[0];
+
+        // Get weight
+        double weight = ttr[children[0]];
+        incrementParentChildCount(parent_child_counts,this_parent_child,weight);
+
+        // Root to s_z
+        this_parent_child = cases[1];
+
+        // Get weight
+        weight = ttr[children[1]];
+        incrementParentChildCount(parent_child_counts,this_parent_child,weight);
+
+      }
+
       // Root to not-s
       this_parent_child = cases[2];
 
       // Find index of not-s
-      std::vector<int> my_parents_children = (*it)->getChildrenIndices();
+      std::vector<int> my_parents_children = (*it)->getParent().getChildrenIndices();
       size_t sibling = 0;
       if (index == my_parents_children[0])
       {
@@ -366,7 +391,7 @@ void SBNParameters::countAllSubsplits(Tree& tree, std::map<std::pair<Subsplit,Su
       this_parent_child = cases[3];
 
       // Get weight (simply q of this branch)
-      weight = ttr[index] - ttr[children[0]] - ttr[children[1]];
+      weight = (*it)->isTip() ? ttr[index] : ttr[index] - ttr[children[0]] - ttr[children[1]];
 
       incrementParentChildCount(parent_child_counts,this_parent_child,weight);
 
@@ -377,13 +402,6 @@ void SBNParameters::countAllSubsplits(Tree& tree, std::map<std::pair<Subsplit,Su
       incrementParentChildCount(parent_child_counts,this_parent_child,weight);
 
     }
-    // Handle current rooting
-    this_parent_child.first = per_node_subsplit[(*it)->getParent().getIndex()];
-    this_parent_child.second = per_node_subsplit[index];
-
-    // Get weight and increment
-    double weight = 1 - ttr[index];
-    incrementParentChildCount(parent_child_counts,this_parent_child,weight);
 
   }
 
@@ -527,53 +545,53 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees)
   // }
 
 
-//   // Turn branch length observations into lognormal distributions
-//   std::pair<RbBitSet,std::vector<double> > clade_edge_observations;
-//   BOOST_FOREACH(clade_edge_observations, branch_length_observations) {
-//     // std::cout << "Learning branch distribution for clade " << clade_edge_observations.first << ", observations are:" << std::endl;
-//     if (clade_edge_observations.second.size() > 2)
-//     {
-//       // TODO: if we are going to keep using lognormal via MLE, there are more efficient ways to get the logmean and logsd
-//       // Get mean/sd of log of observations
-//       double log_mean;
-//       for (size_t i=0; i<clade_edge_observations.second.size(); ++i)
-//       {
-//         // Branch lengths x such that c++ returns log(x) = -inf are possible, replace with smallest representable number instead
-//         double log_x = log(clade_edge_observations.second[i]);
-//         log_mean += log_x == RbConstants::Double::neginf ? RbConstants::Double::min : log_x;
-// // std::cout << log_x << ",";
-//       }
-// // std::cout << std::endl;
-//       log_mean /= clade_edge_observations.second.size();
-//
-//       double log_sd;
-//       for (size_t i=0; i<clade_edge_observations.second.size(); ++i)
-//       {
-//         double log_x = log(clade_edge_observations.second[i]);
-//         log_sd += log_x == RbConstants::Double::neginf ? pow(RbConstants::Double::min - log_mean,2.0) : pow(log_x - log_mean,2.0);
-//       }
-//       log_sd /= clade_edge_observations.second.size();
-//       log_sd = sqrt(log_sd);
-//
-//       // Approximate edge-length distribution using lognormal, use MLE parameters
-//       std::pair<double,double> these_params;
-//       these_params.first = log_mean;
-//       these_params.second = log_sd;
-//
-//       edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
-//
-//     }
-//     else
-//     {
-//       // Basically no information on edge length distribution
-//       // Approximate edge-length distribution using a lognormal resembling an exponential(10)
-//       std::pair<double,double> these_params;
-//       these_params.first = -2.8;
-//       these_params.second = 1.0;
-//
-//       edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
-//     }
-//   }
+  // Turn branch length observations into lognormal distributions
+  std::pair<RbBitSet,std::vector<double> > clade_edge_observations;
+  BOOST_FOREACH(clade_edge_observations, branch_length_observations) {
+    // std::cout << "Learning branch distribution for clade " << clade_edge_observations.first << ", observations are:" << std::endl;
+    if (clade_edge_observations.second.size() > 2)
+    {
+      // TODO: if we are going to keep using lognormal via MLE, there are more efficient ways to get the logmean and logsd
+      // Get mean/sd of log of observations
+      double log_mean;
+      for (size_t i=0; i<clade_edge_observations.second.size(); ++i)
+      {
+        // Branch lengths x such that c++ returns log(x) = -inf are possible, replace with smallest representable number instead
+        double log_x = log(clade_edge_observations.second[i]);
+        log_mean += log_x == RbConstants::Double::neginf ? RbConstants::Double::min : log_x;
+// std::cout << log_x << ",";
+      }
+// std::cout << std::endl;
+      log_mean /= clade_edge_observations.second.size();
+
+      double log_sd;
+      for (size_t i=0; i<clade_edge_observations.second.size(); ++i)
+      {
+        double log_x = log(clade_edge_observations.second[i]);
+        log_sd += log_x == RbConstants::Double::neginf ? pow(RbConstants::Double::min - log_mean,2.0) : pow(log_x - log_mean,2.0);
+      }
+      log_sd /= clade_edge_observations.second.size();
+      log_sd = sqrt(log_sd);
+
+      // Approximate edge-length distribution using lognormal, use MLE parameters
+      std::pair<double,double> these_params;
+      these_params.first = log_mean;
+      these_params.second = log_sd;
+
+      edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
+
+    }
+    else
+    {
+      // Basically no information on edge length distribution
+      // Approximate edge-length distribution using a lognormal resembling an exponential(10)
+      std::pair<double,double> these_params;
+      these_params.first = -2.8;
+      these_params.second = 1.0;
+
+      edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
+    }
+  }
 
   // // Turn branch length observations into gamma distributions
   // std::pair<RbBitSet,std::vector<double> > clade_edge_observations;
@@ -817,6 +835,12 @@ bool SBNParameters::isValidRootDistribution(void) const
       std::cout << "Found impossible root split: " << root_splits[i].first << std::endl;
         return false;
     }
+    // Check they're not empty
+    if ( root_y.getNumberSetBits() == 0 || root_z.getNumberSetBits() == 0 )
+    {
+      std::cout << "Found impossible root split: " << root_splits[i].first << ". Pr(root_split) = " << root_splits[i].second << std::endl;
+        return false;
+    }
   }
 
   double tol = 0.0001;
@@ -880,7 +904,7 @@ void SBNParameters::learnUnconstrainedSBNSA( std::vector<Tree> &trees )
   // Run counting
   for (size_t i=0; i<trees.size(); ++i)
   {
-    countAllSubsplits(this_tree, parent_child_counts, root_split_counts, q, true);
+    countAllSubsplits(trees[i], parent_child_counts, root_split_counts, q, true);
   }
 
   // Turn root split counts into a distribution on the root split
@@ -891,6 +915,11 @@ void SBNParameters::learnUnconstrainedSBNSA( std::vector<Tree> &trees )
 
   // Handle branch lengths
   fitBranchLengthDistributions(trees);
+
+  if ( !isValid() )
+  {
+    throw(RbException("learnUnconstrainedSBNSA produced an invalid SBNParameters object."));
+  }
 
 }
 

@@ -1304,8 +1304,9 @@ SBNParameters TraceTree::learnUnconstrainedSBN(void)
 
   for (size_t i = burnin; i < size(); ++i)
   {
-      // const Tree &tree = objectAt(i);
-      trees.push_back( objectAt(i) );
+      Tree tree = objectAt(i);
+      tree.makeRooted(true);
+      trees.push_back( tree );
   }
 
   if (rooted)

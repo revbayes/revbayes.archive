@@ -48,6 +48,7 @@ namespace RevBayesCore {
         // public methods
         Clade                                       asClade(const std::vector<Taxon> &taxa) const;                                        //!< Get clades Y and Z as a single clade
         RbBitSet                                    asCladeBitset(void) const;                                  //!< Convert this value into a bitset representation for a clade.
+        RbBitSet                                    asSplitBitset(void) const;                                        //!< Convert this value into a split (as bitset representation).
         std::pair<RbBitSet,RbBitSet>                getBitset(void) const;                                      //!< Get the paired bitset representation of this subsplit as a clade
         std::vector<std::pair<Subsplit,Subsplit> >  getAllParentChildGivenNewRoot(const Subsplit &parent, const Subsplit &child) const; //!< Gives us all parent-child subsplits that will replace this one on the equivalent edge in a tree rerooted to a specific edge
         std::pair<Subsplit,Subsplit>                getParentChildGivenNewRoot(const Subsplit &t, const Subsplit &s, const std::string &root_to) const;       //!< Gives us the parent-child subsplit that will replace this one on the equivalent edge in a tree rerooted to a specific edge

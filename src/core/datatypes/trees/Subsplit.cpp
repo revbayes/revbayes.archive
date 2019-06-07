@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iostream>
 #include <sstream>
+#include <cmath>
 
 
 using namespace RevBayesCore;
@@ -65,7 +66,6 @@ Subsplit::Subsplit( const std::vector<Taxon> &c1, const std::vector<Taxon> &c2, 
     bitset(),
     is_fake( false )
 {
-
     // bitset representations and check that X and Y are disjoint
     bool disjoint = true;
 
@@ -114,6 +114,13 @@ Subsplit::Subsplit( const std::vector<Taxon> &c1, const std::vector<Taxon> &c2, 
       throw(RbException("Cannot create subsplit from non-disjoint clades."));
     }
 
+    if (clade_1_bitset.getNumberSetBits() == 0 || clade_2_bitset.getNumberSetBits() == 0)
+    {
+      // std::cout << "Invalid subsplit: " << clade_1_bitset << "|" << clade_2_bitset << std::endl;
+      throw(RbException("Cannot create subsplit when one clade is empty."));
+    }
+
+
     // Order clades
     if ( clade_1_bitset < clade_2_bitset )
     {
@@ -155,6 +162,12 @@ Subsplit::Subsplit( RbBitSet &clade_1_bitset, RbBitSet &clade_2_bitset ) :
     if (!disjoint)
     {
       throw(RbException("Cannot create subsplit from non-disjoint clades."));
+    }
+
+    if (clade_1_bitset.getNumberSetBits() == 0 || clade_2_bitset.getNumberSetBits() == 0)
+    {
+      std::cout << "Invalid subsplit: " << clade_1_bitset << "|" << clade_2_bitset << std::endl;
+      throw(RbException("Cannot create subsplit when one clade is empty."));
     }
 
     // Order clades
@@ -258,9 +271,40 @@ Clade Subsplit::asClade( const std::vector<Taxon>& taxa ) const
  */
 RbBitSet Subsplit::asCladeBitset( void ) const
 {
-    RbBitSet total = bitset.first | bitset.second;
+    RbBitSet y = bitset.first;
+    RbBitSet z = bitset.second;
+    RbBitSet total = y | z;
 
     return total;
+}
+
+/**
+ * Make subsplit into a bitset for a split, which is like a clade but polarized
+ *
+ * \return    The clade.
+ */
+RbBitSet Subsplit::asSplitBitset( void ) const
+{
+    RbBitSet y = bitset.first;
+    RbBitSet z = bitset.second;
+    RbBitSet split = y | z;
+
+    // Polarize if needed, for comparison we forbid splits with >50% 1s
+    if ( split.getNumberSetBits() > size_t(std::floor(split.size()/2.0)) )
+    {
+      split = ~split;
+    }
+
+    // For a split with 50% 1s, we make sure the first bit is a 1 (00110 -> 11001)
+    else if ( size_t(split.size() % 2) == 0 && (split.getNumberSetBits() == size_t(std::floor(split.size()/2.0))) )
+    {
+      if ( split[0] == 0 )
+      {
+        split = ~split;
+      }
+    }
+
+    return split;
 }
 
 /**
@@ -302,14 +346,14 @@ std::vector<std::pair<Subsplit,Subsplit> > Subsplit::getAllParentChildGivenNewRo
     // Define the sets of taxa we need
 
     // Children clades of child subsplit
-    RbBitSet s_y = child.bitset.first;
-    RbBitSet s_z = child.bitset.second;
+    RbBitSet s_y = child.getYBitset();
+    RbBitSet s_z = child.getZBitset();
 
     // Child subsplit
     RbBitSet s = s_y | s_z;
 
     // Everyone but child subsplit
-    RbBitSet not_s = ~s;
+    RbBitSet not_s = s; ~not_s;
 
     // Whole clade of parent
     RbBitSet t = parent.asCladeBitset();
@@ -318,37 +362,80 @@ std::vector<std::pair<Subsplit,Subsplit> > Subsplit::getAllParentChildGivenNewRo
     RbBitSet t_not_s = t & not_s;
 
     // All taxa not in the clade defined by parent
-    RbBitSet not_t = ~t;
+    RbBitSet not_t = t; ~not_t;
 
-    // Re-root to a branch in clade y of subsplit s
-    flipped.first = Subsplit(s_z,not_s);
-    flipped.second = Subsplit(t_not_s,not_t);
+    // std::cout << "In Subsplit::getAllParentChildGivenNewRoot" << std::endl;
+    // std::cout << "parent = " << parent << std::endl;
+    // std::cout << "child = " << child << std::endl;
+    // std::cout << "s_y = " << s_y << std::endl;
+    // std::cout << "s_z = " << s_z << std::endl;
+    // std::cout << "s = " << s << std::endl;
+    // std::cout << "t = " << t << std::endl;
+    // std::cout << "not_t = " << not_t << std::endl;
+    // std::cout << "not_s = " << not_s << std::endl;
+    // std::cout << "t_not_s = " << t_not_s << std::endl;
 
-    all_flipped.push_back(flipped);
+    // If the parent is the root, then we do not need to contemplate anything
+    // we return all empty subsplits
+    if ( parent.asCladeBitset().getNumberSetBits() != s.size() )
+    {
+      // If this is a tip, there are no children of Y to root to
+      // we return empty subsplits for these
+      if ( !child.isFake() )
+      {
+        // Re-root to a branch in clade y of subsplit s
+        flipped.first = Subsplit(s_z,not_s); // parent
+        flipped.second = Subsplit(t_not_s,not_t); // child
 
-    // Re-root to a branch in clade z of subsplit s
-    flipped.first = Subsplit(s_y,not_s);
-    flipped.second = Subsplit(t_not_s,not_t);
+        all_flipped.push_back(flipped);
 
-    all_flipped.push_back(flipped);
+        // Re-root to a branch in clade z of subsplit s
+        flipped.first = Subsplit(s_y,not_s);
+        // child is same
+        // flipped.second = Subsplit(t_not_s,not_t);
 
-    // Re-root to a branch in clade not-s of subsplit t (sister of s in t)
-    flipped.first = Subsplit(not_t,s);
-    flipped.second = child;
+        all_flipped.push_back(flipped);
 
-    all_flipped.push_back(flipped);
+      }
+      else
+      {
+        flipped.first = Subsplit();
+        flipped.second = Subsplit();
 
-    // Re-root to this edge, track clade s as child
-    flipped.first = Subsplit(s,not_s);
-    flipped.second = child;
+        all_flipped.push_back(flipped);
+        all_flipped.push_back(flipped);
+      }
 
-    all_flipped.push_back(flipped);
+      // Re-root to a branch in clade not-s of subsplit t (sister of s in t)
+      flipped.first = Subsplit(not_t,s);
+      flipped.second = child;
 
-    // Re-root to this edge, track clade of everyone but s as child
-    flipped.first = Subsplit(s,not_s);
-    flipped.second = Subsplit(t_not_s,not_t);
+      all_flipped.push_back(flipped);
 
-    all_flipped.push_back(flipped);
+      // Re-root to this edge, track clade s as child
+      flipped.first = Subsplit(s,not_s);
+      flipped.second = child;
+
+      all_flipped.push_back(flipped);
+
+      // Re-root to this edge, track clade of everyone but s as child
+      flipped.first = Subsplit(s,not_s);
+      flipped.second = Subsplit(t_not_s,not_t);
+
+      all_flipped.push_back(flipped);
+    }
+    else
+    {
+      flipped.first = Subsplit();
+      flipped.second = Subsplit();
+
+      all_flipped.push_back(flipped);
+      all_flipped.push_back(flipped);
+      all_flipped.push_back(flipped);
+      all_flipped.push_back(flipped);
+      all_flipped.push_back(flipped);
+    }
+
 
     return all_flipped;
 }
@@ -526,8 +613,7 @@ bool Subsplit::isFake() const
  */
 Subsplit Subsplit::rootSplitFromClade(RbBitSet &c) const
 {
-  RbBitSet c2 = c;
-  ~c2;
+  RbBitSet c2 = c; ~c2;
 
   return(Subsplit(c,c2));
 }
