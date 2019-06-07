@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the declaration of RlPomoState, which is
- * a RevBayes wrapper around a regular Pomo character.
+ * This file contains the declaration of RlPoMoState, which is
+ * a RevBayes wrapper around a regular PoMo character.
  *
- * @brief Declaration of RlPomoState
+ * @brief Declaration of RlPoMoState
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date: 2012-08-23 09:27:32 +0200 (Thu, 23 Aug 2012) $
@@ -13,11 +13,11 @@
  * @since 2012-09-08, version 1.0
  * @extends RbObject
  *
- * $Id: RlPomoState.h 1766 2012-08-23 07:27:32Z Boussau $
+ * $Id: RlPoMoState.h 1766 2012-08-23 07:27:32Z Boussau $
  */
 
-#ifndef RlPomoState_H
-#define RlPomoState_H
+#ifndef RlPoMoState_H
+#define RlPoMoState_H
 
 #include "PoMoState.h"
 #include "ModelObject.h"
@@ -28,16 +28,16 @@
 
 namespace RevLanguage {
     
-    class PomoState : public ModelObject<RevBayesCore::PomoState> {
+    class PoMoState : public ModelObject<RevBayesCore::PoMoState> {
         
     public:
-                                        PomoState(void);                                //!< Default constructor
-                                        PomoState(const RevBayesCore::PomoState &d);    //!< Construct from PomoState
+                                        PoMoState(void);                                //!< Default constructor
+                                        PoMoState(const RevBayesCore::PoMoState &d);    //!< Construct from PoMoState
         
         // Operators
         
         // Basic utility functions
-        PomoState*                      clone(void) const;                              //!< Clone object
+        PoMoState*                      clone(void) const;                              //!< Clone object
         static const std::string&       getClassType(void);                             //!< Get Rev type
         static const TypeSpec&          getClassTypeSpec(void);                         //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                        //!< Get language type of the object

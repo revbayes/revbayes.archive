@@ -249,10 +249,10 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
 
         d = dist;
     }
-    else if ( dt == "Pomo" )
+    else if ( dt == "PoMo" )
     {
 
-        // we get the number of states from the rate matrix (we don't know, because Pomo is flexible about its rates)
+        // we get the number of states from the rate matrix (we don't know, because PoMo is flexible about its rates)
         // set the rate matrix
         size_t nChars = 1;
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
@@ -266,7 +266,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             nChars = rm->getValue().getNumberOfStates();
         }
 
-        RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::PomoState> *dist = new RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::PomoState>(tau, nChars, n, ambig);
+        RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::PoMoState> *dist = new RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::PoMoState>(tau, nChars, n, ambig);
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -576,7 +576,7 @@ const MemberRules& Dist_phyloCTMCDASiteIID::getParameterRules(void) const
         options.push_back( "DNA" );
         options.push_back( "RNA" );
         options.push_back( "AA" );
-        options.push_back( "Pomo" );
+        options.push_back( "PoMo" );
         options.push_back( "Protein" );
         options.push_back( "Standard" );
         options.push_back( "NaturalNumbers" );
