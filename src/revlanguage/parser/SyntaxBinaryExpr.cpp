@@ -132,7 +132,7 @@ RevPtr<RevVariable> SyntaxBinaryExpr::evaluateContent( Environment& env, bool dy
     // Free the memory of our copy
     delete the_function;
     
-    if ( dynamic == false )
+    if ( dynamic == false || isConstExpression() == true )
     {
         // Return the return value of the function after making it constant
         if ( the_return_value != NULL )

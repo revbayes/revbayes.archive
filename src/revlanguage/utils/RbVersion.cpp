@@ -1,6 +1,10 @@
 #include "RbVersion.h"
 #include "GitVersion.h"
 
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
+
 RbVersion::RbVersion( void )
 {
     
@@ -37,6 +41,11 @@ std::string RbVersion::getHeader( void ) const
     header += "\n";
     header += "RevBayes version (" + getVersion() + ")\n";
     header += "Build from " + getGitBranch() + " (" + getGitCommit() + ") on " + getDate() + "\n";
+#ifdef RB_MPI
+    int num_processes = -1;
+    MPI_Comm_size(MPI_COMM_WORLD, &num_processes);
+    header += "MPI enabled: using " + std::to_string(num_processes) + " processes.\n";
+#endif
     header += "\n";
     header += "Visit the website www.RevBayes.com for more information about RevBayes.\n";
     header += "\n";

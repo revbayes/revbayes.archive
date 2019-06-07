@@ -48,6 +48,22 @@ matrix:
           - boost1.67
     - os: linux
       dist: xenial
+      env:
+        - CXX_COMPILER=/usr/bin/g++-7
+        - C_COMPILER=/usr/bin/gcc-7
+        - MAYBE_MPI="-mpi true"
+      addons:
+        apt:
+          sources:
+          - ubuntu-toolchain-r-test
+          - sourceline: 'ppa:mhier/libboost-latest'
+          packages:
+          - g++-7
+          - pandoc
+          - boost1.67
+          - libopenmpi-dev
+    - os: linux
+      dist: xenial
       compiler: clang++
       env:
         - CXX_COMPILER=/usr/local/clang-7.0.0/bin/clang++
@@ -77,7 +93,7 @@ script:
 # Build
   - cd projects/cmake
   - mkdir build
-  - ./regenerate.sh -boost false -travis true
+  - ./regenerate.sh -boost false -travis true ${MAYBE_MPI}
   - cd build
   - cmake . -DINTERNAL_BOOST=OFF
   - make -j4
