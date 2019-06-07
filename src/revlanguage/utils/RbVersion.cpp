@@ -30,7 +30,7 @@ std::string RbVersion::getGitCommit( void ) const
 
 std::string RbVersion::getVersion( void ) const
 {
-    return "1.0.11";
+    return "1.0.12";
 }
 
 
