@@ -1,11 +1,3 @@
-//
-//  ChooseFunction.h
-//  revbayes-proj
-//
-//  Created by Michael Landis on 10/21/16.
-//  Copyright © 2016 Michael Landis. All rights reserved.
-//
-
 #ifndef ChooseFunction_h
 #define ChooseFunction_h
 
@@ -15,13 +7,8 @@
 namespace RevBayesCore {
     
     /**
-     * \brief Round down to the next integer.
-     *
-     * The floor function rounds a real number down to the next integer number.
-     *
-     * \copyright (c) Copyright 2009-2015 (GPL version 3)
-     * \author The RevBayes Development Core Team (Sebastian Hoehna)
-     * \since Version 1.0, 2012-08-13
+     * @brief Calculates the binomial coefficient of a choose b for two
+     * TypedDagNodes of type long. Calculated as a! / b! (a - b)!
      *
      */
     class ChooseFunction : public TypedFunction<long> {
