@@ -66,11 +66,7 @@ BranchHeterogeneousMorphospeciationProcess::BranchHeterogeneousMorphospeciationP
     site_rates(NULL),
     speciation_chars(std::vector<size_t>(num_sites,0)),
     rate_variation_across_sites(false),
-    min_num_lineages( min_num_lineages ),
-    max_num_lineages( max_num_lineages ),
-    exact_num_lineages( exact_num_lineages ),
-    max_time( max_t ),
-    prune_extinct_lineages( prune ),
+    site_rate(1.0),
     NUM_TIME_SLICES( 500.0 )
 {
     addParameter( process_age );
@@ -89,7 +85,6 @@ BranchHeterogeneousMorphospeciationProcess::BranchHeterogeneousMorphospeciationP
     dt = process_age->getValue() / NUM_TIME_SLICES * 10.0;
 
     value->getTreeChangeEventHandler().addListener( this );
-
 }
 
 
@@ -217,11 +212,11 @@ double BranchHeterogeneousMorphospeciationProcess::computeLnProbability( void )
 
 void BranchHeterogeneousMorphospeciationProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t node_index)
 {
-    updateTransitionProbabilities(node_index);
-    
     // check for recomputation
     if ( dirty_nodes[node_index] == true )
     {
+        updateTransitionProbabilities(node_index);
+
         // mark as computed
         dirty_nodes[node_index] = false;
         
@@ -288,6 +283,12 @@ void BranchHeterogeneousMorphospeciationProcess::computeNodeProbability(const Re
             size_t                      right_index     = right.getIndex();
             computeNodeProbability( right, right_index );
             
+            // update species index
+            node_taxa[node.getIndex()] = right.isSampledAncestor() ? node_taxa[right_index] : node_taxa[left_index];
+
+            // update transition probabilities after updating species indices
+            updateTransitionProbabilities(node_index);
+
             // get the likelihoods of descendant nodes
             const std::vector<std::vector<std::vector<double> > > &left_likelihoods  = node_partial_likelihoods[left_index][active_likelihood[left_index]];
             const std::vector<std::vector<std::vector<double> > > &right_likelihoods = node_partial_likelihoods[right_index][active_likelihood[right_index]];
@@ -326,7 +327,7 @@ void BranchHeterogeneousMorphospeciationProcess::computeNodeProbability(const Re
                                         }
                                         else
                                         {
-                                            merged_probability += ( left_site_likelihood[to] * right_site_likelihood[k] + left_site_likelihood[k] * right_site_likelihood[to] ) / 2.0;
+                                            merged_probability += left_site_likelihood[k] * right_site_likelihood[to];
                                         }
                                     }
                                 }
@@ -450,7 +451,7 @@ double BranchHeterogeneousMorphospeciationProcess::computeRootLikelihood( void )
                                 }
                                 else
                                 {
-                                    merged_probability += ( left_site_likelihood[to] * right_site_likelihood[k] + left_site_likelihood[k] * right_site_likelihood[to] ) / 2.0;
+                                    merged_probability += left_site_likelihood[k] * right_site_likelihood[to];
                                 }
                             }
                         }
@@ -677,47 +678,12 @@ double BranchHeterogeneousMorphospeciationProcess::lnProbTreeShape(void) const
  */
 void BranchHeterogeneousMorphospeciationProcess::redrawValue( void )
 {
-    size_t attempts = 0;    
-    //while (attempts < 100000)
-    while (attempts < 10000)
+    node_taxa = std::vector<size_t>(value->getNumberOfTips(), 0);
+
+    for(size_t i = 0; i < value->getNumberOfTips(); i++)
     {
-        bool success = false;
-
-        if ( condition_on_tree == true && value->getNumberOfTips() > 0 )
-        {
-            // simulate a character history conditioned on the observed tree
-
-            // make character data objects -- all unknown/missing
-            std::vector<string> tips = value->getTipNames();
-            HomologousDiscreteCharacterData<NaturalNumbersState> *tip_data = new HomologousDiscreteCharacterData<NaturalNumbersState>();
-            for (size_t i = 0; i < tips.size(); i++)
-            {
-                DiscreteTaxonData<NaturalNumbersState> this_tip_data = DiscreteTaxonData<NaturalNumbersState>(tips[i]);
-                NaturalNumbersState state = NaturalNumbersState(0, num_states);
-                state.setState("?");
-                this_tip_data.addCharacter(state);
-                tip_data->addTaxonData(this_tip_data);
-            }
-            static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData(tip_data);
-
-            success = true;
-        }
-        else if ( condition_on_tip_states == true && static_cast<TreeDiscreteCharacterData *>(this->value)->hasCharacterData() == true )
-        {
-            success = simulateTreeConditionedOnTips(attempts);
-        }
-        else
-        {
-            success = simulateTree(attempts);
-        }
-
-        if (success == true)
-        {
-            return;
-        }
-        ++attempts;
+        node_taxa[value->getTipNode(i)] = find(taxa.begin(), taxa.end(), value->getTipNode(i).getTaxon()) - taxa.begin();
     }
-    throw RbException("After 100000 attempts a character-dependent birth death tree could not be simulated. Try changing minNumLineages or maxNumLineages.");
 }
 
 
@@ -1500,15 +1466,15 @@ void BranchHeterogeneousMorphospeciationProcess::updateTransitionProbabilities(s
     // first, get the rate matrix for this branch
     for (size_t j = 0; j < this->num_site_rates; ++j)
     {
-        double r = 1.0;
+        site_rate = 1.0;
         if ( this->rate_variation_across_sites == true )
         {
-            r = this->site_rates->getValue()[j];
+            site_rate = this->site_rates->getValue()[j];
         }
 
         for( size_t from = 0; from < this->num_states; from++)
         {
-            numericallyIntegrateProcess( start_age, end_age, r, this->transition_prob_matrices[j][from]);
+            numericallyIntegrateProcess( start_age, end_age, this->transition_prob_matrices[j][from]);
         }
     }
 }
@@ -1516,9 +1482,8 @@ void BranchHeterogeneousMorphospeciationProcess::updateTransitionProbabilities(s
 /**
  * Wrapper function for the ODE time stepper function.
  */
-void BranchHeterogeneousMorphospeciationProcess::numericallyIntegrateProcess(double begin_age, double end_age, double rate, state_type &transition_probs) const
+void BranchHeterogeneousMorphospeciationProcess::numericallyIntegrateProcess(double begin_age, double end_age, state_type &transition_probs) const
 {
-    //    double dt = root_age->getValue() / NUM_TIME_SLICES * 10;
     typedef boost::numeric::odeint::runge_kutta_dopri5< state_type > stepper_type;
     boost::numeric::odeint::integrate_adaptive( make_controlled( 1E-7, 1E-7, stepper_type() ) , *this , transition_probs, begin_age , end_age , dt );
 
@@ -1550,11 +1515,11 @@ void BranchHeterogeneousMorphospeciationProcess::operator()(const state_type &x,
     {
 
         // no event
-        double no_event_rate = lambda->getValue() + lambda_a->getValue() + mu->getValue() + psi->getValue();
+        double no_event_rate = site_rate * (lambda->getValue() + lambda_a->getValue()) + mu->getValue() + psi->getValue();
 
         dxdt[i] = - no_event_rate * safe_x[i];
 
-        dxdt[i] += lambda->getValue() * p(t) * safe_x[i];
+        dxdt[i] += site_rate * lambda->getValue() * p(t) * safe_x[i];
 
         // anagenetic state change
         for (size_t j = 0; j < num_states; ++j)
@@ -1566,7 +1531,7 @@ void BranchHeterogeneousMorphospeciationProcess::operator()(const state_type &x,
                 total += safe_x[j];
             }
 
-            dxdt[i] += total * (lambda->getValue() * p(t) + lambda_a->getValue()) / double(num_states - 1);
+            dxdt[i] += total * site_rate * (lambda->getValue() * p(t) + lambda_a->getValue()) / double(num_states - 1);
         }
 
         dxdt[i] /= double(num_sites);
@@ -1584,7 +1549,7 @@ double BranchHeterogeneousMorphospeciationProcess::p( double dt ) const
     if ( dt == 0) return 1.0;
 
     // get the parameters
-    double b = lambda->getValue();
+    double b = lambda->getValue() * site_rate;
     double d = mu->getValue();
     double f = psi->getValue();
     double r = rho->getValue();

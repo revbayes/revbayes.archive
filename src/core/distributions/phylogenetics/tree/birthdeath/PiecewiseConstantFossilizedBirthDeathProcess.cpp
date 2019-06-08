@@ -795,10 +795,7 @@ void PiecewiseConstantFossilizedBirthDeathProcess::updateIntervals() const
     }
 }
 
-/**
- * Compute the log-transformed probability of the current value under the current parameter values.
- *
- */
+
 void PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( void ) const
 {
     updateStartEndTimes(getValue().getRoot());

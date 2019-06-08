@@ -68,7 +68,7 @@ namespace RevBayesCore {
         void                                                            setNumberOfTimeSlices(double n);                                                                    //!< Set the number of time slices for the numerical ODE.
         virtual void                                                    setValue(Tree *v, bool f=false);                                                                    //!< Set the current value, e.g. attach an observation (clamp)
         
-        void                                                            numericallyIntegrateProcess(double begin_age, double end_age, double rate, state_type &transition_probs) const; //!< Wrapper function for the ODE time stepper function.
+        void                                                            numericallyIntegrateProcess(double begin_age, double end_age, state_type &transition_probs) const; //!< Wrapper function for the ODE time stepper function.
         void                                                            resizeVectors();
         
     protected:
@@ -126,12 +126,12 @@ namespace RevBayesCore {
 
         bool                                                            rate_variation_across_sites;
 
-        size_t                                                          min_num_lineages;
-        size_t                                                          max_num_lineages;
-        size_t                                                          exact_num_lineages;
-        double                                                          max_time;
-        bool                                                            prune_extinct_lineages;
         double                                                          NUM_TIME_SLICES;
+
+        double                                                          site_rate;
+
+        std::vector<Taxon>                                              taxa;
+        std::vector<size_t>                                             node_taxa;
     };
     
 }
