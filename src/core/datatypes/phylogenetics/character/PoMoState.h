@@ -1,21 +1,21 @@
 /**
  * @file
- * This file contains the declaration of PomoState, which is
+ * This file contains the declaration of PoMoState, which is
  * the class for the DNA data types plus two-state polymorphic states in RevBayes.
  * Instead of the usual coding by bitfields, we choose coding by ints.
  *
- * @brief Declaration of PomoState
+ * @brief Declaration of PoMoState
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date: 2012-05-24 09:58:04 +0200 (Thu, 24 May 2012) $
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id: PomoState.h 1568 2012-05-24 07:58:04Z hoehna $
+ * $Id: PoMoState.h 1568 2012-05-24 07:58:04Z hoehna $
  */
 
-#ifndef PomoState_H
-#define PomoState_H
+#ifndef PoMoState_H
+#define PoMoState_H
 
 #include "DiscreteCharacterState.h"
 #include "DistributionBinomial.h"
@@ -24,19 +24,19 @@
 
 namespace RevBayesCore {
     
-    class PomoState : public DiscreteCharacterState {
+    class PoMoState : public DiscreteCharacterState {
         
     public:
-        //        PomoState(size_t n);                                                                    //!< Default constructor
-        //        PomoState(size_t n, size_t vps);                                                              //!< Constructor with virtual population size
-        //        PomoState(size_t n, const std::string &s);                                                    //!< Constructor with an observation
-        PomoState(size_t n=4, size_t vps = 10, const std::string &s = "", const std::string &chromosome = "",
+        //        PoMoState(size_t n);                                                                    //!< Default constructor
+        //        PoMoState(size_t n, size_t vps);                                                              //!< Constructor with virtual population size
+        //        PoMoState(size_t n, const std::string &s);                                                    //!< Constructor with an observation
+        PoMoState(size_t n=4, size_t vps = 10, const std::string &s = "", const std::string &chromosome = "",
                   size_t position = 0, const std::vector<double> &weights = std::vector<double>());                                                   //!< Constructor that sets all fields
-        //        PomoState(const std::string &s, const std::string &chromosome,
+        //        PoMoState(const std::string &s, const std::string &chromosome,
         //                  size_t position, size_t n, size_t vps);
-        //        PomoState(const PomoState& t);                                                //!< Copy constructor
+        //        PoMoState(const PoMoState& t);                                                //!< Copy constructor
         
-        PomoState*                       clone(void) const;                                 //!< Get a copy of this object
+        PoMoState*                       clone(void) const;                                 //!< Get a copy of this object
         
         // Discrete character observation functions
         void                            addState(const std::string &symbol);                //!< Add a character state to the set of character states
@@ -69,7 +69,7 @@ namespace RevBayesCore {
         bool                            is_gap;
         bool                            is_missing;
         size_t                          index_single_state;
-        size_t                          virtual_population_size;                            //!< The virtual population size of the Pomo model (by default, 10)
+        size_t                          virtual_population_size;                            //!< The virtual population size of the PoMo model (by default, 10)
         size_t                          num_raw_states;                                     //!< The number of raw states (4 for A,C,G and T)
         size_t                          num_pomo_states;                                     //!< The number of raw states (4 for A,C,G and T)
         size_t                          num_observed_states;

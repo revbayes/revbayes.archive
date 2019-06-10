@@ -1,5 +1,5 @@
-#ifndef RateMatrix_Pomo_H
-#define RateMatrix_Pomo_H
+#ifndef RateMatrix_PoMo_H
+#define RateMatrix_PoMo_H
 
 #include "AbstractRateMatrix.h"
 #include <complex>
@@ -10,23 +10,23 @@ namespace RevBayesCore {
     
     class TransitionProbabilityMatrix;
     
-    class RateMatrix_Pomo : public AbstractRateMatrix {
+    class RateMatrix_PoMo : public AbstractRateMatrix {
     
     public:
         
         using RateMatrix::getRate;
         
-        RateMatrix_Pomo(size_t n, size_t vps=10, const std::vector<double> &mr=std::vector<double>(), const std::vector<double> &sc=std::vector<double>());  //!< Construct rate matrix with n states, a vector of mutation rates, and a vector of selection coefficients
-        RateMatrix_Pomo(size_t n, size_t vps, const RateGenerator &mm, const std::vector<double> sc);  //!< Construct rate matrix with n states, a matrix of mutation rates, and a vector of selection coefficients
+        RateMatrix_PoMo(size_t n, size_t vps=10, const std::vector<double> &mr=std::vector<double>(), const std::vector<double> &sc=std::vector<double>());  //!< Construct rate matrix with n states, a vector of mutation rates, and a vector of selection coefficients
+        RateMatrix_PoMo(size_t n, size_t vps, const RateGenerator &mm, const std::vector<double> sc);  //!< Construct rate matrix with n states, a matrix of mutation rates, and a vector of selection coefficients
 
-        virtual                         ~RateMatrix_Pomo(void);                     //!< Destructor
+        virtual                         ~RateMatrix_PoMo(void);                     //!< Destructor
         
         // RateMatrix functions
-        virtual RateMatrix_Pomo&                    assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
+        virtual RateMatrix_PoMo&                    assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
         double                                      averageRate(void) const;
         void                                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
-        RateMatrix_Pomo*                            clone(void) const;
-        std::vector<double>                         getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, although in the Pomo model I don't know them
+        RateMatrix_PoMo*                            clone(void) const;
+        std::vector<double>                         getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, although in the PoMo model I don't know them
 
         void                                        update(void);
         void                                        setMutationRates(const std::vector<double>& mr);
@@ -53,4 +53,4 @@ namespace RevBayesCore {
     
 }
 
-#endif /* defined(__RateMatrix_Pomo__) */
+#endif /* defined(__RateMatrix_PoMo__) */

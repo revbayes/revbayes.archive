@@ -1,8 +1,8 @@
-#include "PomoRateMatrixFunction.h"
+#include "PoMoRateMatrixFunction.h"
 #include "Func_pomo.h"
 #include "ModelVector.h"
 #include "Natural.h"
-#include "RateMatrix_Pomo.h"
+#include "RateMatrix_PoMo.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
@@ -41,7 +41,7 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_pomo::createFun
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* fit = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< long >* n = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     
-    RevBayesCore::PomoRateMatrixFunction* f = new RevBayesCore::PomoRateMatrixFunction( n, q, fit );
+    RevBayesCore::PoMoRateMatrixFunction* f = new RevBayesCore::PoMoRateMatrixFunction( n, q, fit );
     
     return f;
 }
@@ -93,7 +93,7 @@ const TypeSpec& Func_pomo::getClassTypeSpec(void)
 std::string Func_pomo::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "fnPomo";
+    std::string f_name = "fnPoMo";
     
     return f_name;
 }

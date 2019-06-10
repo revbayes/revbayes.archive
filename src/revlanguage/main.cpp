@@ -74,10 +74,20 @@ variables_map parse_cmd_line(int argc, char* argv[])
     {
 	// Do we want to avoid displaying --file here, since its a positional option also?
 
-	std::cout<<usage()<<"\n";
-	std::cout<<short_description()<<"\n\n";
-	std::cout<<general<<"\n";
-	std::cout<<"See http://revbayes.github.io for more information\n";
+        int rank = 0;
+#ifdef RB_MPI
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#endif
+        if (rank == 0)
+        {
+            std::cout<<usage()<<"\n";
+            std::cout<<short_description()<<"\n\n";
+            std::cout<<general<<"\n";
+            std::cout<<"See http://revbayes.github.io for more information\n";
+        }
+#ifdef RB_MPI
+        MPI::Finalize();
+#endif
 	std::exit(0);
     }
 

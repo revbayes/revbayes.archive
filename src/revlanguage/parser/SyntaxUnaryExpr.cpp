@@ -114,7 +114,7 @@ RevPtr<RevVariable> SyntaxUnaryExpr::evaluateContent( Environment& env, bool dyn
     // free the memory of our copy
     delete func;
     
-    if ( dynamic == false )
+    if ( dynamic == false || isConstExpression() == true )
     {
         // Return value after making sure it is constant
         if ( funcReturnValue != NULL )

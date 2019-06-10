@@ -10,7 +10,8 @@ NexusMonitor::NexusMonitor(TypedDagNode<Tree> *t, const std::vector<DagNode *> &
     tree( t ),
     nodeVariables( n )
 {
-    for (DagNode* n : nodeVariables) {
+    for (size_t i=0; i < nodeVariables.size(); ++i) {
+        DagNode* n = nodeVariables[i];
         this->nodes.push_back( n );
 
         // tell the node that we have a reference to it (avoids deletion)
@@ -33,7 +34,8 @@ void NexusMonitor::printHeader() {
         out_stream << "Begin taxa;" << std::endl;
         out_stream << "\tDimensions ntax=" << taxa.size() << ";" << std::endl;;
         out_stream << "\tTaxlabels" << std::endl;
-        for (Taxon label : taxa) {
+        for (size_t i=0; i < taxa.size(); ++i) {
+            Taxon label = taxa[i];
             out_stream << "\t\t" << label.getName() << std::endl;
         }
         out_stream << "\t\t;" << std::endl;
@@ -51,7 +53,8 @@ void NexusMonitor::monitor(unsigned long gen) {
     out_stream << "tree TREE_" << gen << " = " << (tree->getValue().isRooted() ? "[&R]" : "[&U]");
 
     tree->getValue().clearParameters();
-    for (DagNode* n : nodeVariables) {
+    for (size_t j=0; j < nodeVariables.size(); ++j) {
+        DagNode* n = nodeVariables[j];
 
         const std::string &name = n->getName();
         size_t numParams = n->getNumberOfElements();

@@ -668,9 +668,26 @@ void AbstractRootedTreeDistribution::setValue(Tree *v, bool f )
         {
             //            double factor = process_age->getValue() / value->getRoot().getAge();
             //            TreeUtilities::rescaleTree( value, &value->getRoot(), factor);
-            if (process_age->getValue() != value->getRoot().getAge())
+            
+            size_t output_precision = RbSettings::userSettings().getOutputPrecision();
+            output_precision = output_precision <= 2 ? 0 : output_precision - 2;
+            double rounding_tolerance = 1/std::pow(10, output_precision);
+            
+            double age_diff = std::abs(process_age->getValue() - value->getRoot().getAge());
+            if (age_diff > rounding_tolerance)
             {
                 throw RbException("Tree height and root age values must match when root age is not a stochastic node.");
+            }
+            else
+            {
+                for (size_t i = 0; i < value->getRoot().getNumberOfChildren(); ++i)
+                {
+                    const TopologyNode& child = value->getRoot().getChild(i);
+                    if (process_age->getValue() <= child.getAge())
+                    {
+                        throw RbException("Tree height and root age values must match when root age is not a stochastic node.");
+                    }
+                }
             }
             value->getRoot().setAge( process_age->getValue() );
         }

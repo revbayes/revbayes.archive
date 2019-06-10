@@ -1,5 +1,5 @@
-#ifndef PomoCountFileReader_H
-#define PomoCountFileReader_H
+#ifndef PoMoCountFileReader_H
+#define PoMoCountFileReader_H
 
 #include "DelimitedDataReader.h"
 #include "AbstractHomologousDiscreteCharacterData.h"
@@ -13,7 +13,7 @@ namespace RevBayesCore {
 
 
 	/**
-	 * Reader for allele count filesfor use with Pomo matrices.
+	 * Reader for allele count filesfor use with PoMo matrices.
 	 * Same format as read by IQ-Tree.
 	 * Description: http://www.iqtree.org/doc/Polymorphism-Aware-Models/
 	 * The first line contains COUNTSFILE  then the number of populations and the number of sites.
@@ -27,15 +27,15 @@ namespace RevBayesCore {
 	 * @since 2015-03-03, version 1.0
 	 *
 	 */
-	class PomoCountFileReader : public DelimitedDataReader {
+	class PoMoCountFileReader : public DelimitedDataReader {
 
 	public:
 
-		PomoCountFileReader(const std::string &fn, const size_t virtualPopulationSize = 9, char d=' ', size_t ns=0);
+		PoMoCountFileReader(const std::string &fn, const size_t virtualPopulationSize = 9, char d=' ', size_t ns=0);
 
 		const size_t 																getNumberOfPopulations( void );
 		const size_t 																getNumberOfSites( void );
-		HomologousDiscreteCharacterData<PomoState>* getMatrix( void );
+		HomologousDiscreteCharacterData<PoMoState>* getMatrix( void );
 		const size_t 																getVirtualPopulationSize( void );
 
 	protected:
@@ -46,7 +46,7 @@ namespace RevBayesCore {
 		size_t numberOfSites_;
 		size_t virtualPopulationSize_;
 		std::vector<string> names_;
-		HomologousDiscreteCharacterData<PomoState>* matrix_;
+		HomologousDiscreteCharacterData<PoMoState>* matrix_;
 	};
 
 }

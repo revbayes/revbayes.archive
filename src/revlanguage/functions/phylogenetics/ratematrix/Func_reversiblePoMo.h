@@ -3,7 +3,7 @@
  * This file contains the declaration of the RevLanguage pomo function, which
  * is used to created a deterministic variable associated with the pomo function.
  *
- * @brief Declaration and implementation of Func_reversiblePomo
+ * @brief Declaration and implementation of Func_reversiblePoMo
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
@@ -11,12 +11,12 @@
  * @license GPL version 3
  * @version 1.0
  *
- * $Id: Func_reversiblePomo.h 1406 2014-08-22 02:06:14Z Boussau $
+ * $Id: Func_reversiblePoMo.h 1406 2014-08-22 02:06:14Z Boussau $
  */
 
 
-#ifndef Func_reversiblePomo_H
-#define Func_reversiblePomo_H
+#ifndef Func_reversiblePoMo_H
+#define Func_reversiblePoMo_H
 
 #include "RlRateMatrix.h"
 #include "RlTypedFunction.h"
@@ -26,13 +26,13 @@
 
 namespace RevLanguage {
 
-    class Func_reversiblePomo : public TypedFunction<RateMatrix> {
+    class Func_reversiblePoMo : public TypedFunction<RateMatrix> {
 
     public:
-        Func_reversiblePomo( void );
+        Func_reversiblePoMo( void );
 
         // Basic utility functions
-        Func_reversiblePomo*                                            clone(void) const;                                          //!< Clone the object
+        Func_reversiblePoMo*                                            clone(void) const;                                          //!< Clone the object
         static const std::string&                                       getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&                                          getClassTypeSpec(void);                                     //!< Get class type spec
         std::string                                                     getFunctionName(void) const;                                //!< Get the primary name of the function in Rev

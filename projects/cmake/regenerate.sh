@@ -9,6 +9,7 @@ echo $HERE
 boost="true"
 debug="false"
 mac="false"
+travis="false"
 win="false"
 mpi="false"
 gentoo="false"
@@ -161,6 +162,13 @@ add_definitions(-DRB_XCODE)
 '  >> "$HERE/CMakeLists.txt"
 fi
 
+if [ "$travis" = "true" ]
+then
+    echo 'set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g0 -O2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g0 -O2")
+' >> "$HERE/CMakeLists.txt"
+fi
+
 echo '
 # Add extra CMake libraries into ./CMake
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake ${CMAKE_MODULE_PATH})
@@ -219,16 +227,7 @@ add_subdirectory(help)
 ' >> $HERE/CMakeLists.txt
 fi
 
-if [ "$mpi" = "true" ]
-then
-echo "set executable"
-echo '
-add_executable(rb-mpi ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
-
-target_link_libraries(rb-mpi rb-parser rb-core libs ${Boost_LIBRARIES} ${MPI_LIBRARIES})
-set_target_properties(rb-mpi PROPERTIES PREFIX "../")
-' >> $HERE/CMakeLists.txt
-elif [ "$help" = "true" ]
+if [ "$help" = "true" ]
 then
 echo '
 add_executable(rb-help ${PROJECT_SOURCE_DIR}/help/YAMLHelpGenerator.cpp)
@@ -294,10 +293,14 @@ echo '
 add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 
 target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
+
 set_target_properties(rb PROPERTIES PREFIX "../")
 ' >> $HERE/CMakeLists.txt
+if [ "$mpi" = "true" ] ; then
+    echo 'target_link_libraries(rb ${MPI_LIBRARIES})
+' >> $HERE/CMakeLists.txt
 fi
-
+fi
 
 if [ ! -d "$HERE/libs" ]; then
 mkdir "$HERE/libs"

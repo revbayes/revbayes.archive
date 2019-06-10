@@ -9,7 +9,7 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_Pomo4::RateMatrix_Pomo4(size_t n) : AbstractRateMatrix( n ), N( 10 ), matrixSize( n )
+RateMatrix_PoMo4::RateMatrix_PoMo4(size_t n) : AbstractRateMatrix( n ), N( 10 ), matrixSize( n )
 {
     std::vector<double> temp (4, 0.0);
     for (size_t i = 0; i<4 ; ++i)
@@ -21,7 +21,7 @@ RateMatrix_Pomo4::RateMatrix_Pomo4(size_t n) : AbstractRateMatrix( n ), N( 10 ),
 }
 
 /** Construct rate matrix with n states, virtual population size, mutation rates, selection coefficients */
-RateMatrix_Pomo4::RateMatrix_Pomo4(size_t n, const size_t vps, const std::vector<double> &mr, const std::vector<double> &sc) : AbstractRateMatrix( n ), N( vps ), matrixSize( n )
+RateMatrix_PoMo4::RateMatrix_PoMo4(size_t n, const size_t vps, const std::vector<double> &mr, const std::vector<double> &sc) : AbstractRateMatrix( n ), N( vps ), matrixSize( n )
 {
     std::vector<double> temp (4, 0.0);
     for (size_t i = 0; i<4 ; ++i)
@@ -35,7 +35,7 @@ RateMatrix_Pomo4::RateMatrix_Pomo4(size_t n, const size_t vps, const std::vector
 }
 
 /** Construct rate matrix with n states, a matrix of mutation rates, and a vector of selection coefficients */
-RateMatrix_Pomo4::RateMatrix_Pomo4(size_t n,  const size_t vps, const RateGenerator &mm, const std::vector<double> sc)  : AbstractRateMatrix( n ), N( vps ), matrixSize( n )
+RateMatrix_PoMo4::RateMatrix_PoMo4(size_t n,  const size_t vps, const RateGenerator &mm, const std::vector<double> sc)  : AbstractRateMatrix( n ), N( vps ), matrixSize( n )
 {
     std::vector<double> temp (4, 0.0);
     for (size_t i = 0; i<4 ; ++i)
@@ -50,7 +50,7 @@ RateMatrix_Pomo4::RateMatrix_Pomo4(size_t n,  const size_t vps, const RateGenera
 
 
 /** Destructor */
-RateMatrix_Pomo4::~RateMatrix_Pomo4(void)
+RateMatrix_PoMo4::~RateMatrix_PoMo4(void)
 {
     
 }
@@ -61,10 +61,10 @@ RateMatrix_Pomo4::~RateMatrix_Pomo4(void)
  *
  *
  */
-RateMatrix_Pomo4& RateMatrix_Pomo4::assign(const Assignable &m)
+RateMatrix_PoMo4& RateMatrix_PoMo4::assign(const Assignable &m)
 {
     
-    const RateMatrix_Pomo4 *rm = dynamic_cast<const RateMatrix_Pomo4*>(&m);
+    const RateMatrix_PoMo4 *rm = dynamic_cast<const RateMatrix_PoMo4*>(&m);
     if ( rm != NULL )
     {
         return operator=(*rm);
@@ -75,12 +75,12 @@ RateMatrix_Pomo4& RateMatrix_Pomo4::assign(const Assignable &m)
     }
 }
 
-double RateMatrix_Pomo4::averageRate(void) const
+double RateMatrix_PoMo4::averageRate(void) const
 {
     return 1.0;
 }
 
-void RateMatrix_Pomo4::buildRateMatrix(void)
+void RateMatrix_PoMo4::buildRateMatrix(void)
 {
     
     // compute auxilliary variables
@@ -342,7 +342,7 @@ void RateMatrix_Pomo4::buildRateMatrix(void)
 }
 
 
-double RateMatrix_Pomo4::computeEntryFromMoranProcessWithSelection(size_t state1, size_t state2, double& count1)
+double RateMatrix_PoMo4::computeEntryFromMoranProcessWithSelection(size_t state1, size_t state2, double& count1)
 {
     // We always assume state1 with count1 is increasing
     double count2 = (double)N-count1;
@@ -357,7 +357,7 @@ double RateMatrix_Pomo4::computeEntryFromMoranProcessWithSelection(size_t state1
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_Pomo4::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+void RateMatrix_PoMo4::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
     
     //Now the instantaneous rate matrix has been filled up entirely.
@@ -368,7 +368,7 @@ void RateMatrix_Pomo4::calculateTransitionProbabilities(double startAge, double 
     return;
 }
 
-void RateMatrix_Pomo4::computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const
+void RateMatrix_PoMo4::computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const
 {
     //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
     //Ideally one should dynamically decide how many squarings are necessary.
@@ -405,7 +405,7 @@ void RateMatrix_Pomo4::computeExponentialMatrixByRepeatedSquaring(double t,  Tra
     return;
 }
 
-inline void RateMatrix_Pomo4::squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const
+inline void RateMatrix_PoMo4::squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const
 {
     //Could probably use boost::ublas here, for the moment we do it ourselves.
     for ( size_t i = 0; i < matrixSize; i++ )
@@ -424,19 +424,19 @@ inline void RateMatrix_Pomo4::squareMatrix( TransitionProbabilityMatrix& P,  Tra
 
 
 
-RateMatrix_Pomo4* RateMatrix_Pomo4::clone( void ) const
+RateMatrix_PoMo4* RateMatrix_PoMo4::clone( void ) const
 {
-    return new RateMatrix_Pomo4( *this );
+    return new RateMatrix_PoMo4( *this );
 }
 
-std::vector<double> RateMatrix_Pomo4::getStationaryFrequencies( void ) const
+std::vector<double> RateMatrix_PoMo4::getStationaryFrequencies( void ) const
 {
     
     return stationary_freqs;
 }
 
 
-void RateMatrix_Pomo4::update( void )
+void RateMatrix_PoMo4::update( void )
 {
     
     if ( needs_update )
@@ -448,7 +448,7 @@ void RateMatrix_Pomo4::update( void )
 }
 
 
-void RateMatrix_Pomo4::setMutationRates(const std::vector<double>& mr)
+void RateMatrix_PoMo4::setMutationRates(const std::vector<double>& mr)
 {
     
     mu[0][1] = mr[0];
@@ -466,7 +466,7 @@ void RateMatrix_Pomo4::setMutationRates(const std::vector<double>& mr)
 }
 
 
-void RateMatrix_Pomo4::setMutationRates(const RateGenerator& mm)
+void RateMatrix_PoMo4::setMutationRates(const RateGenerator& mm)
 {
     
     double age = 0.0;
@@ -486,7 +486,7 @@ void RateMatrix_Pomo4::setMutationRates(const RateGenerator& mm)
 }
 
 
-void RateMatrix_Pomo4::setSelectionCoefficients(const std::vector<double>& sc)
+void RateMatrix_PoMo4::setSelectionCoefficients(const std::vector<double>& sc)
 {
     s = sc;
     

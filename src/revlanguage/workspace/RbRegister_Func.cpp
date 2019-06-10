@@ -82,6 +82,7 @@
 #include "Func_BirthDeathSimulator.h"
 #include "Func_branchScoreDistance.h"
 #include "Func_checkNodeOrderConstraints.h"
+#include "Func_chronoToPhylo.h"
 #include "Func_computeWeightedNodeOrderConstraintsScore.h"
 #include "Func_concatenate.h"
 #include "Func_concatenateContinuousCharacterData.h"
@@ -99,8 +100,9 @@
 #include "Func_PhylogeneticIndependentContrastsMultiSample.h"
 #include "Func_pomoState4Converter.h"
 #include "Func_pomoRootFrequencies.h"
-#include "Func_readPomoCountFile.h"
+#include "Func_readPoMoCountFile.h"
 #include "Func_pruneTree.h"
+#include "Func_simStartingTree.h"
 #include "Func_simTree.h"
 #include "Func_simCompleteTree.h"
 #include "Func_stitchTree.h"
@@ -141,7 +143,7 @@
 #include "Func_mtMam.h"
 #include "Func_orderedRateMatrix.h"
 #include "Func_pomo.h"
-#include "Func_reversiblePomo.h"
+#include "Func_reversiblePoMo.h"
 #include "Func_rtRev.h"
 #include "Func_vt.h"
 #include "Func_t92.h"
@@ -318,7 +320,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_mtRev()                                       );
         addFunction( new Func_orderedRateMatrix()                           );
         addFunction( new Func_pomo()                                        );
-        addFunction( new Func_reversiblePomo()                              );
+        addFunction( new Func_reversiblePoMo()                              );
         addFunction( new Func_rtRev()                                       );
         addFunction( new Func_t92()                                         );
         addFunction( new Func_TamuraNei()                                   );
@@ -355,6 +357,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_BirthDeathSimulator()                             );
         addFunction( new Func_branchScoreDistance()                             );
         addFunction( new Func_checkNodeOrderConstraints()                       );
+        addFunction( new Func_chronoToPhylo()                                   );
         addFunction( new Func_computeWeightedNodeOrderConstraintsScore()        );
         addFunction( new Func_concatenate()                                     );
         addFunction( new Func_concatenateContinuousCharacterData()              );
@@ -369,10 +372,11 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_phyloDiversity()                                  );
         addFunction( new Func_PhylogeneticIndependentContrasts()                );
         addFunction( new Func_PhylogeneticIndependentContrastsMultiSample()     );
-        addFunction( new Func_pomoState4Converter()                              );
+        addFunction( new Func_pomoState4Converter()                             );
         addFunction( new Func_pomoRootFrequencies()                             );
         addFunction( new Func_pruneTree()                                       );
-        addFunction( new Func_readPomoCountFile()                               );
+        addFunction( new Func_readPoMoCountFile()                               );
+        addFunction( new Func_simStartingTree()                                 );
         addFunction( new Func_simTree()                                         );
         addFunction( new Func_simCompleteTree()                                 );
         addFunction( new Func_stitchTree()                                      );

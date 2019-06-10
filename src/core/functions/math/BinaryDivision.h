@@ -7,13 +7,10 @@
 namespace RevBayesCore {
     
     /**
-     * \brief Binary division.
+     * @brief Binary division.
      *
-     * We compute the ratio a / b.
-     *
-     * \copyright (c) Copyright 2009-2015 (GPL version 3)
-     * \author The RevBayes Development Core Team (Sebastian Hoehna)
-     * \since Version 1.0, 2012-08-13
+     * We compute the ratio a / b. Can be called on a TypedDagNode.
+     * A wrapper to allow binary division on TypedDagNode class
      *
      */
     template <class firstValueType, class secondValueType, class return_type>

@@ -7,6 +7,7 @@
 #include "Model.h"
 #include "Natural.h"
 #include "PowerPosteriorAnalysis.h"
+#include "Probability.h"
 #include "RevObject.h"
 #include "RbException.h"
 #include "Real.h"
@@ -26,14 +27,17 @@ using namespace RevLanguage;
 PowerPosteriorAnalysis::PowerPosteriorAnalysis() : WorkspaceToCoreWrapperObject<RevBayesCore::PowerPosteriorAnalysis>()
 {
 
-    ArgumentRules* runArgRules = new ArgumentRules();
-    runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
+    ArgumentRules* run_arg_rules = new ArgumentRules();
+    run_arg_rules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    run_arg_rules->push_back( new ArgumentRule("burninFraction", Probability::getClassTypeSpec(), "The fraction of samples to discard.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25) ) );
+    run_arg_rules->push_back( new ArgumentRule("preburninGenerations", Natural::getClassTypeSpec(), "The number of generations to run as pre-burnin when parameter tuning is done.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    run_arg_rules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100) ) );
+    methods.addFunction( new MemberProcedure( "run", RlUtils::Void, run_arg_rules) );
 
-    ArgumentRules* burninArgRules = new ArgumentRules();
-    burninArgRules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), "The frequency when the moves are tuned (usually between 50 and 1000).", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    methods.addFunction( new MemberProcedure( "burnin", RlUtils::Void, burninArgRules) );
+    ArgumentRules* burnin_arg_rules = new ArgumentRules();
+    burnin_arg_rules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    burnin_arg_rules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), "The frequency when the moves are tuned (usually between 50 and 1000).", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "burnin", RlUtils::Void, burnin_arg_rules) );
 
 }
 
@@ -110,8 +114,15 @@ RevPtr<RevVariable> PowerPosteriorAnalysis::executeMethod(std::string const &nam
         found = true;
 
         // get the member with give index
-        int gen = (int)static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
-        value->runAll( size_t(gen) );
+        long gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+        double burn_frac = static_cast<const Probability &>( args[1].getVariable()->getRevObject() ).getValue();
+        size_t preburn_gen = gen;
+        if ( args[2].getVariable()->getRevObject() != RevNullObject::getInstance() )
+        {
+            preburn_gen = static_cast<const Natural &>( args[2].getVariable()->getRevObject() ).getValue();
+        }
+        size_t tune_int = static_cast<const Natural &>( args[3].getVariable()->getRevObject() ).getValue();
+        value->runAll( size_t(gen), burn_frac, preburn_gen, tune_int );
 
         return NULL;
     }
@@ -168,26 +179,26 @@ std::string PowerPosteriorAnalysis::getConstructorFunctionName( void ) const
 const MemberRules& PowerPosteriorAnalysis::getParameterRules(void) const
 {
 
-    static MemberRules memberRules;
+    static MemberRules member_rules;
     static bool rules_set = false;
 
-    if ( !rules_set )
+    if ( rules_set == false )
     {
 
-        memberRules.push_back( new ArgumentRule("model"      , Model::getClassTypeSpec()                   , "The model graph.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule("moves"      , WorkspaceVector<Move>::getClassTypeSpec()   , "The vector moves to use.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule("monitors"   , WorkspaceVector<Monitor>::getClassTypeSpec(), "The monitors to call. Do not provide a screen monitor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule("filename"   , RlString::getClassTypeSpec()                , "The name of the file for the likelihood samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule("powers"     , ModelVector<RealPos>::getClassTypeSpec()    , "A vector of powers.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule("cats"       , Natural::getClassTypeSpec()                 , "The number of categories if no powers are specified.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100) ) );
-        memberRules.push_back( new ArgumentRule("alpha"      , RealPos::getClassTypeSpec()                 , "The alpha parameter of the beta distribution if no powers are specified.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.2) ) );
-        memberRules.push_back( new ArgumentRule("sampleFreq" , Natural::getClassTypeSpec()                 , "The sampling frequency of the likelihood values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100) ) );
-        memberRules.push_back( new ArgumentRule("procPerLikelihood" , Natural::getClassTypeSpec()          , "Number of processors used to compute the likelihood.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+        member_rules.push_back( new ArgumentRule("model"      , Model::getClassTypeSpec()                   , "The model graph.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        member_rules.push_back( new ArgumentRule("moves"      , WorkspaceVector<Move>::getClassTypeSpec()   , "The vector moves to use.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        member_rules.push_back( new ArgumentRule("monitors"   , WorkspaceVector<Monitor>::getClassTypeSpec(), "The monitors to call. Do not provide a screen monitor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        member_rules.push_back( new ArgumentRule("filename"   , RlString::getClassTypeSpec()                , "The name of the file for the likelihood samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        member_rules.push_back( new ArgumentRule("powers"     , ModelVector<RealPos>::getClassTypeSpec()    , "A vector of powers.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        member_rules.push_back( new ArgumentRule("cats"       , Natural::getClassTypeSpec()                 , "The number of categories if no powers are specified.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100) ) );
+        member_rules.push_back( new ArgumentRule("alpha"      , RealPos::getClassTypeSpec()                 , "The alpha parameter of the beta distribution if no powers are specified.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.2) ) );
+        member_rules.push_back( new ArgumentRule("sampleFreq" , Natural::getClassTypeSpec()                 , "The sampling frequency of the likelihood values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100) ) );
+        member_rules.push_back( new ArgumentRule("procPerLikelihood" , Natural::getClassTypeSpec()          , "Number of processors used to compute the likelihood.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
 
         rules_set = true;
     }
 
-    return memberRules;
+    return member_rules;
 }
 
 

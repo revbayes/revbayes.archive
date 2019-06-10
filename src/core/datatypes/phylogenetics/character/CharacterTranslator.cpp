@@ -13,7 +13,7 @@ RevBayesCore::AbstractDiscreteTaxonData* CharacterTranslator::translateCharacter
 //    options.push_back( "DNA" );
 //    options.push_back( "RNA" );
 //    options.push_back( "AA" );
-//    options.push_back( "Pomo" );
+//    options.push_back( "PoMo" );
 //    options.push_back( "Protein" );
 //    options.push_back( "Standard" );
 //    options.push_back( "NaturalNumbers" );

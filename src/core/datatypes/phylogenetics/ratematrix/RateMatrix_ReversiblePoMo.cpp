@@ -1,11 +1,11 @@
 //
-//  RateMatrix_ReversiblePomo.cpp
+//  RateMatrix_ReversiblePoMo.cpp
 //
 //  Created by Bastien Boussau on 4/4/14.
 //  Copyright (c) 2014 Bastien Boussau. all rights reserved.
 //
 
-#include "RateMatrix_ReversiblePomo.h"
+#include "RateMatrix_ReversiblePoMo.h"
 #include "RbException.h"
 #include "TransitionProbabilityMatrix.h"
 
@@ -15,7 +15,7 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(size_t n) : AbstractRateMatrix( n ), rho( 6, 1.0 ), pi(4, 0.25), N( 10 ), matrixSize( n )
+RateMatrix_ReversiblePoMo::RateMatrix_ReversiblePoMo(size_t n) : AbstractRateMatrix( n ), rho( 6, 1.0 ), pi(4, 0.25), N( 10 ), matrixSize( n )
 {
     // theEigenSystem       = new EigenSystem(the_rate_matrix);
     // c_ijk.resize(num_states * num_states * num_states);
@@ -24,7 +24,7 @@ RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(size_t n) : AbstractRateMat
 }
 
 /** Construct rate matrix with n states and a matrix of mutation rates */
-// RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(size_t n,  const RateGenerator &Qmut) : AbstractRateMatrix( n ), Q_mut( static_cast< const Ratematrix_GtR& >( Qmut ) ), N( 10 ), matrixSize( n )
+// RateMatrix_ReversiblePoMo::RateMatrix_ReversiblePoMo(size_t n,  const RateGenerator &Qmut) : AbstractRateMatrix( n ), Q_mut( static_cast< const Ratematrix_GtR& >( Qmut ) ), N( 10 ), matrixSize( n )
 // {
 //
 //     stationary_freqs = Q_mut.getstationaryFrequencies();
@@ -32,7 +32,7 @@ RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(size_t n) : AbstractRateMat
 // }
 //
 // /** Construct rate matrix with n states, a matrix of mutation rates, and a virtual population size */
-// RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(const size_t n,  const RateGenerator &Qmut, const size_t vps )  : AbstractRateMatrix( n ), Q_mut( static_cast< const Ratematrix_GtR& > ( Qmut ) ), N( vps ), matrixSize( n )
+// RateMatrix_ReversiblePoMo::RateMatrix_ReversiblePoMo(const size_t n,  const RateGenerator &Qmut, const size_t vps )  : AbstractRateMatrix( n ), Q_mut( static_cast< const Ratematrix_GtR& > ( Qmut ) ), N( vps ), matrixSize( n )
 // {
 //   stationary_freqs = Q_mut.getstationaryFrequencies();
 //   update();
@@ -40,7 +40,7 @@ RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(size_t n) : AbstractRateMat
 
 
 /** Construct rate matrix with n states, an exchangeability matrix, a simplex of equilibrium frequencies, and a virtual population size */
-RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(const size_t n,  const std::vector<double> &rh, const Simplex p, const size_t vps  )  : AbstractRateMatrix( n ), rho(rh), pi(p), N( vps ), matrixSize( n )
+RateMatrix_ReversiblePoMo::RateMatrix_ReversiblePoMo(const size_t n,  const std::vector<double> &rh, const Simplex p, const size_t vps  )  : AbstractRateMatrix( n ), rho(rh), pi(p), N( vps ), matrixSize( n )
 {
 
   // theEigenSystem       = new EigenSystem(the_rate_matrix);
@@ -52,7 +52,7 @@ RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(const size_t n,  const std:
 }
 
 /** Copy constructor */
-RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(const RateMatrix_ReversiblePomo& m) : AbstractRateMatrix( m ), rho(m.rho), pi(m.pi), N( m.N ), matrixSize( m.matrixSize )
+RateMatrix_ReversiblePoMo::RateMatrix_ReversiblePoMo(const RateMatrix_ReversiblePoMo& m) : AbstractRateMatrix( m ), rho(m.rho), pi(m.pi), N( m.N ), matrixSize( m.matrixSize )
 {
 
     // theEigenSystem       = new EigenSystem( *m.theEigenSystem );
@@ -63,7 +63,7 @@ RateMatrix_ReversiblePomo::RateMatrix_ReversiblePomo(const RateMatrix_Reversible
 }
 
 
-RateMatrix_ReversiblePomo& RateMatrix_ReversiblePomo::operator=(const RateMatrix_ReversiblePomo &r)
+RateMatrix_ReversiblePoMo& RateMatrix_ReversiblePoMo::operator=(const RateMatrix_ReversiblePoMo &r)
 {
 
   if (this != &r)
@@ -89,7 +89,7 @@ RateMatrix_ReversiblePomo& RateMatrix_ReversiblePomo::operator=(const RateMatrix
 
 
 /** Destructor */
-RateMatrix_ReversiblePomo::~RateMatrix_ReversiblePomo(void)
+RateMatrix_ReversiblePoMo::~RateMatrix_ReversiblePoMo(void)
 {
     // delete theEigenSystem;
 
@@ -101,10 +101,10 @@ RateMatrix_ReversiblePomo::~RateMatrix_ReversiblePomo(void)
  *
  *
  */
-RateMatrix_ReversiblePomo& RateMatrix_ReversiblePomo::assign(const Assignable &m)
+RateMatrix_ReversiblePoMo& RateMatrix_ReversiblePoMo::assign(const Assignable &m)
 {
 
-    const RateMatrix_ReversiblePomo *rm = dynamic_cast<const RateMatrix_ReversiblePomo*>(&m);
+    const RateMatrix_ReversiblePoMo *rm = dynamic_cast<const RateMatrix_ReversiblePoMo*>(&m);
     if ( rm != NULL )
     {
         return operator=(*rm);
@@ -115,14 +115,14 @@ RateMatrix_ReversiblePomo& RateMatrix_ReversiblePomo::assign(const Assignable &m
     }
 }
 
-double RateMatrix_ReversiblePomo::averageRate(void) const
+double RateMatrix_ReversiblePoMo::averageRate(void) const
 {
     return 1.0;
 }
 
 
 // Code modified from IQ-tree:
-void RateMatrix_ReversiblePomo::decomposeState(int state, int &i, int &nt1, int &nt2) {
+void RateMatrix_ReversiblePoMo::decomposeState(int state, int &i, int &nt1, int &nt2) {
     if (state < 4) {
         // Fixed a, C, G or t
         i = N;
@@ -165,7 +165,7 @@ void RateMatrix_ReversiblePomo::decomposeState(int state, int &i, int &nt1, int 
 
 // // Code modified from IQ-tree:
 // // Here, we return directly m_xy * \pi_xy, whereas the IQ-tree code returned only m_xy (I think)
-// double RateMatrix_ReversiblePomo::mutCoeff(int nt1, int nt2) {
+// double RateMatrix_ReversiblePoMo::mutCoeff(int nt1, int nt2) {
 //     assert(nt1!=nt2 && nt1<4 && nt2<4);
 //     // if (nt2 < nt1) {
 //     //     int tmp=nt1;
@@ -185,7 +185,7 @@ void RateMatrix_ReversiblePomo::decomposeState(int state, int &i, int &nt1, int 
 //
 
 
-double RateMatrix_ReversiblePomo::mutCoeff(int nt1, int nt2) {
+double RateMatrix_ReversiblePoMo::mutCoeff(int nt1, int nt2) {
 
   // Inspired by code from Rui in revbayescode.txt
   // Order: aCGt
@@ -262,7 +262,7 @@ double RateMatrix_ReversiblePomo::mutCoeff(int nt1, int nt2) {
 
 
 // Code modified from IQ-tree:
-double RateMatrix_ReversiblePomo::computeProbBoundaryMutation(int state1, int state2) {
+double RateMatrix_ReversiblePoMo::computeProbBoundaryMutation(int state1, int state2) {
     // the transition rate to the same state will be calculated by
     // (row_sum = 0).
     assert(state1 != state2);
@@ -316,7 +316,7 @@ double RateMatrix_ReversiblePomo::computeProbBoundaryMutation(int state1, int st
 
 
 
-void RateMatrix_ReversiblePomo::buildRateMatrix(void)
+void RateMatrix_ReversiblePoMo::buildRateMatrix(void)
 {
     // the destination state is in column, the starting state in rows.
         int state1, state2;
@@ -353,7 +353,7 @@ void RateMatrix_ReversiblePomo::buildRateMatrix(void)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_ReversiblePomo::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
+void RateMatrix_ReversiblePoMo::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
 
 
   // We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
@@ -367,12 +367,12 @@ void RateMatrix_ReversiblePomo::calculateTransitionProbabilities(double startAge
 }
 
 
-RateMatrix_ReversiblePomo* RateMatrix_ReversiblePomo::clone( void ) const
+RateMatrix_ReversiblePoMo* RateMatrix_ReversiblePoMo::clone( void ) const
 {
-    return new RateMatrix_ReversiblePomo( *this );
+    return new RateMatrix_ReversiblePoMo( *this );
 }
 
-std::vector<double> RateMatrix_ReversiblePomo::getStationaryFrequencies( void ) const
+std::vector<double> RateMatrix_ReversiblePoMo::getStationaryFrequencies( void ) const
 {
   //indexes for the polymorphic states: a=0, C=1, G=2 and t=3
   // C++11:
@@ -420,7 +420,7 @@ std::vector<double> RateMatrix_ReversiblePomo::getStationaryFrequencies( void ) 
 }
 
 
-void RateMatrix_ReversiblePomo::update( void )
+void RateMatrix_ReversiblePoMo::update( void )
 {
 
     if ( needs_update )

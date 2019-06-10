@@ -54,15 +54,16 @@ namespace RevBayesCore {
         void                                                disableScreenMonitors(bool all);
         size_t                                              getCurrentGeneration(void) const;                               //!< Get the current generations number
         const Model&                                        getModel(void) const;
+        void                                                initializeFromCheckpoint( const std::string &f );
         void                                                initializeFromTrace( RbVector<ModelTrace> traces );
         void                                                printPerformanceSummary(bool current_period = false) const;
         void                                                removeMonitors(void);                                           //!< Remove all monitors
 #ifdef RB_MPI
-        void                                                run(size_t k, RbVector<StoppingRule> r, const MPI_Comm &c, size_t ti, bool verbose=true);
+        void                                                run(size_t k, RbVector<StoppingRule> r, const MPI_Comm &c, size_t ti, const std::string &cp_file, size_t ci=0, bool verbose=true);
 #else
-        void                                                run(size_t k, RbVector<StoppingRule> r, size_t ti, bool verbose=true);
+        void                                                run(size_t k, RbVector<StoppingRule> r, size_t ti, const std::string &cp_file, size_t ci=0, bool verbose=true);
 #endif
-        void                                                runPriorSampler(size_t k, RbVector<StoppingRule> r);
+        void                                                runPriorSampler(size_t k, RbVector<StoppingRule> r, size_t ti);
         void                                                setModel(Model *m, bool redraw);
         
     protected:

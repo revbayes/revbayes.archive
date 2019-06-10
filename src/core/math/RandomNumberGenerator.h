@@ -19,7 +19,8 @@
 #define RandomNumberGenerator_H
 
 #include <vector>
-#include "boost/random.hpp"
+#include <boost/random/uniform_01.hpp>
+#include <boost/random/linear_congruential.hpp>
 
 namespace RevBayesCore {
 
@@ -32,9 +33,9 @@ namespace RevBayesCore {
         // Regular functions
         unsigned int                        getSeed(void) const;                                    //!< Get the seed values
         void                                setSeed(unsigned int s);                                //!< Set the seeds of the RNG
-		double                              uniform01(void);                                        //!< Get a random [0,1) var
+        double                              uniform01(void);                                        //!< Get a random [0,1) var
 
-	private:
+    private:
         unsigned int                        seed;
         boost::rand48                       rng;
         boost::uniform_01<boost::rand48>    zeroone;

@@ -214,7 +214,7 @@ class NxsTaxaBlock
 			taxLabels = other.taxLabels;
 			labelToIndex = other.labelToIndex;
 			dimNTax = other.dimNTax;
-			taxSets = taxSets;
+			taxSets = other.taxSets;
 			taxPartitions = other.taxPartitions;
 			inactiveTaxa = other.inactiveTaxa;
 			}

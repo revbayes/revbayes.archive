@@ -73,10 +73,16 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
     {
         found = true;
         
-        // get the member with give index
-        RevBayesCore::RbVector<RevBayesCore::StoppingRule> rules;
+        int currentGen = int(value->getCurrentGeneration());
         
-        if ( args[1].getVariable()->getRevObject() != RevNullObject::getInstance() )
+        size_t args_index = 0;
+        
+        RevBayesCore::RbVector<RevBayesCore::StoppingRule> rules;
+        int gen = (int)static_cast<const Natural &>( args[args_index++].getVariable()->getRevObject() ).getValue() + currentGen;
+        rules.push_back( RevBayesCore::MaxIterationStoppingRule(gen) );
+        
+        // get the member with given index
+        if ( args[args_index++].getVariable()->getRevObject() != RevNullObject::getInstance() )
         {
             const WorkspaceVector<StoppingRule>& ws_vec = static_cast<const WorkspaceVector<StoppingRule> &>( args[1].getVariable()->getRevObject() );
             for ( size_t i = 0; i < ws_vec.size(); ++i )
@@ -84,23 +90,29 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
                 rules.push_back( ws_vec[i].getValue() );
             }
         }
-
-        int currentGen = int(value->getCurrentGeneration());
-        int gen = (int)static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() + currentGen;
-        rules.push_back( RevBayesCore::MaxIterationStoppingRule(gen) );
         
-        int tuning_interval = (int)static_cast<const Natural &>( args[2].getVariable()->getRevObject() ).getValue();
-        bool prior = static_cast<const RlBoolean &>( args[3].getVariable()->getRevObject() ).getValue();
+        // the tuning interval (0 by default)
+        int tuning_interval = (int)static_cast<const Natural &>( args[args_index++].getVariable()->getRevObject() ).getValue();
+
+        // the checkoint file (empty by default) and the checkoint interval (0 by default)
+        const std::string checkpoint_file = static_cast<const RlString &>( args[args_index++].getVariable()->getRevObject() ).getValue();
+        long checkpoint_interval = static_cast<const Natural &>( args[args_index++].getVariable()->getRevObject() ).getValue();
+        if ( (checkpoint_file != "" && checkpoint_interval == 0) || (checkpoint_file == "" && checkpoint_interval != 0) )
+        {
+            throw RbException("For checkpointing you have to provide both the checkpoint file and the checkpoint frequency (interval).");
+        }
+
+        bool prior = static_cast<const RlBoolean &>( args[args_index++].getVariable()->getRevObject() ).getValue();
         if ( prior == true )
         {
-            value->runPriorSampler( gen, rules );
+            value->runPriorSampler( gen, rules, tuning_interval );
         }
         else
         {
 #ifdef RB_MPI
-            value->run( gen, rules, MPI_COMM_WORLD, tuning_interval );
+            value->run( gen, rules, MPI_COMM_WORLD, tuning_interval, checkpoint_file, checkpoint_interval );
 #else
-            value->run( gen, rules, tuning_interval );
+            value->run( gen, rules, tuning_interval, checkpoint_file, checkpoint_interval );
 #endif
         }
         
@@ -146,6 +158,16 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         }
         
         value->initializeFromTrace( traces );
+        
+        return NULL;
+    }
+    else if ( name == "initializeFromCheckpoint")
+    {
+        found = true;
+        
+        const std::string &checkpoint_filename = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
+        
+        value->initializeFromCheckpoint( checkpoint_filename );
         
         return NULL;
     }
@@ -226,12 +248,14 @@ const TypeSpec& MonteCarloAnalysis::getTypeSpec( void ) const
 void MonteCarloAnalysis::initializeMethods()
 {
     
-    ArgumentRules* runArgRules = new ArgumentRules();
-    runArgRules->push_back( new ArgumentRule( "generations", Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    runArgRules->push_back( new ArgumentRule( "rules", WorkspaceVector<StoppingRule>::getClassTypeSpec(), "The rules when to automatically stop the run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-    runArgRules->push_back( new ArgumentRule( "tuningInterval", Natural::getClassTypeSpec(), "The interval when to update the tuning parameters of the moves.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0L)  ) );
-    runArgRules->push_back( new ArgumentRule( "underPrior" , RlBoolean::getClassTypeSpec(), "Should we run this analysis under the prior only?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-    methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
+    ArgumentRules* run_arg_rules = new ArgumentRules();
+    run_arg_rules->push_back( new ArgumentRule( "generations", Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    run_arg_rules->push_back( new ArgumentRule( "rules", WorkspaceVector<StoppingRule>::getClassTypeSpec(), "The rules when to automatically stop the run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    run_arg_rules->push_back( new ArgumentRule( "tuningInterval", Natural::getClassTypeSpec(), "The interval when to update the tuning parameters of the moves.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0L)  ) );
+    run_arg_rules->push_back( new ArgumentRule( "checkpointFile", RlString::getClassTypeSpec(), "The filename for the checkpoint file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("")  ) );
+    run_arg_rules->push_back( new ArgumentRule( "checkpointInterval", Natural::getClassTypeSpec(), "The interval when to write parameters values to a files for checkpointing.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0L)  ) );
+    run_arg_rules->push_back( new ArgumentRule( "underPrior" , RlBoolean::getClassTypeSpec(), "Should we run this analysis under the prior only?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    methods.addFunction( new MemberProcedure( "run", RlUtils::Void, run_arg_rules) );
     
     ArgumentRules* burninArgRules = new ArgumentRules();
     burninArgRules->push_back( new ArgumentRule( "generations"   , Natural::getClassTypeSpec(), "The number of generation to run this burnin simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
@@ -244,9 +268,13 @@ void MonteCarloAnalysis::initializeMethods()
     operatorSummaryArgRules->push_back( new ArgumentRule( "currentPeriod" , RlBoolean::getClassTypeSpec(), "Should the operator summary (number of tries and acceptance, and the acceptance ratio) of only the current period (i.e., after the last tuning) be printed?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
     methods.addFunction( new MemberProcedure( "operatorSummary", RlUtils::Void, operatorSummaryArgRules) );
     
-    ArgumentRules* initializeTraceArgRules = new ArgumentRules();
-    initializeTraceArgRules->push_back( new ArgumentRule("trace", WorkspaceVector<ModelTrace>::getClassTypeSpec(), "The sample trace object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-    methods.addFunction( new MemberProcedure( "initializeFromTrace", RlUtils::Void, initializeTraceArgRules) );
+    ArgumentRules* initialize_trace_arg_rules = new ArgumentRules();
+    initialize_trace_arg_rules->push_back( new ArgumentRule("trace", WorkspaceVector<ModelTrace>::getClassTypeSpec(), "The sample trace object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "initializeFromTrace", RlUtils::Void, initialize_trace_arg_rules) );
+    
+    ArgumentRules* initialize_checkpoint_arg_rules = new ArgumentRules();
+    initialize_checkpoint_arg_rules->push_back( new ArgumentRule("checkpointFile", RlString::getClassTypeSpec(), "The checkpoint filename.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "initializeFromCheckpoint", RlUtils::Void, initialize_checkpoint_arg_rules) );
     
 }
 

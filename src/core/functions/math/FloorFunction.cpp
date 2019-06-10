@@ -2,6 +2,11 @@
 #include <cmath>
 
 using namespace RevBayesCore;
+/**
+ * FloorFunction of a TypedDagNode holding a value of type double
+ *
+ * @param x a value of type double
+ */
 
 FloorFunction::FloorFunction(const TypedDagNode<double> *x) : TypedFunction<long>( new long(0) ),
     a( x )
