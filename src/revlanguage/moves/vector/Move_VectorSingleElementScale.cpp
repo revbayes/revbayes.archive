@@ -99,7 +99,7 @@ const TypeSpec& Move_VectorSingleElementScale::getTypeSpec( void ) const
 void Move_VectorSingleElementScale::printValue(std::ostream &o) const
 {    
     o << "VectorSingleElementScale(";
-    if (x != nullptr)
+    if (x != NULL)
     {
         o << x->getName();
     }
