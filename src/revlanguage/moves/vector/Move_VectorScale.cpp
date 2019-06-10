@@ -100,13 +100,16 @@ const TypeSpec& Move_VectorScale::getTypeSpec( void ) const {
 }
 
 
-void Move_VectorScale::printValue(std::ostream &o) const {
+void Move_VectorScale::printValue(std::ostream &o) const
+{
     
     o << "Move_VectorScale(";
-    if (x != nullptr) {
+    if ( x != NULL )
+    {
         o << x->getName();
     }
-    else {
+    else
+    {
         o << "?";
     }
     o << ")";
@@ -115,16 +118,20 @@ void Move_VectorScale::printValue(std::ostream &o) const {
 
 void Move_VectorScale::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
-    if ( name == "x" ) {
+    if ( name == "x" )
+    {
         x = var;
     }
-    else if ( name == "lambda" ) {
+    else if ( name == "lambda" )
+    {
         lambda = var;
     }
-    else if ( name == "tune" ) {
+    else if ( name == "tune" )
+    {
         tune = var;
     }
-    else {
+    else
+    {
         Move::setConstParameter(name, var);
     }
 }

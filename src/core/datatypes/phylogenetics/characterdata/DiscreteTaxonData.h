@@ -169,6 +169,7 @@ RevBayesCore::DiscreteTaxonData<RevBayesCore::NaturalNumbersState>* RevBayesCore
     NaturalNumbersState new_state   = NaturalNumbersState(num_states_first * num_states_second);
     
     int k=0;
+    bool first_state_set = false;
     for ( size_t i=0; i<num_states_first; ++i)
     {
         k = int(i*num_states_second);
@@ -176,9 +177,17 @@ RevBayesCore::DiscreteTaxonData<RevBayesCore::NaturalNumbersState>* RevBayesCore
         {
             for ( size_t j=0; j<num_states_second; ++j)
             {
-                if ( second_char.isStateSet( j ) == true )
+                if ( second_char.isStateSet( j ) == true || second_char.isMissingState() == true || second_char.isGapState() == true )
                 {
-                    new_state.addState(k);
+                    if ( first_state_set == false )
+                    {
+                        new_state.setStateByIndex(k);
+                        first_state_set = true;
+                    }
+                    else
+                    {
+                        new_state.addState(k);
+                    }
                 }
                 ++k;
             }

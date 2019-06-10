@@ -30,7 +30,7 @@ void Move_SingleElementScale::constructInternalObject( void )
     for (std::vector<const RevBayesCore::DagNode*>::const_iterator it = p.begin(); it != p.end(); ++it)
     {
         const RevBayesCore::StochasticNode<double> *the_node = dynamic_cast< const RevBayesCore::StochasticNode<double>* >( *it );
-        if ( the_node != nullptr )
+        if ( the_node != NULL )
         {
             n.push_back( const_cast< RevBayesCore::StochasticNode<double>* >( the_node ) );
         }
@@ -117,10 +117,12 @@ const TypeSpec& Move_SingleElementScale::getTypeSpec( void ) const {
 void Move_SingleElementScale::printValue(std::ostream &o) const {
 
     o << "SingleElementScale(";
-    if (x != nullptr) {
+    if (x != NULL)
+    {
         o << x->getName();
     }
-    else {
+    else
+    {
         o << "?";
     }
     o << ")";
@@ -129,16 +131,20 @@ void Move_SingleElementScale::printValue(std::ostream &o) const {
 
 void Move_SingleElementScale::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
 
-    if ( name == "x" ) {
+    if ( name == "x" )
+    {
         x = var;
     }
-    else if ( name == "lambda" ) {
+    else if ( name == "lambda" )
+    {
         lambda = var;
     }
-    else if ( name == "tune" ) {
+    else if ( name == "tune" )
+    {
         tune = var;
     }
-    else {
+    else
+    {
         Move::setConstParameter(name, var);
     }
 }

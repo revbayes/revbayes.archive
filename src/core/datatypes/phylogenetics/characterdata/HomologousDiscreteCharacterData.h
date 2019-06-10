@@ -431,7 +431,7 @@ RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::NaturalNumbersState>
         try
         {
             //size_t idx = obsd.getIndexOfTaxon( n );
-            tmp_second->getIndexOfTaxon( n );
+//            tmp_second->getIndexOfTaxon( n );
             DiscreteTaxonData<NaturalNumbersState> *new_taxon_data = taxon.combineCharacters( tmp_second->getTaxonData( n ) );
             combined_data->addTaxonData( *new_taxon_data );
             

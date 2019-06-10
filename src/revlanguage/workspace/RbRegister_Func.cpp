@@ -84,6 +84,7 @@
 #include "Func_checkNodeOrderConstraints.h"
 #include "Func_chronoToPhylo.h"
 #include "Func_computeWeightedNodeOrderConstraintsScore.h"
+#include "Func_combineCharacter.h"
 #include "Func_concatenate.h"
 #include "Func_concatenateContinuousCharacterData.h"
 #include "Func_CladeSpecificHierarchicalBranchRate.h"
@@ -359,6 +360,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_checkNodeOrderConstraints()                       );
         addFunction( new Func_chronoToPhylo()                                   );
         addFunction( new Func_computeWeightedNodeOrderConstraintsScore()        );
+        addFunction( new Func_combineCharacter()                                );
         addFunction( new Func_concatenate()                                     );
         addFunction( new Func_concatenateContinuousCharacterData()              );
         addFunction( new Func_concatenateFromVector()                           );
