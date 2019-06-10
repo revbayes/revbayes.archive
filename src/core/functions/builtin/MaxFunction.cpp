@@ -16,7 +16,7 @@ MaxFunction::MaxFunction(const TypedDagNode< RbVector<double> > *v) : TypedFunct
 }
 
 
-/** MinFunction of a MatrixReal Constructor
+/** MaxFunction of a MatrixReal Constructor
  * @param v the matrix of values
  */
 MaxFunction::MaxFunction(const TypedDagNode< MatrixReal > *v) : TypedFunction<double>( new double(0.0) ),

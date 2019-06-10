@@ -120,10 +120,10 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
         m->setPrintVersion(wv);
         value = m;
     }
-    else if (character == "Pomo")
+    else if (character == "PoMo")
     {
-        RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::PomoState> *m;
-        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::PomoState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
+        RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::PoMoState> *m;
+        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::PoMoState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
         m->setAppend( ap );
         m->setPrintVersion(wv);
         value = m;
@@ -161,7 +161,7 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
     }
     else
     {
-        throw RbException( "Incorrect character type specified. Valid options are: AA, DNA, NaturalNumbers, Pomo, Protein, RNA, Standard, Binary/Restriction" );
+        throw RbException( "Incorrect character type specified. Valid options are: AA, DNA, NaturalNumbers, PoMo, Protein, RNA, Standard, Binary/Restriction" );
     }
     
 }

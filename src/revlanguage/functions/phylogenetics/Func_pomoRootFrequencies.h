@@ -1,7 +1,7 @@
 /**
  * @file
  * This file contains the declaration of the RevLanguage polymorphicRootFrequencies function, which
- * is used to create a vector of root frequencies for the Pomo model.
+ * is used to create a vector of root frequencies for the PoMo model.
  *
  * @brief Declaration and implementation of polymorphicRootFrequencies
  *

@@ -227,16 +227,7 @@ add_subdirectory(help)
 ' >> $HERE/CMakeLists.txt
 fi
 
-if [ "$mpi" = "true" ]
-then
-echo "set executable"
-echo '
-add_executable(rb-mpi ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
-
-target_link_libraries(rb-mpi rb-parser rb-core libs ${Boost_LIBRARIES} ${MPI_LIBRARIES})
-set_target_properties(rb-mpi PROPERTIES PREFIX "../")
-' >> $HERE/CMakeLists.txt
-elif [ "$help" = "true" ]
+if [ "$help" = "true" ]
 then
 echo '
 add_executable(rb-help ${PROJECT_SOURCE_DIR}/help/YAMLHelpGenerator.cpp)
@@ -302,10 +293,14 @@ echo '
 add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 
 target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
+
 set_target_properties(rb PROPERTIES PREFIX "../")
 ' >> $HERE/CMakeLists.txt
+if [ "$mpi" = "true" ] ; then
+    echo 'target_link_libraries(rb ${MPI_LIBRARIES})
+' >> $HERE/CMakeLists.txt
 fi
-
+fi
 
 if [ ! -d "$HERE/libs" ]; then
 mkdir "$HERE/libs"

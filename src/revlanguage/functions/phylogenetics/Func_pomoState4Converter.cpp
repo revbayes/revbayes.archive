@@ -4,7 +4,7 @@
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlDeterministicNode.h"
 #include "RlTaxon.h"
-#include "PomoState4Converter.h"
+#include "PoMoState4Converter.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
@@ -35,7 +35,7 @@ RevPtr<RevVariable> Func_pomoState4Converter::execute() {
     RevBayesCore::TypedDagNode< long >* n = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
 
 
-    RevBayesCore::PomoState4Converter* c = new RevBayesCore::PomoState4Converter(  );
+    RevBayesCore::PoMoState4Converter* c = new RevBayesCore::PoMoState4Converter(  );
     
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::Taxon> >* taxa  = static_cast< const ModelVector<Taxon> &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     
@@ -46,9 +46,9 @@ RevPtr<RevVariable> Func_pomoState4Converter::execute() {
         gene2species[it->getName()] = it->getSpeciesName();
     }
     
-    AbstractHomologousDiscreteCharacterData PomoAln = c->convertData( aln->getValue(), (int)n->getValue(), gene2species ) ;
+    AbstractHomologousDiscreteCharacterData PoMoAln = c->convertData( aln->getValue(), (int)n->getValue(), gene2species ) ;
         
-    return new RevVariable( new AbstractHomologousDiscreteCharacterData( PomoAln ) );
+    return new RevVariable( new AbstractHomologousDiscreteCharacterData( PoMoAln ) );
 }
 
 

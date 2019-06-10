@@ -1,10 +1,10 @@
 /**
  * @file
- * This file contains the declaration of the Pomo root frequencies funcion class.
+ * This file contains the declaration of the PoMo root frequencies funcion class.
  * This class is derived from the function class and is used to
- * compute the root frequencies of the Pomo model.
+ * compute the root frequencies of the PoMo model.
  *
- * @brief Declaration of the Pomo root frequencies function.
+ * @brief Declaration of the PoMo root frequencies function.
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -19,8 +19,8 @@
 
 
 
-#ifndef PomoRootFrequenciesFunction_H
-#define PomoRootFrequenciesFunction_H
+#ifndef PoMoRootFrequenciesFunction_H
+#define PoMoRootFrequenciesFunction_H
 
 #include "RateMatrix.h"
 #include "RbVector.h"
@@ -32,17 +32,17 @@
 
 namespace RevBayesCore {
     
-    class PomoRootFrequenciesFunction : public TypedFunction< Simplex > {
+    class PoMoRootFrequenciesFunction : public TypedFunction< Simplex > {
         
     public:
-        PomoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< long > *ps);
+        PoMoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< long > *ps);
         
-        PomoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< long > *ps);
+        PoMoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< long > *ps);
 
-        virtual                                            ~PomoRootFrequenciesFunction(void);                                                    //!< Virtual destructor
+        virtual                                            ~PoMoRootFrequenciesFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
-        PomoRootFrequenciesFunction*                        clone(void) const;                                                              //!< Create an independent clone
+        PoMoRootFrequenciesFunction*                        clone(void) const;                                                              //!< Create an independent clone
         void                                                update(void);
         
     protected:

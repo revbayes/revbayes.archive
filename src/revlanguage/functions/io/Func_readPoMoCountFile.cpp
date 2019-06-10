@@ -1,9 +1,9 @@
 #include "HomologousDiscreteCharacterData.h"
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "PomoCountFileReader.h"
+#include "PoMoCountFileReader.h"
 #include "Ellipsis.h"
-#include "Func_readPomoCountFile.h"
+#include "Func_readPoMoCountFile.h"
 #include "ModelVector.h"
 #include "RbException.h"
 #include "RbFileManager.h"
@@ -28,15 +28,15 @@ using namespace RevLanguage;
  *
  * \return A new copy of the process.
  */
-Func_readPomoCountFile* Func_readPomoCountFile::clone( void ) const
+Func_readPoMoCountFile* Func_readPoMoCountFile::clone( void ) const
 {
 
-	return new Func_readPomoCountFile( *this );
+	return new Func_readPoMoCountFile( *this );
 }
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_readPomoCountFile::execute( void )
+RevPtr<RevVariable> Func_readPoMoCountFile::execute( void )
 {
 
 	// get the information from the arguments for reading the file
@@ -44,18 +44,18 @@ RevPtr<RevVariable> Func_readPomoCountFile::execute( void )
 	RevBayesCore::TypedDagNode<long>* virtualPopulationSize = static_cast<const Integer &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<long>* n_states = static_cast<const Integer &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
 
-	RevBayesCore::PomoCountFileReader* pcfr = new RevBayesCore::PomoCountFileReader( fn.getValue(), virtualPopulationSize->getValue(), ' ' );
+	RevBayesCore::PoMoCountFileReader* pcfr = new RevBayesCore::PoMoCountFileReader( fn.getValue(), virtualPopulationSize->getValue(), ' ' );
 
-	RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::PomoState> *pomoAln = new RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::PomoState>( *(pcfr->getMatrix() ) );
+	RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::PoMoState> *pomoAln = new RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::PoMoState>( *(pcfr->getMatrix() ) );
 
-	AbstractHomologousDiscreteCharacterData *rlPomoAln = new AbstractHomologousDiscreteCharacterData( pomoAln );
+	AbstractHomologousDiscreteCharacterData *rlPoMoAln = new AbstractHomologousDiscreteCharacterData( pomoAln );
 
-	return new RevVariable( rlPomoAln );
+	return new RevVariable( rlPoMoAln );
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_readPomoCountFile::getArgumentRules( void ) const
+const ArgumentRules& Func_readPoMoCountFile::getArgumentRules( void ) const
 {
 
 	static ArgumentRules argument_rules = ArgumentRules();
@@ -76,17 +76,17 @@ const ArgumentRules& Func_readPomoCountFile::getArgumentRules( void ) const
 
 
 /** Get Rev type of object */
-const std::string& Func_readPomoCountFile::getClassType(void)
+const std::string& Func_readPoMoCountFile::getClassType(void)
 {
 
-	static std::string rev_type = "Func_readPomoCountFile";
+	static std::string rev_type = "Func_readPoMoCountFile";
 
 	return rev_type;
 }
 
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_readPomoCountFile::getClassTypeSpec(void)
+const TypeSpec& Func_readPoMoCountFile::getClassTypeSpec(void)
 {
 
 	static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
@@ -98,17 +98,17 @@ const TypeSpec& Func_readPomoCountFile::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-std::string Func_readPomoCountFile::getFunctionName( void ) const
+std::string Func_readPoMoCountFile::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "readPomoCountFile";
+    std::string f_name = "readPoMoCountFile";
 
     return f_name;
 }
 
 
 /** Get type spec */
-const TypeSpec& Func_readPomoCountFile::getTypeSpec( void ) const
+const TypeSpec& Func_readPoMoCountFile::getTypeSpec( void ) const
 {
 
 	static TypeSpec type_spec = getClassTypeSpec();
@@ -118,7 +118,7 @@ const TypeSpec& Func_readPomoCountFile::getTypeSpec( void ) const
 
 
 /** Get return type */
-const TypeSpec& Func_readPomoCountFile::getReturnType( void ) const
+const TypeSpec& Func_readPoMoCountFile::getReturnType( void ) const
 {
 
 	static TypeSpec return_typeSpec = AbstractHomologousDiscreteCharacterData::getClassTypeSpec();

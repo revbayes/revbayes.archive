@@ -128,7 +128,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     if ( dt == "DNA" )
     {
         RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState> *dist =
-        new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState>(tau, !true, n, ambig, internal, gapmatch);
+        new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState>(tau, true, n, ambig, internal, gapmatch);
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -407,10 +407,10 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         
         d = dist;
     }
-    else if ( dt == "Pomo" )
+    else if ( dt == "PoMo" )
     {
 
-        // we get the number of states from the rate matrix (we don't know, because Pomo is flexible about its rates)
+        // we get the number of states from the rate matrix (we don't know, because PoMo is flexible about its rates)
         // set the rate matrix
         size_t nChars = 1;
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
@@ -424,7 +424,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             nChars = rm->getValue().getNumberOfStates();
         }
 
-        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PomoState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PomoState>(tau, nChars, !true, n, ambig, internal, gapmatch);
+        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PoMoState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PoMoState>(tau, nChars, !true, n, ambig, internal, gapmatch);
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -947,7 +947,7 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
         options.push_back( "RNA" );
         options.push_back( "AA" );
         options.push_back( "Codon" );
-        options.push_back( "Pomo" );
+        options.push_back( "PoMo" );
         options.push_back( "Protein" );
         options.push_back( "Standard" );
         options.push_back( "NaturalNumbers" );

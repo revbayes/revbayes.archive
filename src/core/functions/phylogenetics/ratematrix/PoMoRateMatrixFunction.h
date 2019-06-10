@@ -1,10 +1,10 @@
 /**
  * @file
- * This file contains the declaration of the Pomo rate matrix function class.
+ * This file contains the declaration of the PoMo rate matrix function class.
  * This class is derived from the function class and is used to
- * compute the rate matrix of a general time reversible (Pomo) Markov chain.
+ * compute the rate matrix of a general time reversible (PoMo) Markov chain.
  *
- * @brief Declaration of the Pomo rate matrix function.
+ * @brief Declaration of the PoMo rate matrix function.
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -19,10 +19,10 @@
 
 
 
-#ifndef PomoRateMatrixFunction_H
-#define PomoRateMatrixFunction_H
+#ifndef PoMoRateMatrixFunction_H
+#define PoMoRateMatrixFunction_H
 
-#include "RateMatrix_Pomo.h"
+#include "RateMatrix_PoMo.h"
 #include "RbVector.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
@@ -31,16 +31,16 @@
 
 namespace RevBayesCore {
     
-    class PomoRateMatrixFunction : public TypedFunction<RateGenerator> {
+    class PoMoRateMatrixFunction : public TypedFunction<RateGenerator> {
 
     public:
-        PomoRateMatrixFunction(const TypedDagNode< long > *ps, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< RbVector<double>  > *sc);
-        PomoRateMatrixFunction(const TypedDagNode< long > *ps, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< RbVector<double>  > *sc);
+        PoMoRateMatrixFunction(const TypedDagNode< long > *ps, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< RbVector<double>  > *sc);
+        PoMoRateMatrixFunction(const TypedDagNode< long > *ps, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< RbVector<double>  > *sc);
 
-        virtual                                            ~PomoRateMatrixFunction(void);                                                    //!< Virtual destructor
+        virtual                                            ~PoMoRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
-        PomoRateMatrixFunction*                             clone(void) const;                                                              //!< Create an independent clone
+        PoMoRateMatrixFunction*                             clone(void) const;                                                              //!< Create an independent clone
         void                                                update(void);
         
     protected:

@@ -7,13 +7,10 @@
 namespace RevBayesCore {
     
     /**
-     * \brief Binary subtraction.
+     * @brief Binary subtraction.
      *
-     * We compute the difference a - b.
-     *
-     * \copyright (c) Copyright 2009-2015 (GPL version 3)
-     * \author The RevBayes Development Core Team (Sebastian Hoehna)
-     * \since Version 1.0, 2012-08-13
+     * We compute the difference a - b. Wrapper to allow subtraction
+     * of values held by TypedDagNodes
      *
      */
     template <class firstValueType, class secondValueType, class return_type>

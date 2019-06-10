@@ -1,4 +1,4 @@
-#include "PomoState4.h"
+#include "PoMoState4.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -14,7 +14,7 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-PomoState4::PomoState4(void) : DiscreteCharacterState( 4 + 6 * (10 - 1) ),
+PoMoState4::PoMoState4(void) : DiscreteCharacterState( 4 + 6 * (10 - 1) ),
     is_gap( false ),
     is_missing( false ),
     index_single_state( 0 ),
@@ -31,7 +31,7 @@ PomoState4::PomoState4(void) : DiscreteCharacterState( 4 + 6 * (10 - 1) ),
 }
 
 /** Constructor with virtual population size */
-PomoState4::PomoState4(size_t vps): DiscreteCharacterState( 4 + 6 * (vps - 1) ),
+PoMoState4::PoMoState4(size_t vps): DiscreteCharacterState( 4 + 6 * (vps - 1) ),
 is_gap( false ),
 is_missing( false ),
 index_single_state( 0 ),
@@ -50,7 +50,7 @@ stringValue_ ("")
 
 
 /** Constructor that sets the observation */
-PomoState4::PomoState4(const std::string &s) : DiscreteCharacterState( 4 + 6 * (10 - 1) ),
+PoMoState4::PoMoState4(const std::string &s) : DiscreteCharacterState( 4 + 6 * (10 - 1) ),
 is_gap( false ),
 is_missing( false ),
 index_single_state( 0 ),
@@ -71,7 +71,7 @@ stringValue_ (s)
 
 
 /** Constructor that sets the observation and the other fields */
-PomoState4::PomoState4(const std::string &s, const std::string chromosome, const size_t position, const size_t virtualPopulationSize, std::vector<double> weights ) : DiscreteCharacterState( 4 + 6 * (virtualPopulationSize - 1) ),
+PoMoState4::PoMoState4(const std::string &s, const std::string chromosome, const size_t position, const size_t virtualPopulationSize, std::vector<double> weights ) : DiscreteCharacterState( 4 + 6 * (virtualPopulationSize - 1) ),
 is_gap( false ),
 is_missing( false ),
 index_single_state( 0 ),
@@ -91,7 +91,7 @@ stringValue_ (s)
 
 
 /** Constructor that sets the observation and the other fields */
-PomoState4::PomoState4(const std::string &s, const std::string chromosome, const size_t position, const size_t virtualPopulationSize) : DiscreteCharacterState( 4 + 6 * (virtualPopulationSize - 1) ),
+PoMoState4::PoMoState4(const std::string &s, const std::string chromosome, const size_t position, const size_t virtualPopulationSize) : DiscreteCharacterState( 4 + 6 * (virtualPopulationSize - 1) ),
 is_gap( false ),
 is_missing( false ),
 index_single_state( 0 ),
@@ -111,7 +111,7 @@ stringValue_ (s)
 
 
 /* Copy constructor */
-PomoState4::PomoState4(const PomoState4& t) : DiscreteCharacterState( 4 + 6 * (t.virtualPopulationSize_ - 1) ), is_gap(t.is_gap), is_missing(t.is_missing), index_single_state(t.index_single_state), num_observed_states(t.num_observed_states), state(t.state), chromosome_(t.chromosome_), position_(t.position_), virtualPopulationSize_(t.virtualPopulationSize_), stringValue_(t.stringValue_)
+PoMoState4::PoMoState4(const PoMoState4& t) : DiscreteCharacterState( 4 + 6 * (t.virtualPopulationSize_ - 1) ), is_gap(t.is_gap), is_missing(t.is_missing), index_single_state(t.index_single_state), num_observed_states(t.num_observed_states), state(t.state), chromosome_(t.chromosome_), position_(t.position_), virtualPopulationSize_(t.virtualPopulationSize_), stringValue_(t.stringValue_)
  {
 
    setWeighted ( t.weighted );
@@ -125,15 +125,15 @@ PomoState4::PomoState4(const PomoState4& t) : DiscreteCharacterState( 4 + 6 * (t
 
 
 
-PomoState4* PomoState4::clone( void ) const
+PoMoState4* PoMoState4::clone( void ) const
 {
 
-    return new PomoState4( *this );
+    return new PoMoState4( *this );
 }
 
 
-void PomoState4::populateWeightedStatesForMonoallelicState(int id1, int sum) {
-  // We do Pomo state averaging.
+void PoMoState4::populateWeightedStatesForMonoallelicState(int id1, int sum) {
+  // We do PoMo state averaging.
   double n = (double)sum;
   double p = 1.0;
 
@@ -210,7 +210,7 @@ void PomoState4::populateWeightedStatesForMonoallelicState(int id1, int sum) {
     }
   }
   else  {
-    throw RbException( "Pomo string state not correct. We found "+ StringUtilities::to_string(id1)  );
+    throw RbException( "PoMo string state not correct. We found "+ StringUtilities::to_string(id1)  );
   }
 
   for (size_t i =0; i < weights.size(); ++i) {
@@ -225,7 +225,7 @@ void PomoState4::populateWeightedStatesForMonoallelicState(int id1, int sum) {
 }
 
 
-void PomoState4::setState(const std::string &symbol)
+void PoMoState4::setState(const std::string &symbol)
 {
     /* Example with only ten states:
      A C G T A10C90 A20C80 A30C70...A90C10 A10G90 A20G80...A10T90...C10G90...C10T90...G10T90
@@ -247,7 +247,7 @@ void PomoState4::setState(const std::string &symbol)
                 ss.ignore();
         }
         if (vect.size() != 4)
-            throw RbException( "Pomo string state not correctly formatted. We found "+ symbol +", but the preferred format is that of counts, e.g. 0,1,4,0 meaning 0 A, 1 C, 4 G, 0 T were sampled at that position." );
+            throw RbException( "PoMo string state not correctly formatted. We found "+ symbol +", but the preferred format is that of counts, e.g. 0,1,4,0 meaning 0 A, 1 C, 4 G, 0 T were sampled at that position." );
         //We have the counts, now we create the state.
         //code borrowed in part from IQ-Tree
         int sum = 0;
@@ -294,7 +294,7 @@ void PomoState4::setState(const std::string &symbol)
               basicIndex = 4 + 2*(virtMinus1);
             }
             else  {
-              throw RbException( "Pomo string state not correct. We found "+ symbol  );
+              throw RbException( "PoMo string state not correct. We found "+ symbol  );
             }
           }
           else if (id1==1) {
@@ -305,7 +305,7 @@ void PomoState4::setState(const std::string &symbol)
               basicIndex = 4 + 4*(virtMinus1);
             }
             else  {
-              throw RbException( "Pomo string state not correct. We found "+ symbol  );
+              throw RbException( "PoMo string state not correct. We found "+ symbol  );
             }
           }
           else if (id1==2) {
@@ -313,11 +313,11 @@ void PomoState4::setState(const std::string &symbol)
               basicIndex = 4 + 5*(virtMinus1);
             }
             else  {
-              throw RbException( "Pomo string state not correct. We found "+ symbol  );
+              throw RbException( "PoMo string state not correct. We found "+ symbol  );
             }
           }
           else  {
-            throw RbException( "Pomo string state not correct. We found "+ symbol  );
+            throw RbException( "PoMo string state not correct. We found "+ symbol  );
           }
 
           std::cout << "basicIndex: "<<basicIndex <<std::endl;
@@ -353,7 +353,7 @@ void PomoState4::setState(const std::string &symbol)
           std::cout << "index: "<<index <<std::endl;
 
           //index = 3 + id1*virtualPopulationSize_ + id2 ;
-          // Let's try Pomo state averaging.
+          // Let's try PoMo state averaging.
           // Basically all cells in the weight matrix that contain only id1, only id2, or a combination of both should have a non-zero weight.
           double n = (double)sum;
           double p = (double)num/(double)sum;
@@ -405,7 +405,7 @@ void PomoState4::setState(const std::string &symbol)
             }
           }
           else {
-            throw RbException( "Pomo string state not correct. We found "+ symbol  );
+            throw RbException( "PoMo string state not correct. We found "+ symbol  );
           }
         }
         else if ( count == 0 )
@@ -414,7 +414,7 @@ void PomoState4::setState(const std::string &symbol)
         }
         else
         {
-            throw RbException( "Pomo string state not correct. We found "+ symbol +", but only 2 states can be non-0." );
+            throw RbException( "PoMo string state not correct. We found "+ symbol +", but only 2 states can be non-0." );
         }
       }
     index_single_state = index;
@@ -428,14 +428,14 @@ void PomoState4::setState(const std::string &symbol)
 }
 
 
-std::string PomoState4::getDataType( void ) const
+std::string PoMoState4::getDataType( void ) const
 {
 
-    return "Pomo";
+    return "PoMo";
 }
 
 
-std::string PomoState4::getStateLabels( void ) const
+std::string PoMoState4::getStateLabels( void ) const
 {
 
     static std::string labels = "A C G T ";
@@ -463,7 +463,7 @@ std::string PomoState4::getStateLabels( void ) const
     return labels;
 }
 
-std::string PomoState4::getStringValue(void) const
+std::string PoMoState4::getStringValue(void) const
 {
 
     if ( isMissingState() )
@@ -479,7 +479,7 @@ std::string PomoState4::getStringValue(void) const
     return stringValue_;
 }
 
-void PomoState4::setVirtualPopulationSize(size_t populationSize)
+void PoMoState4::setVirtualPopulationSize(size_t populationSize)
 {
     if (populationSize >= 100)
     {
@@ -492,26 +492,26 @@ void PomoState4::setVirtualPopulationSize(size_t populationSize)
     virtualPopulationSize_ = populationSize;
 }
 
-void PomoState4::setChromosome(std::string chromosome){
+void PoMoState4::setChromosome(std::string chromosome){
     chromosome_ = chromosome;
 }
 
-void PomoState4::setPosition(size_t position){
+void PoMoState4::setPosition(size_t position){
     position_ = position;
 }
 
-const std::string PomoState4::getChromosome( void )
+const std::string PoMoState4::getChromosome( void )
 {
     return chromosome_;
 }
 
-const size_t PomoState4::getPosition( void )
+const size_t PoMoState4::getPosition( void )
 {
     return position_;
 }
 
 
-void PomoState4::addState(const std::string &symbol)
+void PoMoState4::addState(const std::string &symbol)
 {
     ++num_observed_states;
 
@@ -523,7 +523,7 @@ void PomoState4::addState(const std::string &symbol)
 }
 
 
-RbBitSet PomoState4::getState(void) const
+RbBitSet PoMoState4::getState(void) const
 {
     // we need to clear the bits first
 //    RbBitSet bs = RbBitSet( state.size());
@@ -534,31 +534,31 @@ RbBitSet PomoState4::getState(void) const
 }
 
 
-bool PomoState4::isGapState( void ) const
+bool PoMoState4::isGapState( void ) const
 {
     return is_gap;
 }
 
 
-bool PomoState4::isMissingState( void ) const
+bool PoMoState4::isMissingState( void ) const
 {
     return is_missing;
 }
 
 
-void PomoState4::setGapState( bool tf )
+void PoMoState4::setGapState( bool tf )
 {
     is_gap = tf;
 }
 
 
-void PomoState4::setMissingState( bool tf )
+void PoMoState4::setMissingState( bool tf )
 {
     is_missing = tf;
 }
 
 
-void PomoState4::setToFirstState(void)
+void PoMoState4::setToFirstState(void)
 {
     num_observed_states = 1;
     index_single_state = 0;
@@ -567,7 +567,7 @@ void PomoState4::setToFirstState(void)
 }
 
 
-void PomoState4::setStateByIndex(size_t index)
+void PoMoState4::setStateByIndex(size_t index)
 {
 
     num_observed_states = 1;
