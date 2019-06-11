@@ -86,7 +86,7 @@ variables_map parse_cmd_line(int argc, char* argv[])
             std::cout<<"See http://revbayes.github.io for more information\n";
         }
 #ifdef RB_MPI
-        MPI::Finalize();
+        MPI_Finalize();
 #endif
 	std::exit(0);
     }
