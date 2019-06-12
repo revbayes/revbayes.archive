@@ -128,7 +128,12 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -static")
 '  >> "$HERE/CMakeLists.txt"
 else
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3")
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "^arm*|aarch64")
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+   add_definitions(-DRB_ARM)
+else()
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3")
+endif()
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 '  >> "$HERE/CMakeLists.txt"
 fi
