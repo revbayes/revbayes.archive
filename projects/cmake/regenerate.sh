@@ -101,7 +101,12 @@ project(RevBayes)
 #    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg")
 #endif ()
 
-set(CMAKE_CXX_STANDARD 11)
+# This is the RIGHT way, but requires cmake version >=3:
+#   set(CMAKE_CXX_STANDARD 11)
+# RHEL 7 compute clusters may have cmake 2.8.12
+#
+# So, we add the flag directly instead.
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 ' > "$HERE/CMakeLists.txt"
 
