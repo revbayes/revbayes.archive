@@ -65,8 +65,9 @@ BranchHeterogeneousMorphospeciationProcess::BranchHeterogeneousMorphospeciationP
     rho( rh ),
     site_rates(NULL),
     speciation_chars(std::vector<size_t>(num_sites,0)),
+    rate_allocation(std::vector<size_t>(num_sites,0)),
     rate_variation_across_sites(false),
-    site_rate(1.0),
+    mean_site_rate(1.0),
     NUM_TIME_SLICES( 500.0 )
 {
     addParameter( process_age );
@@ -241,33 +242,32 @@ void BranchHeterogeneousMorphospeciationProcess::computeNodeProbability(const Re
 
             double sampling = node.isFossil() ? mu->getValue() : rho->getValue();
 
-            for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+            for (size_t i = 0; i < num_sites; ++i)
             {
+                size_t mixture = rate_allocation[i];
+
                 // the transition probability matrix for this mixture category
                 const std::vector<std::vector<double> >& tp = this->transition_prob_matrices[mixture];
 
-                for (size_t i = 0; i < num_sites; ++i)
+                std::vector<double> &site_likelihood = node_likelihood[mixture][i];
+
+                for (size_t from = 0; from < num_states; ++from)
                 {
-                    std::vector<double> &site_likelihood = node_likelihood[mixture][i];
+                    site_likelihood[from] = 0.0;
 
-                    for (size_t from = 0; from < num_states; ++from)
+                    for (size_t to = 0; to < num_states; ++to)
                     {
-                        site_likelihood[from] = 0.0;
-
-                        for (size_t to = 0; to < num_states; ++to)
+                        if ( obs_state.isSet( to ) == true || gap == true )
                         {
-                            if ( obs_state.isSet( to ) == true || gap == true )
-                            {
-                                site_likelihood[from] += tp[from][to];
-                            }
+                            site_likelihood[from] += tp[from][to];
                         }
+                    }
 
-                        site_likelihood[from] *= sampling;
+                    site_likelihood[from] *= sampling;
 
-                        if( site_likelihood[from] > max[i] )
-                        {
-                            max[i] = site_likelihood[from];
-                        }
+                    if( site_likelihood[from] > max[i] )
+                    {
+                        max[i] = site_likelihood[from];
                     }
                 }
             }
@@ -295,67 +295,66 @@ void BranchHeterogeneousMorphospeciationProcess::computeNodeProbability(const Re
 
             bool anagenetic_node = ( left.isSampledAncestor() || right.isSampledAncestor() );
 
-            for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+            // merge descendant likelihoods
+            for (size_t i=0; i<num_sites; ++i)
             {
+                size_t mixture = rate_allocation[i];
+
                 // the transition probability matrix for this mixture category
                 const std::vector<std::vector<double> >& tp = this->transition_prob_matrices[mixture];
 
-                // merge descendant likelihoods
-                for (size_t i=0; i<num_sites; ++i)
+                const std::vector<double> &site_likelihood = node_likelihood[mixture][i];
+                const std::vector<double> &left_site_likelihood = left_likelihoods[mixture][i];
+                const std::vector<double> &right_site_likelihood = right_likelihoods[mixture][i];
+
+                for (size_t from=0; from<num_states; ++from)
                 {
-                    const std::vector<double> &site_likelihood = node_likelihood[mixture][i];
-                    const std::vector<double> &left_site_likelihood = left_likelihoods[mixture][i];
-                    const std::vector<double> &right_site_likelihood = right_likelihoods[mixture][i];
+                    site_likelihood[from] = 0.0;
 
-                    for (size_t from=0; from<num_states; ++from)
+                    for (size_t to=0; to<num_states; ++to)
                     {
-                        site_likelihood[from] = 0.0;
+                        double merged_probability = 0.0;
 
-                        for (size_t to=0; to<num_states; ++to)
+                        if( i == speciation_chars[node_index])
                         {
-                            double merged_probability = 0.0;
-
-                            if( i == speciation_chars[node_index])
+                            for (size_t k=0; k<num_states; ++k)
                             {
-                                for (size_t k=0; k<num_states; ++k)
+                                if( k != to )
                                 {
-                                    if( k != to )
+                                    if( anagenetic_node )
                                     {
-                                        if( anagenetic_node )
-                                        {
-                                            merged_probability += left.isSampledAncestor() ? left_site_likelihood[k] : right_site_likelihood[k];
-                                        }
-                                        else
-                                        {
-                                            merged_probability += left_site_likelihood[k] * right_site_likelihood[to];
-                                        }
+                                        merged_probability += left.isSampledAncestor() ? left_site_likelihood[k] : right_site_likelihood[k];
+                                    }
+                                    else
+                                    {
+                                        merged_probability += left_site_likelihood[k] * right_site_likelihood[to];
                                     }
                                 }
+                            }
 
-                                merged_probability /= double(num_states - 1);
+                            merged_probability /= double(num_states - 1);
+                        }
+                        else
+                        {
+                            if( anagenetic_node )
+                            {
+                                merged_probability = left.isSampledAncestor() ? left_site_likelihood[to] : right_site_likelihood[to];
                             }
                             else
                             {
-                                if( anagenetic_node )
-                                {
-                                    merged_probability = left.isSampledAncestor() ? left_site_likelihood[to] : right_site_likelihood[to];
-                                }
-                                else
-                                {
-                                    merged_probability = left_site_likelihood[to] * right_site_likelihood[to];
-                                }
-
+                                merged_probability = left_site_likelihood[to] * right_site_likelihood[to];
                             }
 
-                            site_likelihood[from] += merged_probability * tp[from][to];
                         }
 
-                        site_likelihood[from] *= anagenetic_node ? lambda_a->getValue() : lambda->getValue();
+                        site_likelihood[from] += merged_probability * tp[from][to];
+                    }
 
-                        if( site_likelihood[from] > max[i] )
-                        {
-                            max[i] = site_likelihood[from];
-                        }
+                    site_likelihood[from] *= anagenetic_node ? lambda_a->getValue() : lambda->getValue();
+
+                    if( site_likelihood[from] > max[i] )
+                    {
+                        max[i] = site_likelihood[from];
                     }
                 }
             }
@@ -422,62 +421,61 @@ double BranchHeterogeneousMorphospeciationProcess::computeRootLikelihood( void )
     {
         double site_prob = 0.0;
 
-        for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+        size_t mixture = rate_allocation[i];
+
+        // the transition probability matrix for this mixture category
+        const std::vector<std::vector<double> >& tp = this->transition_prob_matrices[mixture];
+
+        const std::vector<double> &site_likelihood = node_likelihood[mixture][i];
+        const std::vector<double> &left_site_likelihood = left_likelihoods[mixture][i];
+        const std::vector<double> &right_site_likelihood = right_likelihoods[mixture][i];
+
+        for (size_t from=0; from<num_states; ++from)
         {
-            // the transition probability matrix for this mixture category
-            const std::vector<std::vector<double> >& tp = this->transition_prob_matrices[mixture];
+            site_likelihood[from] = 0.0;
 
-            const std::vector<double> &site_likelihood = node_likelihood[mixture][i];
-            const std::vector<double> &left_site_likelihood = left_likelihoods[mixture][i];
-            const std::vector<double> &right_site_likelihood = right_likelihoods[mixture][i];
-
-            for (size_t from=0; from<num_states; ++from)
+            for (size_t to=0; to<num_states; ++to)
             {
-                site_likelihood[from] = 0.0;
+                double merged_probability = 0.0;
 
-                for (size_t to=0; to<num_states; ++to)
+                if( i == speciation_chars[node_index])
                 {
-                    double merged_probability = 0.0;
-
-                    if( i == speciation_chars[node_index])
+                    for (size_t k=0; k<num_states; ++k)
                     {
-                        for (size_t k=0; k<num_states; ++k)
+                        if( k != to )
                         {
-                            if( k != to )
+                            if( anagenetic_node )
                             {
-                                if( anagenetic_node )
-                                {
-                                    merged_probability += left.isSampledAncestor() ? left_site_likelihood[k] : right_site_likelihood[k];
-                                }
-                                else
-                                {
-                                    merged_probability += left_site_likelihood[k] * right_site_likelihood[to];
-                                }
+                                merged_probability += left.isSampledAncestor() ? left_site_likelihood[k] : right_site_likelihood[k];
+                            }
+                            else
+                            {
+                                merged_probability += left_site_likelihood[k] * right_site_likelihood[to];
                             }
                         }
+                    }
 
-                        merged_probability /= double(num_states - 1);
+                    merged_probability /= double(num_states - 1);
+                }
+                else
+                {
+                    if( anagenetic_node )
+                    {
+                        merged_probability = left.isSampledAncestor() ? left_site_likelihood[to] : right_site_likelihood[to];
                     }
                     else
                     {
-                        if( anagenetic_node )
-                        {
-                            merged_probability = left.isSampledAncestor() ? left_site_likelihood[to] : right_site_likelihood[to];
-                        }
-                        else
-                        {
-                            merged_probability = left_site_likelihood[to] * right_site_likelihood[to];
-                        }
-
+                        merged_probability = left_site_likelihood[to] * right_site_likelihood[to];
                     }
 
-                    site_likelihood[from] += merged_probability * tp[from][to];
                 }
 
-                site_likelihood[from] *= anagenetic_node ? lambda_a->getValue() : lambda->getValue();
-
-                site_prob += site_likelihood[from];
+                site_likelihood[from] += merged_probability * tp[from][to];
             }
+
+            site_likelihood[from] *= anagenetic_node ? lambda_a->getValue() : lambda->getValue();
+
+            site_prob += site_likelihood[from];
         }
 
         scaling_factors[node_index][active_likelihood[node_index]][i] = scaling_factors[left_index][active_likelihood[left_index]][i] + scaling_factors[right_index][active_likelihood[right_index]][i];
@@ -1426,6 +1424,11 @@ void BranchHeterogeneousMorphospeciationProcess::touchSpecialization(DagNode *af
         }
     }
     
+    if ( affecter == site_rates )
+    {
+        updateMeanSiteRate();
+    }
+
     if ( affecter != this->dag_node )
     {
         
@@ -1466,12 +1469,6 @@ void BranchHeterogeneousMorphospeciationProcess::updateTransitionProbabilities(s
     // first, get the rate matrix for this branch
     for (size_t j = 0; j < this->num_site_rates; ++j)
     {
-        site_rate = 1.0;
-        if ( this->rate_variation_across_sites == true )
-        {
-            site_rate = this->site_rates->getValue()[j];
-        }
-
         for( size_t from = 0; from < this->num_states; from++)
         {
             numericallyIntegrateProcess( start_age, end_age, this->transition_prob_matrices[j][from]);
@@ -1515,11 +1512,11 @@ void BranchHeterogeneousMorphospeciationProcess::operator()(const state_type &x,
     {
 
         // no event
-        double no_event_rate = site_rate * (lambda->getValue() + lambda_a->getValue()) + mu->getValue() + psi->getValue();
+        double no_event_rate = mean_site_rate * (lambda->getValue() + lambda_a->getValue()) + mu->getValue() + psi->getValue();
 
         dxdt[i] = - no_event_rate * safe_x[i];
 
-        dxdt[i] += site_rate * lambda->getValue() * p(t) * safe_x[i];
+        dxdt[i] += mean_site_rate * lambda->getValue() * p(t) * safe_x[i];
 
         // anagenetic state change
         for (size_t j = 0; j < num_states; ++j)
@@ -1531,13 +1528,26 @@ void BranchHeterogeneousMorphospeciationProcess::operator()(const state_type &x,
                 total += safe_x[j];
             }
 
-            dxdt[i] += total * site_rate * (lambda->getValue() * p(t) + lambda_a->getValue()) / double(num_states - 1);
+            dxdt[i] += total * mean_site_rate * (lambda->getValue() * p(t) + lambda_a->getValue()) / double(num_states - 1);
         }
 
         dxdt[i] /= double(num_sites);
 
     } // end for num_states
 
+}
+
+
+double BranchHeterogeneousMorphospeciationProcess::updateMeanSiteRate(void) const
+{
+    mean_site_rate = 0.0;
+
+    for(size_t i = 0; i < this->num_sites; i++)
+    {
+        mean_site_rate += this->site_rates[rate_allocation[i]];
+    }
+
+    mean_site_rate /= double(this->num_sites);
 }
 
 
@@ -1549,7 +1559,7 @@ double BranchHeterogeneousMorphospeciationProcess::p( double dt ) const
     if ( dt == 0) return 1.0;
 
     // get the parameters
-    double b = lambda->getValue() * site_rate;
+    double b = lambda->getValue() * mean_site_rate;
     double d = mu->getValue();
     double f = psi->getValue();
     double r = rho->getValue();
