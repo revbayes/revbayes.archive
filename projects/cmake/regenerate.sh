@@ -101,6 +101,8 @@ project(RevBayes)
 #    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg")
 #endif ()
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
 ' > "$HERE/CMakeLists.txt"
 
 if [ "$debug" = "true" ]
@@ -123,7 +125,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 elif [ "$win" = "true" ]
 then
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3 -static -std=gnu++98")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3 -static")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -static")
 '  >> "$HERE/CMakeLists.txt"
 else
