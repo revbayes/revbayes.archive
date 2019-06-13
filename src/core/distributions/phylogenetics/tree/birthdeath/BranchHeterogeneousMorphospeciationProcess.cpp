@@ -483,7 +483,7 @@ double BranchHeterogeneousMorphospeciationProcess::computeRootLikelihood( void )
         lnProb += log(site_prob) + scaling_factors[node_index][active_likelihood[node_index]][i];
     }
     
-    return lnProb - num_sites * ( log(num_states) + log(num_site_rates) );
+    return lnProb - num_sites * log(num_states);
 }
 
 
