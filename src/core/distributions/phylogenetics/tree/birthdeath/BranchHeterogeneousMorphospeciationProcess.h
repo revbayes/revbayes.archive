@@ -57,7 +57,7 @@ namespace RevBayesCore {
 
         void                                                            operator() ( const state_type &x , state_type &dxdt , const double t );
         double                                                          p( double t ) const;                //!< p(t)
-        double                                                          updateMeanSiteRate( void ) const;
+        void                                                            updateMeanSiteRate( void ) const;
 
         double                                                          computeLnProbability(void);
         void                                                            fireTreeChangeEvent(const TopologyNode &n, const unsigned& m=0);                                    //!< The tree has changed and we want to know which part.
@@ -125,12 +125,14 @@ namespace RevBayesCore {
 
         std::vector<size_t>                                             speciation_chars;
         std::vector<size_t>                                             rate_allocation;
+        bool                                                            active_rate_allocation;
 
         bool                                                            rate_variation_across_sites;
 
         double                                                          NUM_TIME_SLICES;
 
         double                                                          mean_site_rate;
+        size_t                                                          tmp_allocation;
 
         std::vector<Taxon>                                              taxa;
         std::vector<size_t>                                             node_taxa;

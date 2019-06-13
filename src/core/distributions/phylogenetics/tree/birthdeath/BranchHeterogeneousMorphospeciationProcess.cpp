@@ -65,9 +65,11 @@ BranchHeterogeneousMorphospeciationProcess::BranchHeterogeneousMorphospeciationP
     rho( rh ),
     site_rates(NULL),
     speciation_chars(std::vector<size_t>(num_sites,0)),
-    rate_allocation(std::vector<size_t>(num_sites,0)),
+    rate_allocation(std::vector<std::vector<size_t> >(2, std::vector<size_t>(num_sites,0)) ),
+    active_rate_allocation(false),
     rate_variation_across_sites(false),
     mean_site_rate(1.0),
+    tmp_allocation(0),
     NUM_TIME_SLICES( 500.0 )
 {
     addParameter( process_age );
@@ -244,7 +246,7 @@ void BranchHeterogeneousMorphospeciationProcess::computeNodeProbability(const Re
 
             for (size_t i = 0; i < num_sites; ++i)
             {
-                size_t mixture = rate_allocation[i];
+                size_t mixture = rate_allocation[active_rate_allocation][i];
 
                 // the transition probability matrix for this mixture category
                 const std::vector<std::vector<double> >& tp = this->transition_prob_matrices[mixture];
@@ -298,7 +300,7 @@ void BranchHeterogeneousMorphospeciationProcess::computeNodeProbability(const Re
             // merge descendant likelihoods
             for (size_t i=0; i<num_sites; ++i)
             {
-                size_t mixture = rate_allocation[i];
+                size_t mixture = rate_allocation[active_rate_allocation][i];
 
                 // the transition probability matrix for this mixture category
                 const std::vector<std::vector<double> >& tp = this->transition_prob_matrices[mixture];
@@ -394,6 +396,8 @@ void BranchHeterogeneousMorphospeciationProcess::computeNodeProbability(const Re
 
 double BranchHeterogeneousMorphospeciationProcess::computeRootLikelihood( void )
 {
+    updateMeanSiteRate();
+
     // get the likelihoods of descendant nodes
     const TopologyNode     &root            = value->getRoot();
     size_t                  node_index      = root.getIndex();
@@ -421,7 +425,7 @@ double BranchHeterogeneousMorphospeciationProcess::computeRootLikelihood( void )
     {
         double site_prob = 0.0;
 
-        size_t mixture = rate_allocation[i];
+        size_t mixture = rate_allocation[active_rate_allocation][i];
 
         // the transition probability matrix for this mixture category
         const std::vector<std::vector<double> >& tp = this->transition_prob_matrices[mixture];
@@ -706,6 +710,8 @@ void BranchHeterogeneousMorphospeciationProcess::restoreSpecialization(DagNode *
         }
     }
     
+    active_rate_allocation = false ? true : false;
+
     // reset the flags
     for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
     {
@@ -1423,11 +1429,6 @@ void BranchHeterogeneousMorphospeciationProcess::touchSpecialization(DagNode *af
             dag_node->touchAffected();
         }
     }
-    
-    if ( affecter == site_rates )
-    {
-        updateMeanSiteRate();
-    }
 
     if ( affecter != this->dag_node )
     {
@@ -1469,6 +1470,8 @@ void BranchHeterogeneousMorphospeciationProcess::updateTransitionProbabilities(s
     // first, get the rate matrix for this branch
     for (size_t j = 0; j < this->num_site_rates; ++j)
     {
+        tmp_allocation = j;
+
         for( size_t from = 0; from < this->num_states; from++)
         {
             numericallyIntegrateProcess( start_age, end_age, this->transition_prob_matrices[j][from]);
@@ -1512,11 +1515,11 @@ void BranchHeterogeneousMorphospeciationProcess::operator()(const state_type &x,
     {
 
         // no event
-        double no_event_rate = mean_site_rate * (lambda->getValue() + lambda_a->getValue()) + mu->getValue() + psi->getValue();
+        double no_event_rate = site_rates[tmp_allocation] * (lambda->getValue() + lambda_a->getValue()) + mu->getValue() + psi->getValue();
 
         dxdt[i] = - no_event_rate * safe_x[i];
 
-        dxdt[i] += mean_site_rate * lambda->getValue() * p(t) * safe_x[i];
+        dxdt[i] += site_rates[tmp_allocation] * lambda->getValue() * p(t) * safe_x[i];
 
         // anagenetic state change
         for (size_t j = 0; j < num_states; ++j)
@@ -1528,7 +1531,7 @@ void BranchHeterogeneousMorphospeciationProcess::operator()(const state_type &x,
                 total += safe_x[j];
             }
 
-            dxdt[i] += total * mean_site_rate * (lambda->getValue() * p(t) + lambda_a->getValue()) / double(num_states - 1);
+            dxdt[i] += total * site_rates[tmp_allocation] * (lambda->getValue() * p(t) + lambda_a->getValue()) / double(num_states - 1);
         }
 
         dxdt[i] /= double(num_sites);
@@ -1538,13 +1541,13 @@ void BranchHeterogeneousMorphospeciationProcess::operator()(const state_type &x,
 }
 
 
-double BranchHeterogeneousMorphospeciationProcess::updateMeanSiteRate(void) const
+void BranchHeterogeneousMorphospeciationProcess::updateMeanSiteRate(void) const
 {
     mean_site_rate = 0.0;
 
     for(size_t i = 0; i < this->num_sites; i++)
     {
-        mean_site_rate += this->site_rates[rate_allocation[i]];
+        mean_site_rate += this->site_rates[rate_allocation[active_rate_allocation][i]];
     }
 
     mean_site_rate /= double(this->num_sites);
