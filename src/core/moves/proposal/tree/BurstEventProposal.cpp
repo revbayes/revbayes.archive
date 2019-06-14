@@ -122,6 +122,7 @@ double BurstEventProposal::doProposal( void )
             dist->isBurstSpeciation(child.getIndex()) )
     {
         failed = true;
+        // TODO: Should this be returning -inf (i.e., always reject proposal)?
         return 0;
     }
     
