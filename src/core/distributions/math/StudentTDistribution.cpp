@@ -1,10 +1,4 @@
-//
-//  StudentTDistribution.cpp
-//  revbayes_work
-//
-//  Created by Dismukes, Wade T [EEOBS] on 11/4/16.
-//  Copyright © 2016 Dismukes, Wade T [EEOBS]. All rights reserved.
-//
+
 
 #include "StudentTDistribution.h"
 #include "DistributionStudentT.h"
@@ -13,6 +7,10 @@
 
 using namespace RevBayesCore;
 
+/** Student's T distribution Constructor
+ * @param df Degrees of freedom
+ *
+ */
 
 StudentTDistribution::StudentTDistribution(const TypedDagNode<long> *df) : ContinuousDistribution( new double( 0.0 ) ),
 degrees( df )

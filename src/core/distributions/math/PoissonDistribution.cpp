@@ -5,7 +5,7 @@
 
 using namespace RevBayesCore;
 
-/** PoissonDistribution Constructor
+/** Poisson Distribution Constructor
  *  @param l lambda rate parameter
 */
 

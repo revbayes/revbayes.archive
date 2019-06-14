@@ -5,6 +5,11 @@
 
 using namespace RevBayesCore;
 
+/** Chi Square distribution Constructor
+ * The constructor takes one input:
+ * @param df Degrees of freedom, taken as a long
+ *
+ */
 
 ChisqDistribution::ChisqDistribution(const TypedDagNode<long> *df) : ContinuousDistribution( new double( 0.0 ) ),
     degrees( df )

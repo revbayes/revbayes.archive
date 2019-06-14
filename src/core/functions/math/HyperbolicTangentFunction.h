@@ -8,7 +8,7 @@ namespace RevBayesCore {
     
     
     /**
-     * \brief Hyperbolic tangent of a real number.
+     * @brief Hyperbolic tangent of a real number.
      *
      * Compute the hyperbolic tangent of a real number x (tanh(x) = exp(2x)-1 / (exp(2x)+1)).
      *
