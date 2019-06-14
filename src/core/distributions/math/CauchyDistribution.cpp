@@ -6,6 +6,12 @@
 
 using namespace RevBayesCore;
 
+/*Cauchy distribution constructor
+ * The constructor takes two arguments:
+ * @param l the location, taken as a real number
+ * @param s the scale, taken as a positive real number
+ */
+
 CauchyDistribution::CauchyDistribution(const TypedDagNode<double> *l, const TypedDagNode<double> *s) : ContinuousDistribution( new double( 0.0 ) ),
     location( l ),
     scale( s )
