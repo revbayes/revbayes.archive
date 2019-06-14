@@ -2,7 +2,13 @@
 #include <cmath>
 
 using namespace RevBayesCore;
-
+/**
+ * LnFunction of a TypedDagNode of RbVector constructor with values of
+ * type double.
+ *
+ * @param b RbVector constructor with values of type double
+ * @param e value of type double
+ */
 PowerVectorFunction::PowerVectorFunction(const TypedDagNode<RbVector<double> > *b, const TypedDagNode<double> *e) : TypedFunction<RbVector<double> >( new RbVector<double>(b->getValue().size(),0) ),
     base( b ),
     exponent( e )
