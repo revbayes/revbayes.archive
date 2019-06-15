@@ -110,8 +110,6 @@ meson build-gtk -Dstudio=true
 ninja -C build-gtk install
 ```
 
-#### Installing GTK2
-
 ## Troubleshooting:
 
 * `rb: command not found`
