@@ -106,7 +106,7 @@ brew install gtk2
 
 After GTK2 is installed, you can then configure and build RevStudio as follows:
 ```
-meson build-gtk -Dstudio=true
+meson build-gtk -Dstudio=true -Dprefix=$HOME/Applications/revbayes-gui
 ninja -C build-gtk install
 ```
 
@@ -118,6 +118,12 @@ ninja -C build-gtk install
 
     ```
     export PATH=<prefix>/bin:$PATH  
+    ```
+
+    For example, if you set `-Dprefix=$HOME/Applications/revbayes`, you would do
+
+    ```
+    export PATH=$HOME/Applications/revbayes/bin:$PATH
     ```
 
 * meson configure fails
