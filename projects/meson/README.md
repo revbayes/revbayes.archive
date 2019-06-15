@@ -1,88 +1,80 @@
 # Building with meson
 
-[Meson](https://mesonbuild.com/) ([git](https://github.com/mesonbuild/meson)) is a new build system that aims to replace autotools and compete with CMake.  It is written in Python and works on Windows, Mac, and Linux.
+[Meson](https://mesonbuild.com/) ([git](https://github.com/mesonbuild/meson)) is a new build system that aims to replace autotools and fills the same role as CMake.  Meson has a nice configuration language, and makes it easy to cross-compile to Windows, Macintosh, and ARM systems from Linux.
 
-See the conference talk [Making build systems not suck](https://www.youtube.com/watch?v=KPi0AuVpxLI)
+## Install tools
 
-# Install
+Before compiling revbayes, you need to install C++ compiler.  Then you need to install meson.
 
 On Mac:
+- First install XCode.
 ``` sh
-brew install meson
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+brew install meson boost
 ```
 
 On Debian/Ubuntu Linux
 ``` sh
-apt-get install meson
+apt-get install g++ meson libboost-dev
 ```
 
-On Windows, first, install ninja.  For example, you could [download ninja](https://github.com/ninja-build/ninja/releases) and modify your PATH variable so the windows `cmd` shell can find it.  Second,
+On Redhat Linux
+``` sh
+dnf install gcc-c++ meson boost-devel
+```
+
+If you are running a different system, you can [download ninja](https://github.com/ninja-build/ninja/releases) and install meson using python:
 ```
 python3 -m venv meson
 source meson/bin/activate
 pip3 install meson
 ```
 
-## Install BOOST
+---
+## Building RevBayes
 
-This `README.md` assumes that you've already installed BOOST, and that it is installed as a system library.
-On mac:
-```
-brew install boost
-```
-On Debian/Ubuntu Linux:
-```
-apt-get install libboost-dev
-```
-I think on RedHat-based Linux, you can do:
-```
-dnf install boost-devel
-```
-On Windows, you can [download boost](https://www.boost.org/users/download/)
+1. Download RevBayes from our github repository. Clone the repository using git by running the following command in the terminal:
 
-# Build
+    ``` sh
+    git clone https://github.com/revbayes/revbayes.git revbayes
+    ```
 
-## Preparing to run meson
-Before building with meson, we first need to generate the files `src/meson.build`, `src/libs/meson.build`,
-`src/revlanguage/meson.build`, `src/core/meson.build`, and `src/cmd/meson.build`.
+1. Configure and compile Revbayes:
+   
+    ``` sh
+    ( cd revbayes/projects/meson ; ./generate.sh )
+    meson build revbayes --prefix=$HOME/Applications/revbayes
+    ninja -C build install
+    ```
+
+    This creates a `build` directory where the build will take place, and says that the executables will eventually be installed in `$HOME/Applications/revbayes`.
+
+1. For the MPI version, add `-Dmpi=true` to the `meson` command.
+
+    meson build revbayes -Dmpi=true --prefix=$HOME/Applications/revbayes
+
+## Troubleshooting
+
+If there are errors in the configure step, you can look in `build/meson-logs/meson-log.txt` error log messages to help diagnose the problem.
+
+## Configuration
+
+Setting such as `-Dmpi=true` can be changed after the build directory is created by running the following in the `build` directory:
+``` sh
+meson configure -Doption=value
 ```
-cd revbayes/projects/meson
-./generate.sh
+You can examine current options by running
+``` sh
+meson configure
 ```
-The script `generate.sh`
-* scans the directories for `*.cpp` and `*.c` files to find the source files in each directory.
-* scans the directories for `*.h` files to find the directories that need to be in the include path.
 
-## Configuring
-
-To configure the build, we run the following command from the `revbayes` directory:
-```
-meson build -Dprefix=$HOME/Applications/revbayes
-```
-This creates a `revbayes/build` directory where the build will take place, and says that the executables will eventually be installed in `$HOME/Applications/revbayes`.  If you want to install someplace else, you can use a different "prefix".
-
-If there are errors in the configure step, you can look in `build/meson-logs/meson-log.txt` for log messages to help diagnose the problem.
-
-There is currently a `-Dstatic=true` flag, but this is maybe a hack.  Alternatively you can do `-Dcpp_link_args=-static`.  Both of these
-work for `rb` but not for `RevStudio`.
-
-## Perform the build
-Next, run `ninja` while targetting the `build` directory
-```
-ninja -C build
-ninja -C build install
-```
-You won't need to re-run meson if your `meson.build` files have changed, since  `ninja` will do that automatically.
-
-## Altering the configuration
-
-If you want to change configuration options after you have run `meson`, you can run `meson configure` in the `build` directory to view the current settings.  Then you can alter the settings by running `meson configure -Doption=value`.  For example, to change the install prefix to `/usr/local`,
+For example, to change the install prefix to `/usr/local`,
 ```
 cd build
 meson configure -Dprefix=/usr/local
 ```
 
-## Option: MPI
+### Option: MPI
 
 To build with MPI, set the `mpi` option:
 ```
@@ -90,7 +82,7 @@ meson build-mpi -Dmpi=true -Dprefix=$HOME/Applications/revbayes-mpi
 ninja -C build-mpi install
 ```
 
-## Option: Jupyter Kernel
+### Option: Jupyter Kernel
 
 To build the jupyter kernel, set the `jupyter` option:
 ```
@@ -98,7 +90,7 @@ meson build-jupyter -Djupyter=true -Dprefix=$HOME/Applications/revbayes-jupyter
 ninja -C build-jupyter install
 ```
 
-## Option: RevStudio
+### Option: RevStudio
 
 To build the `RevStudio` GUI in addition to `rb`, you need to enable the `studio` flag when running meson:
 ```
