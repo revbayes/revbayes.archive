@@ -5,6 +5,7 @@
 #include "RevVariable.h"
 #include "WorkspaceToCoreWrapperObject.h"
 
+#include <cstring>
 
 namespace RevLanguage {
 
