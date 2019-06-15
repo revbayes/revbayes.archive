@@ -1,36 +1,38 @@
 # Building with meson
 
-[Meson](https://mesonbuild.com/) ([git](https://github.com/mesonbuild/meson)) is a new build system that aims to replace autotools and fills the same role as CMake.  Meson has a nice configuration language, and makes it easy to cross-compile to Windows, Macintosh, and ARM systems from Linux.
+[Meson](https://mesonbuild.com/) ([git](https://github.com/mesonbuild/meson)) is a new build system that aims to replace autotools and fills the same role as CMake.
+
+Meson makes it easy to cross-compile to Windows, Macintosh, and ARM systems from Linux.
 
 ## Install tools
 
-Before compiling revbayes, you need to install C++ compiler.  Then you need to install meson.
+Before compiling revbayes, you need to install C++ compiler.  Then you need to install meson and BOOST.
 
-On Mac:
-- First install XCode.
+### Mac:
+- First install XCode and homebrew
 ``` sh
-ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 brew install meson boost
 ```
 
-On Debian/Ubuntu Linux
+### Debian/Ubuntu Linux
 ``` sh
 apt-get install g++ meson libboost-dev
 ```
 
-On Redhat Linux
+### Redhat Linux
 ``` sh
 dnf install gcc-c++ meson boost-devel
 ```
 
-If you are running a different system, you can [download ninja](https://github.com/ninja-build/ninja/releases) and install meson using python:
-```
+### Other
+
+You can [download ninja](https://github.com/ninja-build/ninja/releases) and install meson using python:
+``` sh
 python3 -m venv meson
 source meson/bin/activate
 pip3 install meson
 ```
 
----
 ## Building RevBayes
 
 1. Download RevBayes from our github repository. Clone the repository using git by running the following command in the terminal:
