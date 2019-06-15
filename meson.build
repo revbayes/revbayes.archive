@@ -10,10 +10,18 @@ project('RevBayes', ['cpp', 'c'],
 cpp = meson.get_compiler('cpp')
 cc = meson.get_compiler('c')
 
+# For cross-compilation, `host_machine`  is where the binary will RUN
+#                        `build_machine` is where the binary is   COMPILED.
 
-# Only add sse flags for Intel architecture -- not on (say) ARM
-if host_machine.cpu_family() == 'x86' or host_machine.cpu_family() == 'x86_64'
+if host_machine.cpu_family().startswith('x86_64')
   add_project_arguments(['-msse','-msse2','-msse3'], language : 'cpp')
+  add_project_arguments(['-DRB_x86_64'], language: 'cpp')
+elif host_machine.cpu_family().startswith('x86')
+  add_project_arguments(['-msse','-msse2','-msse3'], language : 'cpp')
+  add_project_arguments(['-DRB_x86'], language: 'cpp')
+elif host_machine.cpu_family().startswith('arm')
+  # Only add sse flags for Intel architecture -- not on (say) ARM
+  add_project_arguments(['-DRB_ARM'], language: 'cpp')
 endif
 
 if get_option('buildtype') == 'release' or get_option('buildtype') == 'plain'
