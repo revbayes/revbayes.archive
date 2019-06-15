@@ -52,8 +52,6 @@ pip3 install meson
 
     This creates a `build` directory where the build will take place, and says that the executables will eventually be installed in `$HOME/Applications/revbayes`.
 
-    If there are errors in the configure step, you can look in `build/meson-logs/meson-log.txt` error log messages to help diagnose the problem.
-
 1. For the MPI version, add `-Dmpi=true` to the `meson` command.
 
     ``` sh
@@ -92,18 +90,10 @@ ninja -C build-jupyter install
 
 ### Option: RevStudio
 
-To build the `RevStudio` GUI in addition to `rb`, you need to enable the `studio` flag when running meson:
-```
-meson build-gtk -Dstudio=true
-ninja -C build-gtk install
-```
-However, if GTK2 is not installed or not usable, this will produce an error message.
-Meson uses `pkg-config` to find most dependencies, and to find out what compiler and linker flags they need.
-If meson cannot find GTK2, you can:
-* run `pkg-config gtk+-2.0 --cflags` to see if pkg-config can find GTK2.
-* look in `build-gtk/meson-logs/meson-log.txt` for log messages to help diagnose the problem.
+To build the `RevStudio` GUI in addition to `rb`, you need to
+* install the GTK2 library
+* add the `-Dstudio=true` flag when running meson:
 
-### Installing GTK2
 To install GTK2 on Debian & Ubuntu:
 ```
 apt-get install libgtk+-2.0-dev
@@ -113,4 +103,34 @@ To install GTK2 on Mac:
 ```
 brew install gtk2
 ```
+
+After GTK2 is installed, you can then configure and build RevStudio as follows:
+```
+meson build-gtk -Dstudio=true
+ninja -C build-gtk install
+```
+
+#### Installing GTK2
+
+## Troubleshooting:
+
+* `rb: command not found`
+
+    The problem is that you tried to run RevBayes but your computer doesn't know where the executable is. The easiest way is to add the directory in which you compiled RevBayes to your system path:
+
+    ```
+    export PATH=<prefix>/bin:$PATH  
+    ```
+
+* meson configure fails
+
+    In the configure step, you can look in `build/meson-logs/meson-log.txt` error log messages to help diagnose the problem.
+
+* meson configure cannot find GTK2
+
+     If GTK2 is not installed or not usable, this will produce an error message.
+     Meson uses `pkg-config` to find most dependencies, and to find out what compiler and linker flags they need.
+     If meson cannot find GTK2, you can:
+     * run `pkg-config gtk+-2.0 --cflags` to see if pkg-config can find GTK2.
+     * look in `build-gtk/meson-logs/meson-log.txt` for log messages to help diagnose the problem.
 
