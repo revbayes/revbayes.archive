@@ -11,8 +11,13 @@ cpp = meson.get_compiler('cpp')
 cc = meson.get_compiler('c')
 
 
+# Only add sse flags for Intel architecture -- not on (say) ARM
+if host_machine.cpu_family() == 'x86' or host_machine.cpu_family() == 'x86_64'
+  add_project_arguments(['-msse','-msse2','-msse3'], language : 'cpp')
+endif
+
 if get_option('buildtype') == 'release' or get_option('buildtype') == 'plain'
-  add_project_arguments(['-O3','-msse','-msse2','-msse3'], language : 'cpp')
+  add_project_arguments(['-O3'], language : 'cpp')
   add_project_arguments(['-O3'], language : 'c')
 endif
 
