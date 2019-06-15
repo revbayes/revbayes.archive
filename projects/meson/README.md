@@ -44,8 +44,8 @@ pip3 install meson
 1. Configure and compile Revbayes:
    
     ``` sh
-    ( cd revbayes/ ; git checkout development )               # Probably you want the development branch
-    ( cd revbayes/projects/meson ; ./generate.sh )
+    ( cd revbayes/ ; git checkout development )  # Probably you want the development branch
+    ( cd revbayes/projects/meson/ ; ./generate.sh )
     meson build revbayes --prefix=$HOME/Applications/revbayes
     ninja -C build install
     ```
@@ -62,19 +62,16 @@ pip3 install meson
 
 ## Configuration
 
-Setting such as `-Dmpi=true` can be changed after the build directory is created by running the following in the `build` directory:
+Settings such as `mpi` or `prefix` can be changed using `meson configure`:
 ``` sh
-meson configure -Doption=value
-```
-You can examine current options by running
-``` sh
-meson configure
-```
-
-For example, to change the install prefix to `/usr/local`,
-```
 cd build
+meson configure -Dmpi=false
 meson configure -Dprefix=/usr/local
+```
+You can also examine current options by leaving off the argument:
+``` sh
+cd build
+meson configure
 ```
 
 ### Option: MPI
