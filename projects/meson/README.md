@@ -6,7 +6,7 @@ Meson makes it easy to cross-compile to Windows, Macintosh, and ARM systems from
 
 ## Install tools
 
-Before compiling revbayes, you need to install C++ compiler.  Then you need to install meson and BOOST.
+Before compiling revbayes, you need to install a C++ compiler.  Then you need to install meson and BOOST.
 
 ### Mac:
 - First install XCode and homebrew
@@ -126,15 +126,17 @@ ninja -C build-gtk install
     export PATH=$HOME/Applications/revbayes/bin:$PATH
     ```
 
-* meson configure fails
+* meson fails to configure
 
-    In the configure step, you can look in `build/meson-logs/meson-log.txt` error log messages to help diagnose the problem.
+    You can look in `build/meson-logs/meson-log.txt` error log messages to help diagnose the problem.
 
-* meson configure cannot find GTK2
+* meson cannot find GTK2
 
-     If GTK2 is not installed or not usable, this will produce an error message.
-     Meson uses `pkg-config` to find most dependencies, and to find out what compiler and linker flags they need.
-     If meson cannot find GTK2, you can:
-     * run `pkg-config gtk+-2.0 --cflags` to see if pkg-config can find GTK2.
-     * look in `build-gtk/meson-logs/meson-log.txt` for log messages to help diagnose the problem.
+    If GTK2 is not installed or not usable, this will produce an error message.
+
+    Meson uses `pkg-config` to find most dependencies, and to find out what compiler and linker flags they need.
+
+    If meson cannot find GTK2, you can:
+    * run `pkg-config gtk+-2.0 --cflags` to see if pkg-config can find GTK2.
+    * look in `build-gtk/meson-logs/meson-log.txt` for log messages to help diagnose the problem.
 
