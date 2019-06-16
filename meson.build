@@ -19,7 +19,7 @@ if host_machine.cpu_family().startswith('x86_64')
 elif host_machine.cpu_family().startswith('x86')
   add_project_arguments(['-msse','-msse2','-msse3'], language : 'cpp')
   add_project_arguments(['-DRB_x86'], language: 'cpp')
-elif host_machine.cpu_family().startswith('arm')
+elif host_machine.cpu_family().startswith('arm') or host_machine.cpu_family().startswith('aarch')
   # Only add sse flags for Intel architecture -- not on (say) ARM
   add_project_arguments(['-DRB_ARM'], language: 'cpp')
 endif
