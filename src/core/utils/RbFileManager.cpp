@@ -860,25 +860,53 @@ bool RbFileManager::setStringWithNamesOfFilesInDirectory(const std::string& dirp
             std::string entryname = entry->d_name;
             std::string entrypath = dirpath + path_separator + entryname;
             
-            if (!stat( entrypath.c_str(), &entryinfo ))
+            if (!lstat( entrypath.c_str(), &entryinfo ))
             {
                 
-                if (entryname == "..")
-                {
-                    ;
+                bool skip_me = false;
+
+                // avoid recursing into symlinks that point to a directory above us
+                if ( S_ISLNK( entryinfo.st_mode ) ) {
+                    char *linkname = (char*) malloc(entryinfo.st_size + 1);
+                    ssize_t r = readlink(entrypath.c_str(), linkname, entryinfo.st_size + 1);
+                    if (r < 0 || r > entryinfo.st_size) {
+                        // error
+                        skip_me = true;
+                    } else {
+                        linkname[entryinfo.st_size] = '\0';
+                        if (strspn(linkname, "./") == entryinfo.st_size) {
+                            // this symlink consists entirely of dots and dashes and is likely a reference to a directory above us
+                            skip_me = true;
+                        } else {
+                            // replace entryinfo with info from stat
+                            if ( stat( entrypath.c_str(), &entryinfo ) ) {
+                                // if this returned a non-zero value, something is wrong
+                                skip_me = true;
+                            }
+                        }
+                    }
+                    free(linkname);
                 }
-                else if (entryname == "." || entryname[0] == '.')
-                {
-                    ;
+
+                if (!skip_me) {
+                    if (entryname == "..")
+                    {
+                        ;
+                    }
+                    else if (entryname == "." || entryname[0] == '.')
+                    {
+                        ;
+                    }
+                    else if ( recursive == true && S_ISDIR( entryinfo.st_mode ) )
+                    {
+                        setStringWithNamesOfFilesInDirectory( entrypath, sv );
+                    }
+                    else
+                    {
+                        sv.push_back( entrypath );
+                    }
                 }
-                else if ( recursive == true && S_ISDIR( entryinfo.st_mode ) )
-                {
-                    setStringWithNamesOfFilesInDirectory( entrypath, sv );
-                }
-                else
-                {
-                    sv.push_back( entrypath );
-                }
+
                 
             }
             
