@@ -49,9 +49,9 @@ namespace RevBayesCore {
         Clade                                       asClade(const std::vector<Taxon> &taxa) const;                                        //!< Get clades Y and Z as a single clade
         RbBitSet                                    asCladeBitset(void) const;                                  //!< Convert this value into a bitset representation for a clade.
         RbBitSet                                    asSplitBitset(void) const;                                        //!< Convert this value into a split (as bitset representation).
+        std::vector<std::pair<Subsplit,Subsplit> >  doVirtualRootingNonRootParent(const Subsplit &parent, const Subsplit &child) const; //!< Gives us all parent-child subsplits that will replace this one on the equivalent edge in a tree rerooted to a specific edge
+        std::vector<std::pair<Subsplit,Subsplit> >  doVirtualRootingRootParent(const Subsplit &sister1, const Subsplit &sister2, const Subsplit &child) const; //!< Gives us all parent-child subsplits that will replace this one on the equivalent edge in a tree rerooted to a specific edge
         std::pair<RbBitSet,RbBitSet>                getBitset(void) const;                                      //!< Get the paired bitset representation of this subsplit as a clade
-        std::vector<std::pair<Subsplit,Subsplit> >  getAllParentChildGivenNewRoot(const Subsplit &parent, const Subsplit &child) const; //!< Gives us all parent-child subsplits that will replace this one on the equivalent edge in a tree rerooted to a specific edge
-        std::pair<Subsplit,Subsplit>                getParentChildGivenNewRoot(const Subsplit &t, const Subsplit &s, const std::string &root_to) const;       //!< Gives us the parent-child subsplit that will replace this one on the equivalent edge in a tree rerooted to a specific edge
         Clade                                       getY(const std::vector<Taxon>& taxa) const;                                           //!< Get clade Y
         RbBitSet                                    getYBitset(void) const;                                     //!< Get clade Y as bitset
         Clade                                       getZ(const std::vector<Taxon>& taxa) const;                                           //!< Get clade Z
@@ -60,10 +60,11 @@ namespace RevBayesCore {
         bool                                        isChildOfZ(const Subsplit &s) const;                      //!< Is argument subsplit compatible with this one?
         bool                                        isCompatible(const Subsplit &s) const;                      //!< Is argument subsplit compatible with this one?
         bool                                        isFake() const;                                             //!< Is this a fake subsplit (aka a single tip)?
-        Subsplit                                    rootSplitFromClade(RbBitSet &c) const;                             //!< If this clade is one side of a root split, make the full root subsplit.
+        Subsplit                                    rootSplitFromClade() const;                                 //!< If this clade (that this subsplit represents) is one side of a root split, make the full root subsplit.
         size_t                                      size(void) const;                                           //!< Get the number of taxa.
         bool                                        splitsAreDisjoint(void) const;
         std::string                                 toString(void) const;                                       //!< Convert this value into a string.
+        std::pair<Subsplit,Subsplit>                virtualRoot(const Subsplit &t, const Subsplit &s, int case_number) const;       //!< Gives us the parent-child subsplit that will replace this one on the equivalent edge in a tree rerooted to a specific edge
 
         // public TopologyNode functions
 
