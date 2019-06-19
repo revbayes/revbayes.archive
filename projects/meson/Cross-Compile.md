@@ -1,6 +1,28 @@
 # Cross compiling with Meson
 
-## Linux to windows
+Cross-compiling means compiling executables on one system (e.g. Linux) that run on another system (e.g. Windows, Mac, ARM). Cross-compiling can be useful if you only have a Linux system, but want to create downloadable executables for another system.  One might also want to use Linux to compile ARM executables if the Linux system compiles faster.  The system the compiler runs on is called the "build" system, and the system that the executable will ultimately run on is called the "host" system.
+
+## Linux to Windows (quick version)
+
+``` sh
+sudo apt-get install meson
+
+sudo apt-get install g++-mingw-w64 wine64       # Install cross-compiler and exe wrapper
+./revbayes/projects/meson/make_winroot.sh       # Install windows boost in ~/win_root
+
+git clone https://github.com/revbayes/revbayes.git revbayes
+( cd revbayes/ ; git checkout development )     # Probably you want the development branch
+
+( cd revbayes/projects/meson/ ; ./generate.sh )
+meson build revbayes --prefix=$HOME/Applications/revbayes-w64 --cross-file=win64-cross.txt
+
+ninja -C build install
+
+cp /usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/libgcc_s_seh-1.dll $HOME/Applications/revbayes-64
+cp /usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/libstdc++-6.dll $HOME/Applications/revbayes-64
+``
+
+## Linux to Windows (longer version)
 
 To do a cross-build from linux to windows, we need to
 * download windows libraries
@@ -57,7 +79,7 @@ To do a cross-build from linux to windows, we need to
 
    ```
    # Tell pkg-config where to look for `*.pc` files.
-   export PKG_CONFIG_PATH=$HOME/win_root/mingw64/lib/pkgconfig
+   export PKG_CONFIG_LIBDIR=$HOME/win_root/mingw64/lib/pkgconfig
    # Tell pkg-config to prefix -I/-L paths with this
    export PKG_CONFIG_SYSROOT_DIR=$HOME/win_root
    # Check that GTK has been installed successfully
