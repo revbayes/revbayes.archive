@@ -268,60 +268,49 @@ void SBNParameters::countAllSubsplits(Tree& tree, std::map<std::pair<Subsplit,Su
   tree.orderNodesForTraversal(order);
   const std::vector<TopologyNode*> &postorder_nodes = tree.getNodes();
 
-  double one_over_n_branches = 1.0 / (2.0 * tree.getNumberOfNodes() - 4.0); // 1 over the number of branches in an unrooted tree
+  double one_over_n_branches = 1.0 / (2.0 * tree.getNumberOfNodes() - 3.0); // 1 over the number of branches in an unrooted tree
 
-  // Get all node's subsplits (we will need these repeatedly)
-  // We do not make a subsplit for the root as the root is a trifurcation in an unrooted tree
+  // For storing subsplits
   std::vector<Subsplit> per_node_subsplit = std::vector<Subsplit>(tree.getNumberOfNodes(),Subsplit());
-  for (std::vector<TopologyNode*>::const_iterator it = postorder_nodes.begin(); it != (postorder_nodes.end()-1); ++it)
-  {
-    // TODO: after obtaining tips, build subsplits recursively
-    // Code below should do it (untested)
-    size_t i = (*it)->getIndex();
-    if ( (*it)->isTip() )
-    {
-      per_node_subsplit[i] = (*it)->getSubsplit(taxa);
-    }
-    else
-    {
-      std::vector<int> my_children = (*it)->getChildrenIndices();
-      RbBitSet clade_1 = per_node_subsplit[my_children[0]].asCladeBitset();
-      RbBitSet clade_2 = per_node_subsplit[my_children[1]].asCladeBitset();
-      per_node_subsplit[i] = Subsplit(clade_1,clade_2);
-    }
-    // // This may not actually be slower
-    // size_t i = (*it)->getIndex();
-    // per_node_subsplit[i] = (*it)->getSubsplit(taxa);
-  }
-
   // For storing sum of rooting probabilities from tip through this branch.
   std::vector<double> ttr = std::vector<double>(tree.getNumberOfNodes(),0.0);
 
-  // Tip to root pass, here we accumulate cumulative rooting probabilities and add to root split counters
-  // On each edge (the edge subtending the node we're visiting) we need the probability of rooting to the split this edge induces
-  // We do not loop over the root for now because it is a special case: we already account for rooting on all edges, but ttr[root] is ill-defined
+  // Tip to root pass, here we do two things
+  // 1) Get all node's subsplits (we will need these repeatedly)
+  //      We do not make a subsplit for the root as the root is a trifurcation in an unrooted tree
+  // 2) accumulate cumulative rooting probabilities and add to root split counters
+  //      On each edge (the edge subtending the node we're visiting) we need the probability of rooting to the split this edge induces
+  //      We do not loop over the root for now because it is a special case: we already account for rooting on all edges, but ttr[root] is ill-defined
   for (std::vector<TopologyNode*>::const_iterator it = postorder_nodes.begin(); it != (postorder_nodes.end()-1); ++it)
   {
     size_t index = (*it)->getIndex();
 
-    std::vector<int> children = (*it)->getChildrenIndices();
-
-    // RbBitSet c = per_node_subsplit[index].asCladeBitset();
-    Subsplit root_on_edge = per_node_subsplit[index].rootSplitFromClade();
-
-    double this_root_q = doSA ? one_over_n_branches : q[root_on_edge];
-
-    // Accumulate cumulative probability
     if ( (*it)->isTip() )
     {
-      ttr[index] = this_root_q;
-    }
-    else {
-      ttr[index] = this_root_q + ttr[children[0]] + ttr[children[1]];
-    }
+      // 1)
+      per_node_subsplit[index] = (*it)->getSubsplit(taxa);
 
-    // Increment root counts
-    incrementRootSplitCount(root_split_counts,root_on_edge,this_root_q);
+      // 2)
+      Subsplit root_on_edge = per_node_subsplit[index].rootSplitFromClade();
+      double this_root_q = doSA ? one_over_n_branches : q[root_on_edge];
+      ttr[index] = this_root_q;
+      incrementRootSplitCount(root_split_counts,root_on_edge,this_root_q);
+    }
+    else
+    {
+      std::vector<int> children = (*it)->getChildrenIndices();
+
+      // 1)
+      RbBitSet clade_1 = per_node_subsplit[children[0]].asCladeBitset();
+      RbBitSet clade_2 = per_node_subsplit[children[1]].asCladeBitset();
+      per_node_subsplit[index] = Subsplit(clade_1,clade_2);
+
+      // 2)
+      Subsplit root_on_edge = per_node_subsplit[index].rootSplitFromClade();
+      double this_root_q = doSA ? one_over_n_branches : q[root_on_edge];
+      ttr[index] = this_root_q + ttr[children[0]] + ttr[children[1]];
+      incrementRootSplitCount(root_split_counts,root_on_edge,this_root_q);
+    }
   }
 
   // Root to tip pass (this is where the fun starts)
@@ -358,7 +347,7 @@ void SBNParameters::countAllSubsplits(Tree& tree, std::map<std::pair<Subsplit,Su
       // Get all cases for virtual rooting of this edge (including current rooting)
       std::vector<std::pair<Subsplit,Subsplit> > cases = per_node_subsplit[index].doVirtualRootingRootParent(per_node_subsplit[sibling_indices[0]],per_node_subsplit[sibling_indices[1]],per_node_subsplit[index]);
 
-      Subsplit root_on_edge = per_node_subsplit[index].rootSplitFromClade();
+      // Subsplit root_on_edge = per_node_subsplit[index].rootSplitFromClade();
 
       // Case 1
       double weight = ttr[root_children_indices[0]];
@@ -371,7 +360,8 @@ void SBNParameters::countAllSubsplits(Tree& tree, std::map<std::pair<Subsplit,Su
 // std::cout << "did case 2" << std::endl;
 
       // Case 3
-      weight = doSA ? one_over_n_branches : q[root_on_edge];
+      // weight = doSA ? one_over_n_branches : q[root_on_edge];
+      weight = doSA ? one_over_n_branches : q[cases[5].first];
       incrementParentChildCount(parent_child_counts,cases[2],weight);
 // std::cout << "did case 3" << std::endl;
 
@@ -392,7 +382,8 @@ void SBNParameters::countAllSubsplits(Tree& tree, std::map<std::pair<Subsplit,Su
       }
 
       // Case 6
-      weight = doSA ? one_over_n_branches : q[root_on_edge];
+      // weight = doSA ? one_over_n_branches : q[root_on_edge];
+      weight = doSA ? one_over_n_branches : q[cases[5].first];
       incrementParentChildCount(parent_child_counts,cases[5],weight);
 // std::cout << "did case 6" << std::endl;
     }
@@ -406,7 +397,7 @@ void SBNParameters::countAllSubsplits(Tree& tree, std::map<std::pair<Subsplit,Su
       // Get all cases for virtual rooting of this edge (including current rooting)
       std::vector<std::pair<Subsplit,Subsplit> > cases = per_node_subsplit[index].doVirtualRootingNonRootParent(this_parent_child.first,this_parent_child.second);
 
-      Subsplit root_on_edge = per_node_subsplit[index].rootSplitFromClade();
+      // Subsplit root_on_edge = per_node_subsplit[index].rootSplitFromClade();
 
       // Case 1
       double weight = 1 - ttr[(*it)->getParent().getIndex()];
@@ -426,7 +417,8 @@ void SBNParameters::countAllSubsplits(Tree& tree, std::map<std::pair<Subsplit,Su
 // std::cout << "did case 2" << std::endl;
 
       // Case 3
-      weight = doSA ? one_over_n_branches : q[root_on_edge];
+      // weight = doSA ? one_over_n_branches : q[root_on_edge];
+      weight = doSA ? one_over_n_branches : q[cases[5].first];
       incrementParentChildCount(parent_child_counts,cases[2],weight);
 // std::cout << "did case 3" << std::endl;
 
@@ -447,7 +439,8 @@ void SBNParameters::countAllSubsplits(Tree& tree, std::map<std::pair<Subsplit,Su
       }
 
       // Case 6
-      weight = doSA ? one_over_n_branches : q[root_on_edge];
+      // weight = doSA ? one_over_n_branches : q[root_on_edge];
+      weight = doSA ? one_over_n_branches : q[cases[5].first];
       incrementParentChildCount(parent_child_counts,cases[5],weight);
 // std::cout << "did case 6" << std::endl;
 
@@ -465,47 +458,27 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees)
   for (size_t i=0; i<trees.size(); ++i)
   {
     // Get branch lengths
+    //unrooted trees have basal polytomies, so without fear we can take a node's clade, turn it into the split the edge below it represents, and add to that edge's observations
     const std::vector<TopologyNode*> tree_nodes = trees[i].getNodes();
     for (size_t i=0; i<tree_nodes.size(); ++i)
     {
-      if ( (!tree_nodes[i]->isRoot()) && (!tree_nodes[i]->getParent().isRoot()))
+      if ( (!tree_nodes[i]->isRoot()) )
       {
         Subsplit this_subsplit = tree_nodes[i]->getSubsplit(taxa);
-        RbBitSet this_split = this_subsplit.asCladeBitset();
+        RbBitSet this_split = this_subsplit.asSplitBitset();
 
-        // Polarize split if needed (fewer than half the bits should be set)
-        if ((this_split.getNumberSetBits() > size_t(std::floor(this_split.size()/2.0))) )
-        {
-          this_split = ~this_split;
-        }
-        // If even, and half bits are set, make sure first bit is 1
-        else if ( size_t(this_split.size() % 2) == 0 && (this_split.getNumberSetBits() == size_t(std::floor(this_split.size()/2.0))) && this_split[0] == 0)
-        {
-          this_split = ~this_split;
-        }
+        // // Polarize split if needed (fewer than half the bits should be set)
+        // if ((this_split.getNumberSetBits() > size_t(std::floor(this_split.size()/2.0))) )
+        // {
+        //   this_split = ~this_split;
+        // }
+        // // If even, and half bits are set, make sure first bit is 1
+        // else if ( size_t(this_split.size() % 2) == 0 && (this_split.getNumberSetBits() == size_t(std::floor(this_split.size()/2.0))) && this_split[0] == 0)
+        // {
+        //   this_split = ~this_split;
+        // }
 
         (branch_length_observations[this_split]).push_back(tree_nodes[i]->getBranchLength());
-      }
-      // We're representing an unrooted tree as rooted, so we must account for the fact that the two edges descending from the root are really one edge
-      else if (tree_nodes[i]->isRoot())
-      {
-        // Get split from left descendant
-        Subsplit this_subsplit = tree_nodes[i]->getChild(0).getSubsplit(taxa);
-        RbBitSet this_split = this_subsplit.asCladeBitset();
-
-        // Polarize split if needed (fewer than half the bits should be set)
-        if ((this_split.getNumberSetBits() > size_t(std::floor(this_split.size()/2.0))) )
-        {
-          this_split = ~this_split;
-        }
-        // If even, and half bits are set, make sure first bit is 1
-        else if ( size_t(this_split.size() % 2) == 0 && (this_split.getNumberSetBits() == size_t(std::floor(this_split.size()/2.0))) && this_split[0] == 0)
-        {
-          this_split = ~this_split;
-        }
-
-        (branch_length_observations[this_split]).push_back(tree_nodes[i]->getChild(0).getBranchLength() + tree_nodes[i]->getChild(1).getBranchLength());
-
       }
     }
   }
