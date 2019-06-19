@@ -539,7 +539,7 @@ RbBitSet Subsplit::getZBitset( void ) const
  */
 bool Subsplit::isChildOfY(const Subsplit &s) const
 {
-    return false;
+    return s.asCladeBitset() == bitset.first;
 }
 
 /**
@@ -548,7 +548,7 @@ bool Subsplit::isChildOfY(const Subsplit &s) const
  */
 bool Subsplit::isChildOfZ(const Subsplit &s) const
 {
-    return false;
+    return s.asCladeBitset() == bitset.second;
 }
 
 /**
