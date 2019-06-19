@@ -114,7 +114,7 @@ ninja -C build-gtk install
 
 * `rb: command not found`
 
-    The problem is that you tried to run RevBayes but your computer doesn't know where the executable is. The easiest way is to add the directory in which you compiled RevBayes to your system path:
+    The problem is that you tried to run RevBayes but your computer doesn't know where the executable is. The easiest way is to add the directory in which you _installed_ RevBayes to your system path:
 
     ```
     export PATH=<prefix>/bin:$PATH  
