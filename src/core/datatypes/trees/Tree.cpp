@@ -1799,7 +1799,6 @@ void Tree::unroot( void )
         setRooted( false );
         setRoot( new_root, true);
 
-std::cout << "unrooting tree, now root has this many children: " << root->getChildrenIndices().size() << std::endl;
     }
 
 }

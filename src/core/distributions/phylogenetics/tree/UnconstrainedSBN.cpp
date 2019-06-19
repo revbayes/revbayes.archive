@@ -301,11 +301,9 @@ void UnconstrainedSBN::simulateTree( void )
     Subsplit root_split = parameters.drawRootSplit();
     active.push_back(std::make_pair(root_split,root));
 
-std::cout << "drew root split = " << root_split << std::endl;
     // All other subplits
     while (active.size() > 0)
     {
-std::cout << "active.size() = " << active.size() << std::endl;
       // Get a node/subsplit to work on, remove that from list
       std::pair<Subsplit,TopologyNode*> this_parent = active.back();
       active.pop_back();
@@ -341,7 +339,6 @@ std::cout << "active.size() = " << active.size() << std::endl;
       double brlen  = RbStatistics::Lognormal::rv(these_params.first, these_params.second, *rng);
       // double brlen  = RbStatistics::Gamma::rv(these_params.first, these_params.second, *rng);
       Y_child_node->setBranchLength(brlen,false);
-std::cout << "Drew Y subsplit and branch length" << std::endl;
 
       // Choose subsplit of Z
       Subsplit Z_child = parameters.drawSubsplitForZ(this_parent_subsplit);
@@ -366,7 +363,6 @@ std::cout << "Drew Y subsplit and branch length" << std::endl;
       brlen = RbStatistics::Lognormal::rv(these_params.first, these_params.second, *rng);
       // brlen = RbStatistics::Gamma::rv(these_params.first, these_params.second, *rng);
       Z_child_node->setBranchLength(brlen,false);
-std::cout << "Drew Y subsplit and branch length" << std::endl;
 
       // Attach nodes to eachother
       this_parent_node->addChild(Y_child_node);

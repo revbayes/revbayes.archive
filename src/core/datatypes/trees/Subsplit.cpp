@@ -346,7 +346,7 @@ std::vector<std::pair<Subsplit,Subsplit> > Subsplit::doVirtualRootingNonRootPare
     // The child subsplit induced by rooting to a descendant of s
     Subsplit reversed_child = Subsplit(t_not_s,not_t);
 
-    // std::cout << "In Subsplit::getAllParentChildGivenNewRoot" << std::endl;
+    // std::cout << "In Subsplit::doVirtualRootingNonRootParent" << std::endl;
     // std::cout << "parent = " << parent << std::endl;
     // std::cout << "child = " << child << std::endl;
     // std::cout << "s_y = " << s_y << std::endl;
@@ -380,6 +380,15 @@ std::vector<std::pair<Subsplit,Subsplit> > Subsplit::doVirtualRootingNonRootPare
 
       // Case 5: virtual root in s_z
       orientation.first = Subsplit(s_y,not_s);
+      all_orientations.push_back(orientation);
+    }
+    else
+    {
+      Subsplit dummy_subsplit = Subsplit();
+      orientation.first = dummy_subsplit;
+      orientation.second = dummy_subsplit;
+
+      all_orientations.push_back(orientation);
       all_orientations.push_back(orientation);
     }
 
@@ -428,11 +437,9 @@ std::vector<std::pair<Subsplit,Subsplit> >  Subsplit::doVirtualRootingRootParent
   Subsplit reversed_child = Subsplit(sib1,sib2);
 
   // std::cout << "In Subsplit::getAllParentChildGivenNewRoot" << std::endl;
-  // std::cout << "parent = " << parent << std::endl;
-  // std::cout << "child = " << child << std::endl;
+  // std::cout << "s = " << s << std::endl;
   // std::cout << "s_y = " << s_y << std::endl;
   // std::cout << "s_z = " << s_z << std::endl;
-  // std::cout << "s = " << s << std::endl;
   // std::cout << "sister 1 = " << sib1 << std::endl;
   // std::cout << "sister 2 = " << sib2 << std::endl;
 
@@ -459,6 +466,15 @@ std::vector<std::pair<Subsplit,Subsplit> >  Subsplit::doVirtualRootingRootParent
 
     // Case 5: virtual root in s_z
     orientation.first = Subsplit(s_y,not_s);
+    all_orientations.push_back(orientation);
+  }
+  else
+  {
+    Subsplit dummy_subsplit = Subsplit();
+    orientation.first = dummy_subsplit;
+    orientation.second = dummy_subsplit;
+
+    all_orientations.push_back(orientation);
     all_orientations.push_back(orientation);
   }
 
