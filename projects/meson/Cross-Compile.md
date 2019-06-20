@@ -20,7 +20,7 @@ ninja -C build install
 
 cp /usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/libgcc_s_seh-1.dll $HOME/Applications/revbayes-64
 cp /usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/libstdc++-6.dll $HOME/Applications/revbayes-64
-``
+```
 
 ## Linux to Windows (longer version)
 
