@@ -36,7 +36,7 @@ Cross-compiling means compiling executables on one system (e.g. Linux) that run 
    ``` sh
    cp /usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/libgcc_s_seh-1.dll $HOME/Applications/revbayes-64/bin
    cp /usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/libstdc++-6.dll $HOME/Applications/revbayes-64/bin
-   cp ~/win_root/*.dll $HOME/Applications/revbayes-64/bin
+   cp ~/win_root/mingw64/bin/*.dll $HOME/Applications/revbayes-64/bin
    ```
    You may have to change the path for libstdc++-6.dll and libgcc_s_seh-1.dll a bit, depending on
    your compiler version.
@@ -81,6 +81,13 @@ For RevStudio we need to install win64 libraries for GTK2.  The libraries will e
    done
    ```
 
+Then, you run meson with the `-Dstudio=true` flag:
+
+``` sh
+meson build-gtk revbayes -Dstudio=true -Dprefix=$HOME/Applications/revbayes-gui --cross-file=win64-cross.txt
+ninja -C build-gtk install
+```
+
 It seems that statically linking the gtk libraries doesn't work, at least
 when using the libraries from MSYS2.
 
@@ -118,8 +125,9 @@ However, I have not tried this.
    might do something like this:
 
    ```
-   cp /usr/lib/gcc/x86_64-w64-mingw32/7.3-win32/libgcc_s_seh-1.dll $OUTPUT/bin/
-   cp /usr/lib/gcc/x86_64-w64-mingw32/7.3-win32/libstdc++-6.dll $OUTPUT/bin/
+   cp /usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/libgcc_s_seh-1.dll $OUTPUT/bin/
+   cp /usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/libstdc++-6.dll $OUTPUT/bin/
+   cp ~/win_root/mingw64/bin/*.dll $OUTPUT/bin/
    ```
 
    It is possible that you might need slightly different libraries than the ones
