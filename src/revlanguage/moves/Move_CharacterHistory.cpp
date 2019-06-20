@@ -14,7 +14,6 @@
 #include "Dist_phyloCTMCDASequence.h"
 #include "MetropolisHastingsMove.h"
 #include "Move_CharacterHistory.h"
-#include "NodeRejectionSampleProposal.h"
 #include "OptionRule.h"
 #include "Probability.h"
 #include "RateGeneratorSequence_Biogeography.h"

@@ -11,7 +11,6 @@
 #include "RlBoolean.h"
 #include "RlString.h"
 #include "RlSimplex.h"
-#include "TimeAtlas.h"
 #include "RevVariable.h"
 #include <vector>
 

@@ -3,7 +3,6 @@
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "RlTimeTree.h"
-#include "ModelVector.h"
 #include "MaximumTreeFunction.h"
 #include "TypedDagNode.h"
 

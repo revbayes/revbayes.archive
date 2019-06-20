@@ -11,7 +11,6 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RevObject.h"
-#include "RlBoolean.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 

@@ -109,8 +109,6 @@ namespace RevBayesCore {
 
 #include "CharacterTranslator.h"
 #include "DnaState.h"
-#include "DiscreteCharacterState.h"
-#include "DiscreteTaxonData.h"
 #include "NaturalNumbersState.h"
 #include "NclReader.h"
 #include "RbConstants.h"
@@ -119,8 +117,6 @@ namespace RevBayesCore {
 #include <cmath>
 #include <fstream>
 #include <sstream>
-#include <string>
-
 
 /**
  * Default constructor,
