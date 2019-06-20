@@ -206,7 +206,20 @@ Subsplit& Subsplit::operator=(const Subsplit &s)
  */
 bool Subsplit::operator==(const Subsplit &s) const
 {
-  return ( s.getBitset() == bitset );
+  bool tf;
+
+  // If first set bits of both pairs are the same, the Subsplits may be equal (and we have to check)
+  // If not, then we know that they must be different
+  // Checking this first speeds the process if most comparisons are between non-equal Subsplits
+  if ( s.getYBitset().getFirstSetBit() == bitset.first.getFirstSetBit() && s.getZBitset().getFirstSetBit() == bitset.second.getFirstSetBit() )
+  {
+    tf = (s.getBitset() == bitset);
+  }
+  else
+  {
+    tf = false;
+  }
+  return ( tf );
 }
 
 
@@ -215,7 +228,20 @@ bool Subsplit::operator==(const Subsplit &s) const
  */
 bool Subsplit::operator!=(const Subsplit &s) const
 {
-  return ( s.getBitset() != bitset );
+  bool tf;
+
+  // If first set bits of both pairs are the same, the Subsplits may be equal (and we have to check)
+  // If not, then we know that they must be different
+  // Checking this first speeds the process if most comparisons are between non-equal Subsplits
+  if ( s.getYBitset().getFirstSetBit() == bitset.first.getFirstSetBit() && s.getZBitset().getFirstSetBit() == bitset.second.getFirstSetBit() )
+  {
+    tf = (s.getBitset() != bitset);
+  }
+  else
+  {
+    tf = true;
+  }
+  return ( tf );
 }
 
 /**
@@ -559,7 +585,7 @@ bool Subsplit::isChildOfY(const Subsplit &s) const
 }
 
 /**
- * Is subsplit s a child of this subsplit's clade Y?
+ * Is subsplit s a child of this subsplit's clade Z?
  * \return    true/false
  */
 bool Subsplit::isChildOfZ(const Subsplit &s) const
