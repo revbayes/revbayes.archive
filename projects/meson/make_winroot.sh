@@ -16,7 +16,7 @@ cat > "${SYSROOT}/bin/pkg-config" <<EOF
 export PKG_CONFIG_SYSROOT_DIR=${SYSROOT}
 export PKG_CONFIG_LIBDIR=${SYSROOT}/mingw64/lib/pkgconfig
 
-eval pkg-config "\$\@"
+eval pkg-config "\$@"
 EOF
 chmod +x "${SYSROOT}/bin/pkg-config"
 
