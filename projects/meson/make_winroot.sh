@@ -18,6 +18,7 @@ export PKG_CONFIG_LIBDIR=${SYSROOT}/mingw64/lib/pkgconfig
 
 eval pkg-config "\$\@"
 EOF
+chmod +x "${SYSROOT}/bin/pkg-config"
 
 # 3. Generate cross file
 CROSSNAME=win64-cross.txt
