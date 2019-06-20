@@ -60,7 +60,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     {
         site_ratesNode = static_cast<const ModelVector<RealPos> &>( site_rates->getRevObject() ).getDagNode();
     }
-    
+
     const RevBayesCore::TypedDagNode< RevBayesCore::Simplex > *site_rates_probsNode = NULL;
     if ( site_rates_probs->getRevObject() != RevNullObject::getInstance() )
     {
@@ -77,7 +77,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             throw RbException( "The number of site rates probs does not match the number of site rates." );
         }
     }
-    
+
     RevBayesCore::TypedDagNode< double >* p_invNode = NULL;
     if ( p_inv != NULL && p_inv->getRevObject() != RevNullObject::getInstance() )
     {
@@ -128,7 +128,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     if ( dt == "DNA" )
     {
         RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState> *dist =
-        new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState>(tau, !true, n, ambig, internal, gapmatch);
+        new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState>(tau, true, n, ambig, internal, gapmatch);
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -146,7 +146,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             {
                 throw RbException( "The number of clock rates does not match the number of branches" );
             }
-            
+
             dist->setClockRate( clockRates );
         }
         else
@@ -187,12 +187,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
-        
+
         if ( site_rates_probsNode != NULL && site_rates_probsNode->getValue().size() > 0 )
         {
             dist->setSiteRatesProbs( site_rates_probsNode );
         }
-        
+
 
         d = dist;
     }
@@ -237,7 +237,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
                 {
                     throw RbException( "The number of substitution matrices does not match the number of branches" );
                 }
-                
+
                 // sanity check
                 if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
                 {
@@ -258,12 +258,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
-        
+
         if ( site_rates_probsNode != NULL && site_rates_probsNode->getValue().size() > 0 )
         {
             dist->setSiteRatesProbs( site_rates_probsNode );
         }
-        
+
 
         d = dist;
     }
@@ -308,7 +308,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
                 {
                     throw RbException( "The number of substitution matrices does not match the number of branches" );
                 }
-                
+
                 // sanity check
                 if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
                 {
@@ -328,35 +328,35 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
-        
+
         if ( site_rates_probsNode != NULL && site_rates_probsNode->getValue().size() > 0 )
         {
             dist->setSiteRatesProbs( site_rates_probsNode );
         }
-        
+
 
         d = dist;
     }
     else if ( dt == "Codon" )
     {
         RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::CodonState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::CodonState>(tau, 61, true, n, ambig, internal, gapmatch);
-        
+
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
-        
+
         // set the probability for invariant site (by default this p_inv=0.0)
         dist->setPInv( p_invNode );
-        
+
         if ( rate->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
-            
+
             // sanity check
             if ( (nNodes-1) != clockRates->getValue().size() )
             {
                 throw RbException( "The number of clock rates does not match the number of branches" );
             }
-            
+
             dist->setClockRate( clockRates );
         }
         else
@@ -365,12 +365,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             dist->setClockRate( clockRate );
         }
         dist->setUseSiteMatrices(use_site_matrices, sp);
-        
+
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
-            
+
             if (use_site_matrices == false)
             {
                 // sanity check
@@ -378,14 +378,14 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
                 {
                     throw RbException( "The number of substitution matrices does not match the number of branches" );
                 }
-                
+
                 // sanity check
                 if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
                 {
                     throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
                 }
             }
-            
+
             dist->setRateMatrix( rm );
         }
         else
@@ -393,18 +393,18 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator &>( q->getRevObject() ).getDagNode();
             dist->setRateMatrix( rm );
         }
-        
+
         if ( site_ratesNode != NULL && site_ratesNode->getValue().size() > 0 )
         {
             dist->setSiteRates( site_ratesNode );
         }
-        
+
         if ( site_rates_probsNode != NULL && site_rates_probsNode->getValue().size() > 0 )
         {
             dist->setSiteRatesProbs( site_rates_probsNode );
         }
-        
-        
+
+
         d = dist;
     }
     else if ( dt == "Pomo" )
@@ -463,7 +463,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
                 {
                     throw RbException( "The number of substitution matrices does not match the number of branches" );
                 }
-                
+
                 // sanity check
                 if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
                 {
@@ -484,12 +484,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
-        
+
         if ( site_rates_probsNode != NULL && site_rates_probsNode->getValue().size() > 0 )
         {
             dist->setSiteRatesProbs( site_rates_probsNode );
         }
-        
+
 
         d = dist;
     }
@@ -575,7 +575,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
                 {
                     throw RbException( "The number of substitution matrices does not match the number of branches" );
                 }
-                
+
                 // sanity check
                 if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
                 {
@@ -596,12 +596,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
-        
+
         if ( site_rates_probsNode != NULL && site_rates_probsNode->getValue().size() > 0 )
         {
             dist->setSiteRatesProbs( site_rates_probsNode );
         }
-        
+
 
         d = dist;
     }
@@ -659,7 +659,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
                 {
                     throw RbException( "The number of substitution matrices does not match the number of branches" );
                 }
-                
+
                 // sanity check
                 if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
                 {
@@ -680,7 +680,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
-        
+
         if ( site_rates_probsNode != NULL && site_rates_probsNode->getValue().size() > 0 )
         {
             dist->setSiteRatesProbs( site_rates_probsNode );
@@ -804,7 +804,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
                 {
                     throw RbException( "The number of substitution matrices does not match the number of branches" );
                 }
-                
+
                 // sanity check
                 if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
                 {
@@ -825,7 +825,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
-        
+
         if ( site_rates_probsNode != NULL && site_rates_probsNode->getValue().size() > 0 )
         {
             dist->setSiteRatesProbs( site_rates_probsNode );
@@ -870,37 +870,37 @@ std::string Dist_phyloCTMC::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
     std::string d_name = "PhyloCTMC";
-    
+
     return d_name;
 }
 
 
 MethodTable Dist_phyloCTMC::getDistributionMethods( void ) const
 {
-    
+
     MethodTable methods = TypedDistribution<AbstractHomologousDiscreteCharacterData>::getDistributionMethods();
-    
+
     // member functions
     ArgumentRules* siteLikelihoodsArgRules = new ArgumentRules();
     methods.addFunction( new DistributionMemberFunction<Dist_phyloCTMC, ModelVector<Real> >( "siteLikelihoods", variable, siteLikelihoodsArgRules, true ) );
-    
+
     // f(Xh,rk|theta); returning a matrixreal where each row corresponds a site and each column corresponds an array (length = (num_site_rates + pInv != 0)) of rate categories [site_rate_index + pInv != 0] with the first element under inv if pInv > 0
     ArgumentRules* siteRateLikelihoodsArgRules = new ArgumentRules();
     methods.addFunction( new DistributionMemberFunction<Dist_phyloCTMC, MatrixReal >( "siteRateLikelihoods", variable, siteRateLikelihoodsArgRules, true ) );
-    
+
     // f(Xh,mk|theta); returning a matrixreal where each row corresponds a site and each column corresponds an array (length = ((num_site_rates + pInv != 0) * num_site_matrices)) of mixture categories [(site_rate_index + pInv != 0) * num_site_matrices + site_matrix_index] with the first num_site_matrices elements under inv if pInv > 0
     ArgumentRules* siteMixtureLikelihoodsArgRules = new ArgumentRules();
     methods.addFunction( new DistributionMemberFunction<Dist_phyloCTMC, MatrixReal >( "siteMixtureLikelihoods", variable, siteMixtureLikelihoodsArgRules, true ) );
-    
+
     ArgumentRules* siteRatesArgRules = new ArgumentRules();
-    
+
     std::vector<std::string> optionsMethod;
     optionsMethod.push_back( "sampling" );
     optionsMethod.push_back( "weightedAverage" );
     siteRatesArgRules->push_back( new OptionRule( "estimateMethod", new RlString("sampling"), optionsMethod, "The method used to estimate the site specific rate." ) );
-    
+
     methods.addFunction( new DistributionMemberFunction<Dist_phyloCTMC, ModelVector<RealPos> >( "siteRates", variable, siteRatesArgRules, true ) );
-    
+
     return methods;
 }
 
@@ -960,7 +960,7 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
         dist_member_rules.push_back( new ArgumentRule("coding", RlString::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("all") ) );
 
         dist_member_rules.push_back( new ArgumentRule( "storeInternalNodes", RlBoolean::getClassTypeSpec(), "Should we store internal node states in the character matrix?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
-        
+
         dist_member_rules.push_back( new ArgumentRule( "gapMatchClamped", RlBoolean::getClassTypeSpec(), "Should we set the simulated character to be gap or missing if the corresponding character in the clamped matrix is gap or missing?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
 
         rules_set = true;
@@ -1126,4 +1126,3 @@ void Dist_phyloCTMC::setConstParameter(const std::string& name, const RevPtr<con
     }
 
 }
-
