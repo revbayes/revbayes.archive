@@ -465,6 +465,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
     // condition on nTaxa
     else if ( condition == "nTaxa" )
     {
+        throw(RbException("Cannot condition on number of taxa in episodic serially-sampled birth-death process."));
         // lnProbTimes -= lnProbNumTaxa( value->getNumberOfTips(), 0, process_time, true );
     }
 
@@ -668,18 +669,25 @@ double EpisodicBirthDeathSamplingTreatmentProcess::E(size_t i, double t) const
  */
 size_t EpisodicBirthDeathSamplingTreatmentProcess::findIndex(double t) const
 {
-    // Linear search for interval because upper_bound isn't cooperating
-    for (size_t i=0; i < timeline.size()-1; ++i)
+    // Linear search for interval because std::lower_bound is not cooperating
+    if (timeline.size() == 2) // If timeline.size() were 1, we would have 0 break points and would be in constant-rate version
     {
-        if (t >= timeline[i] && t < timeline[i+1])
-        {
-            return i;
-        }
+      return(t < timeline[1] ? 0 : 1);
+    }
+    else
+    {
+      for (size_t i=0; i < timeline.size()-1; ++i)
+      {
+          if (t >= timeline[i] && t < timeline[i+1])
+          {
+              return(i);
+          }
+      }
+
+      return(timeline.size() - 1);
     }
 
-    return timeline.size() - 1;
-
-    // // Binary search for interval because std::upper_bound isn't cooperating
+    // // Binary search for interval because std::lower_bound isn't cooperating
     // // The run-time cost differential of binary versus linear seems negligible in limited testing
     // // First check if t > s_l, since we don't have an l+1 this interval is unbounded and we can't include it in the search
     // if (t >= timeline[timeline.size()-1])
@@ -745,8 +753,9 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnProbTreeShape(void) const
     int num_extinct = (int)value->getNumberOfExtinctTips();
     int num_sa = (int)value->getNumberOfSampledAncestors();
 
-    //TODO: Check against Gavryushkina (2014)
-    return (num_taxa - num_sa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct);
+    // return (num_taxa - num_sa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct);
+    //Gavryushkina (2014) uses the following
+    return (num_taxa - num_sa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa);
 }
 
 /**
@@ -941,7 +950,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::pSurvival(double start, doubl
 {
   //TODO: we do not really need this function here, and survival does not have quite the same meaning here
   //      we should make sure this is this is the closest translation of survival to SSBDPs
-  return (1.0 - E(findIndex(end),end)) / (1.0 - E(findIndex(end),end));
+  return (1.0 - E(findIndex(start),start)) / (1.0 - E(findIndex(end),end));
 }
 
 /**
