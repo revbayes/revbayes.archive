@@ -9,12 +9,8 @@ namespace RevBayesCore {
     /**
      * @brief Geometric distribution class.
      *
-     * The geometric distribution represents ...
+     * The geometric distribution represents
      * Instances of this class can be associated to stochastic variables.
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     *
      */
     class GeometricDistribution : public TypedDistribution<long> {
         

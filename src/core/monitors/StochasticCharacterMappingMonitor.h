@@ -71,8 +71,6 @@ namespace RevBayesCore {
 #include "Model.h"
 #include "Monitor.h"
 #include "RbFileManager.h"
-#include "StochasticNode.h"
-#include "StateDependentSpeciationExtinctionProcess.h"
 
 using namespace RevBayesCore;
 

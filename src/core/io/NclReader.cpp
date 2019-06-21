@@ -13,7 +13,6 @@
 #include "TaxonMap.h"
 #include "Tree.h"
 #include "TopologyNode.h"
-#include "Tree.h"
 #include "TreeUtilities.h"
 #include "RlUserInterface.h"
 

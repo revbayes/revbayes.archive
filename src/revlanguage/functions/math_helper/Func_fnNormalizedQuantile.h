@@ -46,13 +46,11 @@ namespace RevLanguage {
 
 #include "ArgumentRule.h"
 #include "Ellipsis.h"
-#include "ModelVector.h"
 #include "NormalizeVectorFunction.h"
 #include "RbUtil.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
-#include "TypedDagNode.h"
 #include "QuantileFunction.h"
 #include "TypeSpec.h"
 #include "GammaDistribution.h"

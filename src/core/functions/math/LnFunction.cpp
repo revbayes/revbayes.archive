@@ -3,6 +3,11 @@
 
 using namespace RevBayesCore;
 
+/**
+ * LnFunction of a TypedDagNode of type double
+ *
+ * @param x value of type double
+ */
 LnFunction::LnFunction(const TypedDagNode<double> *x) : ContinuousFunction( new double(0.0) ),
     a( x )
 {

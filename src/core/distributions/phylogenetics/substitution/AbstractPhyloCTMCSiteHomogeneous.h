@@ -254,8 +254,6 @@ namespace RevBayesCore {
 #include "RandomNumberGenerator.h"
 #include "RateMatrix_JC.h"
 #include "StochasticNode.h"
-#include "TopologyNode.h"
-#include "TransitionProbabilityMatrix.h"
 
 #include <cmath>
 
