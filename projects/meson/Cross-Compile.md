@@ -2,45 +2,53 @@
 
 Cross-compiling means compiling executables on one system (e.g. Linux) that run on another system (e.g. Windows, Mac, ARM). Cross-compiling can be useful if you only have a Linux system, but want to create downloadable executables for another system.  One might also want to use Linux to compile ARM executables if the Linux system compiles faster.  The system the compiler runs on is called the "build" system, and the system that the executable will ultimately run on is called the "host" system.
 
-## Linux to Windows (quick version)
+## Linux to Windows
 
-``` sh
-sudo apt-get install meson
+1. Download the cross-compiler and the build system
+    ``` sh
+    sudo apt-get install meson
+    sudo apt-get install g++-mingw-w64 wine64       # Install cross-compiler and exe wrapper
+    ```
 
-sudo apt-get install g++-mingw-w64 wine64       # Install cross-compiler and exe wrapper
-./revbayes/projects/meson/make_winroot.sh       # Install windows boost in ~/win_root
+2. Download RevBayes from our github repository.
+    ``` sh
+    git clone https://github.com/revbayes/revbayes.git revbayes
+    ( cd revbayes/ ; git checkout development )     # Probably you want the development branch
+    ```
 
-git clone https://github.com/revbayes/revbayes.git revbayes
-( cd revbayes/ ; git checkout development )     # Probably you want the development branch
+3. Create a directory to hold windows libraries.
+   ``` sh
+   ./revbayes/projects/meson/make_winroot.sh       # Install windows boost in ~/win_root
+   ```
+   This script
+   * Creates the "cross-file" `win64-cross.txt`
+   * Create a pkg-config wrapper in ~/win_root/bin/pkg-config
+   * Installs boost libraries in ~/win_root/mingw64/
 
-( cd revbayes/projects/meson/ ; ./generate.sh )
-meson build revbayes --prefix=$HOME/Applications/revbayes-w64 --cross-file=win64-cross.txt
+4. Configure and compile 
+   ``` sh
+   ( cd revbayes/projects/meson/ ; ./generate.sh )
+   meson build revbayes --prefix=$HOME/Applications/revbayes-w64 --cross-file=win64-cross.txt
+   ninja -C build install
+   ```
 
-ninja -C build install
+5. Copy the DLLs we use into the same directory as the revbayes executable
+   ``` sh
+   cp /usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/libgcc_s_seh-1.dll $HOME/Applications/revbayes-64/bin
+   cp /usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/libstdc++-6.dll $HOME/Applications/revbayes-64/bin
+   cp ~/win_root/mingw64/bin/*.dll $HOME/Applications/revbayes-64/bin
+   ```
+   You may have to change the path for libstdc++-6.dll and libgcc_s_seh-1.dll a bit, depending on
+   your compiler version.
 
-cp /usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/libgcc_s_seh-1.dll $HOME/Applications/revbayes-64
-cp /usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/libstdc++-6.dll $HOME/Applications/revbayes-64
-``
+## Building RevStudio
 
-## Linux to Windows (longer version)
-
-To do a cross-build from linux to windows, we need to
-* download windows libraries
-* tell pkg-config where to find them
-* install the cross-compiler
-* create a meson cross-file
-* run meson (configure)
-* run ninja (build)
-* install DLLs
-
-1. Let's put our windows libraries in a directory called `~/win_root`.  The libraries will end up in `~/win_root/mingw64/lib` with header files in `~/win_root/mingw64/include`.
+For RevStudio we need to install win64 libraries for GTK2.  The libraries will end up in `~/win_root/mingw64/lib` with header files in `~/win_root/mingw64/include`.
 
    ``` sh
-   mkdir ~/win_root
    cd ~/win_root
 
-   for PKG in boost-1.67.0-2 \
-              pango-1.42.4-2 \
+   for PKG in pango-1.42.4-2 \
               glib2-2.58.1-1 \
               cairo-1.16.0-1 \
               gdk-pixbuf2-2.38.0-2 \
@@ -68,56 +76,39 @@ To do a cross-build from linux to windows, we need to
               libdatrie-0.2.12-1 \
               libwinpthread-git-7.0.0.5273.3e5acf5d-1 \
               ; do
-      wget http://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-${PKG}-any.pkg.tar.xz
+      wget --no-verbose --show-progress http://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-${PKG}-any.pkg.tar.xz
       tar -Jxf mingw-w64-x86_64-${PKG}-any.pkg.tar.xz
    done
    ```
 
-   If you just want to install BOOST, only the first package above is actually necessary.  All the remaining packages are dependencies of GTK.
+Then, you run meson with the `-Dstudio=true` flag:
 
-2. We also need to tell pkg-config that our libraries live in a different place than they would if this was really windows.
+``` sh
+meson build-gtk revbayes -Dstudio=true -Dprefix=$HOME/Applications/revbayes-gui --cross-file=win64-cross.txt
+ninja -C build-gtk install
+```
 
-   ```
-   # Tell pkg-config where to look for `*.pc` files.
-   export PKG_CONFIG_LIBDIR=$HOME/win_root/mingw64/lib/pkgconfig
-   # Tell pkg-config to prefix -I/-L paths with this
-   export PKG_CONFIG_SYSROOT_DIR=$HOME/win_root
-   # Check that GTK has been installed successfully
-   pkg-config --cflags --libs gtk+-2.0
-   ```
+It seems that statically linking the gtk libraries doesn't work, at least
+when using the libraries from MSYS2.
 
-   If pkg-config cannot find `gtk+-2.0`, then the configuring with meson won't succeed.  If don't tell it about the sysroot, running meson will succeed, but the compiler won't be able to find GTK2.
+## Installing Cross-compilers
 
-3. We also need to have a cross-compiler installed.  The convention these days is that cross-compilers live in `/usr/bin/` and are prefixed with the description of the target architecture.  For example, `/usr/bin/x86_64-w64-mingw32-g++` is the compiler that targets 64-bit windows.
+The convention these days is that cross-compilers live in `/usr/bin/` and are prefixed with the description of the target architecture.  For example, `/usr/bin/x86_64-w64-mingw32-g++` is the compiler that targets 64-bit windows.
 
    ```
    apt-get install g++-mingw-w64
    apt-get install wine64
    ```
 
-   I think on homebrew, you can do:
+I think on homebrew, you can do:
    ```
    brew install mingw
    brew install wine
    ```
-   However, I have not tried this.
-
-4. Look at the cross file `revbayes/projects/meson/mingw-64bit-cross.txt`. Change the string `/path/to/win_root/` to refer to `$HOME/win_root`.
+However, I have not tried this.
 
 
-5. Now we can finally run meson and ninja:
-
-   ```
-   cd revbayes
-   ( cd projects/meson ; ./generate.sh )
-   meson cross-build --cross-file=projects/meson/mingw-64bit-cross.txt -Dstudio=true -Dstatic=false -Dprefix=$HOME/win_rb
-   ninja -C cross-build
-   ```
-
-   It seems that statically linking the gtk libraries doesn't work, at least
-   when using the libraries from MSYS2.
-
-6. Install DLLs
+## Installing DLLs
 
    If your executables are not completely statically linked, you will have to
    include the DLLs that the executable needs.  If you put them in the same
@@ -134,8 +125,9 @@ To do a cross-build from linux to windows, we need to
    might do something like this:
 
    ```
-   cp /usr/lib/gcc/x86_64-w64-mingw32/7.3-win32/libgcc_s_seh-1.dll $OUTPUT/bin/
-   cp /usr/lib/gcc/x86_64-w64-mingw32/7.3-win32/libstdc++-6.dll $OUTPUT/bin/
+   cp /usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/libgcc_s_seh-1.dll $OUTPUT/bin/
+   cp /usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/libstdc++-6.dll $OUTPUT/bin/
+   cp ~/win_root/mingw64/bin/*.dll $OUTPUT/bin/
    ```
 
    It is possible that you might need slightly different libraries than the ones

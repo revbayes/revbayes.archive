@@ -101,7 +101,7 @@ namespace RevBayesCore {
 #include "CharacterEventDiscrete.h"
 #include "PathRejectionSampleProposal.h"
 #include "RateMatrix_JC.h"
-#include "RbConstants.h"
+
 
 template<class charType>
 RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const TypedDagNode<Tree> *tau, size_t nChars, size_t nSites, bool useAmbigChar, bool internal) : TreeHistoryCtmc<charType>( tau, nChars, nSites, useAmbigChar, internal )

@@ -14,7 +14,6 @@
 
 #include <climits>
 #include <sstream>
-#include <climits>
 
 using namespace RevLanguage;
 

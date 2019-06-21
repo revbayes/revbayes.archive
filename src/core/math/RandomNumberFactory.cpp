@@ -24,7 +24,6 @@
 #include "RbOptions.h"
 #include <ctime>
 #include <climits>
-#include <climits>
 
 using namespace RevBayesCore;
 
