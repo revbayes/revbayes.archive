@@ -52,10 +52,13 @@ variables_map parse_cmd_line(int argc, char* argv[])
 //	("verbose,V",value<int>()->implicit_value(1),"Log extra information for debugging.")
 
 	("batch,b","Run in batch mode.")
-    ("args",value<std::vector<std::string> >()->multitoken(),"Command line arguments to initialize RevBayes variables.")
+        // multitoken means that `--args a1 a2 a3` works the same as `--args a1 --args a2 --args a3`
+        ("args",value<std::vector<std::string> >()->multitoken(),"Command line arguments to initialize RevBayes variables.")
+        // multitoken means that `--args a1 a2 a3` works the same as `--args a1 --args a2 --args a3`
+        ("cmd",value<std::vector<std::string> >()->multitoken(),"Script and command line arguments to initialize RevBayes variables.")
 	// composing means that --file can occur multiple times
-    ("file",value<std::vector<std::string> >()->composing(),"File(s) to source.")
-    ("setOption",value<std::vector<std::string> >()->composing(),"Set an option key=value.")
+        ("file",value<std::vector<std::string> >()->composing(),"File(s) to source.")
+        ("setOption",value<std::vector<std::string> >()->composing(),"Set an option key=value.")
 	;
 
     // Treat all positional options as "file" options.
@@ -183,13 +186,6 @@ int main(int argc, char* argv[]) {
         }
     }
     
-    std::vector<std::string> rb_args;
-    if ( args.count("args") > 0 )
-    {
-        rb_args = args["args"].as<std::vector<std::string> >();
-    }
-    
-
     /*default to interactive mode*/
     bool batch_mode = (args.count("batch") > 0);
     // FIXME -- the batch_mode variable appears to have no effect if true.
@@ -201,6 +197,26 @@ int main(int argc, char* argv[]) {
         source_files = args["file"].as<std::vector<std::string> >();
     }
     
+    if ( args.count("args") and args.count("cmd"))
+        throw RbException("command line: received both --args and --cmd");
+
+    std::vector<std::string> rb_args;
+    if ( args.count("args") > 0 )
+    {
+        rb_args = args["args"].as<std::vector<std::string> >();
+    }
+    else if ( args.count("cmd") > 0)
+    {
+        rb_args = args["cmd"].as<std::vector<std::string> >();
+        source_files.push_back(rb_args[0]);
+        rb_args.erase(rb_args.begin());
+
+        // Let's make batch mode default to true for scripts.
+        if (not args.count("batch"))
+            batch_mode = true;
+    }
+
+
     /* initialize environment */
     RevLanguageMain rl = RevLanguageMain(batch_mode);
 
