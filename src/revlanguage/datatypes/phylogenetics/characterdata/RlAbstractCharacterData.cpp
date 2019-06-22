@@ -276,6 +276,23 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
         
         return new RevVariable( new Natural(n) );
     }
+    else if (name == "setNewHomeologAssignment")
+    {
+        found = true;
+        
+        const RevObject& current = args[0].getVariable()->getRevObject();
+        if ( current.isType( RlString::getClassTypeSpec() ) )
+        {
+            std::string n = std::string( static_cast<const RlString&>( current ).getValue() );
+            const RevObject& new_name = args[1].getVariable()->getRevObject();
+            if ( new_name.isType( RlString::getClassTypeSpec() ) )
+            {
+                std::string name = std::string( static_cast<const RlString&>( new_name ).getValue() );
+                charDataObject->setNewHomeologAssignment( n ,name );
+            }
+        }
+        return NULL;
+    }
     else if (name == "setTaxonName")
     {
         found = true;
