@@ -35,6 +35,7 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     ArgumentRules* showdataArgRules             = new ArgumentRules();
     ArgumentRules* removeTaxaArgRules           = new ArgumentRules();
     ArgumentRules* removeTaxaArgRules2          = new ArgumentRules();
+    ArgumentRules* setNewHomeologAssignmentArgRules= new ArgumentRules();
     ArgumentRules* setTaxonNameArgRules         = new ArgumentRules();
     ArgumentRules* setTaxonObjectArgRules       = new ArgumentRules();
     ArgumentRules* taxaArgRules                 = new ArgumentRules();
@@ -60,6 +61,8 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     percentageMissingArgRules->push_back(   new ArgumentRule("name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     removeTaxaArgRules->push_back(          new ArgumentRule("name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     removeTaxaArgRules2->push_back(         new ArgumentRule("names" , ModelVector<RlString>::getClassTypeSpec(), "The names of the taxa.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    setNewHomeologAssignmentArgRules->push_back(new ArgumentRule("current"   , RlString::getClassTypeSpec(), "The name currently in the character alignment.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    setNewHomeologAssignmentArgRules->push_back(new ArgumentRule("new"       , RlString::getClassTypeSpec(), "The new tip name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     setTaxonNameArgRules->push_back(        new ArgumentRule("current"    , RlString::getClassTypeSpec(), "The old name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     setTaxonNameArgRules->push_back(        new ArgumentRule("new"        , RlString::getClassTypeSpec(), "The new name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     setTaxonObjectArgRules->push_back(      new ArgumentRule("current"    , RlString::getClassTypeSpec(), "The old name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -79,6 +82,7 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     methods.addFunction( new MemberProcedure( "show", RlUtils::Void, showdataArgRules ) );
     methods.addFunction( new MemberProcedure( "removeTaxa", RlUtils::Void, removeTaxaArgRules ) );
     methods.addFunction( new MemberProcedure( "removeTaxa", RlUtils::Void, removeTaxaArgRules2 ) );
+    methods.addFunction( new MemberProcedure( "setNewHomeologAssignment", RlUtils::Void, setNewHomeologAssignmentArgRules ) );
     methods.addFunction( new MemberProcedure( "setTaxonName", RlUtils::Void, setTaxonNameArgRules ) );
     methods.addFunction( new MemberProcedure( "setTaxonObject", RlUtils::Void, setTaxonObjectArgRules ) );
     methods.addFunction( new MemberProcedure( "taxa", ModelVector<Taxon>::getClassTypeSpec(), taxaArgRules ) );

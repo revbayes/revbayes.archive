@@ -59,6 +59,7 @@ namespace RevBayesCore {
         size_t                                      getNumberOfTaxa(void) const;                                                //!< Number of taxa
         size_t                                      getNumberOfIncludedTaxa(void) const;                                        //!< Number of included taxa
         double                                      getPercentageMissing(const std::string &n) const;                           //!< Returns the percentage of missing data for this sequence
+        const std::string                           getHomeologAssignment(const std::string &tipName);                          //!< Get the homeolog character data currently assigned to this tip.
         const std::vector<Taxon>&                   getTaxa(void) const;                                                        //!< Get the names of the taxa
         const Taxon&                                getTaxon(size_t idx) const;                                                 //!< Returns the i-th taxon
         AbstractTaxonData&                          getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
@@ -77,9 +78,11 @@ namespace RevBayesCore {
         void                                        restoreTaxon(const std::string& s);                                         //!< Restore taxon
         void                                        setFileName(const std::string &fn);                                         //!< Set the file name
         void                                        setFilePath(const std::string &fn);                                         //!< Set the file path
+        void                                        setNewHomeologAssignment(const std::string& dataName, const std::string& tipName); //!< Assign homeolog character data to a tip 
         void                                        setTaxonName(const std::string& currentName, const std::string& newName);   //!< Change the name of a taxon
         void                                        setTaxonObject(const std::string& currentName, const Taxon& new_taxon);     //!< Change the name of a taxon
         void                                        show(std::ostream &out) const;                                              //!< Show the entire content
+        void                                        swapHomeologAssignment(const std::string& tipName1, const std::string& tipName2); //!< Swap the currently assigned homeolog character data between tips
         
         
         // CharacterData functions
@@ -96,6 +99,7 @@ namespace RevBayesCore {
         std::set<size_t>                            deletedTaxa;                                                                //!< Set of deleted taxa
         std::string                                 fileName;                                                                   //!< The path/filename from where this matrix originated
         std::string                                 filePath;                                                                   //!< The path/filename from where this matrix originated
+        std::map<std::string, std::string >         homeologMap;
         std::vector<Taxon>                          taxa;                                                                       //!< names of the sequences
         std::map<std::string, AbstractTaxonData* >  taxonMap;
     };
