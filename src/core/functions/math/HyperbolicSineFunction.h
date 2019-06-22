@@ -9,13 +9,9 @@ namespace RevBayesCore {
     
     
     /**
-     * \brief Hyperbolic Sine of a real number.
+     * @brief Hyperbolic Sine of a real number.
      *
      * Compute the hyperbolic Sine of a real number x. (sinh(x) = (exp(x) - exp(-x))/2).
-     *
-     * \copyright (c) Copyright 2009-2015 (GPL version 3)
-     * \author The RevBayes Development Core Team (Wade Dismukes)
-     * \since Version 1.0, 2015-01-31
      *
      */
     class HyperbolicSineFunction : public ContinuousFunction {

@@ -51,7 +51,7 @@ RevBayesCore::TypedFunction<double>* Func_computeWeightedNodeOrderConstraintsSco
         RevBayesCore::computeWeightedNodeOrderConstraintsScoreFunction* f = new RevBayesCore::computeWeightedNodeOrderConstraintsScoreFunction( tau, c, bet );
         return f;
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         std::cerr << e.getMessage() << std::endl;
     }

@@ -32,7 +32,7 @@ namespace RevBayesCore {
         virtual AbstractTaxonData*              clone(void) const = 0;
         
         // AbstractTaxonData functions
-        virtual AbstractTaxonData&              concatenate(const AbstractTaxonData &d) = 0;                        //!< Concatenate sequences
+        virtual void                            concatenate(const AbstractTaxonData &d) = 0;                        //!< Concatenate sequences
         virtual size_t                          getNumberOfCharacters(void) const = 0;                              //!< How many characters
         virtual double                          getPercentageMissing(void) const = 0;                               //!< Returns the percentage of missing data for this sequence
         const Taxon&                            getTaxon(void) const;                                               //!< Return the name of the character vector

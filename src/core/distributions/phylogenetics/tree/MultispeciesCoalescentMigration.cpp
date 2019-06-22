@@ -534,9 +534,9 @@ void MultispeciesCoalescentMigration::simulateTree( void )
         TopologyNode *sp_node = it->second;
         double species_age = it->first;
         
-        enum EVENT_TYPE { COALESCENT, MIGRATION };
+        enum EVENT_TYPE { COALESCENT, MIGRATION, NO_EVENT };
         
-        EVENT_TYPE next_event_type;
+        EVENT_TYPE next_event_type = NO_EVENT;
         size_t next_event_node;
         double next_event_time = RbConstants::Double::inf;
         for (size_t this_population=0; this_population<individuals_per_branch.size(); ++this_population)

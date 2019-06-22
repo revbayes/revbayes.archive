@@ -41,7 +41,7 @@ double PhyloMultivariateBrownianProcess::computeLnProbability(void)
 {
     
     double lnProb = 0;
-    if (sigma->getValue().isPositive())
+    if (sigma->getValue().isPositiveDefinite())
     {
         lnProb = recursiveLnProb(tau->getValue().getRoot());
     }

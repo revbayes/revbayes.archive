@@ -21,7 +21,6 @@
 //#include "Statistic.h"
 #include "Clade.h"
 #include "Tree.h"
-#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 

@@ -56,7 +56,7 @@ namespace RevBayesCore {
         std::vector<double>                                 getEmpiricalBaseFrequencies(void) const;                                    //!< Compute the empirical base frequencies
         const std::set<size_t>&                             getExcludedCharacters(void) const;                                          //!< Returns the name of the file the data came from
         std::vector<size_t>                                 getIncludedSiteIndices(void) const;
-        size_t                                              getMaxObservedStateIndex(void) const;                                        //!< Get the number of observed states for the characters in this matrix
+        size_t                                              getMaxObservedStateIndex(void) const;                                       //!< Get the number of observed states for the characters in this matrix
         size_t                                              getNumberOfCharacters(void) const;                                          //!< Number of characters
         size_t                                              getNumberOfIncludedCharacters(void) const;                                  //!< Number of characters
         size_t                                              getNumberOfInvariantSites(bool excl) const;                                 //!< Number of invariant sites
@@ -71,23 +71,25 @@ namespace RevBayesCore {
         DiscreteTaxonData<charType>&                        getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
         const DiscreteTaxonData<charType>&                  getTaxonData(const std::string &tn) const;                                  //!< Return a reference to a sequence in the character matrix
         
-        double                                              maxGcContent(bool excl) const;                                                   //!< Maximum GC-content of a sequence
-        size_t                                              maxInvariableBlockLength(bool excl) const;                                       //!< Maximum length of a block of invariant sites
-        size_t                                              maxVariableBlockLength(bool excl) const;                                         //!< Maximum length of a block of variant sites
-        double                                              meanGcContent(bool excl) const;                                              //!< Mean GC-content of all sequence
-        double                                              meanGcContentByCodon(size_t n, bool excl) const;                                   //!< Mean GC-content of all sequences by codon position
-        double                                              minGcContent(bool excl) const;                                                   //!< Number of invariant sites
-        size_t                                              numInvariableSiteBlocks(bool excl) const;                                        //!< Number of invariant blocks
+        double                                              maxGcContent(bool excl) const;                                              //!< Maximum GC-content of a sequence
+        size_t                                              maxInvariableBlockLength(bool excl) const;                                  //!< Maximum length of a block of invariant sites
+        size_t                                              maxVariableBlockLength(bool excl) const;                                    //!< Maximum length of a block of variant sites
+        double                                              meanGcContent(bool excl) const;                                             //!< Mean GC-content of all sequence
+        double                                              meanGcContentByCodon(size_t n, bool excl) const;                            //!< Mean GC-content of all sequences by codon position
+        double                                              minGcContent(bool excl) const;                                              //!< Number of invariant sites
+        size_t                                              numInvariableSiteBlocks(bool excl) const;                                   //!< Number of invariant blocks
         size_t                                              numberTaxaMissingSequence(double p) const;                                  //!< Number of taxa missing x percent of the sequence
         double                                              varGcContent(bool excl) const;                                              //!< Mean GC-content of all sequence
-        double                                              varGcContentByCodon(size_t n, bool excl) const;                                   //!< Mean GC-content of all sequences by codon position
+        double                                              varGcContentByCodon(size_t n, bool excl) const;                             //!< Mean GC-content of all sequences by codon position
         
+        HomologousDiscreteCharacterData<NaturalNumbersState>*       combineCharacters(const HomologousDiscreteCharacterData &d) const;        //!< Combine/expand data matrices
+        AbstractHomologousDiscreteCharacterData*            combineCharacters(const AbstractHomologousDiscreteCharacterData &d) const;        //!< Combine/expand data matrices
         AbstractHomologousDiscreteCharacterData*            expandCharacters(size_t n) const;
         void                                                includeCharacter(size_t i);                                                 //!< Include character
         bool                                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
         bool                                                isCharacterResolved(size_t txIdx, size_t chIdx) const;                      //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         bool                                                isCharacterResolved(const std::string &tn, size_t chIdx) const;             //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
-        void                                                removeExcludedCharacters(void);                                              //!< Remove all the excluded characters
+        void                                                removeExcludedCharacters(void);                                             //!< Remove all the excluded characters
         void                                                restoreCharacter(size_t i);                                                 //!< Restore character
         AbstractHomologousDiscreteCharacterData*            translateCharacters(const std::string &type) const;
         
@@ -107,8 +109,6 @@ namespace RevBayesCore {
 
 #include "CharacterTranslator.h"
 #include "DnaState.h"
-#include "DiscreteCharacterState.h"
-#include "DiscreteTaxonData.h"
 #include "NaturalNumbersState.h"
 #include "NclReader.h"
 #include "RbConstants.h"
@@ -117,8 +117,6 @@ namespace RevBayesCore {
 #include <cmath>
 #include <fstream>
 #include <sstream>
-#include <string>
-
 
 /**
  * Default constructor,
@@ -354,6 +352,123 @@ RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>
     
     return m;
 }
+
+
+/**
+ * Add another character data object to this character data object.
+ *
+ * \param[in]    obsd    The CharacterData object that should be added.
+ */
+template<class charType>
+RevBayesCore::AbstractHomologousDiscreteCharacterData* RevBayesCore::HomologousDiscreteCharacterData<charType>::combineCharacters(const AbstractHomologousDiscreteCharacterData &obsd ) const
+{
+    
+    const HomologousDiscreteCharacterData<charType>* rhs = dynamic_cast<const HomologousDiscreteCharacterData<charType>* >( &obsd );
+    if ( rhs == NULL )
+    {
+        throw RbException("Cannot combine CharacterData of two different types!!!");
+    }
+    
+    return combineCharacters( *rhs );
+}
+
+
+/**
+ * Add another character data object to this character data object.
+ *
+ * \param[in]    obsd    The CharacterData object that should be added.
+ */
+template<class charType>
+RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::NaturalNumbersState>* RevBayesCore::HomologousDiscreteCharacterData<charType>::combineCharacters(const HomologousDiscreteCharacterData<charType> &second ) const
+{
+    
+    HomologousDiscreteCharacterData<charType>               *tmp_first      = this->clone();
+    HomologousDiscreteCharacterData<charType>               *tmp_second     = second.clone();
+    HomologousDiscreteCharacterData<NaturalNumbersState>    *combined_data  = new HomologousDiscreteCharacterData<NaturalNumbersState>();
+    
+    std::string type = "union";
+    size_t sequence_length = getNumberOfCharacters();
+    
+    // check if both have the same number of taxa
+//    if ( taxa.size() != obsd.getNumberOfTaxa() )
+//    {
+//        throw RbException("Cannot combine two character data objects with different number of taxa!");
+//    }
+    
+    std::vector<string> to_delete;
+    //    std::vector<bool> used = std::vector<bool>(obsd.getNumberOfTaxa(),false);
+    
+    for (size_t i=0; i<second.getNumberOfTaxa(); ++i)
+    {
+        const std::string &n = second.getTaxonNameWithIndex( i );
+        try
+        {
+            getIndexOfTaxon( n );
+        }
+        catch(RbException &e)
+        {
+            if ( type == "union" )
+            {
+                tmp_first->addMissingTaxon( n );
+            }
+            else if ( type != "intersection" )
+            {
+                to_delete.push_back( n );
+            //                throw RbException("Cannot concatenate two character data objects because first character data object has no taxon with name '" + obsd.getTaxonNameWithIndex(i) + "n'!");
+            }
+        }
+    }
+    
+    for (size_t i=0; i<taxa.size(); ++i )
+    {
+        const std::string &n = taxa[i].getName();
+        const DiscreteTaxonData<charType>& taxon = tmp_first->getTaxonData( n );
+        
+        try
+        {
+            //size_t idx = obsd.getIndexOfTaxon( n );
+//            tmp_second->getIndexOfTaxon( n );
+            DiscreteTaxonData<NaturalNumbersState> *new_taxon_data = taxon.combineCharacters( tmp_second->getTaxonData( n ) );
+            combined_data->addTaxonData( *new_taxon_data );
+            
+            delete new_taxon_data;
+        }
+        catch(RbException &e)
+        {
+            if (type == "intersection")
+            {
+                to_delete.push_back(n);
+            }
+            else if (type == "union")
+            {
+                tmp_second->addMissingTaxon( n );
+                DiscreteTaxonData<NaturalNumbersState> *new_taxon_data = taxon.combineCharacters( tmp_second->getTaxonData( n ) );
+                combined_data->addTaxonData( *new_taxon_data );
+
+                delete new_taxon_data;
+            }
+            else
+            {
+                throw RbException("Cannot concatenate two character data objects because second character data object has no taxon with name '" + n + "n'!");
+            }
+        }
+        
+    }
+    
+    for (size_t i=0; i<to_delete.size(); i++)
+    {
+        combined_data->deleteTaxon(to_delete[i]);
+    }
+    
+//    const std::set<size_t> &exclChars = obsd.getExcludedCharacters();
+//    for (std::set<size_t>::const_iterator it = exclChars.begin(); it != exclChars.end(); ++it)
+//    {
+//        combined_data->deletedCharacters.insert( *it + sequence_length );
+//    }
+    
+    return combined_data;
+}
+
 
 
 
@@ -1503,6 +1618,10 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::maxInvariableBlo
         if ( invariant == true )
         {
             ++this_block_length;
+            if ( this_block_length > max_length )
+            {
+                max_length = this_block_length;
+            }
         }
         else
         {
@@ -1561,6 +1680,10 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::maxVariableBlock
         if ( invariant == false )
         {
             ++this_block_length;
+            if ( this_block_length > max_length )
+            {
+                max_length = this_block_length;
+            }
         }
         else
         {
@@ -1910,7 +2033,7 @@ double RevBayesCore::HomologousDiscreteCharacterData<charType>::varGcContent( bo
         double diff = gc_content[i] - mean_gc;
         var_gc += diff * diff;
     }
-    return var_gc / double(nt);
+    return var_gc / double(nt-1);
 }
 
 
@@ -1970,7 +2093,7 @@ double RevBayesCore::HomologousDiscreteCharacterData<charType>::varGcContentByCo
         double diff = gc_content[i] - mean_gc;
         var_gc += diff * diff;
     }
-    return var_gc / double(nt);
+    return var_gc / double(nt-1);
 }
 
 

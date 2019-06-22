@@ -2,6 +2,10 @@
 
 using namespace RevBayesCore;
 
+/**
+ * SumFunction of a RbVector Constructor.
+ * @param v the vector of values of type long
+ */
 SumIntegerFunction::SumIntegerFunction(const TypedDagNode<RbVector<long> > *v) : TypedFunction<long>( new long(0.0) ), vals( v )
 {
     // add the parameters as parents

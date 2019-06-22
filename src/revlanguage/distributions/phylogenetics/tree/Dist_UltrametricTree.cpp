@@ -145,6 +145,11 @@ MethodTable Dist_UltrametricTree::getDistributionMethods( void ) const
     sample_prob_arg_rules->push_back( new ArgumentRule( "log", RlBoolean::getClassTypeSpec(), "If we should return the log-transformed probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean( false ) ) );
     methods.addFunction( new DistributionMemberFunction<Dist_UltrametricTree, ModelVector<Real> >( "getSampleProbabilities", this->variable, sample_prob_arg_rules   ) );
     
+    // member functions
+    ArgumentRules* branch_rates_arg_rules = new ArgumentRules();
+    branch_rates_arg_rules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), "The index of the tree in the trace for which we want to get the branch rates.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new DistributionMemberFunction<Dist_UltrametricTree, ModelVector<RealPos> >( "getBranchRates", this->variable, branch_rates_arg_rules   ) );
+
     return methods;
 }
 

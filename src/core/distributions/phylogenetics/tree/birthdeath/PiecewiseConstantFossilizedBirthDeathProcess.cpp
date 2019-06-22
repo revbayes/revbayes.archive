@@ -156,14 +156,14 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
                 }
             }
             // y == d
-            else if ( d_i[i] != taxa[i].getAgeRange().getMin() )
+            else if ( fabs(d_i[i] - taxa[i].getAgeRange().getMin()) > 1E-5 )
             {
                 return RbConstants::Double::neginf;
             }
 
             // if the tip is a sampling event in the past
             // replace observed extinction time with unobserved extinction time
-            if( d_i[i] > 0.0 )
+            if ( d_i[i] > 0.0 )
             {
                 lnProb -= death[di];
                 lnProb += log( fossil[di] ) + log( p(d_i[i], di) );
@@ -258,6 +258,7 @@ void PiecewiseConstantFossilizedBirthDeathProcess::simulateClade(std::vector<Top
         if( n[i]->isTip() )
         {
             double min = n[i]->getTaxon().getAgeRange().getMin();
+            double max = n[i]->getTaxon().getAgeRange().getMax();
 
             // in the extended tree, tip ages are extinction times
             if( extended )
@@ -500,24 +501,24 @@ double PiecewiseConstantFossilizedBirthDeathProcess::simulateDivergenceTime(doub
 }
 
 
-size_t PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( const TopologyNode& node ) const
+int PiecewiseConstantFossilizedBirthDeathProcess::updateStartEndTimes( const TopologyNode& node ) const
 {
     if( node.isTip() )
     {
         return find(taxa.begin(), taxa.end(), node.getTaxon()) - taxa.begin();
     }
 
-    size_t species;
+    int species = -1;
 
     std::vector<TopologyNode* > children = node.getChildren();
 
     bool sa = node.isSampledAncestor(true);
 
-    for(size_t c = 0; c < children.size(); c++)
+    for(int c = 0; c < children.size(); c++)
     {
         const TopologyNode& child = *children[c];
 
-        size_t i = updateStartEndTimes(child);
+        int i = updateStartEndTimes(child);
 
         // if child is a tip, set the species/end time
         if( child.isTip() )

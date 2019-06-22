@@ -1,15 +1,9 @@
-//
-//  MpiUtilities.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 4/2/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
 #include "MpiUtilities.h"
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <cstdio>
+#include <stdio.h>
 
 #ifdef RB_MPI
 #include <mpi.h>

@@ -4,8 +4,14 @@
 
 using namespace RevBayesCore;
 
+
+
 /**
- * Constructor. Here we simply set up the parameter dependencies.
+ * EmpiricalQuantileFunction of a RbVector constructor and a TypedDagNode
+ * double of the kth quantile
+ *
+ * @param v an RbVector of values of type double
+ * @param k a double value
  */
 EmpiricalQuantileFunction::EmpiricalQuantileFunction(const TypedDagNode< RbVector<double> > *v, const TypedDagNode<double>* k) : TypedFunction<double>( new double(0.0) ),
     vals( v ),

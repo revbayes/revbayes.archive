@@ -1,5 +1,4 @@
 #include "DagNode.h"
-#include "FileMonitor.h"
 #include "HillClimber.h"
 #include "MoveSchedule.h"
 #include "RandomMoveSchedule.h"
@@ -11,7 +10,6 @@
 #include "RbOptions.h"
 #include "RlUserInterface.h"
 #include "SingleRandomMoveSchedule.h"
-#include "RandomMoveSchedule.h"
 #include "ExtendedNewickTreeMonitor.h"
 
 #include <unistd.h>

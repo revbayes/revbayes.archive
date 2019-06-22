@@ -44,7 +44,7 @@ std::vector<std::string> getFileList(const std::string &path)
     const std::string& wd = s.getWorkingDirectory();
     
     RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(wd, path);
-    fm.setStringWithNamesOfFilesInDirectory( v );
+    fm.setStringWithNamesOfFilesInDirectory( v, false );
     
     return v;
 }

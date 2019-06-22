@@ -138,84 +138,84 @@ void RbMath::computeLandU(MatrixReal& aMat, MatrixReal& lMat, MatrixReal& uMat) 
  */
 int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
 
-	size_t dim = A.getNumberOfRows();
-	if (dim != A.getNumberOfColumns())
-		return (1);
+    size_t dim = A.getNumberOfRows();
+    if (dim != A.getNumberOfColumns())
+        return (1);
 
-	// create identity matrices
-	MatrixReal D(dim, dim, 0.0);
-	MatrixReal N(dim, dim, 0.0);
-	MatrixReal X(dim, dim, 0.0);
-	for (size_t i=0; i<dim; i++)
-        {
-		D[i][i] = 1.0;
+    // create identity matrices
+    MatrixReal D(dim, dim, 0.0);
+    MatrixReal N(dim, dim, 0.0);
+    MatrixReal X(dim, dim, 0.0);
+    for (size_t i=0; i<dim; i++)
+    {
+        D[i][i] = 1.0;
         N[i][i] = 1.0;
         X[i][i] = 1.0;
-        }
+    }
 
-	// create uninitialized matrix
-	MatrixReal cX(dim, dim, 0.0);
+    // create uninitialized matrix
+    MatrixReal cX(dim, dim, 0.0);
 
-	// We assume that we have a rate matrix where rows sum to zero
-	// Then the infinity-norm is twice the maximum absolute value
-	// of the diagonal cells.
-	double normA = 0.0;
-	for (size_t i=0; i<dim; i++)
-        {
-		double x = fabs (A[i][i]);
-		if (x > normA)
-			normA = x;
-        }
-	normA *= 2.0;
+    // We assume that we have a rate matrix where rows sum to zero
+    // Then the infinity-norm is twice the maximum absolute value
+    // of the diagonal cells.
+    double normA = 0.0;
+    for (size_t i=0; i<dim; i++)
+    {
+        double x = fabs (A[i][i]);
+        if (x > normA)
+            normA = x;
+    }
+    normA *= 2.0;
 
-	// Calculate 1 + floor (log2(normA))
-	int y;
-	frexp(normA, &y);	// this will give us the floor(log2(normA)) part in y
-	y++;
+    // Calculate 1 + floor (log2(normA))
+    int y;
+    frexp(normA, &y);	// this will give us the floor(log2(normA)) part in y
+    y++;
 
-	// Get max(0,y)
-	int j = 0;
-	if (y > 0)
-		j = y;
+    // Get max(0,y)
+    int j = 0;
+    if (y > 0)
+        j = y;
 
-	// divide A by scalar 2^j
-	//A /= ldexp(1.0, j);
+    // divide A by scalar 2^j
+    //A /= ldexp(1.0, j);
     double myFactor = 1.0 / ldexp(1.0, j);
     A *= myFactor;
 
-	double c = 1.0;
-	for (int k=1; k<=qValue; k++)
-        {
-		c = c * (qValue - k + 1.0) / ((2.0 * qValue - k + 1.0) * k);
+    double c = 1.0;
+    for (int k=1; k<=qValue; k++)
+    {
+        c = c * (qValue - k + 1.0) / ((2.0 * qValue - k + 1.0) * k);
 
-		/* X = AX */
+        /* X = AX */
         X = A * X;
 
-		/* N = N + cX */
-		cX = X * c;
-		N = N + cX;
+        /* N = N + cX */
+        cX = X * c;
+        N = N + cX;
 
-		/* D = D + (-1)^k*cX */
-		if (k % 2 == 0)
-			D = D + cX;
-		else
-			D = D - cX;
-        }
+        /* D = D + (-1)^k*cX */
+        if (k % 2 == 0)
+            D = D + cX;
+        else
+            D = D - cX;
+    }
 
-	RbMath::gaussianElimination(D, N, F);
+    RbMath::gaussianElimination(D, N, F);
 
-	for (int k=0; k<j; k++)
-		F = F * F;
+    for (int k=0; k<j; k++)
+        F = F * F;
 
-	for (size_t i=0; i<dim; i++)
+    for (size_t i=0; i<dim; i++)
+    {
+        for (j=0; j<int(dim); j++)
         {
-		for (j=0; j<int(dim); j++)
-            {
-			if (F[i][j] < 0.0)
-				F[i][j] = 0.0;
-            }
+            if (F[i][j] < 0.0)
+                F[i][j] = 0.0;
         }
-	return (0);
+    }
+    return (0);
 }
 
 
@@ -241,17 +241,17 @@ int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
  */
 int RbMath::findPadeQValue(double tolerance) {
 
-	// Here we want to calculate
-	// double x = pow(2.0, 3.0 - (0 + 0)) * MbMath::factorial(0) * MbMath::factorial(0) / (MbMath::factorial(0+0) * MbMath::factorial(0+0+1));
-	// that is, the expression below for qV = 0. However, we can simplify that to
-	double x = 8.0;
-	int qV = 0;
-	while (x > tolerance)
-        {
-		qV++;
-		x = pow(2.0, 3.0 - (qV + qV)) * RbMath::factorial(qV) * RbMath::factorial(qV) / (RbMath::factorial(qV+qV) * RbMath::factorial(qV+qV+1));
-        }
-	return (qV);
+    // Here we want to calculate
+    // double x = pow(2.0, 3.0 - (0 + 0)) * MbMath::factorial(0) * MbMath::factorial(0) / (MbMath::factorial(0+0) * MbMath::factorial(0+0+1));
+    // that is, the expression below for qV = 0. However, we can simplify that to
+    double x = 8.0;
+    int qV = 0;
+    while (x > tolerance)
+    {
+        qV++;
+        x = pow(2.0, 3.0 - (qV + qV)) * RbMath::factorial(qV) * RbMath::factorial(qV) / (RbMath::factorial(qV+qV) * RbMath::factorial(qV+qV+1));
+    }
+    return (qV);
 }
 
 
@@ -297,70 +297,70 @@ void RbMath::hadamardMult(const MatrixReal& A, const std::vector<double>& B, Mat
 void RbMath::matrixInverse(const MatrixComplex& a, MatrixComplex& aInv) {
 
     // get dimensions: we assume a square matrix
-	size_t n = a.getNumberOfRows();
+    size_t n = a.getNumberOfRows();
 
     // copy original matrix, a, into a working version, aTmp
     MatrixComplex aTmp(a);
 
     // set up some matrices for work
-	MatrixComplex lMat(n, n, std::complex<double>(0.0) );
-	MatrixComplex uMat(n, n, std::complex<double>(0.0) );
+    MatrixComplex lMat(n, n, std::complex<double>(0.0) );
+    MatrixComplex uMat(n, n, std::complex<double>(0.0) );
     MatrixComplex identity(n, n, std::complex<double>(0.0) );
     for (size_t i=0; i<n; i++)
         identity[i][i] = 1.0;
-	std::vector<std::complex<double> > bVec(n);
+    std::vector<std::complex<double> > bVec(n);
 
     // compute the matrix inverse
-	RbMath::computeLandU(aTmp, lMat, uMat);
-	for (size_t k=0; k<n; k++)
-        {
-		for (size_t i=0; i<n; i++)
-			bVec[i] = identity[i][k];
+    RbMath::computeLandU(aTmp, lMat, uMat);
+    for (size_t k=0; k<n; k++)
+    {
+        for (size_t i=0; i<n; i++)
+            bVec[i] = identity[i][k];
 
-		/* Answer of Ly = b (which is solving for y) is copied into b. */
-		forwardSubstitutionRow(lMat, bVec);
+        /* Answer of Ly = b (which is solving for y) is copied into b. */
+        forwardSubstitutionRow(lMat, bVec);
 
-		/* Answer of Ux = y (solving for x and the y was copied into b above)
+        /* Answer of Ux = y (solving for x and the y was copied into b above)
          is also copied into b. */
-		backSubstitutionRow(uMat, bVec);
-		for (size_t i=0; i<n; i++)
-			aInv[i][k] = bVec[i];
-        }
+        backSubstitutionRow(uMat, bVec);
+        for (size_t i=0; i<n; i++)
+            aInv[i][k] = bVec[i];
+    }
 }
 
 
 void RbMath::matrixInverse(const MatrixReal& a, MatrixReal& aInv) {
 
     // get dimensions: we assume a square matrix
-	size_t n = a.getNumberOfRows();
+    size_t n = a.getNumberOfRows();
 
     // copy original matrix, a, into a working version, aTmp
     MatrixReal aTmp(a);
 
     // set up some matrices for work
-	MatrixReal lMat(n, n, 0.0);
-	MatrixReal uMat(n, n, 0.0);
+    MatrixReal lMat(n, n, 0.0);
+    MatrixReal uMat(n, n, 0.0);
     MatrixReal identity(n, n, 0.0);
     for (size_t i=0; i<n; i++)
         identity[i][i] = 1.0;
-	std::vector<double> bVec(n);
+    std::vector<double> bVec(n);
 
     // compute the matrix inverse
-	RbMath::computeLandU(aTmp, lMat, uMat);
-	for (size_t k=0; k<n; k++)
-        {
-		for (size_t i=0; i<n; i++)
-			bVec[i] = identity[i][k];
+    RbMath::computeLandU(aTmp, lMat, uMat);
+    for (size_t k=0; k<n; k++)
+    {
+        for (size_t i=0; i<n; i++)
+            bVec[i] = identity[i][k];
 
-		/* Answer of Ly = b (which is solving for y) is copied into b. */
-		forwardSubstitutionRow(lMat, bVec);
+        /* Answer of Ly = b (which is solving for y) is copied into b. */
+        forwardSubstitutionRow(lMat, bVec);
 
-		/* Answer of Ux = y (solving for x and the y was copied into b above)
-         is also copied into b. */
-		backSubstitutionRow(uMat, bVec);
-		for (size_t i=0; i<n; i++)
-			aInv[i][k] = bVec[i];
-        }
+        /* Answer of Ux = y (solving for x and the y was copied into b above)
+           is also copied into b. */
+        backSubstitutionRow(uMat, bVec);
+        for (size_t i=0; i<n; i++)
+            aInv[i][k] = bVec[i];
+    }
 }
 
 
@@ -376,16 +376,16 @@ void RbMath::matrixInverse(const MatrixReal& a, MatrixReal& aInv) {
  */
 int RbMath::transposeMatrix(const MatrixReal& a, MatrixReal& t) {
 
-	size_t m = a.getNumberOfRows();
-	size_t n = a.getNumberOfColumns();
+    size_t m = a.getNumberOfRows();
+    size_t n = a.getNumberOfColumns();
 
-	if ( m != t.getNumberOfColumns() || n != t.getNumberOfRows() )
+    if ( m != t.getNumberOfColumns() || n != t.getNumberOfRows() )
         throw (RbException("Cannot transpose an N X M matrix if the other matrix is not M X N"));
 
-	for (size_t i=0; i<m; i++)
-		for (size_t j=0; j<n; j++)
-			t[j][i] = a[i][j];
-	return (0);
+    for (size_t i=0; i<m; i++)
+        for (size_t j=0; j<n; j++)
+            t[j][i] = a[i][j];
+    return (0);
 }
 
 
@@ -400,18 +400,18 @@ int RbMath::transposeMatrix(const MatrixReal& a, MatrixReal& t) {
  */
 std::vector<double> RbMath::colSumMatrix(const MatrixReal& a) {
 
-	size_t m = a.getNumberOfRows();
-	size_t n = a.getNumberOfColumns();
+    size_t m = a.getNumberOfRows();
+    size_t n = a.getNumberOfColumns();
 
     std::vector<double> s(n, 0.0);
 
-	for (size_t i=0; i<m; i++) {
-		for (size_t j=0; j<n; j++) {
+    for (size_t i=0; i<m; i++) {
+        for (size_t j=0; j<n; j++) {
             s[j] += a[i][j];
-		}
-	}
+        }
+    }
 
-	return s;
+    return s;
 }
 
 
@@ -424,18 +424,18 @@ std::vector<double> RbMath::colSumMatrix(const MatrixReal& a) {
  */
 std::vector<double> RbMath::rowSumMatrix(const MatrixReal& a) {
 
-	size_t m = a.getNumberOfRows();
-	size_t n = a.getNumberOfColumns();
+    size_t m = a.getNumberOfRows();
+    size_t n = a.getNumberOfColumns();
 
     std::vector<double> s(m, 0);
 
-	for (size_t i=0; i<m; i++) {
-		for (size_t j=0; j<n; j++) {
+    for (size_t i=0; i<m; i++) {
+        for (size_t j=0; j<n; j++) {
             s[i] += a[i][j];
-		}
-	}
+        }
+    }
 
-	return s;
+    return s;
 }
 
 
@@ -448,15 +448,15 @@ std::vector<double> RbMath::rowSumMatrix(const MatrixReal& a) {
  */
 std::vector<double> RbMath::rowMeansMatrix(const MatrixReal& a) {
 
-	size_t m = a.getNumberOfRows();
-	size_t n = a.getNumberOfColumns();
+    size_t m = a.getNumberOfRows();
+    size_t n = a.getNumberOfColumns();
 
     std::vector<double> s = rowSumMatrix(a);
-	for (size_t i=0; i<m; i++){
+    for (size_t i=0; i<m; i++){
         s[i] /= n;
-	}
+    }
 
-	return s;
+    return s;
 }
 
 
@@ -470,15 +470,15 @@ std::vector<double> RbMath::rowMeansMatrix(const MatrixReal& a) {
  */
 std::vector<double> RbMath::colMeansMatrix(const MatrixReal& a) {
 
-	size_t m = a.getNumberOfRows();
-	size_t n = a.getNumberOfColumns();
+    size_t m = a.getNumberOfRows();
+    size_t n = a.getNumberOfColumns();
 
     std::vector<double> s = colSumMatrix(a);
-	for (size_t i=0; i<n; i++){
+    for (size_t i=0; i<n; i++){
         s[i] /= m;
-	}
+    }
 
-	return s;
+    return s;
 }
 
 

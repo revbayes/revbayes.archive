@@ -140,7 +140,7 @@ double CorrelationMatrixProposal::doProposal( void ) {
 
     // check that the resulting variance-covariance matrix is positive definite
 
-    std::cout << v.isPositive() << std::endl;
+    std::cout << v.isPositiveDefinite() << std::endl;
     std::cout << v << std::endl;
     exit(1);
 

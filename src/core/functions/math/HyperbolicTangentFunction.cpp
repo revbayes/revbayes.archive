@@ -2,7 +2,11 @@
 #include <cmath>
 
 using namespace RevBayesCore;
-
+/**
+ * HyperbolicTangentFunction of a TypedDagNode of type double
+ *
+ * @param a the value of type double
+ */
 HyperbolicTangentFunction::HyperbolicTangentFunction(const TypedDagNode<double> *a) : ContinuousFunction( new double(0.0) ),
     x( a )
 {

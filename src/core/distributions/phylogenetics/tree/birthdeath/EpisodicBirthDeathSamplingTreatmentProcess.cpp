@@ -215,7 +215,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
 {
     // variable declarations and initialization
     double lnProbTimes = 0.0;
-    double process_time = getOriginAge();
+    //    double process_time = getOriginAge(); // Sebastian: currently unused.
     size_t num_initial_lineages = 0;
     TopologyNode* root = &value->getRoot();
 
@@ -303,6 +303,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
             lnProbTimes += ln_sampling_event_prob;
         }
     }
+    // std::cout << "computed (ii); lnProbability = " << lnProbTimes << std::endl;
 
     // add the serial tip age terms (iii)
     for (size_t i = 0; i < serial_tip_ages.size(); ++i)
@@ -360,7 +361,6 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
         lnProbTimes += log(phi[index]) + log(1 - r[index]);
 
     }
-// std::cout << "computed (iv); lnProbability = " << lnProbTimes << std::endl;
 
     // add the burst bifurcation age terms (v)
     for (size_t i = 0; i < timeline.size(); ++i)
@@ -371,10 +371,9 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
             lnProbTimes += event_bifurcation_times[i].size() * log(lambda_event[i]);
             int active_lineages_at_t = survivors(timeline[i]); //A(t_{\rho_i})
             int A_minus_K = active_lineages_at_t - int(event_bifurcation_times[i].size());
-            lnProbTimes += log(pow(lambda_event[i],A_minus_K)*E(i,timeline[i])+pow(1.0 - lambda_event[i],A_minus_K));
+            lnProbTimes += log(pow(2*lambda_event[i]*E(i,timeline[i]),A_minus_K)+pow(1.0 - lambda_event[i],A_minus_K));
         }
     }
-// std::cout << "computed (v); lnProbability = " << lnProbTimes << std::endl;
 
     // add the non-burst bifurcation age terms (vi)
     for (size_t i = 0; i < serial_bifurcation_times.size(); ++i)
@@ -388,7 +387,6 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
         size_t index = findIndex(t);
         lnProbTimes += log( lambda[index] );
     }
-// std::cout << "computed (vi); lnProbability = " << lnProbTimes << std::endl;
 
     // Compute probabilities of branch segments on all branches
     for (size_t i=0; i<num_nodes; ++i)
@@ -422,7 +420,8 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
 
             lnProbTimes -= lnD(interval_t_o,t_o);
             lnProbTimes += lnD(interval_t_end,t_end);
-
+            // std::cout << "    computing (vii); t_o = " << t_o << "; t_end = " << t_end << "; lnD(interval_t_o,t_o) = " << lnD(interval_t_o,t_o) << "; lnD(interval_t_end,t_end) = " << lnD(interval_t_end,t_end) << std::endl;
+            // std::cout << "lnProbTimes is now " << lnProbTimes << std::endl;
         }
     }
 
@@ -466,6 +465,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
     // condition on nTaxa
     else if ( condition == "nTaxa" )
     {
+        throw(RbException("Cannot condition on number of taxa in episodic serially-sampled birth-death process."));
         // lnProbTimes -= lnProbNumTaxa( value->getNumberOfTips(), 0, process_time, true );
     }
 
@@ -607,7 +607,8 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnD(size_t i, double t) const
     if ( t < DBL_EPSILON )
     {
         // TODO: this can't be right, if phi_event[0] = 0 this will blow up
-        return log(phi_event[0]);
+        // return log(phi_event[0]);
+        return phi_event[0] <= DBL_EPSILON ? 0.0 : log(phi_event[0]);
     }
     else
     {
@@ -617,15 +618,19 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnD(size_t i, double t) const
         {
             // D <- D * (1-this_p_s) * (1-this_p_d) * (1-this_p_b + 2*this_p_b*E)
             this_lnD_i = lnD_previous[i];
+            // std::cout << "this_lnD_i is now " << this_lnD_i << std::endl;
             this_lnD_i += log(1.0-phi_event[i]) + log(1.0-mu_event[i]) + log(1-lambda_event[i]+2*lambda_event[i]*E_previous[i]);
+            // std::cout << "this_lnD_i is now " << this_lnD_i << std::endl;
         }
         else
         {
-            this_lnD_i = log(phi_event[0]);
+            this_lnD_i = phi_event[0] <= DBL_EPSILON ? 0.0 : log(phi_event[0]);
+            // std::cout << "this_lnD_i is now " << this_lnD_i << std::endl;
         }
         // D <- D * 4 * exp(-A*(next_t-current_t))
         // D <- D / ( 1+B+exp(-A*(next_t-current_t))*(1-B) )^2
         this_lnD_i += 2*RbConstants::LN2 + (-A_i[i] * (t - s));
+        // std::cout << "this_lnD_i is now " << this_lnD_i << std::endl;
         this_lnD_i -= 2 * log(1 + B_i[i] + exp(-A_i[i] * (t - s)) * (1 - B_i[i]));
 
         return this_lnD_i;
@@ -664,18 +669,25 @@ double EpisodicBirthDeathSamplingTreatmentProcess::E(size_t i, double t) const
  */
 size_t EpisodicBirthDeathSamplingTreatmentProcess::findIndex(double t) const
 {
-    // Linear search for interval because upper_bound isn't cooperating
-    for (size_t i=0; i < timeline.size()-1; ++i)
+    // Linear search for interval because std::lower_bound is not cooperating
+    if (timeline.size() == 2) // If timeline.size() were 1, we would have 0 break points and would be in constant-rate version
     {
-        if (t >= timeline[i] && t < timeline[i+1])
-        {
-            return i;
-        }
+      return(t < timeline[1] ? 0 : 1);
     }
-    
-    return timeline.size() - 1;
+    else
+    {
+      for (size_t i=0; i < timeline.size()-1; ++i)
+      {
+          if (t >= timeline[i] && t < timeline[i+1])
+          {
+              return(i);
+          }
+      }
 
-    // // Binary search for interval because std::upper_bound isn't cooperating
+      return(timeline.size() - 1);
+    }
+
+    // // Binary search for interval because std::lower_bound isn't cooperating
     // // The run-time cost differential of binary versus linear seems negligible in limited testing
     // // First check if t > s_l, since we don't have an l+1 this interval is unbounded and we can't include it in the search
     // if (t >= timeline[timeline.size()-1])
@@ -741,8 +753,9 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnProbTreeShape(void) const
     int num_extinct = (int)value->getNumberOfExtinctTips();
     int num_sa = (int)value->getNumberOfSampledAncestors();
 
-    //TODO: Check against Gavryushkina (2014)
-    return (num_taxa - num_sa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct);
+    // return (num_taxa - num_sa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct);
+    //Gavryushkina (2014) uses the following
+    return (num_taxa - num_sa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa);
 }
 
 /**
@@ -914,7 +927,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void ) 
     for (size_t i=1; i<timeline.size(); ++i)
     {
         t = timeline[i];
-        
+
         // first, we need to compute E and D at the end of the previous interval
         E_previous[i] = E(i-1, t);
         lnD_previous[i] = lnD(i-1, t);
@@ -937,7 +950,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::pSurvival(double start, doubl
 {
   //TODO: we do not really need this function here, and survival does not have quite the same meaning here
   //      we should make sure this is this is the closest translation of survival to SSBDPs
-  return (1.0 - E(findIndex(end),end)) / (1.0 - E(findIndex(end),end));
+  return (1.0 - E(findIndex(start),start)) / (1.0 - E(findIndex(end),end));
 }
 
 /**

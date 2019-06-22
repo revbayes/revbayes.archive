@@ -220,7 +220,7 @@ const TypeSpec& Func_concatenate::getTypeSpec( void ) const
 const TypeSpec& Func_concatenate::getReturnType( void ) const
 {
     
-    static TypeSpec return_typeSpec = RlBoolean::getClassTypeSpec();
+    static TypeSpec return_typeSpec = AbstractHomologousDiscreteCharacterData::getClassTypeSpec();
     
     return return_typeSpec;
 }

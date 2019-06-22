@@ -419,7 +419,7 @@ void RevVariable::replaceRevObject( RevObject *newValue )
             rev_object->getDagNode()->setElementVariable( is_element_var );
         }
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         // do nothing
     }
@@ -454,7 +454,7 @@ void RevVariable::setElementVariableState(bool flag)
         }
         
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         // do nothing
     }
@@ -484,7 +484,7 @@ void RevVariable::setHiddenVariableState(bool flag)
         }
         
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         // do nothing
     }

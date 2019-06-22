@@ -23,10 +23,12 @@ namespace RevBayesCore {
         ContinuousTaxonData*                    clone(void) const;
         
         // TaxonData functions
-        ContinuousTaxonData&                    concatenate(const AbstractTaxonData &d);                            //!< Concatenate sequences
-        ContinuousTaxonData&                    concatenate(const ContinuousTaxonData &d);                          //!< Concatenate sequences
         void                                    addCharacter(const double &newChar);                                //!< Push back a new character
         void                                    addCharacter(const double &newChar, const bool tf);                 //!< Push back a new character
+//        void                                    combineCharacters(const AbstractTaxonData &d);                      //!< Concatenate sequences
+//        void                                    combineCharacters(const ContinuousTaxonData &d);                    //!< Concatenate sequences
+        void                                    concatenate(const AbstractTaxonData &d);                            //!< Concatenate sequences
+        void                                    concatenate(const ContinuousTaxonData &d);                          //!< Concatenate sequences
         const double&                           getCharacter(size_t index) const;                                   //!< Get the character at position index
         double&                                 getCharacter(size_t index);                                         //!< Get the character at position index (non-const to return non-const character)
         size_t                                  getNumberOfCharacters(void) const;                                  //!< How many characters

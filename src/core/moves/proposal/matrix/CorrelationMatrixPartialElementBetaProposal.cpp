@@ -187,7 +187,7 @@ double CorrelationMatrixPartialElementBetaProposal::doProposal( void )
         double backward = RbStatistics::Beta::lnPdf(new_a, new_b, current_value);
         ln_hastings_ratio = backward - forward;
     }
-    catch (RbException e)
+	catch (RbException &e)
     {
         ln_hastings_ratio = RbConstants::Double::neginf;
     }

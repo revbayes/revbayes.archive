@@ -1,7 +1,7 @@
 #ifndef RlStationarityStoppingRule_H
 #define RlStationarityStoppingRule_H
 
-#include "FileMonitor.h"
+#include "VariableMonitor.h"
 #include "RlAbstractConvergenceStoppingRule.h"
 #include "TypedDagNode.h"
 

@@ -34,8 +34,8 @@ namespace RevLanguage {
             // Member method functions
         virtual RevPtr<RevVariable>                             executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
         
-        void                                                    concatenate(const RevObject& d, std::string type="") const;                                                  //!< Concatenate two sequences
-        void                                                    concatenate(const AbstractHomologousDiscreteCharacterData& d, std::string type="") const;                    //!< Concatenate two sequences
+        void                                                    concatenate(const RevObject& d, std::string type="") const;                             //!< Concatenate two sequences
+        void                                                    concatenate(const AbstractHomologousDiscreteCharacterData& d, std::string type="") const;//!< Concatenate two sequences
         
         
     private:

@@ -115,6 +115,8 @@ double MultiValueEventSlideProposal::doProposal( void )
         double new_val = val + delta;
         
         val = new_val;
+        
+        hr = 0.0;
     }
     else
     {
