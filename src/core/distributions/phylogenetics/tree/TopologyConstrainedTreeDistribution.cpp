@@ -845,7 +845,8 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
             // Get the rng
             RandomNumberGenerator* rng = GLOBAL_RNG;
             
-            clade_age = rng->uniform01() * ( max_age - max_node_age ) + max_node_age;
+//            clade_age = rng->uniform01() * ( max_age - max_node_age ) + max_node_age;
+            clade_age = tree_base_distribution->simulateCladeAge(nodes_in_clade.size(), max_age, 0, max_node_age);
         }
         
         tree_base_distribution->simulateClade(nodes_in_clade, clade_age, 0.0);
