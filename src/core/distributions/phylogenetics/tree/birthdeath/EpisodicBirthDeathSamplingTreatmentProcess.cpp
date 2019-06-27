@@ -158,7 +158,7 @@ EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentP
     if (t != NULL)
     {
       delete value;
-      value = &(t->getValue());
+      value = t->getValue().clone();
     }
     else
     {
