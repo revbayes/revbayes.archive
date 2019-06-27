@@ -499,7 +499,7 @@ AbstractTaxonData& AbstractCharacterData::getTaxonData( const std::string &tn ) 
  *
  * \param[in] tipName        the name currently used on the tree.
  */
-const std::string AbstractCharacterData::getHomeologAssignment(const std::string& tipName)
+const std::string AbstractCharacterData::getHomeologPhase(const std::string& tipName)
 {
     return homeologMap[tipName];
 }
@@ -673,7 +673,7 @@ void AbstractCharacterData::setFilePath(const std::string& fn)
  * \param[in] dataName       the name currently used in the character alignment.
  * \param[in] tipName        the name to be used on the tree.
  */
-void AbstractCharacterData::setNewHomeologAssignment(const std::string& dataName, const std::string& tipName)
+void AbstractCharacterData::setHomeologPhase(const std::string& dataName, const std::string& tipName)
 {
     homeologMap[tipName] = dataName;
     AbstractTaxonData& t = getTaxonData( dataName );
@@ -771,12 +771,12 @@ void AbstractCharacterData::show(std::ostream &out) const {
 
 
 /**
- * Swap the currently assigned character homeolog data between tips.
+ * Switch the currently assigned homeolog phase.
  *
  * \param[in] tipName1        self explanatory. 
  * \param[in] tipName2        self explanatory.
  */
-void AbstractCharacterData::swapHomeologAssignment(const std::string& tipName1, const std::string& tipName2)
+void AbstractCharacterData::switchHomeologPhase(const std::string& tipName1, const std::string& tipName2)
 {
     std::string data1 = homeologMap[tipName1];
     std::string data2 = homeologMap[tipName2];
