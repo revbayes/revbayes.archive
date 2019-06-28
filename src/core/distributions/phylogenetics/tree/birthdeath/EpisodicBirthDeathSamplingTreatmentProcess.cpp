@@ -393,19 +393,16 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
     {
       const TopologyNode& n = value->getNode( i );
 
-      if ( !(n.isSampledAncestor()) )
+      double t = n.getAge();
+      size_t index = findIndex(t);
+      double this_ln_D = lnD(index,t);
+      if ( n.isTip() )
       {
-        double t = n.getAge();
-        size_t index = findIndex(t);
-        double this_ln_D = lnD(index,t);
-        if ( n.isTip() )
-        {
-          lnProbTimes -= this_ln_D;
-        }
-        else
-        {
-          lnProbTimes += this_ln_D;
-        }
+        lnProbTimes -= this_ln_D;
+      }
+      else
+      {
+        lnProbTimes += this_ln_D;
       }
 
 //         if ( !n.isRoot() && !n.isSampledAncestor() )
