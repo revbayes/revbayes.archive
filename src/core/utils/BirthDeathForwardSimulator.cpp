@@ -234,7 +234,6 @@ std::vector<double> BirthDeathForwardSimulator::getMuRate( size_t index, size_t 
 
 double BirthDeathForwardSimulator::getPhiProbability( size_t index, size_t n ) const
 {
-
     if ( Phi.size() > index )
     {
         if ( Phi[index].size() > n )
@@ -437,10 +436,10 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age, SI
 
         std::vector< std::set<TopologyNode*> > active_nodes_in_actegories = std::vector< std::set<TopologyNode*> >( NUM_CATEGORIES, std::set<TopologyNode*>() );
 
-        size_t current_time_index = 0;
-        while ( current_time_index < NUM_TIME_INTERVALS && timeline[current_time_index] > start_age )
+        size_t current_time_index = NUM_TIME_INTERVALS - 1;
+        while ( current_time_index > 0 && timeline[current_time_index] > start_age )
         {
-            ++current_time_index;
+            --current_time_index;
         }
 
         // draw the index of the root category
@@ -598,7 +597,7 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age, SI
                 current_age = event_age;
 
                 // update the interval index
-                ++current_time_index;
+                --current_time_index;
 
                 if ( current_time_index < NUM_TIME_INTERVALS )
                 {
@@ -741,8 +740,8 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age, SI
                             TopologyNode *this_node = *it;
                             this_node->setAge( next_age );
 
-                            // the current node to our set of sampled nodes
-                            sampled_nodes.insert( this_node );
+                            // // the current node to our set of sampled nodes
+                            // sampled_nodes.insert( this_node );
 
                             // now draw if this node died during sampling (i.e., treatment)
                             u = rng->uniform01();
@@ -758,7 +757,24 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age, SI
                                 current_phi_total       -= this_cat_phi;
                                 current_rate_total      -= (current_lambda[i] + current_mu[i] + this_cat_phi);
                             } // end-of this node died during sampling
+                            else
+                            {
+                              // left child (sampled ancestor)
+                              TopologyNode *left = new TopologyNode();
+                              this_node->addChild( left );
+                              left->setParent( this_node );
+                              left->setAge( next_age );
+                              sampled_nodes.insert( left );
+                              
+                              // right child
+                              TopologyNode *right = new TopologyNode();
+                              this_node->addChild( right );
+                              right->setParent( this_node );
 
+                              // update the active node set
+                              active_nodes_in_actegories[i].erase( this_node );
+                              active_nodes_in_actegories[i].insert( right );
+                            }
                             // now stop the loop
                             break;
                         }
@@ -783,6 +799,7 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age, SI
 
 
         // set the ages of all remaining active nodes to 0.0
+        // add nodes that were not sampled at the present to the extinct pile
         for ( size_t i=0; i<NUM_CATEGORIES; ++i)
         {
             const std::set<TopologyNode*> &active_nodes_in_category = active_nodes_in_actegories[i];
@@ -790,47 +807,22 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age, SI
             {
                 TopologyNode *this_node = *it;
                 this_node->setAge( 0.0 );
+
+                bool found = false;
+                for ( std::set<TopologyNode*>::const_iterator jt=sampled_nodes.begin(); jt!=sampled_nodes.end(); ++jt)
+                {
+                  if (*it == *jt)
+                  {
+                    found = true;
+                    break;
+                  }
+                }
+                if ( found == false )
+                {
+                  extinct_not_sampled_nodes.insert(this_node);
+                }
             }
         }
-
-        // Event-sampling at present day
-        for ( size_t i=0; i<NUM_CATEGORIES; ++i )
-        {
-            // a sampling event
-            double this_sampling_prob = getPhiProbability(0.0, i);
-            if ( this_sampling_prob > 0.0 )
-            {
-                std::set<TopologyNode*> old_active_nodes_in_category = active_nodes_in_actegories[i];
-                for ( std::set<TopologyNode*>::const_iterator it=old_active_nodes_in_category.begin(); it!=old_active_nodes_in_category.end(); ++it)
-                {
-                    TopologyNode *this_node = *it;
-                    u = rng->uniform01();
-                    if ( u < this_sampling_prob )
-                    {
-                        // TopologyNode *this_node = *it;
-                        // this_node->setAge( event_age );
-
-                        // store this node
-                        sampled_nodes.insert( this_node );
-
-                    } // end-if there was a sampling event for this node
-                    else
-                    {
-                      extinct_not_sampled_nodes.insert( this_node );
-                    }
-
-                } // end-for all nodes in this rate category
-
-            } // end-if this category has a non-zero sampling probability
-            else
-            {
-              std::set<TopologyNode*> old_active_nodes_in_category = active_nodes_in_actegories[i];
-              for ( std::set<TopologyNode*>::const_iterator it=old_active_nodes_in_category.begin(); it!=old_active_nodes_in_category.end(); ++it)
-              {
-                  extinct_not_sampled_nodes.insert( *it );
-              } // end-for all nodes in this rate category
-            }
-        } // end-for over all categories
 
         bool complete_tree = !true;
         bool prune = complete_tree == false && current_num_active_nodes > 0 && ( condition == ROOT && current_num_active_nodes >= 2 );
