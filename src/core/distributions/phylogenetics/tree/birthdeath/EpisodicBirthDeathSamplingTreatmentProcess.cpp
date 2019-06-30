@@ -158,7 +158,7 @@ EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentP
     if (t != NULL)
     {
       delete value;
-      value = &(t->getValue());
+      value = t->getValue().clone();
     }
     else
     {
@@ -391,76 +391,67 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
     // Compute probabilities of branch segments on all branches
     for (size_t i=0; i<num_nodes; ++i)
     {
-        const TopologyNode& n = value->getNode( i );
+      const TopologyNode& n = value->getNode( i );
 
-        if ( !n.isRoot() && !n.isSampledAncestor() )
-        {
-//        double t_start = n.getParent().getAge();
-//        double t_end = n.getAge();
-            double t_start = n.getAge();
-            double t_end = n.getParent().getAge();
+      double t = n.getAge();
+      size_t index = findIndex(t);
+      double this_ln_D = lnD(index,t);
+      if ( n.isTip() )
+      {
+        lnProbTimes -= this_ln_D;
+      }
+      else
+      {
+        lnProbTimes += this_ln_D;
+      }
 
-            size_t interval_t_start = findIndex(t_start);
-            size_t interval_t_end = findIndex(t_end);
+//         if ( !n.isRoot() && !n.isSampledAncestor() )
+//         {
+// //        double t_start = n.getParent().getAge();
+// //        double t_end = n.getAge();
+//             double t_start = n.getAge();
+//             double t_end = n.getParent().getAge();
+//
+//             size_t interval_t_start = findIndex(t_start);
+//             size_t interval_t_end = findIndex(t_end);
+//
+//             double t_o = t_start;
+//             size_t interval_t_o = interval_t_start;
+//
+//             while ( interval_t_o < interval_t_end )
+//             {
+//                 double t_y = timeline[interval_t_o+1];
+//                 size_t interval_t_y = interval_t_o + 1;
+//
+//                 lnProbTimes -= lnD(interval_t_o,t_o);
+//                 lnProbTimes += lnD(interval_t_y,t_y);
+//
+//                 t_o = t_y;
+//                 interval_t_o = interval_t_y;
+//             }
+//
+//             lnProbTimes -= lnD(interval_t_o,t_o);
+//             lnProbTimes += lnD(interval_t_end,t_end);
+//             // std::cout << "    computing (vii); t_o = " << t_o << "; t_end = " << t_end << "; lnD(interval_t_o,t_o) = " << lnD(interval_t_o,t_o) << "; lnD(interval_t_end,t_end) = " << lnD(interval_t_end,t_end) << std::endl;
+//             // std::cout << "lnProbTimes is now " << lnProbTimes << std::endl;
+//         }
 
-            double t_o = t_start;
-            size_t interval_t_o = interval_t_start;
+      }
+      lnProbTimes += lnD(findIndex(value->getRoot().getAge()),value->getRoot().getAge());
 
-            while ( interval_t_o < interval_t_end )
-            {
-                double t_y = timeline[interval_t_o+1];
-                size_t interval_t_y = interval_t_o + 1;
-
-                lnProbTimes -= lnD(interval_t_o,t_o);
-                lnProbTimes += lnD(interval_t_y,t_y);
-
-                t_o = t_y;
-                interval_t_o = interval_t_y;
-            }
-
-            lnProbTimes -= lnD(interval_t_o,t_o);
-            lnProbTimes += lnD(interval_t_end,t_end);
-            // std::cout << "    computing (vii); t_o = " << t_o << "; t_end = " << t_end << "; lnD(interval_t_o,t_o) = " << lnD(interval_t_o,t_o) << "; lnD(interval_t_end,t_end) = " << lnD(interval_t_end,t_end) << std::endl;
-            // std::cout << "lnProbTimes is now " << lnProbTimes << std::endl;
-        }
-    }
-
-    // // Handle all branch segments by creating master list of all intervals and tracking number alive in each
-    // // Assemble sorted master timeline defining all branch-interval beginnings and endings
-    // std::vector<double> all_events = timeline;
-    // all_events.reserve(1 + timeline.size() + serial_bifurcation_times.size() + serial_sampled_ancestor_ages.size() + serial_tip_ages.size());
-    // all_events.insert(all_events.end(),(&value->getRoot())->getAge() - offset);
-    // all_events.insert(all_events.end(),serial_bifurcation_times.begin(),serial_bifurcation_times.end());
-    // all_events.insert(all_events.end(),serial_sampled_ancestor_ages.begin(),serial_sampled_ancestor_ages.end());
-    // all_events.insert(all_events.end(),serial_tip_ages.begin(),serial_tip_ages.end());
-    // std::sort(all_events.begin(),all_events.end());
-    //
-    // // Ensure list of times is unique
-    // std::vector<double>::iterator it = std::unique(all_events.begin(),all_events.end());
-    // all_events.resize(std::distance(all_events.begin(),it));
-    //
-    // // Compute probabilities of branch segments
-    // for (size_t i=0; i<all_events.size()-1; ++i)
-    // {
-    //   if ( RbMath::isAComputableNumber(lnProbTimes) == false )
-    //   {
-    //       return RbConstants::Double::nan;
-    //   }
-    //   double t_y = all_events[i]; // The times are sorted in ascending order
-    //   double t_o = all_events[i+1];
-    //   int active_lineages_in_interval = survivors((t_o + t_y)/2.0);
-    //   double lnD_t_o = lnD(findIndex(t_o),t_o);
-    //   double lnD_t_y = lnD(findIndex(t_y),t_y);
-    //   lnProbTimes += active_lineages_in_interval * lnD_t_o - active_lineages_in_interval * lnD_t_y;
-    //
-    // }
 // std::cout << "computed (vii); lnProbability = " << lnProbTimes << std::endl;
 
     // condition on survival
     if ( condition == "survival" )
     {
-        double root_age = (&value->getRoot())->getAge() - offset;
+        double root_age = (&value->getRoot())->getAge();
         lnProbTimes -= num_initial_lineages * log( 1 - E(findIndex(root_age),root_age) );
+    }
+    else if ( condition == "sampleAtLeastOneLineage" )
+    {
+        // The conditioning suggested by Stadler 2011 and used by Gavryuskina (2014)
+        double root_age = (&value->getRoot())->getAge();
+        lnProbTimes -= log( 1 - E(findIndex(root_age),root_age) );
     }
     // condition on nTaxa
     else if ( condition == "nTaxa" )
@@ -510,12 +501,12 @@ void EpisodicBirthDeathSamplingTreatmentProcess::countAllNodes(void) const
   event_tip_ages = std::vector<std::vector<double> >(timeline.size(),std::vector<double>(0,1.0));
   event_bifurcation_times = std::vector<std::vector<double> >(timeline.size(),std::vector<double>(0,1.0));
 
-  // Assign all node times (bifurcations, sampled ancestors, and tips) to their sets, accounting for offset
+  // Assign all node times (bifurcations, sampled ancestors, and tips) to their sets
   for (size_t i = 0; i < num_nodes; i++)
   {
       const TopologyNode& n = value->getNode( i );
 
-      double t = n.getAge() - offset;
+      double t = n.getAge();
 
       if ( n.isTip() && n.isFossil() && n.isSampledAncestor() )
       {
@@ -770,14 +761,9 @@ void EpisodicBirthDeathSamplingTreatmentProcess::updateVectorParameters( void ) 
     timeline.clear();
     timeline = interval_times->getValue();
 
-    // Offset the timeline
-    for (size_t i=0; i<timeline.size(); ++i)
-    {
-      timeline[i] += offset;
-    }
-
     // Add t_0
-    timeline.insert(timeline.begin(),0.0);
+    getOffset();
+    timeline.insert(timeline.begin(),offset);
 
     // clean all the sets
     lambda.clear();
