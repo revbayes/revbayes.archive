@@ -584,6 +584,25 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age, SI
                                     // update the active node set
                                     active_nodes_in_actegories[i].erase( this_node );
                                 }
+                                else
+                                {
+                                  // left child (sampled ancestor)
+                                  TopologyNode *left = new TopologyNode();
+                                  this_node->addChild( left );
+                                  left->setParent( this_node );
+                                  left->setAge( next_age );
+                                  left->setSampledAncestor( true );
+                                  sampled_nodes.insert( left );
+
+                                  // right child
+                                  TopologyNode *right = new TopologyNode();
+                                  this_node->addChild( right );
+                                  right->setParent( this_node );
+
+                                  // update the active node set
+                                  active_nodes_in_actegories[i].erase( this_node );
+                                  active_nodes_in_actegories[i].insert( right );
+                                }
 
                             } // end-if there was a sampling event for this node
 
@@ -724,7 +743,6 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age, SI
                 else if ( u < (current_lambda_total+current_mu_total+current_phi_total)/current_rate_total )
                 {
                     // it was a sampling event
-
                     u = rng->uniform01();
                     for ( size_t i=0; i<NUM_CATEGORIES; ++i)
                     {
@@ -764,8 +782,9 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age, SI
                               this_node->addChild( left );
                               left->setParent( this_node );
                               left->setAge( next_age );
+                              left->setSampledAncestor( true );
                               sampled_nodes.insert( left );
-                              
+
                               // right child
                               TopologyNode *right = new TopologyNode();
                               this_node->addChild( right );
