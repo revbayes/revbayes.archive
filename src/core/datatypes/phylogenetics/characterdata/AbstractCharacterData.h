@@ -56,6 +56,7 @@ namespace RevBayesCore {
         const std::string&                          getFileName(void) const;                                                    //!< Returns the name of the file the data came from
         const std::string&                          getFilePath(void) const;                                                    //!< Returns the name of the file path
         size_t                                      getIndexOfTaxon(const std::string &n) const;                                //!< Get the index of the taxon with name 'n'.
+        const std::map<std::string, std::string >   getHomeologMap();
         size_t                                      getNumberOfTaxa(void) const;                                                //!< Number of taxa
         size_t                                      getNumberOfIncludedTaxa(void) const;                                        //!< Number of included taxa
         double                                      getPercentageMissing(const std::string &n) const;                           //!< Returns the percentage of missing data for this sequence
