@@ -307,6 +307,7 @@ std::string RbFileManager::getFileNameWithoutExtension( void ) const
     
     for (size_t i = 0; i < tokens.size()-1; ++i)
     {
+        if(i > 0) name += ".";
         name += tokens[i];
     }
     
