@@ -2,6 +2,7 @@
 #include "ArgumentRules.h"
 #include "MetropolisHastingsMove.h"
 #include "Move_TipTimeSlideUniform.h"
+#include "Natural.h"
 #include "TipTimeSlideUniformProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
@@ -49,8 +50,16 @@ void Move_TipTimeSlideUniform::constructInternalObject( void )
         d = static_cast<RevBayesCore::StochasticNode<double> *>( tmp );
     }
 
-    RevBayesCore::Proposal *p = new RevBayesCore::TipTimeSlideUniformProposal( t, d );
-    value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
+    RevBayesCore::TipTimeSlideUniformProposal *p = new RevBayesCore::TipTimeSlideUniformProposal( t, d);
+
+    if ( node_index != NULL && node_index->getRevObject() != RevNullObject::getInstance() )
+    {
+        size_t ti = static_cast<const Natural &>( node_index->getRevObject() ).getValue();
+
+        p->useIndex(ti);
+    }
+
+    value = new RevBayesCore::MetropolisHastingsMove(p, w, false);
 }
 
 
@@ -108,6 +117,7 @@ const MemberRules& Move_TipTimeSlideUniform::getParameterRules(void) const
         
         memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         memberRules.push_back( new ArgumentRule( "origin", RealPos::getClassTypeSpec() , "The variable for the origin of the process giving a maximum age.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL) );
+        memberRules.push_back( new ArgumentRule( "index", Natural::getClassTypeSpec() , "Only propose changes to the tip with this index.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
 
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
@@ -158,6 +168,10 @@ void Move_TipTimeSlideUniform::setConstParameter(const std::string& name, const 
     else if (name == "origin")
     {
         origin = var;
+    }
+    else if (name == "index")
+    {
+        node_index = var;
     }
     else
     {
