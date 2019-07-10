@@ -2,12 +2,13 @@
 #include "ArgumentRules.h"
 #include "MetropolisHastingsMove.h"
 #include "Move_TipTimeSlideUniform.h"
-#include "Natural.h"
 #include "TipTimeSlideUniformProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RevObject.h"
+#include "RlString.h"
 #include "RlTimeTree.h"
+#include "RlTaxon.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -52,11 +53,21 @@ void Move_TipTimeSlideUniform::constructInternalObject( void )
 
     RevBayesCore::TipTimeSlideUniformProposal *p = new RevBayesCore::TipTimeSlideUniformProposal( t, d);
 
-    if ( node_index != NULL && node_index->getRevObject() != RevNullObject::getInstance() )
+    if ( tip != NULL && tip->getRevObject() != RevNullObject::getInstance() )
     {
-        size_t ti = static_cast<const Natural &>( node_index->getRevObject() ).getValue();
+        std::string tip_name = "";
+        if ( tip->getRevObject().getType() == RlString::getClassType() )
+        {
+            tip_name = static_cast<const RlString&>( tip->getRevObject() ).getValue();
+        }
+        else if ( tip->getRevObject().getType() == Taxon::getClassType() )
+        {
+            tip_name = static_cast<const Taxon&>( tip->getRevObject() ).getValue().getSpeciesName();
+        }
 
-        p->useIndex(ti);
+        long index = tmp->getValue().getTipNodeWithName( tip_name ).getIndex();
+
+        p->useIndex(index);
     }
 
     value = new RevBayesCore::MetropolisHastingsMove(p, w, false);
@@ -117,7 +128,10 @@ const MemberRules& Move_TipTimeSlideUniform::getParameterRules(void) const
         
         memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         memberRules.push_back( new ArgumentRule( "origin", RealPos::getClassTypeSpec() , "The variable for the origin of the process giving a maximum age.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL) );
-        memberRules.push_back( new ArgumentRule( "index", Natural::getClassTypeSpec() , "Only propose changes to the tip with this index.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
+        std::vector<TypeSpec> tip_index_arg_types;
+        tip_index_arg_types.push_back( RlString::getClassTypeSpec() );
+        tip_index_arg_types.push_back( Taxon::getClassTypeSpec() );
+        memberRules.push_back( new ArgumentRule( "tip", tip_index_arg_types, "The name of a specific tip/taxon.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
@@ -169,9 +183,9 @@ void Move_TipTimeSlideUniform::setConstParameter(const std::string& name, const 
     {
         origin = var;
     }
-    else if (name == "index")
+    else if (name == "tip")
     {
-        node_index = var;
+        tip = var;
     }
     else
     {

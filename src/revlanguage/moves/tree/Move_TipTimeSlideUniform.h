@@ -43,7 +43,7 @@ namespace RevLanguage {
         
         RevPtr<const RevVariable>                   tree;
         RevPtr<const RevVariable>                   origin;
-        RevPtr<const RevVariable>                   node_index;
+        RevPtr<const RevVariable>                   tip;
 
     };
     
