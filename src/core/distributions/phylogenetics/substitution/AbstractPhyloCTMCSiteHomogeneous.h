@@ -107,6 +107,7 @@ namespace RevBayesCore {
         void                                                                setSiteRatesProbs(const TypedDagNode< Simplex > *rp);
         void                                                                setUseMarginalLikelihoods(bool tf);
         void                                                                setUseSiteMatrices(bool sm, const TypedDagNode< Simplex > *s = NULL);
+        void                                                                swap_taxon_name_2_tip_index(std::string tip1, std::string tip2);
 
 
     protected:
@@ -3685,6 +3686,15 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
 }
 
 
+
+template<class charType>
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::swap_taxon_name_2_tip_index(std::string tip1, std::string tip2)
+{
+    size_t index1 = taxon_name_2_tip_index_map[tip1];
+    size_t index2 = taxon_name_2_tip_index_map[tip2];
+    taxon_name_2_tip_index_map[tip1] = index2;
+    taxon_name_2_tip_index_map[tip2] = index1;
+}
 
 /** Swap a parameter of the distribution */
 template<class charType>
