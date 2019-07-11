@@ -427,13 +427,12 @@ bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
 void TopologyConstrainedTreeDistribution::recursivelyFlagNodesDirty(const TopologyNode& n)
 {
     
-    
     dirty_nodes[ n.getIndex() ] = true;
     
-    if ( n.isRoot() )
-        return;
-    
-    recursivelyFlagNodesDirty(n.getParent());
+    if ( n.isRoot() == false )
+    {
+        recursivelyFlagNodesDirty(n.getParent());
+    }
     
 }
 
