@@ -2661,7 +2661,7 @@ template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setValue(AbstractHomologousDiscreteCharacterData *v, bool force)
 {
 
-    if (v->getMaxObservedStateIndex() > this->num_chars - 1)
+    if ( v->getMaxObservedStateIndex() > this->num_chars - 1)
     {
         // We might use different sized matrices for different partitions depending on the observed number of states.
         std::stringstream ss;
