@@ -590,7 +590,7 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age, SI
                                   TopologyNode *left = new TopologyNode();
                                   this_node->addChild( left );
                                   left->setParent( this_node );
-                                  left->setAge( next_age );
+                                  left->setAge( event_age );
                                   left->setSampledAncestor( true );
                                   sampled_nodes.insert( left );
 
@@ -871,6 +871,8 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age, SI
                         sibling->setParent( &grandparent );
                         grandparent.addChild( sibling );
 
+                        sibling->setSampledAncestor(false);
+
                         delete &parent; // this will also delete this child node
                     }
                     else
@@ -912,6 +914,9 @@ Tree* BirthDeathForwardSimulator::simulateTreeConditionTime(double start_age, SI
         if ( n.isTip() == true )
         {
             n.setName("Tip_"+ StringUtilities::toString(i+1) );
+        } else if ( n.isSampledAncestor() == true )
+        {
+          n.setName("Tip_"+ StringUtilities::toString(i+1) );
         }
     }
 
