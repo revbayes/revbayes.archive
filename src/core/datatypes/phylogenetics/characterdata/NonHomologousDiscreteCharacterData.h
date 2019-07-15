@@ -60,8 +60,7 @@ namespace RevBayesCore {
 }
 
 
-#include "DiscreteCharacterState.h"
-#include "DiscreteTaxonData.h"
+
 #include "FastaWriter.h"
 #include "NclReader.h"
 #include "RbConstants.h"
@@ -70,7 +69,7 @@ namespace RevBayesCore {
 #include <cmath>
 #include <fstream>
 #include <sstream>
-#include <string>
+
 
 
 /**

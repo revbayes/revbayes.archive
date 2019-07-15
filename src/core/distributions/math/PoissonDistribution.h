@@ -11,7 +11,7 @@ namespace RevBayesCore {
      *
      * The Poisson distribution represents a family of distributions
      * defined on the natural numbers. The Poisson distribution has 1 parameter:
-     *   lambda .. the rate
+     * @param  lambda  the rate
      * Instances of this class can be associated to stochastic variables.
      *
      */

@@ -8,7 +8,6 @@
 //
 
 #include "ReversiblePoMoRateMatrixFunction.h"
-#include "Func_reversiblePoMo.h"
 #include "ModelVector.h"
 #include "Natural.h"
 #include "RateMatrix_ReversiblePoMo.h"

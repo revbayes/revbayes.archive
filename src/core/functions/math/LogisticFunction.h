@@ -8,14 +8,11 @@ namespace RevBayesCore {
     
     
     /**
-     * \brief Logistic function value of a real number.
+     * @brief Logistic function value of a real number.
      *
      * Compute the logistic function of a real number x (tanh(x) = exp(x) / (1 + exp(x))).
      *
-     * \copyright (c) Copyright 2009-2015 (GPL version 3)
-     * \author The RevBayes Development Core Team (Nicolas Lartillot)
-     * \since Version 1.0, 2015-01-31
-     *
+     * 
      */
     class LogisticFunction : public ContinuousFunction {
         

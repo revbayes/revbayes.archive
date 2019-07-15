@@ -10,12 +10,9 @@ namespace RevBayesCore {
     
     
     /**
-     * The power function for a vector, f(a,b) = a^b.
+     * @brief The power function for a vector, f(b,e) = b^e.
      *
      *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2014-08-29, version 1.0
      *
      */
     class PowerVectorFunction : public TypedFunction<RbVector<double> > {

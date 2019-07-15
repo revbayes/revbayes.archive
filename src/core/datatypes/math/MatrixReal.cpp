@@ -628,7 +628,6 @@ void MatrixReal::update( void ) const
 }
 
 #include "RbMathMatrix.h"
-#include "RbException.h"
 
 MatrixReal operator+(const MatrixReal& A);
 MatrixReal operator-(const MatrixReal& A);

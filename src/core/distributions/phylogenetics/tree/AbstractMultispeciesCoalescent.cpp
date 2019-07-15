@@ -278,13 +278,23 @@ void AbstractMultispeciesCoalescent::resetTipAllocations( void )
         }
     }
     
+    // second, let's create a map from individual names to the species names
+    std::map<std::string, std::string> individual_names_2_species_names;
+    for (std::vector<Taxon>::const_iterator it = taxa.begin(); it != taxa.end(); ++it)
+    {
+        const std::string &name = it->getName();
+        individual_names_2_species_names[name] = it->getSpeciesName();
+    }
+    
     // create a map for the individuals to branches
     individuals_per_branch = std::vector< std::set< const TopologyNode* > >(sp.getNumberOfNodes(), std::set< const TopologyNode* >() );
     for (size_t i=0; i<num_taxa; ++i)
     {
 //        const std::string &tip_name = it->getName();
         const TopologyNode &n = value->getNode( i );
-        const std::string &species_name = n.getSpeciesName();
+        const std::string &individual_name = n.getName();
+        const std::string &species_name = individual_names_2_species_names[ individual_name ];
+        
         TopologyNode *species_node = species_names_2_species_nodes[species_name];
         individuals_per_branch[ species_node->getIndex() ].insert( &n );
     }
