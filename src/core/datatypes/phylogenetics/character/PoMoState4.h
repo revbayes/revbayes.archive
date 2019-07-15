@@ -1,21 +1,21 @@
 /**
  * @file
- * This file contains the declaration of PomoState4, which is
+ * This file contains the declaration of PoMoState4, which is
  * the class for the DNA data types plus two-state polymorphic states in RevBayes.
  * Instead of the usual coding by bitfields, we choose coding by ints.
  *
- * @brief Declaration of PomoState4
+ * @brief Declaration of PoMoState4
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date: 2012-05-24 09:58:04 +0200 (Thu, 24 May 2012) $
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id: PomoState4.h 1568 2012-05-24 07:58:04Z hoehna $
+ * $Id: PoMoState4.h 1568 2012-05-24 07:58:04Z hoehna $
  */
 
-#ifndef PomoState4_H
-#define PomoState4_H
+#ifndef PoMoState4_H
+#define PoMoState4_H
 
 #include "DiscreteCharacterState.h"
 #include "DistributionBinomial.h"
@@ -24,20 +24,20 @@
 
 namespace RevBayesCore {
 
-    class PomoState4 : public DiscreteCharacterState {
+    class PoMoState4 : public DiscreteCharacterState {
 
     public:
-        PomoState4(void);                                                                    //!< Default constructor
-        PomoState4(size_t vps);                                                              //!< Constructor with virtual population size
-        PomoState4(const std::string &s);                                                    //!< Constructor with an observation
-        PomoState4(const std::string &s, const std::string chromosome,
+        PoMoState4(void);                                                                    //!< Default constructor
+        PoMoState4(size_t vps);                                                              //!< Constructor with virtual population size
+        PoMoState4(const std::string &s);                                                    //!< Constructor with an observation
+        PoMoState4(const std::string &s, const std::string chromosome,
                   const size_t position, const size_t virtualPopulationSize,
                   std::vector<double> weights  );                                                   //!< Constructor that sets all fields
-        PomoState4(const std::string &s, const std::string chromosome,
+        PoMoState4(const std::string &s, const std::string chromosome,
                   const size_t position, const size_t virtualPopulationSize);
-        PomoState4(const PomoState4& t);                                                //!< Copy constructor
+        PoMoState4(const PoMoState4& t);                                                //!< Copy constructor
 
-        PomoState4*                       clone(void) const;                                 //!< Get a copy of this object
+        PoMoState4*                       clone(void) const;                                 //!< Get a copy of this object
 
         // Discrete character observation functions
         void                            addState(const std::string &symbol);                //!< Add a character state to the set of character states
@@ -75,7 +75,7 @@ namespace RevBayesCore {
 
         std::string                     chromosome_;                                        //!< The chromosome on which the state lies
         size_t                          position_;                                          //!< The position of the state in the chromosome
-        size_t                          virtualPopulationSize_;                             //!< The virtual population size of the Pomo model (by default, 10)
+        size_t                          virtualPopulationSize_;                             //!< The virtual population size of the PoMo model (by default, 10)
         //std::vector<double>             weights_;                                           //!< Weights are used when the "average" option is used
         //bool                                    weighted_;
         std::string stringValue_;                           //!< The string description of the state.

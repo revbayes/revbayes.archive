@@ -1,17 +1,16 @@
-#include "Func_reversiblePomo.h"
+#include "Func_reversiblePoMo.h"
 //
-//  Func_reversiblePomo.cpp
+//  Func_reversiblePoMo.cpp
 //  RevBayesCore
 //
 //  Created by Bastien Boussau on 22/8/14.
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include "ReversiblePomoRateMatrixFunction.h"
-#include "Func_reversiblePomo.h"
+#include "ReversiblePoMoRateMatrixFunction.h"
 #include "ModelVector.h"
 #include "Natural.h"
-#include "RateMatrix_ReversiblePomo.h"
+#include "RateMatrix_ReversiblePoMo.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
@@ -22,7 +21,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_reversiblePomo::Func_reversiblePomo( void ) : TypedFunction<RateMatrix>( ) {
+Func_reversiblePoMo::Func_reversiblePoMo( void ) : TypedFunction<RateMatrix>( ) {
 
 }
 
@@ -33,13 +32,13 @@ Func_reversiblePomo::Func_reversiblePomo( void ) : TypedFunction<RateMatrix>( ) 
  *
  * \return A new copy of the process.
  */
-Func_reversiblePomo* Func_reversiblePomo::clone( void ) const {
+Func_reversiblePoMo* Func_reversiblePoMo::clone( void ) const {
 
-    return new Func_reversiblePomo( *this );
+    return new Func_reversiblePoMo( *this );
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_reversiblePomo::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_reversiblePoMo::createFunction( void ) const
 {
     RevBayesCore::TypedDagNode<RevBayesCore::Simplex>* bf = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* er = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
@@ -54,14 +53,14 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_reversiblePomo:
 
     RevBayesCore::TypedDagNode< long >* n = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
 
-    RevBayesCore::ReversiblePomoRateMatrixFunction* f = new RevBayesCore::ReversiblePomoRateMatrixFunction( n, er, bf );
+    RevBayesCore::ReversiblePoMoRateMatrixFunction* f = new RevBayesCore::ReversiblePoMoRateMatrixFunction( n, er, bf );
 
     return f;
 }
 
 
 /* Get argument rules */
-const ArgumentRules& Func_reversiblePomo::getArgumentRules( void ) const
+const ArgumentRules& Func_reversiblePoMo::getArgumentRules( void ) const
 {
 
   static ArgumentRules argumentRules = ArgumentRules();
@@ -82,17 +81,17 @@ const ArgumentRules& Func_reversiblePomo::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_reversiblePomo::getClassType(void)
+const std::string& Func_reversiblePoMo::getClassType(void)
 {
 
-    static std::string rev_type = "Func_reversiblePomo";
+    static std::string rev_type = "Func_reversiblePoMo";
 
 	return rev_type;
 }
 
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_reversiblePomo::getClassTypeSpec(void)
+const TypeSpec& Func_reversiblePoMo::getClassTypeSpec(void)
 {
 
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
@@ -104,16 +103,16 @@ const TypeSpec& Func_reversiblePomo::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-std::string Func_reversiblePomo::getFunctionName( void ) const
+std::string Func_reversiblePoMo::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "fnReversiblePomo";
+    std::string f_name = "fnReversiblePoMo";
 
     return f_name;
 }
 
 
-const TypeSpec& Func_reversiblePomo::getTypeSpec( void ) const
+const TypeSpec& Func_reversiblePoMo::getTypeSpec( void ) const
 {
 
     static TypeSpec type_spec = getClassTypeSpec();

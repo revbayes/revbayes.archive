@@ -10,18 +10,12 @@
 
 namespace RevBayesCore {
     
-    /**
-     * @brief Dirichlet distribution class.
-     *
-     * The Dirichlet distribution represents a family of distributions
-     * on simplices (a vector that sums to one). The Dirichlet distribution has 1 parameters:
-     *   alpha .. the relative counts in each category
-     * Instances of this class can be associated to stochastic variables.
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     *
-     */
+/** Dirichlet distribution class.
+ * The Dirichlet distribution represents a family of distributions
+ * on simplices (a vector that sums to one). The Dirichlet distribution has 1 parameters:
+ *   alpha .. the relative counts in each category
+ * Instances of this class can be associated to stochastic variables.
+ */
     class DirichletDistribution : public TypedDistribution< Simplex > {
         
     public:

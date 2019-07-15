@@ -48,6 +48,7 @@ namespace RevBayesCore {
         virtual void                                            concatenate(const AbstractCharacterData &d, std::string type = "") = 0;                     //!< Concatenate data matrices
         virtual void                                            concatenate(const HomologousCharacterData &d, std::string type = "") = 0;                   //!< Concatenate two sequences
         virtual void                                            concatenate(const AbstractHomologousDiscreteCharacterData &d, std::string type = "") = 0;   //!< Concatenate data matrices
+        virtual AbstractHomologousDiscreteCharacterData*        combineCharacters(const AbstractHomologousDiscreteCharacterData &d) const = 0;              //!< Combine/expand data matrices
         virtual double                                          computeMultinomialProfileLikelihood( void ) const = 0;
         virtual MatrixReal                                      computeStateFrequencies(void) const = 0;                                                    //!< Compute the state frequencies for this character data object
         virtual void                                            excludeCharacter(size_t i) = 0;                                                             //!< Exclude character

@@ -197,6 +197,7 @@
 #include "Dist_norm.h"
 #include "Dist_normTruncated.h"
 #include "Dist_normTruncatedPositive.h"
+#include "Dist_pointMass.h"
 #include "Dist_poisson.h"
 #include "Dist_scaledDirichlet.h"
 #include "Dist_softBoundUniformNormal.h"
@@ -431,6 +432,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // inverse-gamma distribution
         AddContinuousDistribution< RealPos          >( new Dist_inverseGamma() );
+
+        // point mass distribution
+        AddDistribution< Real                       >( new Dist_pointMass() );
 
         // poisson distribution
         AddDistribution< Natural                    >( new Dist_poisson() );

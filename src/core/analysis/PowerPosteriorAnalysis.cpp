@@ -2,6 +2,7 @@
 #include "VariableMonitor.h"
 #include "MonteCarloSampler.h"
 #include "MoveSchedule.h"
+#include "MpiUtilities.h"
 #include "PowerPosteriorAnalysis.h"
 #include "ProgressBar.h"
 #include "RandomMoveSchedule.h"
@@ -200,7 +201,11 @@ void PowerPosteriorAnalysis::runAll(size_t gen, double burnin_fraction, size_t p
 #ifdef RB_MPI
     // wait until all chains complete
     MPI_Barrier(MPI_COMM_WORLD);
+    
+    // to be safe, we should synchronize the random number generators
+    MpiUtilities::synchronizeRNG( MPI_COMM_WORLD);
 #endif
+    
     if ( process_active == true )
     {
         summarizeStones();
@@ -272,7 +277,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen, double burnin_frac
     
     // Monitor
     sampler->startMonitors(gen, false);
-    sampler->writeMonitorHeaders();
+    sampler->writeMonitorHeaders( false );
     sampler->monitor(0);
     
     double p = powers[idx];

@@ -1,15 +1,7 @@
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "ConstantNode.h"
-#include "ModelVector.h"
-#include "Monitor.h"
 #include "OptionRule.h"
-#include "RevObject.h"
-#include "RbException.h"
 #include "RlMonitor.h"
-#include "TypeSpec.h"
-
 
 using namespace RevLanguage;
 
@@ -66,7 +58,6 @@ RevPtr<RevVariable> Monitor::executeMethod(const std::string& name, const std::v
 }
 
 
-/** Get Rev type of object */
 const std::string& Monitor::getClassType(void)
 {
     
@@ -75,7 +66,7 @@ const std::string& Monitor::getClassType(void)
 	return rev_type; 
 }
 
-/** Get class type spec describing type of object */
+
 const TypeSpec& Monitor::getClassTypeSpec(void)
 {
     
@@ -109,7 +100,7 @@ std::vector<std::string> Monitor::getConstructorFunctionAliases( void ) const
 
 
 /**
- * Get the Rev name for the constructor function.
+ * Get the Rev name for the constructor function (with appropriate prefix).
  *
  * \return Rev name of constructor function.
  */
@@ -123,17 +114,14 @@ std::string Monitor::getConstructorFunctionName( void ) const
 }
 
 
-/** Get type spec */
 void Monitor::printValue(std::ostream &o, bool user) const
-{
-    
+{    
     printValue(o);
 }
 
-/** Get type spec */
+
 void Monitor::printValue(std::ostream &o) const
 {
-    
     o << getMonitorName();
 }
 

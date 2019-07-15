@@ -3,34 +3,16 @@
 #include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
 #include "Move_VectorScale.h"
-#include "Natural.h"
-#include "RbException.h"
-#include "Real.h"
 #include "RealPos.h"
-#include "RevObject.h"
-#include "RlBoolean.h"
-#include "TypedDagNode.h"
-#include "TypeSpec.h"
 #include "VectorScaleProposal.h"
-
 
 using namespace RevLanguage;
 
-Move_VectorScale::Move_VectorScale() : Move()
-{
-    
-}
+Move_VectorScale::Move_VectorScale() : Move() {}
 
 
-/**
- * The clone function is a convenience function to create proper copies of inherited objected.
- * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
- *
- * \return A new copy of the process.
- */
 Move_VectorScale* Move_VectorScale::clone(void) const
-{
-    
+{    
 	return new Move_VectorScale(*this);
 }
 
@@ -54,43 +36,41 @@ void Move_VectorScale::constructInternalObject( void )
 }
 
 
-/** Get Rev type of object */
 const std::string& Move_VectorScale::getClassType(void)
-{
-    
-    static std::string rev_type = "Move_VectorScale";
-    
+{    
+    static std::string rev_type = "Move_VectorScale";   
 	return rev_type; 
 }
 
-/** Get class type spec describing type of object */
+
 const TypeSpec& Move_VectorScale::getClassTypeSpec(void)
-{
-    
-    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
-    
+{    
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );    
 	return rev_type_spec; 
 }
 
 
-/**
- * Get the Rev name for the constructor function.
- *
- * \return Rev name of constructor function.
- */
 std::string Move_VectorScale::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "VectorScale";
-    
+    std::string c_name = "VectorScale";    
     return c_name;
 }
 
 
-/** Return member rules (no members) */
+/**
+ * Get the member rules used to create the constructor of this object.
+ *
+ * The member rules of the VectorSingleElementScale move are:
+ * (1) the variable which must be a positive real vector.
+ * (2) the tuning parameter lambda that defines the size of the proposal (positive real)
+ * (3) a flag whether auto-tuning should be used.
+ *
+ * \return The member rules.
+ */
 const MemberRules& Move_VectorScale::getParameterRules(void) const
 {
-    
+
     static MemberRules move_member_rules;
     static bool rules_set = false;
     
@@ -111,7 +91,7 @@ const MemberRules& Move_VectorScale::getParameterRules(void) const
     return move_member_rules;
 }
 
-/** Get type spec */
+
 const TypeSpec& Move_VectorScale::getTypeSpec( void ) const {
     
     static TypeSpec type_spec = getClassTypeSpec();
@@ -120,33 +100,38 @@ const TypeSpec& Move_VectorScale::getTypeSpec( void ) const {
 }
 
 
-/** Get type spec */
-void Move_VectorScale::printValue(std::ostream &o) const {
+void Move_VectorScale::printValue(std::ostream &o) const
+{
     
     o << "Move_VectorScale(";
-    if (x != NULL) {
+    if ( x != NULL )
+    {
         o << x->getName();
     }
-    else {
+    else
+    {
         o << "?";
     }
     o << ")";
 }
 
 
-/** Set a member variable */
 void Move_VectorScale::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
-    if ( name == "x" ) {
+    if ( name == "x" )
+    {
         x = var;
     }
-    else if ( name == "lambda" ) {
+    else if ( name == "lambda" )
+    {
         lambda = var;
     }
-    else if ( name == "tune" ) {
+    else if ( name == "tune" )
+    {
         tune = var;
     }
-    else {
+    else
+    {
         Move::setConstParameter(name, var);
     }
 }

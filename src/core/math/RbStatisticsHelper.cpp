@@ -510,9 +510,15 @@ double RbStatistics::Helper::rndGamma1(double s, RandomNumberGenerator& rng)
     for (;;) {
         r = rng.uniform01();
         if (r > p)
-            x = a - log((1.0 - r) / (1.0 - p)), w = a * log(x) - d;
+        {
+            x = a - log((1.0 - r) / (1.0 - p));
+            w = a * log(x) - d;
+        }
         else if (r>uf)
-            x = a * pow(r / p, 1.0 / s), w = x;
+        {
+            x = a * pow(r / p, 1.0 / s);
+            w = x;
+        }
         else
             return (0.0);
         r = rng.uniform01();

@@ -1,11 +1,11 @@
 
 
-#include "PomoRootFrequenciesFunction.h"
+#include "PoMoRootFrequenciesFunction.h"
 #include "RbException.h"
 
 using namespace RevBayesCore;
 
-PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< long > *ps) : TypedFunction< Simplex > ( new Simplex() ),
+PoMoRootFrequenciesFunction::PoMoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RbVector<double> > *mr, const TypedDagNode< long > *ps) : TypedFunction< Simplex > ( new Simplex() ),
     fixedNucleotideRootFrequencies( fnrf ),
     frequencyOfPolymorphismsAtTheRoot( fopar ),
     mutationRates(mr), populationSize(ps)
@@ -25,7 +25,7 @@ PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode< Sim
 }
 
 
-PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< long > *ps): TypedFunction< Simplex > ( new Simplex() ),
+PoMoRootFrequenciesFunction::PoMoRootFrequenciesFunction(const TypedDagNode< Simplex > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateGenerator > *mm, const TypedDagNode< long > *ps): TypedFunction< Simplex > ( new Simplex() ),
     fixedNucleotideRootFrequencies( fnrf ),
     frequencyOfPolymorphismsAtTheRoot( fopar ),
     mutationMatrix( mm ),
@@ -45,19 +45,19 @@ PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode< Sim
 }
 
 
-PomoRootFrequenciesFunction::~PomoRootFrequenciesFunction( void ) {
+PoMoRootFrequenciesFunction::~PoMoRootFrequenciesFunction( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
-PomoRootFrequenciesFunction* PomoRootFrequenciesFunction::clone( void ) const
+PoMoRootFrequenciesFunction* PoMoRootFrequenciesFunction::clone( void ) const
 {
-    return new PomoRootFrequenciesFunction( *this );
+    return new PoMoRootFrequenciesFunction( *this );
 }
 
 
-void PomoRootFrequenciesFunction::update( void )
+void PoMoRootFrequenciesFunction::update( void )
 {
     std::vector<double> mr ;
     if (useMutationMatrix) {
@@ -107,7 +107,7 @@ void PomoRootFrequenciesFunction::update( void )
 
 
 
-void PomoRootFrequenciesFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+void PoMoRootFrequenciesFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == fixedNucleotideRootFrequencies)
@@ -132,7 +132,7 @@ void PomoRootFrequenciesFunction::swapParameterInternal(const DagNode *oldP, con
 
 
 
-std::vector<double> PomoRootFrequenciesFunction::setMutationRates(const RateGenerator& mm) {
+std::vector<double> PoMoRootFrequenciesFunction::setMutationRates(const RateGenerator& mm) {
     double age = 0.0;
     double rate = 1.0;
     std::vector<double> r;

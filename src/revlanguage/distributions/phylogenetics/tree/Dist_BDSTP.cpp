@@ -210,7 +210,7 @@ std::vector<std::string> Dist_BDSTP::getDistributionFunctionAliases( void ) cons
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
     a_names.push_back( "BDSTP" );
-    a_names.push_back( "FBDP" );
+    //a_names.push_back( "FBDP" );
     a_names.push_back( "SkylineBDP" );
     a_names.push_back( "SSBDP" );
     a_names.push_back( "SampledAncestorBDP" );
@@ -282,6 +282,7 @@ const MemberRules& Dist_BDSTP::getParameterRules(void) const
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "time" );
         optionsCondition.push_back( "survival" );
+        optionsCondition.push_back( "sampleAtLeastOneLineage" );
         dist_member_rules.push_back( new OptionRule( "condition", new RlString("time"), optionsCondition, "The condition of the process." ) );
         dist_member_rules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The taxa used for initialization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 

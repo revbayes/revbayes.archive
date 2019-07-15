@@ -1,5 +1,5 @@
-#ifndef Func_readPomoCountFile_H
-#define Func_readPomoCountFile_H
+#ifndef Func_readPoMoCountFile_H
+#define Func_readPoMoCountFile_H
 
 #include "Procedure.h"
 #include "RbFileManager.h"
@@ -15,11 +15,11 @@ namespace RevLanguage {
  * This is the interface for a class that reads in a distance matrix, in Phylip format.
  */
 
-class Func_readPomoCountFile : public Procedure {
+class Func_readPoMoCountFile : public Procedure {
 
     public:
         // Basic utility functions
-        Func_readPomoCountFile*     		    clone(void) const;                                                      //!< Clone the object
+        Func_readPoMoCountFile*     		    clone(void) const;                                                      //!< Clone the object
         static const std::string&           getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&              getClassTypeSpec(void);                                                 //!< Get class type spec
         std::string                         getFunctionName(void) const;                                            //!< Get the primary name of the function in Rev

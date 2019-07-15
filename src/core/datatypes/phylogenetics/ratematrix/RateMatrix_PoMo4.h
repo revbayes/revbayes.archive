@@ -1,6 +1,6 @@
 /**
  * @file
- * This file contains the declaration of RateMatrix_Pomo4, which is a
+ * This file contains the declaration of RateMatrix_PoMo4, which is a
  * class that holds a rate matrix combining population-level polymorphisms
  * with inter-species divergence. Presented in De Maio, Schlötterer and Kosiol, Molecular Biology and Evolution 30:10 2249-62 (2013).
  * Parameters:
@@ -10,19 +10,19 @@
  * s: vector of fitness parameters of size 4: sA, sC, sG, sT
  // * pi: vector of root frequencies of size 4: piA, piC, piG, piT
  *
- * @brief Declaration of RateMatrix_Pomo4, a matrix combining polymorphisms and substitutions
+ * @brief Declaration of RateMatrix_PoMo4, a matrix combining polymorphisms and substitutions
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date: 2004-07-03 12:20:37 -0800 $
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id: RateMatrix_Pomo4.h 1901 2014-07-03 06:15 boussau $
+ * $Id: RateMatrix_PoMo4.h 1901 2014-07-03 06:15 boussau $
  */
 
 
-#ifndef __RateMatrix_Pomo4__
-#define __RateMatrix_Pomo4__
+#ifndef __RateMatrix_PoMo4__
+#define __RateMatrix_PoMo4__
 
 #include "AbstractRateMatrix.h"
 #include <complex>
@@ -33,24 +33,24 @@ namespace RevBayesCore {
     
     class TransitionProbabilityMatrix;
     
-    class RateMatrix_Pomo4 : public AbstractRateMatrix {
+    class RateMatrix_PoMo4 : public AbstractRateMatrix {
         
     public:
         
         using RateMatrix::getRate;
         
-        RateMatrix_Pomo4(size_t n);                                                  //!< Construct rate matrix with n states
-        RateMatrix_Pomo4(size_t n,  const size_t vps, const std::vector<double> &mr, const std::vector<double> &sc);  //!< Construct rate matrix with n states, a vector of mutation rates, and a vector of selection coefficients
-        RateMatrix_Pomo4(size_t n,  const size_t vps, const RateGenerator &mm, const std::vector<double> sc);  //!< Construct rate matrix with n states, a matrix of mutation rates, and a vector of selection coefficients
+        RateMatrix_PoMo4(size_t n);                                                  //!< Construct rate matrix with n states
+        RateMatrix_PoMo4(size_t n,  const size_t vps, const std::vector<double> &mr, const std::vector<double> &sc);  //!< Construct rate matrix with n states, a vector of mutation rates, and a vector of selection coefficients
+        RateMatrix_PoMo4(size_t n,  const size_t vps, const RateGenerator &mm, const std::vector<double> sc);  //!< Construct rate matrix with n states, a matrix of mutation rates, and a vector of selection coefficients
         
-        virtual                         ~RateMatrix_Pomo4(void);                     //!< Destructor
+        virtual                         ~RateMatrix_PoMo4(void);                     //!< Destructor
         
         // RateMatrix functions
-        virtual RateMatrix_Pomo4&                    assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
+        virtual RateMatrix_PoMo4&                    assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
         double                                      averageRate(void) const;
         void                                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
-        RateMatrix_Pomo4*                            clone(void) const;
-        std::vector<double>                         getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, although in the Pomo4 model I don't know them
+        RateMatrix_PoMo4*                            clone(void) const;
+        std::vector<double>                         getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, although in the PoMo4 model I don't know them
         
         void                                        update(void);
         void                                        setMutationRates(const std::vector<double>& mr);
@@ -76,4 +76,4 @@ namespace RevBayesCore {
     
 }
 
-#endif /* defined(__RateMatrix_Pomo4__) */
+#endif /* defined(__RateMatrix_PoMo4__) */

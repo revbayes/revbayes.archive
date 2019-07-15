@@ -87,8 +87,8 @@ double ScaleProposalContinuous::doProposal( void )
     // copy value
     storedValue = val;
     
-    double min = variable->getMin();
-    double max = variable->getMax();
+//    double min = variable->getMin();
+//    double max = variable->getMax();
     
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();

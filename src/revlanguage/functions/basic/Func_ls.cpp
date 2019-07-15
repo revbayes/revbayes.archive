@@ -171,7 +171,7 @@ bool Func_ls::matchFileToken( std::string name ) const
     valid_tokens.insert("readDiscreteCharacterData");
     valid_tokens.insert("readDistanceMatrix");
     valid_tokens.insert("readMatrix");
-    valid_tokens.insert("readPomoCountFile");
+    valid_tokens.insert("readPoMoCountFile");
     valid_tokens.insert("readRelativeNodeAgeConstraints");
     valid_tokens.insert("readRelativeNodeAgeWeightedConstraints");
     valid_tokens.insert("readStochasticVariableTrace");

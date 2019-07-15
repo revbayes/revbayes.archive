@@ -28,7 +28,8 @@ AbstractCharacterData::AbstractCharacterData(const AbstractCharacterData &d) :
     fileName(d.fileName),
     filePath(d.filePath),
     taxa(d.taxa),
-    taxonMap() {
+    taxonMap(),
+    homeologMap() {
     
     for (std::map<std::string, AbstractTaxonData*>::const_iterator it = d.taxonMap.begin(); it != d.taxonMap.end(); ++it)
     {
@@ -36,6 +37,15 @@ AbstractCharacterData::AbstractCharacterData(const AbstractCharacterData &d) :
         
         // add the sequence also as a member so that we can access it by name
         taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( name, it->second->clone() ) );
+    }
+    
+    for (std::map<std::string, std::string>::const_iterator it = d.homeologMap.begin(); it != d.homeologMap.end(); ++it)
+    {
+        const std::string &name1 = it->first;
+        const std::string &name2 = it->second;
+        
+        // add the sequence also as a member so that we can access it by name
+        homeologMap.insert( std::pair<std::string, std::string >( name1, name2 ) );
     }
 }
 
@@ -494,6 +504,23 @@ AbstractTaxonData& AbstractCharacterData::getTaxonData( const std::string &tn ) 
 }
 
 
+const std::map<std::string, std::string > AbstractCharacterData::getHomeologMap()
+{
+    return homeologMap;
+}
+
+
+/**
+ * Get the homeolog character data currently assigned to the tip.
+ *
+ * \param[in] tipName        the name currently used on the tree.
+ */
+const std::string AbstractCharacterData::getHomeologPhase(const std::string& tipName)
+{
+    return homeologMap[tipName];
+}
+
+
 /**
  * Get the names of all taxa.
  *
@@ -657,6 +684,31 @@ void AbstractCharacterData::setFilePath(const std::string& fn)
 
 
 /**
+ * Assign character homeolog data to a tip.
+ *
+ * \param[in] dataName       the name currently used in the character alignment.
+ * \param[in] tipName        the name to be used on the tree.
+ */
+void AbstractCharacterData::setHomeologPhase(const std::string& dataName, const std::string& tipName)
+{
+    homeologMap[tipName] = dataName;
+    AbstractTaxonData& t = getTaxonData( dataName );
+    t.setTaxon( Taxon(tipName) );
+    size_t numTax = taxa.size();
+    for (size_t i = 0; i < numTax ; ++i)
+    {
+        if ( taxa[i].getName() == dataName)
+        {
+            taxa[i] = Taxon(tipName);
+            break;
+        }
+    }
+    taxonMap.erase( dataName );
+    taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( tipName, t.clone() ) );
+}
+
+
+/**
  * Change the name of a taxon
  *
  * \param[in] currentName    self explanatory.
@@ -731,6 +783,29 @@ void AbstractCharacterData::show(std::ostream &out) const {
             }
         std::cout << std::endl;
         }
+}
+
+
+/**
+ * Switch the currently assigned homeolog phase.
+ *
+ * \param[in] tipName1        self explanatory. 
+ * \param[in] tipName2        self explanatory.
+ */
+void AbstractCharacterData::switchHomeologPhase(const std::string& tipName1, const std::string& tipName2)
+{
+    std::string data1 = homeologMap[tipName1];
+    std::string data2 = homeologMap[tipName2];
+    homeologMap[tipName1] = data2;
+    homeologMap[tipName2] = data1;
+    AbstractTaxonData& t1 = getTaxonData( tipName1 );
+    AbstractTaxonData& t2 = getTaxonData( tipName2 );
+    t1.setTaxon( Taxon(tipName2) );
+    t2.setTaxon( Taxon(tipName1) );
+    taxonMap.erase( tipName1 );
+    taxonMap.erase( tipName2 );
+    taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( tipName1, t2.clone() ) );
+    taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( tipName2, t1.clone() ) );
 }
 
 
