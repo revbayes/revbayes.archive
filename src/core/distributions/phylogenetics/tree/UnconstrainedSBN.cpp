@@ -49,11 +49,11 @@ double UnconstrainedSBN::computeLnProbability( void )
 
     if ( rooted )
     {
-      lnProbability += computeLnProbabilityRootedTopology();
+      lnProbability += parameters.computeLnProbabilityRootedTopology( *value );
     }
     else
     {
-      lnProbability += computeLnProbabilityUnrootedTopology();
+      lnProbability += computeLnProbabilityUnrootedTopologyMarginalize();
     }
 
     // Add branch lengths
@@ -97,8 +97,11 @@ double UnconstrainedSBN::computeLnProbabilityBranchLengths( void )
     return lnProbability;
 }
 
-double UnconstrainedSBN::computeLnProbabilityRootedTopology( void )
+double UnconstrainedSBN::computeLnProbabilityUnrootedTopologyMarginalize( void )
 {
+    // Make the tree properly rooted so that rooting to branches has the desired effect
+    value->makeRooted(true);
+
     if ( !(value->isBinary()) )
     {
       return RbConstants::Double::nan;
@@ -106,86 +109,32 @@ double UnconstrainedSBN::computeLnProbabilityRootedTopology( void )
 
     double lnProbability = 0.0;
 
-    // first compute root split probability
-    const TopologyNode &root = value->getRoot();
-    const std::vector<TopologyNode*>& root_children = root.getChildren();
+    // Brute force marginalization
+    TopologyNode &initial_root = value->getRoot();
 
-    if ( root_children.size() != 2 )
+    std::vector<double> lnl_given_root;
+    double offset = RbConstants::Double::neginf;
+    // sum over rooting locations
+    std::cout << "marginalizing:" << std::endl;
+    for (size_t ri=0; ri < value->getNumberOfNodes(); ++ri)
     {
-      return( RbConstants::Double::nan );
+      value->reroot(value->getNode(ri),true);
+      lnl_given_root.push_back(parameters.computeLnProbabilityRootedTopology( *value ));
+      std::cout << " ri";
     }
+    std::cout << "marginalization complete" << std::endl;
+    lnProbability = logSumExp(lnl_given_root);
 
-    Subsplit root_split = value->getRootSubsplit(taxa);
+    std::cout << "computed lnProb" << std::endl;
+    // Put root back where we found it
+    value->reroot(initial_root,true);
+std::cout << "rerooted" << std::endl;
 
-    lnProbability += parameters.computeRootSplitProbability(root_split);
-
-    // get all parent-child subsplit pairs, calculate their probabilities
-    // TODO: We could do this more efficiently by travesing the tree, since we would not have to find the subsplit every node belongs to every time
-    std::vector<std::pair<Subsplit,Subsplit> > parent_child_subsplits = value->getAllSubsplitParentChildPairs(taxa);
-
-    std::pair<Subsplit,Subsplit> parent_child_pair;
-
-    BOOST_FOREACH(parent_child_pair, parent_child_subsplits)
-    {
-      lnProbability += parameters.computeSubsplitTransitionProbability(parent_child_pair.first, parent_child_pair.second);
-    }
+    value->unroot();
+std::cout << "unrooted" << std::endl;
 
     return lnProbability;
 }
-
-double UnconstrainedSBN::computeLnProbabilityUnrootedTopology( void )
-{
-    if ( !(value->isBinary()) )
-    {
-      return RbConstants::Double::nan;
-    }
-
-    double lnProbability = 0.0;
-
-    // // Brute force marginalization
-    // else
-    // {
-    //   TopologyNode &initial_root = value->getRoot();
-    //
-    //   // sum over rooting locations
-    //   for (size_t ri=0; ri < value->getNumberOfNodes(); ++ri)
-    //   {
-    //     value->reroot(value->getNode(ri),false);
-    //     lnProbability = logSum(lnProbability,computeLnProbabilityRootedTopology());
-    //   }
-    //
-    //   // Put root back where we found it
-    //   value->reroot(initial_root,false);
-    // }
-
-    // // Initialize important features
-    // size_t nnodes = value->getNumberOfNodes();
-    // std::vector<double> lnProb_tree_and_root = std::vector<double>(nnodes,0.0); // For each node in the tree, the log-probability Pr(rooted tree rooted to edge subtending this node), will be 0.0 at root and one of root's children
-    // std::vector<double> descending = std::vector<double>(nnodes,0.0); // Vector of probability of all of tree descending from this node given its subsplit
-    // std::vector<double> reversal = std::vector<double>(nnodes,0.0); // Vector of probabilities of
-    // std::vector<Split> branch_splits = std::vector<Split>(nnodes,Subsplit()); // Branches (that subtend nodes) as Split objects
-    //
-    // // Tip to root pass
-    // value->orderNodesForTraversal("postorder");
-    //
-    // std::vector<TopologyNode*> nodes = value->getNodes();
-    // for (std::vector<TopologyNode*>::iterator n = nodes.begin(); n != children.end(); n++)
-    // {
-    //   size_t i = n->getIndex();
-    //   if (n->isTip())
-    //   {
-    //     lnProb_tree_and_root[i] = 0.0;
-    //   }
-    //   else
-    //   {
-    //     std::vector<TopologyNode*> children_indices = n->getChildrenIndices();
-    //     lnProb_tree_and_root[i] = logSumExpWeights(lnProb_tree_and_root[0], lnProb_tree_and_root[1], );
-    //   }
-    // }
-
-    return lnProbability;
-}
-
 
 double UnconstrainedSBN::logSumExp( std::vector<double> &x )
 {

@@ -20,8 +20,7 @@ namespace RevBayesCore {
         // public member functions
         UnconstrainedSBN*                        clone(void) const;                                                                                  //!< Create an independent clone
         double                                              computeLnProbability(void);
-        double                                              computeLnProbabilityUnrootedTopology(void);
-        double                                              computeLnProbabilityRootedTopology(void);
+        double                                              computeLnProbabilityUnrootedTopologyMarginalize(void);
         double                                              computeLnProbabilityBranchLengths(void);
         double                                              logSumExp(std::vector<double> &x); // Calculate log(sum(exp(x))) accounting for the fact that exp(x) can produce 0s for x << 0
         double                                              logSumExp(double &x1, double &x2); // Calculate log(sum(exp(x))) accounting for the fact that exp(x) can produce 0s for x << 0

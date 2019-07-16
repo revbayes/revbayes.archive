@@ -116,6 +116,52 @@ const std::vector<Taxon>& SBNParameters::getTaxa(void) const
   return taxa;
 }
 
+/* Computes the probability of the given ROOTED tree under this SBN. */
+double SBNParameters::computeLnProbabilityRootedTopology( const Tree &tree ) const
+{
+  if ( !(tree.isBinary()) )
+  {
+    return RbConstants::Double::nan;
+  }
+
+  double lnProbability = 0.0;
+
+  // first compute root split probability
+  const TopologyNode &root = tree.getRoot();
+  const std::vector<TopologyNode*>& root_children = root.getChildren();
+
+  if ( root_children.size() != 2 )
+  {
+    return( RbConstants::Double::nan );
+  }
+
+  Subsplit root_split = tree.getRootSubsplit(taxa);
+
+  lnProbability += computeRootSplitProbability(root_split);
+
+  // get all parent-child subsplit pairs, calculate their probabilities
+  // TODO: We could do this more efficiently by travesing the tree, since we would not have to find the subsplit every node belongs to every time
+  std::vector<std::pair<Subsplit,Subsplit> > parent_child_subsplits = tree.getAllSubsplitParentChildPairs(taxa);
+
+  std::pair<Subsplit,Subsplit> parent_child_pair;
+
+  BOOST_FOREACH(parent_child_pair, parent_child_subsplits)
+  {
+    lnProbability += computeSubsplitTransitionProbability(parent_child_pair.first, parent_child_pair.second);
+  }
+
+  return lnProbability;
+
+}
+
+/* Computes the probability of the given UNROOTED tree under this SBN. */
+double SBNParameters::computeLnProbabilityUnrootedTopology( const Tree &tree ) const
+{
+  double lnProbability = 0.0;
+
+  return lnProbability;
+}
+
 /* Computes the probability of seeing a particular root split given an SBN */
 double SBNParameters::computeRootSplitProbability( const Subsplit &root_split ) const
 {
