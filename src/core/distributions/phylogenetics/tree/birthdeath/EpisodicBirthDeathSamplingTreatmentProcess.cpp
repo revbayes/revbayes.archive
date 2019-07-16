@@ -513,7 +513,8 @@ void EpisodicBirthDeathSamplingTreatmentProcess::countAllNodes(void) const
         // node is sampled ancestor
           int at_event = whichIntervalTime(t);
 
-          if (at_event == -1)
+          // If this tip is not at an event time (and specifically at an event time with Phi[i] > 0), it's a serial tip
+          if (at_event == -1 || phi_event[at_event] < DBL_EPSILON)
           {
             serial_sampled_ancestor_ages.push_back(t);
           }
@@ -527,7 +528,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::countAllNodes(void) const
           // node is serial leaf
           int at_event = whichIntervalTime(t);
 
-          // If this tip is not at an event time (and at an event time with Phi[i] > 0), it's a serial tip
+          // If this tip is not at an event time (and specifically at an event time with Phi[i] > 0), it's a serial tip
           if (at_event == -1 || phi_event[at_event] < DBL_EPSILON)
           {
             serial_tip_ages.push_back(t);
@@ -558,7 +559,8 @@ void EpisodicBirthDeathSamplingTreatmentProcess::countAllNodes(void) const
               // node is bifurcation event (a "true" node)
               int at_event = whichIntervalTime(t);
 
-              if (at_event == -1)
+              // If this bifurcation is not at an event time (and specifically at an event time with Lambda[i] > 0), it's a serial bifurcation
+              if (at_event == -1 || lambda_event[at_event] < DBL_EPSILON)
               {
                 serial_bifurcation_times.push_back(t);
               }

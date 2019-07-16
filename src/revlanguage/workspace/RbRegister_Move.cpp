@@ -97,7 +97,6 @@
 #include "Move_ShrinkExpandScale.h"
 #include "Move_SingleElementScale.h"
 #include "Move_SingleElementSlide.h"
-#include "Move_EllipticalSliceSamplingLognormalIID.h"
 #include "Move_EllipticalSliceSamplingSimple.h"
 #include "Move_SynchronizedVectorFixedSingleElementSlide.h"
 #include "Move_VectorBinarySwitch.h"
@@ -275,7 +274,6 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_VectorSingleElementScale() );
         addTypeWithConstructor( new Move_VectorSingleElementSlide() );
         addTypeWithConstructor( new Move_VectorFixedSingleElementSlide() );
-        addTypeWithConstructor( new Move_EllipticalSliceSamplingLognormalIID() );
         addTypeWithConstructor( new Move_EllipticalSliceSamplingSimple() );
         addTypeWithConstructor( new Move_SynchronizedVectorFixedSingleElementSlide() );
 
@@ -349,7 +347,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Simplex>( )               );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<ModelVector<Natural> >( ) );
         addTypeWithConstructor( new Move_ReversibleJumpSwitch<Tree>( )                  );
-        
+
         addTypeWithConstructor( new Move_MultiValueEventBirthDeath()                    );
         addTypeWithConstructor( new Move_MultiValueEventScale()                         );
         addTypeWithConstructor( new Move_MultiValueEventSlide()                         );
