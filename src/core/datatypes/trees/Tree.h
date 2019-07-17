@@ -123,7 +123,7 @@ namespace RevBayesCore {
         bool                                                isRooted(void) const;                                                                               //!< Is the Tree rooted
         bool                                                isUltrametric(void) const;                                                                          //!< Is this tree ultrametric?
         void                                                makeInternalNodesBifurcating(bool reindex);                                                         //!< Make all the internal nodes bifurcating.
-        void                                                makeRooted(bool reindex);                                                                           //!< Make an unrooted tree rooted by arbitrarily resolving basal polytomy
+        void                                                makeRooted(TopologyNode &n, bool reindex);                                                                           //!< Make an unrooted tree rooted by arbitrarily resolving basal polytomy
         void                                                orderNodesByIndex();
         std::vector<TopologyNode*>&                         orderNodesForTraversal(std::string &order);
         void                                                pruneTaxa(const RbBitSet&);

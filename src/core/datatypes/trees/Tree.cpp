@@ -1237,66 +1237,138 @@ void Tree::makeInternalNodesBifurcating(bool reindex)
 }
 
 // Makes an unrooted tree a rooted tree
-// We start with this tree
-//  ___ A (child[0])
-// |___ B (child[1])
-// |___ C (child[2])
+// We start with this tree, where node n is somewhere in A (possibly all of A)
+//  ___ A
+// |___ B
+// |___ C
 //
-// We end with this tree
-// ___ A
-//|  _ B
-//|_|
-//  |_ C
-void Tree::makeRooted(bool reindex)
+// We end with a tree where this is the root split
+// ___ n
+//|___ everybody else
+void Tree::makeRooted(TopologyNode &n, bool reindex)
 {
-    // std::cout << "hello from Tree::makeRooted()" << std::endl;
+// std::cout << "hello from Tree::makeRooted()" << std::endl;
     if (rooted || root->getChildrenIndices().size() != 3)
     {
       throw(RbException("Cannot add a root to a rooted tree."));
     }
 
-    // Root's children
-    TopologyNode* a = &root->getChild(0);
-    TopologyNode* b = &root->getChild(1);
-    TopologyNode* c = &root->getChild(2);
+    Clade outgroup = n.getClade();
+// std::cout << "got outgroup" << std::endl;
 
-    // std::cout << "got all children" << std::endl;
-    // root->removeAllChildren();
-    root->removeChild(b);
-    root->removeChild(c);
-
-    // std::cout << "root has no kids now" << std::endl;
-    // Topology at new node
     TopologyNode *new_node = new TopologyNode( getNumberOfNodes()+1 );
-    // TopologyNode* new_node = root;
-    // new_node->setIndex(num_nodes + 1);
-    // std::cout << "new node exists, has index " << new_node->getIndex() << std::endl;
-    new_node->addChild(b);
-    new_node->addChild(c);
 
-    b->setParent(new_node);
-    c->setParent(new_node);
+    TopologyNode* a;
+    TopologyNode* b;
+    TopologyNode* c;
 
-    // new_node->addChild(b);
-    // new_node->addChild(c);
+    // std::cout << "Trying to root to clade " << outgroup << std::endl;
+    // std::cout << "Root clade 0 " << root->getChild(0).getClade() << std::endl;
+    // std::cout << "Root clade 2 " << root->getChild(1).getClade() << std::endl;
+    // std::cout << "Root clade 2 " << root->getChild(2).getClade() << std::endl;
 
-    // std::cout << "new node stole root's kids" << std::endl;
-    // Topology at root
-    // root->addChild(a);
-    root->addChild(new_node);
-    new_node->setParent(root);
 
-    // std::cout << "root adopted new node" << std::endl;
-    // Misc cleanup
-    new_node->setBranchLength(0.0,false);
-    new_node->setNodeType(false,false,true);
-    root->setNodeType(false,true,false);
-    rooted = true;
-    num_nodes++;
+    if ( root->getChild(0).containsClade(outgroup,true) )
+    {
+      a = &root->getChild(0);
+      b = &root->getChild(1);
+      c = &root->getChild(2);
+    }
+    else if ( root->getChild(1).containsClade(outgroup,true) )
+    {
+      a = &root->getChild(1);
+      b = &root->getChild(0);
+      c = &root->getChild(2);
+    }
+    else if ( root->getChild(2).containsClade(outgroup,true) )
+    {
+      a = &root->getChild(2);
+      b = &root->getChild(0);
+      c = &root->getChild(1);
+    }
+    else
+    {
+      throw(RbException("Cannot find clade containing new root."));
+    }
 
-    // std::cout << "about to set root" << std::endl;
-    // we need to reset the root so that the vector of nodes get filled again with the new number of nodes
-    setRoot( &getRoot(), reindex );
+    if ( n.getParent().isRoot() )
+    {
+      // std::cout << "got all children" << std::endl;
+      // root->removeAllChildren();
+      root->removeChild(b);
+      root->removeChild(c);
+
+      // std::cout << "root has no kids now" << std::endl;
+      // Topology at new node
+      // std::cout << "new node exists, has index " << new_node->getIndex() << std::endl;
+      new_node->addChild(b);
+      new_node->addChild(c);
+
+      b->setParent(new_node);
+      c->setParent(new_node);
+
+      // new_node->addChild(b);
+      // new_node->addChild(c);
+
+      // std::cout << "new node stole root's kids" << std::endl;
+      // Topology at root
+      // root->addChild(a);
+      root->addChild(new_node);
+      new_node->setParent(root);
+
+      new_node->setNodeType(false,false,true);
+      root->setNodeType(false,true,false);
+
+      // std::cout << "root adopted new node" << std::endl;
+      // Misc cleanup
+      new_node->setBranchLength(0.0,false);
+      rooted = true;
+      num_nodes++;
+
+      // std::cout << "about to set root" << std::endl;
+      // we need to reset the root so that the vector of nodes get filled again with the new number of nodes
+      setRoot( &getRoot(), reindex );
+    }
+    else
+    {
+      reroot(getMrca(outgroup),true);
+      // std::cout << "rerooted" << std::endl;
+      makeRooted(getMrca(outgroup),true);
+    }
+//     else
+//     {
+// std::cout << "n does not have root as parent" << std::endl;
+//       TopologyNode &parent = n.getParent();
+//
+//       parent.removeChild(&n);
+//
+//       reverseParentChild(n.getParent());
+//       std::cout << "reverseParentChild" << std::endl;
+//
+//       new_node->addChild(&n);
+//       new_node->addChild(&parent);
+//       std::cout << "added new node's children" << std::endl;
+//
+//       b->setParent(a);
+//       c->setParent(a);
+// std::cout << "set b's and a's new parents" << std::endl;
+//
+//       new_node->setNodeType(false,true,false);
+//       root->setNodeType(false,false,true);
+//
+//       root = new_node;
+// std::cout << "root = new_node" << std::endl;
+//     }
+
+    // // std::cout << "root adopted new node" << std::endl;
+    // // Misc cleanup
+    // new_node->setBranchLength(0.0,false);
+    // rooted = true;
+    // num_nodes++;
+    //
+    // // std::cout << "about to set root" << std::endl;
+    // // we need to reset the root so that the vector of nodes get filled again with the new number of nodes
+    // setRoot( &getRoot(), reindex );
 
 }
 

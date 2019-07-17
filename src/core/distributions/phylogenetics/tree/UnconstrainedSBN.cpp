@@ -100,38 +100,28 @@ double UnconstrainedSBN::computeLnProbabilityBranchLengths( void )
 double UnconstrainedSBN::computeLnProbabilityUnrootedTopologyMarginalize( void )
 {
     // Make the tree properly rooted so that rooting to branches has the desired effect
-    value->makeRooted(true);
-
-    if ( !(value->isBinary()) )
-    {
-      return RbConstants::Double::nan;
-    }
 
     double lnProbability = 0.0;
-
-    // Brute force marginalization
-    TopologyNode &initial_root = value->getRoot();
 
     std::vector<double> lnl_given_root;
     double offset = RbConstants::Double::neginf;
     // sum over rooting locations
-    std::cout << "marginalizing:" << std::endl;
+    // std::cout << "marginalizing over " << value->getNumberOfNodes() << " possible rooting locations" << std::endl;
     for (size_t ri=0; ri < value->getNumberOfNodes(); ++ri)
     {
-      value->reroot(value->getNode(ri),true);
-      lnl_given_root.push_back(parameters.computeLnProbabilityRootedTopology( *value ));
-      std::cout << " ri";
+      if (!(value->getNode(ri).isRoot()))
+      {
+        Tree *tree_rooted = value->clone();
+        tree_rooted->makeRooted(tree_rooted->getNode(ri),true);
+        double lnl = parameters.computeLnProbabilityRootedTopology( *(tree_rooted) );
+        // std::cout << "at" << ri << ", lnL_tot = " << lnl << std::endl;
+        lnl_given_root.push_back(lnl);
+      }
     }
-    std::cout << "marginalization complete" << std::endl;
+    // std::cout << "marginalization complete" << std::endl;
     lnProbability = logSumExp(lnl_given_root);
 
-    std::cout << "computed lnProb" << std::endl;
-    // Put root back where we found it
-    value->reroot(initial_root,true);
-std::cout << "rerooted" << std::endl;
-
-    value->unroot();
-std::cout << "unrooted" << std::endl;
+    // std::cout << "computed lnProb" << std::endl;
 
     return lnProbability;
 }

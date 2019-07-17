@@ -121,6 +121,7 @@ double SBNParameters::computeLnProbabilityRootedTopology( const Tree &tree ) con
 {
   if ( !(tree.isBinary()) )
   {
+    std::cout << "tree no longer binary" << std::endl;
     return RbConstants::Double::nan;
   }
 
