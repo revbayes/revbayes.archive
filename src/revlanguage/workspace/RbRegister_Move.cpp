@@ -204,6 +204,7 @@
 #include "Move_SubtreeScale.h"
 #include "Move_SPRNonclock.h"
 #include "Move_TreeScale.h"
+#include "Move_UnrootedUnconstrainedSBN.h"
 #include "Move_WeightedNodeTimeSlide.h"
 
 
@@ -396,6 +397,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_TipTimeSlideUniform()              );
         addTypeWithConstructor( new Move_SpeciesTreeScale()                 );
         addTypeWithConstructor( new Move_TreeScale()                        );
+        addTypeWithConstructor( new Move_UnrootedUnconstrainedSBN()           );
         addTypeWithConstructor( new Move_NarrowExchangeRateMatrix()         );
 
         /* Moves on character histories / data augmentation */

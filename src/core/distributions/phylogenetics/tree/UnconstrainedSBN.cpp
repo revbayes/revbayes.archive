@@ -19,7 +19,6 @@ UnconstrainedSBN::UnconstrainedSBN(const SBNParameters parameters, bool rooted) 
 	  rooted( rooted ),
     taxa( parameters.getTaxa() )
 {
-
     // Class SBNParameters handles parameterization of these edge_length_distributions
     // Here we simply use those parameters
     // Parameters are set either by calling a learn___() function or reading in an SBN
@@ -66,33 +65,29 @@ double UnconstrainedSBN::computeLnProbabilityBranchLengths( void )
 {
     double lnProbability = 0.0;
 
-    // // std::map<RbBitSet,std::pair<double,double> > edge_length_params = parameters.getEdgeLengthDistributionParameters();
-    // std::map<RbBitSet,std::pair<std::vector<double>,std::vector<double> > > edge_length_params = parameters.getEdgeLengthDistributionParameters();
-    //
-    // // Get branch lengths
-    // const std::vector<TopologyNode*> tree_nodes = value->getNodes();
-    // for (size_t i=0; i<tree_nodes.size(); ++i)
-    // {
-    //   if (!tree_nodes[i]->isRoot())
-    //   {
-    //     //TODO: this probability setup is really only good for a rooted tree, unrooted trees use splits not clades
-    //     //      we should prbably make a separate rooted and unrooted lnProb() calculator
-    //     Subsplit this_split = tree_nodes[i]->getSubsplit(taxa);
-    //     RbBitSet this_clade = this_split.asCladeBitset();
-    //
-    //     // std::pair<double,double> these_params = edge_length_params[this_clade];
-    //
-    //     std::pair<std::vector<double>,std::vector<double> > these_params = edge_length_params[this_clade];
-    //    //
-    //     // // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Lognormal::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
-    //     // // std::cout << "lognormal mu: " << these_params.first << "; lognormal sigma: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
-    //     // lnProbability += RbStatistics::Lognormal::lnPdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
-    //
-    //     // // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Gamma::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
-    //     // // std::cout << "gamma shape: " << these_params.first << "; gamma rate: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
-    //     // lnProbability += RbStatistics::Gamma::lnPdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
-    //   }
-    // }
+    std::map<RbBitSet,std::pair<double,double> > edge_length_params = parameters.getEdgeLengthDistributionParameters();
+
+    // Get branch lengths
+    const std::vector<TopologyNode*> tree_nodes = value->getNodes();
+    for (size_t i=0; i<tree_nodes.size(); ++i)
+    {
+      if (!tree_nodes[i]->isRoot())
+      {
+        // Subsplit this_subsplit = tree_nodes[i]->getSubsplit(taxa);
+        // RbBitSet this_split = this_subsplit.asSplitBitset();
+        RbBitSet this_split = tree_nodes[i]->getSubsplit(taxa).asSplitBitset();
+
+        std::pair<double,double> these_params = edge_length_params[this_split];
+
+        // // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Lognormal::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
+        // // std::cout << "lognormal mu: " << these_params.first << "; lognormal sigma: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
+        lnProbability += RbStatistics::Lognormal::lnPdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
+
+        // // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Gamma::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
+        // // std::cout << "gamma shape: " << these_params.first << "; gamma rate: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
+        // lnProbability += RbStatistics::Gamma::lnPdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
+      }
+    }
 
     return lnProbability;
 }
