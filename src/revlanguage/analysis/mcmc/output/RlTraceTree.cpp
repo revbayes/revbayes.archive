@@ -8,6 +8,7 @@
 #include "RlBranchLengthTree.h"
 #include "RlClade.h"
 #include "RlSBNParameters.h"
+#include "RlString.h"
 #include "RlTimeTree.h"
 #include "RlTraceTree.h"
 #include "RlTree.h"
@@ -281,7 +282,10 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
     else if ( name == "learnUnconstrainedSBN" )
     {
         found = true;
-        RevBayesCore::SBNParameters sbn = this->value->learnUnconstrainedSBN();
+
+        const std::string &branch_length_approximation  = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
+
+        RevBayesCore::SBNParameters sbn = this->value->learnUnconstrainedSBN(branch_length_approximation);
         return new RevVariable( new SBNParameters( sbn ) );
 
     }
@@ -371,6 +375,7 @@ void TraceTree::initMethods( void )
     this->methods.addFunction( new MemberProcedure( "cladeProbability", Probability::getClassTypeSpec(), cladeProbArgRules) );
 
     ArgumentRules* learnUnconstrainedSBNRules = new ArgumentRules();
+    learnUnconstrainedSBNRules->push_back( new ArgumentRule("branchLengthApproximationMethod", RlString::getClassTypeSpec(), "gammaMOM|lognormalML|lognormalMOM.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
     this->methods.addFunction( new MemberProcedure( "learnUnconstrainedSBN", SBNParameters::getClassTypeSpec(), learnUnconstrainedSBNRules) );
 
     ArgumentRules* getNumberSamplesArgRules = new ArgumentRules();

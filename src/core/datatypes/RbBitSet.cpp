@@ -67,7 +67,7 @@ bool RbBitSet::operator>(const RbBitSet& x) const
 bool RbBitSet::operator>=(const RbBitSet& x) const
 {
 
-    return x.value < value;
+    return !(x.value < value);
 }
 
 /** Bitwise and */

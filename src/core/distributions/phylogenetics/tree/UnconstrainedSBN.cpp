@@ -67,6 +67,9 @@ double UnconstrainedSBN::computeLnProbabilityBranchLengths( void )
 
     std::map<RbBitSet,std::pair<double,double> > edge_length_params = parameters.getEdgeLengthDistributionParameters();
 
+    // How is this SBN approximating branch lengths?
+    bool approx_gamma = parameters.getBranchLengthApproximationMethod() == "gammaMOM";
+
     // Get branch lengths
     const std::vector<TopologyNode*> tree_nodes = value->getNodes();
     for (size_t i=0; i<tree_nodes.size(); ++i)
@@ -79,13 +82,19 @@ double UnconstrainedSBN::computeLnProbabilityBranchLengths( void )
 
         std::pair<double,double> these_params = edge_length_params[this_split];
 
-        // // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Lognormal::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
-        // // std::cout << "lognormal mu: " << these_params.first << "; lognormal sigma: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
-        lnProbability += RbStatistics::Lognormal::lnPdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
+        if (approx_gamma)
+        {
+          // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Gamma::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
+          // std::cout << "gamma shape: " << these_params.first << "; gamma rate: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
+          lnProbability += RbStatistics::Gamma::lnPdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
+        }
+        else
+        {
+          // // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Lognormal::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
+          // // std::cout << "lognormal mu: " << these_params.first << "; lognormal sigma: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
+          lnProbability += RbStatistics::Lognormal::lnPdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
+        }
 
-        // // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Gamma::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
-        // // std::cout << "gamma shape: " << these_params.first << "; gamma rate: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
-        // lnProbability += RbStatistics::Gamma::lnPdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength());
       }
     }
 
@@ -201,6 +210,10 @@ void UnconstrainedSBN::setValue(RevBayesCore::Tree *v, bool force)
 
 void UnconstrainedSBN::simulateTree( void )
 {
+
+    // How is this SBN handling branch lengths?
+    bool approx_gamma = parameters.getBranchLengthApproximationMethod() == "gammaMOM";
+
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
@@ -270,8 +283,17 @@ void UnconstrainedSBN::simulateTree( void )
       // Draw a branch length from the observed pool at random
       std::pair<double,double> these_params = edge_length_params[Y_child.asSplitBitset()];
 
-      double brlen  = RbStatistics::Lognormal::rv(these_params.first, these_params.second, *rng);
-      // double brlen  = RbStatistics::Gamma::rv(these_params.first, these_params.second, *rng);
+      double brlen;
+
+      if ( approx_gamma )
+      {
+        brlen  = RbStatistics::Gamma::rv(these_params.first, these_params.second, *rng);
+      }
+      else
+      {
+        brlen  = RbStatistics::Lognormal::rv(these_params.first, these_params.second, *rng);
+      }
+
       Y_child_node->setBranchLength(brlen,false);
 
       // Choose subsplit of Z
@@ -294,8 +316,15 @@ void UnconstrainedSBN::simulateTree( void )
 
       these_params = edge_length_params[Z_child.asSplitBitset()];
 
-      brlen = RbStatistics::Lognormal::rv(these_params.first, these_params.second, *rng);
-      // brlen = RbStatistics::Gamma::rv(these_params.first, these_params.second, *rng);
+      if ( approx_gamma )
+      {
+        brlen = RbStatistics::Gamma::rv(these_params.first, these_params.second, *rng);
+      }
+      else
+      {
+        brlen  = RbStatistics::Lognormal::rv(these_params.first, these_params.second, *rng);
+      }
+
       Z_child_node->setBranchLength(brlen,false);
 
       // Attach nodes to eachother

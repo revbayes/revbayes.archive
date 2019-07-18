@@ -1284,7 +1284,7 @@ bool TraceTree::isClock(void)
     return clock;
 }
 
-SBNParameters TraceTree::learnUnconstrainedSBN(void)
+SBNParameters TraceTree::learnUnconstrainedSBN(const std::string &branch_length_approximation)
 {
 
   NewickConverter converter;
@@ -1294,7 +1294,7 @@ SBNParameters TraceTree::learnUnconstrainedSBN(void)
 
   // Initialize SBNParameters object with taxa
   // SBNParameters sbn = SBNParameters(ordered_taxa);
-  SBNParameters sbn(ordered_taxa);
+  SBNParameters sbn(ordered_taxa, branch_length_approximation);
 
   // Are trees rooted?
   rooted = objectAt(0).isRooted();
@@ -1310,7 +1310,7 @@ SBNParameters TraceTree::learnUnconstrainedSBN(void)
 
   if (rooted)
   {
-    sbn.learnRootedUnconstrainedSBN(trees);
+    throw(RbException("Unconstrained SBNs must be fit to unrooted trees."));
   }
   else
   {
