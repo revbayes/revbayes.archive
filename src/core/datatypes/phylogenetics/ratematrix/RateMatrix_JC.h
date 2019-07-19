@@ -26,10 +26,6 @@ namespace RevBayesCore {
      *      |                            |
      *      |  1/3    1/3    1/3     -   |
      *
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2014-07-04, version 1.0
      */
     class RateMatrix_JC : public TimeReversibleRateMatrix {
         
