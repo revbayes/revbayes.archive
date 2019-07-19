@@ -1,9 +1,14 @@
 #include "InverseGammaDistribution.h"
 #include "DistributionInverseGamma.h"
 #include "RandomNumberFactory.h"
-#include "RbConstants.h"
 
 using namespace RevBayesCore;
+
+/* Inverse Gamma Distribution Constructor
+ * @param sh a double that represents the shape of the distribution
+ * @param r a double that represents the rate of the distribution
+ *
+ */
 
 InverseGammaDistribution::InverseGammaDistribution(const TypedDagNode<double> *sh, const TypedDagNode<double> *r) : ContinuousDistribution( new double( 1.0 ) ),
     shape( sh ),

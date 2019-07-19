@@ -13,14 +13,10 @@ namespace RevBayesCore {
      * @brief Multinomial distribution class.
      *
      * The Multinomial distribution represents a family of distributions
-     * defined on a vector of real number. The Multinomial distribution has 2 parameters:
-     *   n .. the number of tries
-     *   p .. the vector of category probabilities
+     * defined on a vector of real number. The distribution is a generalization of the Bernoulli, Binomial, and Categorical distributions The Multinomial distribution has 2 parameters:
+     *@param n  the number of trials
+     *@param p the vector of category probabilities
      * Instances of this class can be associated to stochastic variables.
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Michael Landis)
-     * @since 2014-05-06, version 1.0
      *
      */
     class MultinomialDistribution : public TypedDistribution< RbVector<long> > {

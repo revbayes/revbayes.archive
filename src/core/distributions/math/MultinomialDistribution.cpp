@@ -4,6 +4,11 @@
 
 using namespace RevBayesCore;
 
+/*Multinomial Distribution Constructor
+ * @param p A simplex of the the probabilities for each category
+ * @param n A long for the number of trials
+ */
+
 MultinomialDistribution::MultinomialDistribution(const TypedDagNode<Simplex> *p, const TypedDagNode<long> *n) : TypedDistribution< RbVector<long> >( new RbVector<long>() ),
     p( p ),
     n( n )
