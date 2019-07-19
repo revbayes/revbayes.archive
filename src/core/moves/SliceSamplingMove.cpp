@@ -124,9 +124,8 @@ public:
         lnPrior += variable->getLnProbability();
 
         // 2. then we recompute the probability for all the affected nodes
-        for (RbOrderedSet<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it)
+        for (auto& node: affectedNodes)
         {
-            DagNode* node = *it;
             if ( node->isClamped() )
                 lnLikelihood += node->getLnProbability();
             else
