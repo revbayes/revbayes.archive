@@ -190,7 +190,6 @@
 #include "Func_ancestralStateTree.h"
 #include "Func_consensusTree.h"
 #include "Func_convertToPhylowood.h"
-#include "Func_formatDiscreteCharacterData.h"
 #include "Func_module.h"
 #include "Func_readAtlas.h"
 #include "Func_readCharacterDataDelimited.h"

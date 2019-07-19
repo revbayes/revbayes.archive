@@ -174,7 +174,7 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
 
     // multiply the probability of a descendant of the initial species
     lnProbTimes += computeLnProbabilityDivergenceTimes();
-    
+        
     return lnProbTimes + lnProbTreeShape();
 }
 
@@ -566,6 +566,15 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
     }
 
 
+}
+
+
+double AbstractRootedTreeDistribution::simulateCladeAge(size_t n, double origin, double present, double min) const
+{
+    
+    std::vector<double> times = simulateDivergenceTimes(n, origin, present, min);
+    
+    return times.back();
 }
 
 

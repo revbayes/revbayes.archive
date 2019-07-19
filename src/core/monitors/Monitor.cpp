@@ -8,13 +8,13 @@ using namespace RevBayesCore;
 Monitor::Monitor(unsigned long g) :
     enabled( true ),
     printgen( g ),
-    model( NULL )
+    model( nullptr )
 {}
 
 Monitor::Monitor(unsigned long g, DagNode *n) :
     enabled( true ),
     printgen( g ),
-    model( NULL )
+    model( nullptr )
 {
     
     nodes.push_back( n );
@@ -31,7 +31,7 @@ Monitor::Monitor(unsigned long g, const std::vector<DagNode *> &n) :
     enabled( true ),
     printgen( g ),
     nodes( n ),
-    model( NULL )
+    model( nullptr )
 {
     
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)

@@ -20,7 +20,6 @@
 
 //#include "Statistic.h"
 #include "Tree.h"
-#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 

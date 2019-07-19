@@ -1,6 +1,5 @@
 #include "Func_phyloDiversity.h"
 #include "Clade.h"
-#include "Func_phyloDiversity.h"
 #include "ModelVector.h"
 #include "PhyloDiversityFunction.h"
 #include "RealPos.h"

@@ -354,7 +354,8 @@ void RateMatrix_DECRateMatrix::calculateTransitionProbabilities(double startAge,
     }
     else {
         
-        if (useSquaring || true ) {
+        if ( useSquaring || true )
+        {
             //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
             exponentiateMatrixByScalingAndSquaring(t, P);
         }

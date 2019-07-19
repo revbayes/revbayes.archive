@@ -109,8 +109,6 @@ namespace RevBayesCore {
 
 #include "CharacterTranslator.h"
 #include "DnaState.h"
-#include "DiscreteCharacterState.h"
-#include "DiscreteTaxonData.h"
 #include "NaturalNumbersState.h"
 #include "NclReader.h"
 #include "RbConstants.h"
@@ -119,8 +117,6 @@ namespace RevBayesCore {
 #include <cmath>
 #include <fstream>
 #include <sstream>
-#include <string>
-
 
 /**
  * Default constructor,
@@ -938,7 +934,10 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMaxObservedSt
         for (size_t i = 0; i < getNumberOfTaxa(); i++)
         {
             const DiscreteTaxonData<charType>& sequence = getTaxonData( i );
-            observed |= sequence[j].getState();
+            if ( sequence[j].isMissingState() == false )
+            {
+                observed |= sequence[j].getState();
+            }
         }
     }
 

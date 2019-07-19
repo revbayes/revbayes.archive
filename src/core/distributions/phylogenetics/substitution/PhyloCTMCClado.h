@@ -93,14 +93,10 @@ namespace RevBayesCore {
 #include "BranchHistory.h"
 #include "ConstantNode.h"
 #include "StochasticNode.h"
-#include "ChromosomesCladogenicStateFunction.h"
 #include "DECCladogeneticStateFunction.h"
 #include "DiscreteCharacterState.h"
 #include "RateMatrix_JC.h"
 #include "RandomNumberFactory.h"
-#include "RbVector.h"
-#include "TopologyNode.h"
-#include "TransitionProbabilityMatrix.h"
 
 #include <cmath>
 #include <cstring>

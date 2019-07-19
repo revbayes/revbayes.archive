@@ -19,7 +19,6 @@
 #include "DistanceMatrix.h"
 #include "MatrixReal.h"
 #include "Tree.h"
-#include "Tree.h"
 #include "TopologyNode.h"
 #include <string>
 #include <vector>
