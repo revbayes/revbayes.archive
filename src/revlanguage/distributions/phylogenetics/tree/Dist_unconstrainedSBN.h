@@ -45,7 +45,6 @@ namespace RevLanguage {
     private:
 
         RevPtr<const RevVariable>                       parameters;                                                                                           //!< Taxon names
-        RevPtr<const RevVariable>                       rooted;                                                                                    		//!< Boolean indicating whether topologies are rooted
     };
 
 }

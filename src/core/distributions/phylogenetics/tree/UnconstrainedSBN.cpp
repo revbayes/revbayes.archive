@@ -14,9 +14,8 @@
 
 using namespace RevBayesCore;
 
-UnconstrainedSBN::UnconstrainedSBN(const SBNParameters parameters, bool rooted) : TypedDistribution<Tree>( new Tree() ),
+UnconstrainedSBN::UnconstrainedSBN(const SBNParameters parameters) : TypedDistribution<Tree>( new Tree() ),
     parameters( parameters ),
-	  rooted( rooted ),
     taxa( parameters.getTaxa() )
 {
     // Class SBNParameters handles parameterization of these edge_length_distributions
@@ -46,14 +45,7 @@ double UnconstrainedSBN::computeLnProbability( void )
 
     // Here we compute the probability of the tree topology according to the SBN
 
-    if ( rooted )
-    {
-      lnProbability += parameters.computeLnProbabilityRootedTopology( *value );
-    }
-    else
-    {
-      lnProbability += computeLnProbabilityUnrootedTopologyMarginalize();
-    }
+    lnProbability += computeLnProbabilityUnrootedTopologyMarginalize();
 
     // Add branch lengths
     lnProbability += computeLnProbabilityBranchLengths();
@@ -346,11 +338,8 @@ void UnconstrainedSBN::simulateTree( void )
     	psi->getTipNodeWithName(taxa[i].getName()).setIndex(i);
     }
 
-    if ( !rooted )
-    {
-      psi->unroot();
-    }
-    psi->setRooted( rooted );
+    psi->unroot();
+    psi->setRooted( false );
     psi->orderNodesByIndex();
 
   // finally store the new value

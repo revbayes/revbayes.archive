@@ -44,8 +44,7 @@ Dist_UnconstrainedSBN* Dist_UnconstrainedSBN::clone( void ) const
  */
 RevBayesCore::UnconstrainedSBN* Dist_UnconstrainedSBN::createDistribution( void ) const {
     const RevBayesCore::SBNParameters &p = static_cast<const SBNParameters &>(parameters->getRevObject()).getValue();
-    bool r = static_cast<const RlBoolean &>( rooted->getRevObject() ).getValue();
-    RevBayesCore::UnconstrainedSBN* d = new RevBayesCore::UnconstrainedSBN( p, r);
+    RevBayesCore::UnconstrainedSBN* d = new RevBayesCore::UnconstrainedSBN( p);
 
     return d;
 }
@@ -107,7 +106,6 @@ const MemberRules& Dist_UnconstrainedSBN::getParameterRules(void) const {
     if ( !rules_set )
         {
         memberRules.push_back( new ArgumentRule( "parameters", SBNParameters::getClassTypeSpec() , "The parameters of the SBN", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "rooted", RlBoolean::getClassTypeSpec()                       , "Is the distribution for a rooted tree?.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
 
         rules_set = true;
         }
@@ -143,10 +141,6 @@ void Dist_UnconstrainedSBN::setConstParameter(const std::string& name, const Rev
     if ( name == "parameters" )
     {
         parameters = var;
-    }
-    else if ( name == "rooted" )
-    {
-        rooted = var;
     }
     else
     {

@@ -42,7 +42,8 @@ namespace RevBayesCore {
 
         // Access to members
         const std::string &                                                 getBranchLengthApproximationMethod(void) const; // Tell someone how this SBN is approximating branch lengths
-        std::map<RbBitSet,std::pair<double,double> >&                       getEdgeLengthDistributionParameters(void); // For each subsplit parent-child relationship, the parameters of the edge length distribution
+        std::map<RbBitSet,std::pair<double,double> >&                       getEdgeLengthDistributionParameters(void); // For each split in an unrooted tree, the parameters of the edge length distribution
+        std::map<RbBitSet,std::pair<double,double> >&                       getNodeTimeDistributionParameters(void); // For each clade in a rooted tree, the parameters of the edge length distribution
         const size_t                                                        getNumTaxa(void) const; // The number of taxa in the tree the SBN describes
         std::vector<std::pair<Subsplit,double> >&                           getRootSplits(void); // The root splits in the tree and their probabilities
         std::map<Subsplit,std::vector<std::pair<Subsplit,double> > >&       getSubsplitCPDs(void); // For each subsplit, its children and their probabilities
@@ -62,12 +63,12 @@ namespace RevBayesCore {
         // Functions for learning SBNs
         void                                countAllSubsplits(Tree& tree, std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts, std::map<Subsplit,double>& root_split_counts, std::map<Subsplit,double>& q, bool doSA);
         void                                fitBranchLengthDistributions(std::vector<Tree> &trees);
+        void                                fitNodeTimeDistributions(std::vector<Tree> &trees);
         bool                                isValidCPD(std::vector<std::pair<Subsplit,double> >& cpd, Subsplit& parent) const;
         bool                                isValidRootDistribution(void) const;
         void                                normalizeCPDForSubsplit(std::vector<std::pair<Subsplit,double> >& cpd, Subsplit& parent);
         void                                makeCPDs(std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts);
         void                                makeRootSplits(std::map<Subsplit,double>& root_split_counts);
-        void                                learnRootedUnconstrainedSBN( std::vector<Tree>& trees );
         void                                learnTimeCalibratedSBN( std::vector<Tree>& trees );
         void                                learnUnconstrainedSBNSA( std::vector<Tree> &trees );
         void                                learnUnconstrainedSBNEM( std::vector<Tree> &trees, double &alpha );

@@ -102,6 +102,11 @@ std::map<RbBitSet,std::pair<double,double> >& SBNParameters::getEdgeLengthDistri
   return edge_length_distribution_parameters;
 }
 
+std::map<RbBitSet,std::pair<double,double> >& SBNParameters::getNodeTimeDistributionParameters(void)
+{
+  return edge_length_distribution_parameters;
+}
+
 const size_t SBNParameters::getNumTaxa(void) const
 {
   return num_taxa;
@@ -652,6 +657,10 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
 
 }
 
+void SBNParameters::fitNodeTimeDistributions(std::vector<Tree> &trees )
+{
+
+}
 void SBNParameters::makeCPDs(std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts)
 {
 
@@ -911,42 +920,6 @@ bool SBNParameters::isValidRootDistribution(void) const
   return true;
 }
 
-void SBNParameters::learnRootedUnconstrainedSBN( std::vector<Tree> &trees )
-{
-  // TODO: Reformat branch length processing and tree processing.
-  //       We're going to want to read each tree once and leave it as a root split and a vector of subsplits (probably as a pair<root,all_subsplits>).
-  //         We're also going to want makeCPDs and makeRootSplits to take these in, as well as a weight (the weight is either the variational distribution q_k^n or 1/(2n-3)) for normalizing.
-  //         Each tree-read pass should also return not just the subsplits but the branch lengths observed for each subsplit.
-  //       If we're going to consider online work, this will need a lot of other work
-
-  // For counting subsplits, we could use integers but unrooted trees get fractional counts, so we'll be consistent
-  std::map<Subsplit,double> root_split_counts;
-  std::map<std::pair<Subsplit,Subsplit>,double> parent_child_counts;
-
-  // The weight to assign when counting subsplits, for rooted trees the weight is 1
-  double weight = 1.0;
-
-  // Loop over all trees
-  // for each, get all root splits and subsplit parent-child relationships
-  // then consolidate into our master list
-  for (size_t i=0; i<trees.size(); ++i)
-  {
-    addTreeToAllRootSplitCounts(root_split_counts, trees[i], weight);
-    addTreeToAllParentChildCounts(parent_child_counts, trees[i], weight);
-  }
-
-  // Turn root split counts into a distribution on the root split
-  makeRootSplits(root_split_counts);
-
-  // Turn parent-child subsplit counts into CPDs
-  makeCPDs(parent_child_counts);
-
-  if ( !isValid() )
-  {
-    throw(RbException("learnRootedUnconstrainedSBN produced an invalid SBNParameters object."));
-  }
-
-}
 
 void SBNParameters::learnUnconstrainedSBNSA( std::vector<Tree> &trees )
 {

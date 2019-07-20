@@ -18,7 +18,7 @@ using namespace RevBayesCore;
 UnrootedUnconstrainedSBNProposal::UnrootedUnconstrainedSBNProposal( StochasticNode<Tree> *n, const SBNParameters sbn ) : Proposal(),
     tree( n ),
     // SBNParameters( sbn ),
-    SBNDistribution(UnconstrainedSBN(sbn,false))
+    SBNDistribution(UnconstrainedSBN(sbn))
 {
     // tell the base class to add the node
     addNode( tree );

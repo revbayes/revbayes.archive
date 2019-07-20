@@ -14,7 +14,7 @@ namespace RevBayesCore {
     class UnconstrainedSBN : public TypedDistribution<Tree> {
 
     public:
-        UnconstrainedSBN(const SBNParameters parameters, bool rooted);
+        UnconstrainedSBN(const SBNParameters parameters);
 		virtual                                            ~UnconstrainedSBN(void);                                                                    //!< Virtual destructor
 
         // public member functions
@@ -40,7 +40,6 @@ namespace RevBayesCore {
 
         // members
         SBNParameters                                       parameters;  // The parameters for this SBN
-        bool                                                rooted;
         std::vector<Taxon>                                  taxa;
     };
 
