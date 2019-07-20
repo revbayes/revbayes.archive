@@ -1,4 +1,5 @@
 #include "RateMatrix_Kimura80.h"
+#include "TransitionProbabilityMatrix.h"
 
 using namespace RevBayesCore;
 

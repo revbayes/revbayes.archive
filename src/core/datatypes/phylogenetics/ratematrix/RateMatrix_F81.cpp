@@ -1,5 +1,6 @@
 #include "EigenSystem.h"
 #include "RateMatrix_F81.h"
+#include "TransitionProbabilityMatrix.h"
 
 using namespace RevBayesCore;
 

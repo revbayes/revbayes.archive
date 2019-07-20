@@ -1,4 +1,5 @@
 #include "RateMatrix_JC.h"
+#include "TransitionProbabilityMatrix.h"
 
 
 
