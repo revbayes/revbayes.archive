@@ -678,22 +678,22 @@ void SBNParameters::fitNodeTimeDistributions(std::vector<Tree> &trees )
       tip_ages.push_back(trees[i].getTipNode(index).getAge());
     }
 
-    // We need root age for proportions so we handle the root first
-    RbBitSet this_clade = RbBitSet(taxa.size(),true);
+    // Root is different, handle it first
+    RbBitSet root_clade = RbBitSet(taxa.size(),true);
 
     double max_leaf_age = 0.0;
 
-    for (size_t n=0; n<taxa.size(); ++n)
+    for (size_t j=0; j<taxa.size(); ++j)
     {
-      if ( tip_ages[n] > max_leaf_age)
+      if ( tip_ages[j] > max_leaf_age)
       {
-        max_leaf_age = tip_ages[n];
+        max_leaf_age = tip_ages[j];
       }
     }
 
     double root_age = trees[i].getRoot().getAge();
 
-    (node_time_observations[this_clade]).push_back(root_age - max_leaf_age);
+    (node_time_observations[root_clade]).push_back(root_age - max_leaf_age);
 
     for (size_t n=0; n<tree_nodes.size(); ++i)
     {
@@ -701,15 +701,15 @@ void SBNParameters::fitNodeTimeDistributions(std::vector<Tree> &trees )
       if ( tree_nodes[n]->isInternal() )
       {
         Subsplit this_subsplit = tree_nodes[n]->getSubsplit(taxa);
-        this_clade = this_subsplit.asCladeBitset();
+        RbBitSet this_clade = this_subsplit.asCladeBitset();
 
         double max_descendant_leaf_age = 0.0;
 
-        for (size_t n=0; n<taxa.size(); ++n)
+        for (size_t j=0; j<taxa.size(); ++j)
         {
-          if ( this_clade[n] && tip_ages[n] > max_descendant_leaf_age)
+          if ( this_clade[j] && tip_ages[j] > max_descendant_leaf_age)
           {
-            max_descendant_leaf_age = tip_ages[n];
+            max_descendant_leaf_age = tip_ages[j];
           }
         }
 

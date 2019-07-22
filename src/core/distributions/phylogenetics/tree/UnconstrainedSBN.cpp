@@ -218,7 +218,6 @@ void UnconstrainedSBN::simulateTree( void )
 
     // For drawing branch lengths
     std::map<RbBitSet,std::pair<double,double> > edge_length_params = parameters.getEdgeLengthDistributionParameters();
-    // std::map<RbBitSet,std::pair<std::vector<double>,std::vector<double> > > edge_length_params = parameters.getEdgeLengthDistributionParameters();
 
     // create the tip nodes
     std::vector<TopologyNode*> tip_nodes;
@@ -272,7 +271,7 @@ void UnconstrainedSBN::simulateTree( void )
       // this_parent_child.first = this_parent_subsplit;
       // this_parent_child.second = Y_child;
 
-      // Draw a branch length from the observed pool at random
+      // Draw a branch length
       std::pair<double,double> these_params = edge_length_params[Y_child.asSplitBitset()];
 
       double brlen;
