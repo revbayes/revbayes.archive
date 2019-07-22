@@ -37,7 +37,8 @@ SBNParameters::SBNParameters( void ) :
   taxa(),
   root_splits(),
   subsplit_cpds(),
-  branch_length_approximation_method()
+  branch_length_approximation_method(),
+  time_calibrated()
 {
   // Nothing to do
 }
@@ -49,12 +50,10 @@ SBNParameters::SBNParameters( std::vector<Taxon> taxa, const std::string &branch
   taxa( taxa ),
   root_splits(),
   subsplit_cpds(),
-  branch_length_approximation_method( branch_length_approximation )
+  branch_length_approximation_method( branch_length_approximation ),
+  time_calibrated()
 {
-  if ( !(branch_length_approximation_method == "gammaMOM" || branch_length_approximation_method == "lognormalML" || branch_length_approximation_method == "lognormalMOM") )
-  {
-    throw(RbException("Invalid branch length/node height approximation method when initializing SBN object."));
-  }
+  // Nothing to do
 }
 
 /** Construct rate matrix with n states */
@@ -64,7 +63,8 @@ SBNParameters::SBNParameters( const SBNParameters &sbn ) :
   taxa(sbn.taxa),
   root_splits(sbn.root_splits),
   subsplit_cpds(sbn.subsplit_cpds),
-  branch_length_approximation_method(sbn.branch_length_approximation_method)
+  branch_length_approximation_method(sbn.branch_length_approximation_method),
+  time_calibrated(sbn.time_calibrated)
 {
 
 }
@@ -87,6 +87,7 @@ SBNParameters& SBNParameters::operator=( const SBNParameters &sbn )
       root_splits                         = sbn.root_splits;
       subsplit_cpds                       = sbn.subsplit_cpds;
       branch_length_approximation_method  = sbn.branch_length_approximation_method;
+      time_calibrated                     = sbn.time_calibrated;
     }
 
     return *this;
@@ -601,7 +602,7 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
     BOOST_FOREACH(clade_edge_observations, branch_length_observations) {
       if (clade_edge_observations.second.size() > 2)
       {
-        // Get mean/var of log of observations
+        // Get mean/var of observations
         double mean;
         for (size_t i=0; i<clade_edge_observations.second.size(); ++i)
         {
@@ -659,6 +660,123 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
 
 void SBNParameters::fitNodeTimeDistributions(std::vector<Tree> &trees )
 {
+  // First we get the data we want from our samples
+  std::map<RbBitSet,std::vector<double> > node_time_observations;
+
+  // Loop over all trees
+  for (size_t i=0; i<trees.size(); ++i)
+  {
+    const std::vector<TopologyNode*> tree_nodes = trees[i].getNodes();
+
+    // We need a mapping from the ith taxon in our bitsets to the corresponding tip node age
+    // Our bitsets may not match bitsets available in tree, so we make our own mapping
+    std::vector<double> tip_ages;
+
+    for (size_t i=0; i<taxa.size(); ++i)
+    {
+      size_t index = trees[i].getTipIndex(taxa[i].getName());
+      tip_ages.push_back(trees[i].getTipNode(index).getAge());
+    }
+
+    // We need root age for proportions so we handle the root first
+    RbBitSet this_clade = RbBitSet(taxa.size(),true);
+
+    double max_leaf_age = 0.0;
+
+    for (size_t n=0; n<taxa.size(); ++n)
+    {
+      if ( tip_ages[n] > max_leaf_age)
+      {
+        max_leaf_age = tip_ages[n];
+      }
+    }
+
+    double root_age = trees[i].getRoot().getAge();
+
+    (node_time_observations[this_clade]).push_back(root_age - max_leaf_age);
+
+    for (size_t n=0; n<tree_nodes.size(); ++i)
+    {
+      // Root already handled and nothing to do for tips
+      if ( tree_nodes[n]->isInternal() )
+      {
+        Subsplit this_subsplit = tree_nodes[n]->getSubsplit(taxa);
+        this_clade = this_subsplit.asCladeBitset();
+
+        double max_descendant_leaf_age = 0.0;
+
+        for (size_t n=0; n<taxa.size(); ++n)
+        {
+          if ( this_clade[n] && tip_ages[n] > max_descendant_leaf_age)
+          {
+            max_descendant_leaf_age = tip_ages[n];
+          }
+        }
+
+        double my_age_above_tips = tree_nodes[n]->getAge() - max_descendant_leaf_age;
+        double my_parents_age_above_tips = tree_nodes[n]->getParent().getAge() - max_descendant_leaf_age;
+        (node_time_observations[this_clade]).push_back(my_age_above_tips/my_parents_age_above_tips);
+      }
+    }
+  }
+
+  // Then we fit distributions to our observations
+  if ( branch_length_approximation_method == "rootGammaNodePropBeta" )
+  {
+    // Turn root age observations into gamma distributions
+
+
+    // Turn node age proportion observations into beta distributions
+    std::pair<RbBitSet,std::vector<double> > node_proportion_observation;
+    BOOST_FOREACH(node_proportion_observation, node_time_observations) {
+      if (node_proportion_observation.second.size() > 2)
+      {
+        // Get mean/var of log of observations
+        double mean;
+        for (size_t i=0; i<node_proportion_observation.second.size(); ++i)
+        {
+          mean += node_proportion_observation.second[i];
+        }
+        mean /= node_proportion_observation.second.size();
+
+        double var;
+        for (size_t i=0; i<node_proportion_observation.second.size(); ++i)
+        {
+          var += pow(node_proportion_observation.second[i] - mean,2.0);
+        }
+        var /= node_proportion_observation.second.size();
+
+        // Approximate node-proportion distribution using beta
+        std::pair<double,double> these_params;
+
+        // Approximate edge-length distribution using Beta, use method of moments
+        if (var >= mean * (1-mean)) {
+          // Variance is too small, set it to minimum for MOM fitting
+          var = mean * (1-mean);
+          these_params.first = mean * (mean * (1-mean)/var - 1);
+          these_params.first = (1.0 - mean) * (mean * (1-mean)/var - 1);
+        }
+        else
+        {
+          these_params.first = mean * (mean * (1-mean)/var - 1);
+          these_params.first = (1.0 - mean) * (mean * (1-mean)/var - 1);
+        }
+
+        edge_length_distribution_parameters[node_proportion_observation.first] = these_params;
+
+      }
+      else
+      {
+        // Basically no information on node proportion distribution
+        // Approximate edge-length distribution using a uniform
+        std::pair<double,double> these_params;
+        these_params.first = 1.0;
+        these_params.second = 1.0;
+
+        edge_length_distribution_parameters[node_proportion_observation.first] = these_params;
+      }
+    }
+  }
 
 }
 void SBNParameters::makeCPDs(std::map<std::pair<Subsplit,Subsplit>,double>& parent_child_counts)
@@ -920,9 +1038,54 @@ bool SBNParameters::isValidRootDistribution(void) const
   return true;
 }
 
+void SBNParameters::learnTimeCalibratedSBN( std::vector<Tree>& trees )
+{
+  time_calibrated = true;
+
+  if ( !(branch_length_approximation_method == "rootGammaNodePropBeta") )
+  {
+    throw(RbException("Invalid branch length/node height approximation method when initializing SBN object."));
+  }
+
+  // For counting subsplits, we could use integers but unrooted trees get fractional counts, so we'll be consistent
+  std::map<Subsplit,double> root_split_counts;
+  std::map<std::pair<Subsplit,Subsplit>,double> parent_child_counts;
+
+  // The weight to assign when counting subsplits, for rooted trees the weight is 1
+  double weight = 1.0;
+
+  // Loop over all trees
+  // for each, get all root splits and subsplit parent-child relationships
+  // then consolidate into our master list
+  for (size_t i=0; i<trees.size(); ++i)
+  {
+    addTreeToAllRootSplitCounts(root_split_counts, trees[i], weight);
+    addTreeToAllParentChildCounts(parent_child_counts, trees[i], weight);
+  }
+
+  // Turn root split counts into a distribution on the root split
+  makeRootSplits(root_split_counts);
+
+  // Turn parent-child subsplit counts into CPDs
+  makeCPDs(parent_child_counts);
+
+  if ( !isValid() )
+  {
+    throw(RbException("learnTimeCalibratedSBN produced an invalid SBNParameters object."));
+  }
+
+  fitNodeTimeDistributions(trees);
+}
 
 void SBNParameters::learnUnconstrainedSBNSA( std::vector<Tree> &trees )
 {
+  time_calibrated = false;
+
+  if ( !(branch_length_approximation_method == "gammaMOM" || branch_length_approximation_method == "lognormalML" || branch_length_approximation_method == "lognormalMOM") )
+  {
+    throw(RbException("Invalid branch length/node height approximation method when initializing SBN object."));
+  }
+
   // std::cout << "hello from learnUnconstrainedSBNSA, there are this many trees" << trees.size() << std::endl;
 
   // To store counts

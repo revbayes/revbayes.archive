@@ -80,6 +80,7 @@ namespace RevBayesCore {
         void                                incrementRootSplitCount(std::map<Subsplit,double>& root_split_counts, Subsplit &this_root_split, double &weight);
       private:
         // members
+        bool                                           time_calibrated; // Is this a time-calibrated SBN?
         size_t                                         num_taxa; // The number of taxa in the tree the SBN describes
         std::vector<Taxon>                             taxa; // The taxa in the tree the SBN describes
         std::vector<std::pair<Subsplit,double> >       root_splits; // The root splits in the tree and their probabilities
