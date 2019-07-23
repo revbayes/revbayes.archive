@@ -941,7 +941,7 @@ void DagNode::removeChild(DagNode *child) const
 {
 
     // test if we even have this node as a child
-    std::vector<DagNode *>::iterator it = std::find( children.begin(), children.end(), child );
+    auto it = std::find( children.begin(), children.end(), child );
     if ( it != children.end() )
     {
         children.erase( it );
