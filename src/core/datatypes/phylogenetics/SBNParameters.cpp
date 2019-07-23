@@ -672,11 +672,12 @@ void SBNParameters::fitNodeTimeDistributions(std::vector<Tree> &trees )
     // Our bitsets may not match bitsets available in tree, so we make our own mapping
     std::vector<double> tip_ages;
 
-    for (size_t i=0; i<taxa.size(); ++i)
+    for (size_t j=0; j<taxa.size(); ++j)
     {
-      size_t index = trees[i].getTipIndex(taxa[i].getName());
+      size_t index = trees[i].getTipIndex(taxa[j].getName());
       tip_ages.push_back(trees[i].getTipNode(index).getAge());
     }
+// std::cout << "got tip ages" << std::endl;
 
     // Root is different, handle it first
     RbBitSet root_clade = RbBitSet(taxa.size(),true);
@@ -692,14 +693,16 @@ void SBNParameters::fitNodeTimeDistributions(std::vector<Tree> &trees )
     }
 
     double root_age = trees[i].getRoot().getAge();
+// std::cout << "got root age" << std::endl;
 
     (node_time_observations[root_clade]).push_back(root_age - max_leaf_age);
 
-    for (size_t n=0; n<tree_nodes.size(); ++i)
+    for (size_t n=0; n<tree_nodes.size(); ++n)
     {
       // Root already handled and nothing to do for tips
-      if ( tree_nodes[n]->isInternal() )
+      if ( !(tree_nodes[n]->isTip()) && !(tree_nodes[n]->isRoot()) )
       {
+// std::cout << "on node " << n << std::endl;
         Subsplit this_subsplit = tree_nodes[n]->getSubsplit(taxa);
         RbBitSet this_clade = this_subsplit.asCladeBitset();
 
@@ -712,14 +715,16 @@ void SBNParameters::fitNodeTimeDistributions(std::vector<Tree> &trees )
             max_descendant_leaf_age = tip_ages[j];
           }
         }
-
+// std::cout << "max_descendant_leaf_age = " << max_descendant_leaf_age << std::endl;
         double my_age_above_tips = tree_nodes[n]->getAge() - max_descendant_leaf_age;
+// std::cout << "my_age_above_tips = " << my_age_above_tips << std::endl;
         double my_parents_age_above_tips = tree_nodes[n]->getParent().getAge() - max_descendant_leaf_age;
+// std::cout << "my_parents_age_above_tips = " << my_parents_age_above_tips << std::endl;
         (node_time_observations[this_clade]).push_back(my_age_above_tips/my_parents_age_above_tips);
       }
     }
   }
-
+// std::cout << "got all node ages" << std::endl;
   // Then we fit distributions to our observations
   if ( branch_length_approximation_method == "rootGammaNodePropBeta" )
   {
@@ -752,7 +757,7 @@ void SBNParameters::fitNodeTimeDistributions(std::vector<Tree> &trees )
         // Approximate edge-length distribution using Beta, use method of moments
         if (var >= mean * (1-mean)) {
           // Variance is too small, set it to minimum for MOM fitting
-          var = mean * (1-mean);
+          var = 0.95 * (mean * (1-mean));
           these_params.first = mean * (mean * (1-mean)/var - 1);
           these_params.first = (1.0 - mean) * (mean * (1-mean)/var - 1);
         }
@@ -1061,13 +1066,16 @@ void SBNParameters::learnTimeCalibratedSBN( std::vector<Tree>& trees )
   {
     addTreeToAllRootSplitCounts(root_split_counts, trees[i], weight);
     addTreeToAllParentChildCounts(parent_child_counts, trees[i], weight);
+// std::cout << "got splits from tree " << i << std::endl;
   }
 
   // Turn root split counts into a distribution on the root split
   makeRootSplits(root_split_counts);
+// std::cout << "made root splits" << std::endl;
 
   // Turn parent-child subsplit counts into CPDs
   makeCPDs(parent_child_counts);
+// std::cout << "made CPDs" << std::endl;
 
   if ( !isValid() )
   {
@@ -1075,6 +1083,8 @@ void SBNParameters::learnTimeCalibratedSBN( std::vector<Tree>& trees )
   }
 
   fitNodeTimeDistributions(trees);
+// std::cout << "fit branch lengths" << std::endl;
+
 }
 
 void SBNParameters::learnUnconstrainedSBNSA( std::vector<Tree> &trees )
