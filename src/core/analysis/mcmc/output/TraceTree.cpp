@@ -1284,6 +1284,39 @@ bool TraceTree::isClock(void)
     return clock;
 }
 
+SBNParameters TraceTree::learnTimeCalibratedSBN(const std::string &branch_length_approximation)
+{
+
+  NewickConverter converter;
+
+  std::vector<Taxon> ordered_taxa = objectAt(0).getTaxa();
+  VectorUtilities::sort( ordered_taxa );
+
+  // Initialize SBNParameters object with taxa
+  // SBNParameters sbn = SBNParameters(ordered_taxa);
+  SBNParameters sbn(ordered_taxa, branch_length_approximation);
+
+  // Get trees as vector to pass to learning function
+  std::vector<Tree> trees;
+
+  for (size_t i = burnin; i < size(); ++i)
+  {
+      Tree tree = objectAt(i);
+      trees.push_back( tree );
+  }
+
+  if (!clock)
+  {
+    throw(RbException("Time-constrained SBNs must be fit to clock trees."));
+  }
+  else
+  {
+    sbn.learnTimeCalibratedSBN(trees);
+  }
+
+    return sbn;
+}
+
 SBNParameters TraceTree::learnUnconstrainedSBN(const std::string &branch_length_approximation)
 {
 

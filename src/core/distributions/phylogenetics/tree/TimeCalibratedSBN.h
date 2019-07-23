@@ -1,5 +1,5 @@
-#ifndef TimeConstrainedSBN_H
-#define TimeConstrainedSBN_H
+#ifndef TimeCalibratedSBN_H
+#define TimeCalibratedSBN_H
 
 #include "MatrixReal.h"
 #include "Subsplit.h"
@@ -11,14 +11,14 @@
 
 namespace RevBayesCore {
 
-    class TimeConstrainedSBN : public TypedDistribution<Tree> {
+    class TimeCalibratedSBN : public TypedDistribution<Tree> {
 
     public:
-        TimeConstrainedSBN(const SBNParameters parameters);
-		virtual                                            ~TimeConstrainedSBN(void);                                                                    //!< Virtual destructor
+        TimeCalibratedSBN(const SBNParameters parameters);
+		virtual                                            ~TimeCalibratedSBN(void);                                                                    //!< Virtual destructor
 
         // public member functions
-        TimeConstrainedSBN*                        clone(void) const;                                                                                  //!< Create an independent clone
+        TimeCalibratedSBN*                        clone(void) const;                                                                                  //!< Create an independent clone
         double                                              computeLnProbability(void);
         double                                              computeLnProbabilityNodeTimes( void );
         void                                                redrawValue(void);

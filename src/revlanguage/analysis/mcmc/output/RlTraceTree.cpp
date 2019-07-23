@@ -279,6 +279,16 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         }
 
     }
+    else if ( name == "learnTimeCalibratedSBN" )
+    {
+        found = true;
+
+        const std::string &branch_length_approximation  = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
+
+        RevBayesCore::SBNParameters sbn = this->value->learnTimeCalibratedSBN(branch_length_approximation);
+        return new RevVariable( new SBNParameters( sbn ) );
+
+    }
     else if ( name == "learnUnconstrainedSBN" )
     {
         found = true;
@@ -373,6 +383,10 @@ void TraceTree::initMethods( void )
     cladeProbArgRules->push_back( new ArgumentRule("clade", Clade::getClassTypeSpec(), "The (monophyletic) clade.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
     cladeProbArgRules->push_back( new ArgumentRule("verbose", RlBoolean::getClassTypeSpec(), "Printing verbose output.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true)) );
     this->methods.addFunction( new MemberProcedure( "cladeProbability", Probability::getClassTypeSpec(), cladeProbArgRules) );
+
+    ArgumentRules* learnTimeCalibratedSBNRules = new ArgumentRules();
+    learnTimeCalibratedSBNRules->push_back( new ArgumentRule("nodeAgeApproximationMethod", RlString::getClassTypeSpec(), "gammaRootNodePropBeta", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    this->methods.addFunction( new MemberProcedure( "learnTimeCalibratedSBN", SBNParameters::getClassTypeSpec(), learnTimeCalibratedSBNRules) );
 
     ArgumentRules* learnUnconstrainedSBNRules = new ArgumentRules();
     learnUnconstrainedSBNRules->push_back( new ArgumentRule("branchLengthApproximationMethod", RlString::getClassTypeSpec(), "gammaMOM|lognormalML|lognormalMOM.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );

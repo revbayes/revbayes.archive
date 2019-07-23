@@ -151,6 +151,7 @@
 #include "Dist_sampledSpeciationBirthDeathProcess.h"
 #include "Dist_BDSTP.h"
 #include "Dist_SSBDP.h"
+#include "Dist_timeCalibratedSBN.h"
 #include "Dist_TimeVaryingStateDependentSpeciationExtinctionProcess.h"
 #include "Dist_UltrametricTree.h"
 #include "Dist_uniformTimeTree.h"
@@ -348,6 +349,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // constrained topology distribution
         AddDistribution< TimeTree                   >( new Dist_ConstrainedTopology() );
+
+        // uniform topology distribution
+        AddDistribution< BranchLengthTree           >( new Dist_TimeCalibratedSBN() );
 
         // uniform time tree distribution
         AddDistribution< TimeTree                   >( new Dist_uniformTimeTree() );

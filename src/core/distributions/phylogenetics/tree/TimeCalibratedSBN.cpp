@@ -8,14 +8,14 @@
 #include "RbConstants.h"
 #include "RbException.h"
 #include "TopologyNode.h"
-#include "TimeConstrainedSBN.h"
+#include "TimeCalibratedSBN.h"
 
 #include <algorithm>
 #include <cmath>
 
 using namespace RevBayesCore;
 
-TimeConstrainedSBN::TimeConstrainedSBN(const SBNParameters parameters) : TypedDistribution<Tree>( new Tree() ),
+TimeCalibratedSBN::TimeCalibratedSBN(const SBNParameters parameters) : TypedDistribution<Tree>( new Tree() ),
     parameters( parameters ),
     taxa( parameters.getTaxa() )
 {
@@ -27,20 +27,20 @@ TimeConstrainedSBN::TimeConstrainedSBN(const SBNParameters parameters) : TypedDi
 }
 
 
-TimeConstrainedSBN::~TimeConstrainedSBN()
+TimeCalibratedSBN::~TimeCalibratedSBN()
 {
     // the tree will be deleted automatically by the base class
 
 }
 
 
-TimeConstrainedSBN* TimeConstrainedSBN::clone( void ) const
+TimeCalibratedSBN* TimeCalibratedSBN::clone( void ) const
 {
 
-    return new TimeConstrainedSBN( *this );
+    return new TimeCalibratedSBN( *this );
 }
 
-double TimeConstrainedSBN::computeLnProbability( void )
+double TimeCalibratedSBN::computeLnProbability( void )
 {
     double lnProbability = 0.0;
 
@@ -54,7 +54,7 @@ double TimeConstrainedSBN::computeLnProbability( void )
     return lnProbability;
 }
 
-double TimeConstrainedSBN::computeLnProbabilityNodeTimes( void )
+double TimeCalibratedSBN::computeLnProbabilityNodeTimes( void )
 {
     double lnProbability = 0.0;
 
@@ -144,12 +144,12 @@ double TimeConstrainedSBN::computeLnProbabilityNodeTimes( void )
     return lnProbability;
 }
 
-void TimeConstrainedSBN::redrawValue( void )
+void TimeCalibratedSBN::redrawValue( void )
 {
     simulateTree();
 }
 
-void TimeConstrainedSBN::setValue(RevBayesCore::Tree *v, bool force)
+void TimeCalibratedSBN::setValue(RevBayesCore::Tree *v, bool force)
 {
 
     // delegate to super class
@@ -158,7 +158,7 @@ void TimeConstrainedSBN::setValue(RevBayesCore::Tree *v, bool force)
 }
 
 
-void TimeConstrainedSBN::simulateTree( void )
+void TimeCalibratedSBN::simulateTree( void )
 {
 
     // How is this SBN approximating node heights?
@@ -357,7 +357,7 @@ void TimeConstrainedSBN::simulateTree( void )
 
 
 /** Swap a parameter of the distribution */
-void TimeConstrainedSBN::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
+void TimeCalibratedSBN::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
   // SBNs have their parameters set once and they do not change afterwards
 }
@@ -368,7 +368,7 @@ void TimeConstrainedSBN::swapParameterInternal( const DagNode *oldP, const DagNo
 //  *
 //  * \return     True if the constraints are matched, false otherwise.
 //  */
-// bool TimeConstrainedSBN::matchesConstraints( void )
+// bool TimeCalibratedSBN::matchesConstraints( void )
 // {
 //
 //     if ( constraints.empty() == true )
