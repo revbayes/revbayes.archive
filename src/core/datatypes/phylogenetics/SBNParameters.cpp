@@ -16,6 +16,7 @@
 
 #include <boost/foreach.hpp>
 #include "DistributionGamma.h"
+#include "DistributionKumaraswamy.h"
 #include "DistributionLognormal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -658,6 +659,82 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
 
 }
 
+// Jones (2009) eqn 5.2, Score function for Kumaraswamy distribution
+double kumar_score(double a, std::vector<double> &samples)
+{
+  double n = (double)samples.size();
+
+  double T1 = 0.0;
+  double T2 = 0.0;
+  double T3 = 0.0;
+
+  for (size_t i=0; i<samples.size(); ++i)
+  {
+    double y = std::pow(samples[i],a);
+    double log_y = log(y);
+    double one_minus_y = 1.0 - y;
+    T1 += log_y/one_minus_y;
+    T2 += (y * log_y)/one_minus_y;
+    T3 += log(one_minus_y);
+  }
+
+  T1 *= 1.0/n;
+  T2 *= 1.0/n;
+  T3 *= 1.0/n;
+
+  return n/a * (1 + T1 + T2/T3);
+
+}
+
+std::pair<double,double> fit_kumar_agd(std::vector<double> &samples)
+{
+
+  double x_s = 1.0;
+  double x_s_1;
+
+  double y_s = 1.0;
+  double y_s_1;
+
+  double lambda_s = 1.0;
+  double lambda_s_1 = (1.0 + sqrt(1.0 + 4.0 * lambda_s*lambda_s)) / 2.0;
+
+  double d = 10000000.0;
+  double beta_inv = 1.0/1000.0;
+  double eps = 0.001;
+  // Run accelerated gradient descent
+  while (d > eps)
+  {
+    double gamma_s = (1.0 - lambda_s) / lambda_s_1;
+
+    y_s_1 = x_s + beta_inv * kumar_score(x_s,samples);
+    x_s_1 = (1.0 - gamma_s) * y_s_1 + gamma_s * y_s;
+
+    d = fabs(x_s_1 - x_s);
+
+    x_s = x_s_1;
+    y_s = y_s_1;
+
+    lambda_s = lambda_s_1;
+    lambda_s_1 = (1.0 + sqrt(1.0 + 4.0 * lambda_s*lambda_s)) / 2.0;
+
+  }
+
+  std::pair<double,double> alphabeta;
+  alphabeta.first = x_s_1;
+
+  // Get beta parameter of Kumaraswamy distribution (x_s_1 is alpha)
+  double s = 0.0;
+  for (size_t i=0; i<samples.size(); ++i)
+  {
+    s += log(1.0 - std::pow(samples[i],x_s_1));
+  }
+
+  alphabeta.second = -(double)samples.size()/s;
+
+  return alphabeta;
+}
+
+
 void SBNParameters::fitNodeTimeDistributions(std::vector<Tree> &trees )
 {
   // First we get the data we want from our samples
@@ -726,54 +803,52 @@ void SBNParameters::fitNodeTimeDistributions(std::vector<Tree> &trees )
   }
 // std::cout << "got all node ages" << std::endl;
   // Then we fit distributions to our observations
-  if ( branch_length_approximation_method == "rootGammaNodePropBeta" )
+  if ( branch_length_approximation_method == "rootGammaNodePropKumaraswamy" )
   {
-    // Turn root age observations into gamma distributions
+    // Turn root age observations into gamma distributions via method of moments
+    RbBitSet root_clade = RbBitSet(taxa.size(),true);
+    std::vector<double> root_age_observations = node_time_observations[root_clade];
 
+    // Get mean/var of observations
+    double mean;
+    for (size_t i=0; i<root_age_observations.size(); ++i)
+    {
+      mean += root_age_observations[i];
+    }
+    mean /= root_age_observations.size();
 
-    // Turn node age proportion observations into beta distributions
+    double var;
+    for (size_t i=0; i<root_age_observations.size(); ++i)
+    {
+      var += pow(root_age_observations[i] - mean,2.0);
+    }
+    var /= root_age_observations.size();
+
+    // Approximate edge-length distribution using gamma
+    std::pair<double,double> root_params;
+
+    root_params.second = mean/var;
+    root_params.first = mean * root_params.second;
+
+std::cout << "Fit gamma to root age, mean was " << mean << " and var was " << var << std::endl;
+std::cout << "Fit gamma to root age, rate is " << root_params.first << " and shape is " << root_params.second << std::endl;
+std::cout << "trying to store root parameters with bitset " << root_clade << std::endl;
+    edge_length_distribution_parameters[root_clade] = root_params;
+std::cout << "Re-accessing, rate is " << edge_length_distribution_parameters[root_clade].first << " and shape is " << edge_length_distribution_parameters[root_clade].second << std::endl;
+
+    // Turn node age proportion observations into Kumaraswamy distributions
     std::pair<RbBitSet,std::vector<double> > node_proportion_observation;
     BOOST_FOREACH(node_proportion_observation, node_time_observations) {
       if (node_proportion_observation.second.size() > 2)
       {
-        // Get mean/var of log of observations
-        double mean;
-        for (size_t i=0; i<node_proportion_observation.second.size(); ++i)
-        {
-          mean += node_proportion_observation.second[i];
-        }
-        mean /= node_proportion_observation.second.size();
-
-        double var;
-        for (size_t i=0; i<node_proportion_observation.second.size(); ++i)
-        {
-          var += pow(node_proportion_observation.second[i] - mean,2.0);
-        }
-        var /= node_proportion_observation.second.size();
-
-        // Approximate node-proportion distribution using beta
-        std::pair<double,double> these_params;
-
-        // Approximate edge-length distribution using Beta, use method of moments
-        if (var >= mean * (1-mean)) {
-          // Variance is too small, set it to minimum for MOM fitting
-          var = 0.95 * (mean * (1-mean));
-          these_params.first = mean * (mean * (1-mean)/var - 1);
-          these_params.first = (1.0 - mean) * (mean * (1-mean)/var - 1);
-        }
-        else
-        {
-          these_params.first = mean * (mean * (1-mean)/var - 1);
-          these_params.first = (1.0 - mean) * (mean * (1-mean)/var - 1);
-        }
-
-        edge_length_distribution_parameters[node_proportion_observation.first] = these_params;
+        // Approximate node-proportion distribution using Kumaraswamy
+        edge_length_distribution_parameters[node_proportion_observation.first] = fit_kumar_agd(node_proportion_observation.second);
 
       }
       else
       {
         // Basically no information on node proportion distribution
-        // Approximate edge-length distribution using a uniform
+        // Approximate node proportion distribution using a uniform
         std::pair<double,double> these_params;
         these_params.first = 1.0;
         these_params.second = 1.0;
@@ -1047,7 +1122,7 @@ void SBNParameters::learnTimeCalibratedSBN( std::vector<Tree>& trees )
 {
   time_calibrated = true;
 
-  if ( !(branch_length_approximation_method == "rootGammaNodePropBeta") )
+  if ( !(branch_length_approximation_method == "rootGammaNodePropKumaraswamy") )
   {
     throw(RbException("Invalid branch length/node height approximation method when initializing SBN object."));
   }

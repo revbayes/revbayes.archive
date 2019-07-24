@@ -184,6 +184,7 @@
 #include "Dist_halfNormalPositive.h"
 #include "Dist_inverseGamma.h"
 #include "Dist_inverseWishart.h"
+#include "Dist_Kumaraswamy.h"
 #include "Dist_Laplace.h"
 #include "Dist_LKJ.h"
 #include "Dist_LKJPartial.h"
@@ -447,6 +448,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddContinuousDistribution< RealPos          >( new Dist_exponential() );
         AddContinuousDistribution< Real             >( new Dist_exponentialOffset() );
         AddContinuousDistribution< RealPos          >( new Dist_exponentialOffsetPositive() );
+
+        // Kumaraswamy distribution
+        AddDistribution< Probability                >( new Dist_Kumaraswamy() );
 
         // Laplace distribution
         AddContinuousDistribution< Real             >( new Dist_Laplace() );

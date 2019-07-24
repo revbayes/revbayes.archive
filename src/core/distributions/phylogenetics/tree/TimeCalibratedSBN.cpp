@@ -2,6 +2,7 @@
 #include "Clade.h"
 #include "DistributionBeta.h"
 #include "DistributionGamma.h"
+#include "DistributionKumaraswamy.h"
 #include "DistributionLognormal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -63,8 +64,8 @@ double TimeCalibratedSBN::computeLnProbabilityNodeTimes( void )
     const std::vector<TopologyNode*> tree_nodes = value->getNodes();
 
     // How is this SBN approximating node heights?
-    bool approx_root_gamma = parameters.getBranchLengthApproximationMethod() == "rootGammaNodePropBeta";
-    bool approx_prop_beta = parameters.getBranchLengthApproximationMethod() == "rootGammaNodePropBeta";
+    bool approx_root_gamma = parameters.getBranchLengthApproximationMethod() == "rootGammaNodePropKumaraswamy";
+    bool approx_prop_kumar = parameters.getBranchLengthApproximationMethod() == "rootGammaNodePropKumaraswamy";
 
     // We need a mapping from the ith taxon in our bitsets to the corresponding tip node age
     // Our bitsets may not match bitsets available in tree, so we make our own mapping
@@ -126,12 +127,12 @@ double TimeCalibratedSBN::computeLnProbabilityNodeTimes( void )
         double my_parents_age_above_tips = tree_nodes[i]->getParent().getAge() - max_descendant_leaf_age;
         double p = my_age_above_tips/my_parents_age_above_tips;
 
-        if (approx_prop_beta)
+        if (approx_prop_kumar)
         {
           // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Gamma::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
           // std::cout << "gamma shape: " << these_params.first << "; gamma rate: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
 
-          lnProbability += RbStatistics::Beta::lnPdf(these_params.first, these_params.second, p);
+          lnProbability += RbStatistics::Kumaraswamy::lnPdf(these_params.first, these_params.second, p);
         }
         else
         {
@@ -162,8 +163,8 @@ void TimeCalibratedSBN::simulateTree( void )
 {
 
     // How is this SBN approximating node heights?
-    bool approx_root_gamma = parameters.getBranchLengthApproximationMethod() == "rootGammaNodePropBeta";
-    bool approx_prop_beta = parameters.getBranchLengthApproximationMethod() == "rootGammaNodePropBeta";
+    bool approx_root_gamma = parameters.getBranchLengthApproximationMethod() == "rootGammaNodePropKumaraswamy";
+    bool approx_prop_kumar = parameters.getBranchLengthApproximationMethod() == "rootGammaNodePropKumaraswamy";
 
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -212,11 +213,13 @@ void TimeCalibratedSBN::simulateTree( void )
     // Draw root age
     RbBitSet root_clade = RbBitSet(taxa.size(),true);
     std::pair<double,double> root_params = node_age_params[root_clade];
+std::cout << "trying to access root parameters with bitset " << root_clade << std::endl;
 
     if ( approx_root_gamma )
     {
-      double offset_age  = RbStatistics::Gamma::rv(root_params.first, root_params.second, *rng);
-
+std::cout << "about to draw root, gamma shape = " << root_params.first << " and rate = " << root_params.second << std::endl;
+      // double offset_age  = RbStatistics::Gamma::rv(root_params.first, root_params.second, *rng);
+      double offset_age = 10.0;
       root->setAge(offset_age + max_leaf_age);
     }
     else
@@ -265,9 +268,9 @@ void TimeCalibratedSBN::simulateTree( void )
         }
 
         double p;
-        if ( approx_prop_beta )
+        if ( approx_prop_kumar )
         {
-          p  = RbStatistics::Beta::rv(these_params.first, these_params.second, *rng);
+          p  = RbStatistics::Kumaraswamy::rv(these_params.first, these_params.second, *rng);
         }
         else
         {
@@ -310,9 +313,9 @@ void TimeCalibratedSBN::simulateTree( void )
         }
 
         double p;
-        if ( approx_prop_beta )
+        if ( approx_prop_kumar )
         {
-          p  = RbStatistics::Beta::rv(these_params.first, these_params.second, *rng);
+          p  = RbStatistics::Kumaraswamy::rv(these_params.first, these_params.second, *rng);
         }
         else
         {
@@ -346,7 +349,6 @@ void TimeCalibratedSBN::simulateTree( void )
     	psi->getTipNodeWithName(taxa[i].getName()).setIndex(i);
     }
 
-    psi->unroot();
     psi->orderNodesByIndex();
 
   // finally store the new value
