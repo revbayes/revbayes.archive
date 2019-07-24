@@ -93,9 +93,10 @@ double TimeCalibratedSBN::computeLnProbabilityNodeTimes( void )
 
     if (approx_root_gamma)
     {
-      // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Gamma::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
-      // std::cout << "gamma shape: " << these_params.first << "; gamma rate: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
-      lnProbability += RbStatistics::Gamma::lnPdf(root_params.first, root_params.second, value->getRoot().getAge() - max_leaf_age);
+      double root_age_offset = value->getRoot().getAge() - max_leaf_age;
+      // std::cout << "gamma shape: " << root_params.first << "; gamma rate: " << root_params.second << std::endl;
+      // std::cout << "Computing probability for root age (minus offset) " << root_age_offset << ", lnProb = " << RbStatistics::Gamma::lnPdf(root_params.first, root_params.second, root_age_offset) << std::endl;
+      lnProbability += RbStatistics::Gamma::lnPdf(root_params.first, root_params.second, root_age_offset);
     }
     else
     {
@@ -105,7 +106,7 @@ double TimeCalibratedSBN::computeLnProbabilityNodeTimes( void )
     // Get all other probs
     for (size_t i=0; i<tree_nodes.size(); ++i)
     {
-      if (tree_nodes[i]->isInternal())
+      if ( !(tree_nodes[i]->isRoot() || tree_nodes[i]->isTip()) )
       {
         // Subsplit this_subsplit = tree_nodes[i]->getSubsplit(taxa);
         // RbBitSet this_split = this_subsplit.asSplitBitset();
@@ -129,16 +130,14 @@ double TimeCalibratedSBN::computeLnProbabilityNodeTimes( void )
 
         if (approx_prop_kumar)
         {
-          // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Gamma::pdf(these_params.first, these_params.second, tree_nodes[i]->getBranchLength()) << std::endl;
-          // std::cout << "gamma shape: " << these_params.first << "; gamma rate: " << these_params.second << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
-
+          // std::cout << "Computing probability for node age with proportion p = " << p << ", lnProb = " << RbStatistics::Kumaraswamy::lnPdf(these_params.first, these_params.second, p) << std::endl;
+          // std::cout << "Kumaraswamy alpha: " << these_params.first << "; Kumaraswamy beta: " << these_params.second << std::endl;
           lnProbability += RbStatistics::Kumaraswamy::lnPdf(these_params.first, these_params.second, p);
         }
         else
         {
           throw(RbException("Invalid node age approximation scheme."));
         }
-
       }
     }
 
@@ -213,13 +212,10 @@ void TimeCalibratedSBN::simulateTree( void )
     // Draw root age
     RbBitSet root_clade = RbBitSet(taxa.size(),true);
     std::pair<double,double> root_params = node_age_params[root_clade];
-std::cout << "trying to access root parameters with bitset " << root_clade << std::endl;
 
     if ( approx_root_gamma )
     {
-std::cout << "about to draw root, gamma shape = " << root_params.first << " and rate = " << root_params.second << std::endl;
-      // double offset_age  = RbStatistics::Gamma::rv(root_params.first, root_params.second, *rng);
-      double offset_age = 10.0;
+      double offset_age  = RbStatistics::Gamma::rv(root_params.first, root_params.second, *rng);
       root->setAge(offset_age + max_leaf_age);
     }
     else

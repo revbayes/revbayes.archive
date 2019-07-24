@@ -830,30 +830,29 @@ void SBNParameters::fitNodeTimeDistributions(std::vector<Tree> &trees )
     root_params.second = mean/var;
     root_params.first = mean * root_params.second;
 
-std::cout << "Fit gamma to root age, mean was " << mean << " and var was " << var << std::endl;
-std::cout << "Fit gamma to root age, rate is " << root_params.first << " and shape is " << root_params.second << std::endl;
-std::cout << "trying to store root parameters with bitset " << root_clade << std::endl;
     edge_length_distribution_parameters[root_clade] = root_params;
-std::cout << "Re-accessing, rate is " << edge_length_distribution_parameters[root_clade].first << " and shape is " << edge_length_distribution_parameters[root_clade].second << std::endl;
 
     // Turn node age proportion observations into Kumaraswamy distributions
     std::pair<RbBitSet,std::vector<double> > node_proportion_observation;
     BOOST_FOREACH(node_proportion_observation, node_time_observations) {
-      if (node_proportion_observation.second.size() > 2)
+      if ( node_proportion_observation.first != root_clade ) // We already did the root
       {
-        // Approximate node-proportion distribution using Kumaraswamy
-        edge_length_distribution_parameters[node_proportion_observation.first] = fit_kumar_agd(node_proportion_observation.second);
+        if (node_proportion_observation.second.size() > 2)
+        {
+          // Approximate node-proportion distribution using Kumaraswamy
+          edge_length_distribution_parameters[node_proportion_observation.first] = fit_kumar_agd(node_proportion_observation.second);
 
-      }
-      else
-      {
-        // Basically no information on node proportion distribution
-        // Approximate node proportion distribution using a uniform
-        std::pair<double,double> these_params;
-        these_params.first = 1.0;
-        these_params.second = 1.0;
+        }
+        else
+        {
+          // Basically no information on node proportion distribution
+          // Approximate node proportion distribution using a uniform
+          std::pair<double,double> these_params;
+          these_params.first = 1.0;
+          these_params.second = 1.0;
 
-        edge_length_distribution_parameters[node_proportion_observation.first] = these_params;
+          edge_length_distribution_parameters[node_proportion_observation.first] = these_params;
+        }
       }
     }
   }
