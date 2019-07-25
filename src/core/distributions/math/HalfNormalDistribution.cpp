@@ -2,9 +2,17 @@
 #include "HalfNormalDistribution.h"
 #include "DistributionNormal.h"
 #include "RandomNumberFactory.h"
-#include "RbConstants.h"
+
 
 using namespace RevBayesCore;
+
+/*Half-Normal Distribution Constructor
+ * @param o the offset.
+ * @param s the standard deviation
+ *
+ */
+
+
 
 HalfNormalDistribution::HalfNormalDistribution(const TypedDagNode<double> *o, const TypedDagNode<double> *s) : ContinuousDistribution( new double( 0.0 ) ),
     offset( o ),

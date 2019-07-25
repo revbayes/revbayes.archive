@@ -9,6 +9,12 @@
 
 using namespace RevBayesCore;
 
+/* Multivariate Normal Distribution Constructor
+ *
+ * @param m A vector of doubles for the location parameters
+ * @param cov a matrix of reals for that represents the covariance matrix
+ */
+
 MultivariateNormalDistribution::MultivariateNormalDistribution(const TypedDagNode< RbVector<double> > *m, const TypedDagNode<MatrixReal>* cov, const TypedDagNode<MatrixReal>* prec, const TypedDagNode<double>* sc) :
     TypedDistribution< RbVector<double> >( new RbVector<double>() ),
     mean( m ),

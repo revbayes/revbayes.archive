@@ -174,7 +174,7 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
 
     // multiply the probability of a descendant of the initial species
     lnProbTimes += computeLnProbabilityDivergenceTimes();
-    
+        
     return lnProbTimes + lnProbTreeShape();
 }
 
