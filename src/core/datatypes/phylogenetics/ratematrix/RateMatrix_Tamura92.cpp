@@ -1,14 +1,13 @@
-#include "MatrixReal.h"
-#include "RateMatrix_Tamura92.h"
-#include "RbException.h"
-#include "TransitionProbabilityMatrix.h"
 
-#include <cmath>
-#include <string>
+#include "RateMatrix_Tamura92.h"
+
+
 
 using namespace RevBayesCore;
 
-/** Construct rate matrix with n states */
+/** Default Constructor for the Tamura92 Rate Matrix
+ * Kappa is initially assumed to be 1
+ * */
 RateMatrix_Tamura92::RateMatrix_Tamura92(void) : TimeReversibleRateMatrix( 4 )
 {
     
@@ -100,7 +99,9 @@ RateMatrix_Tamura92* RateMatrix_Tamura92::clone( void ) const {
     return new RateMatrix_Tamura92( *this );
 }
 
-
+/*Set Kappa, the transition:transversion ratio
+ * @param k a double for kappa
+ */
 void RateMatrix_Tamura92::setKappa( double k ) {
     
     kappa = k;
@@ -110,7 +111,13 @@ void RateMatrix_Tamura92::setKappa( double k ) {
     
 }
 
-
+/*Set the GC, the joint stationary frequency of G and C nucleotides
+ * By Chargoff's Second Parity Rule, complimentary nucleotides should have the same base frequency, thus:
+ * (GC) = G+C, (GC)=1-(AT)
+ *
+ * @param f a double from 0 to 1 for the joint stationary frequency of G and C
+ *
+ */
 void RateMatrix_Tamura92::setGC(double f)
 {
     
