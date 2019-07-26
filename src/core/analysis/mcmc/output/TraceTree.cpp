@@ -31,7 +31,8 @@ TraceTree::AnnotationReport::AnnotationReport() :
     mean_node_ages                (true),
     node_ages_HPD                 (0.95),
     sampled_ancestor_probs        (true),
-    force_positive_branch_lengths (false)
+    force_positive_branch_lengths (false),
+    use_outgroup(false)
 {}
 
 
@@ -40,7 +41,8 @@ TraceTree::AnnotationReport::AnnotationReport() :
  */
 TraceTree::TraceTree( bool c ) : Trace<Tree>(),
     clock( c ),
-    rooted( true )
+    rooted( true ),
+    use_outgroup(false)
 {
 }
 
@@ -624,10 +626,17 @@ void TraceTree::annotateTree( Tree &tree, AnnotationReport report, bool verbose 
         
         if ( tmp_tree->isRooted() == false && rooted == false )
         {
-            std::vector<std::string> tip_names = objectAt(0).getTipNames();
-            std::sort(tip_names.begin(),tip_names.end());
-            std::string outgroup = tip_names[0];
-            tmp_tree->reroot( outgroup, true );
+            if( use_outgroup )
+            {
+                tmp_tree->reroot( outgroup, true );
+            }
+            else
+            {
+                std::vector<std::string> tip_names = objectAt(0).getTipNames();
+                std::sort(tip_names.begin(),tip_names.end());
+                std::string outgrp = tip_names[0];
+                tmp_tree->reroot( outgrp, true );
+            }
         }
         else if ( tmp_tree->isRooted() != rooted )
         {
@@ -1118,15 +1127,21 @@ int TraceTree::getTopologyFrequency(const RevBayesCore::Tree &tree, bool verbose
 {
     summarize( verbose );
     
-    std::vector<std::string> tip_names = objectAt(0).getTipNames();
-    std::sort(tip_names.begin(),tip_names.end());
-    std::string outgroup = tip_names[0];
-    
     Tree t = tree;
     
     if ( t.isRooted() == false && rooted == false )
     {
-        t.reroot( outgroup, true );
+        if( use_outgroup )
+        {
+            t.reroot( outgroup, true );
+        }
+        else
+        {
+            std::vector<std::string> tip_names = objectAt(0).getTipNames();
+            std::sort(tip_names.begin(),tip_names.end());
+            std::string outgrp = tip_names[0];
+            t.reroot( outgrp, true );
+        }
     }
     
     std::string newick = t.getPlainNewickRepresentation();
@@ -1217,17 +1232,22 @@ std::vector<Tree> TraceTree::getUniqueTrees( double credible_interval_size, bool
 
 bool TraceTree::isCoveredInInterval(const std::string &v, double ci_size, bool verbose)
 {
-    
-    std::vector<std::string> tip_names = objectAt(0).getTipNames();
-    std::sort(tip_names.begin(),tip_names.end());
-    std::string outgroup = tip_names[0];
-    
     Tree tree;
     tree.initFromString(v);
     
     if ( tree.isRooted() == false && rooted == false )
     {
-        tree.reroot( outgroup, true );
+        if( use_outgroup )
+        {
+            tree.reroot( outgroup, true );
+        }
+        else
+        {
+            std::vector<std::string> tip_names = objectAt(0).getTipNames();
+            std::sort(tip_names.begin(),tip_names.end());
+            std::string outgrp = tip_names[0];
+            tree.reroot( outgrp, true );
+        }
     }
     
     return isCoveredInInterval(tree, ci_size, verbose);
@@ -1685,13 +1705,20 @@ void TraceTree::printTreeSummary(std::ostream &o, double credibleIntervalSize, b
 }
 
 
+void TraceTree::setOutgroup(const RevBayesCore::Clade &c)
+{
+    use_outgroup = true;
+    outgroup = c;
+}
+
+
 void TraceTree::summarize( bool verbose )
 {
     if ( isDirty() == false ) return;
     
     std::vector<std::string> tip_names = objectAt(0).getTipNames();
     std::sort(tip_names.begin(),tip_names.end());
-    std::string outgroup = tip_names[0];
+    std::string outgrp = tip_names[0];
 
     rooted = objectAt(0).isRooted();
     size_t num_taxa = objectAt(0).getNumberOfTips();
@@ -1727,7 +1754,14 @@ void TraceTree::summarize( bool verbose )
         
         if ( rooted == false )
         {
-            tree.reroot( outgroup, true );
+            if( use_outgroup )
+            {
+                tree.reroot( outgroup, true );
+            }
+            else
+            {
+                tree.reroot( outgrp, true );
+            }
         }
         
         std::string newick = tree.getPlainNewickRepresentation();
