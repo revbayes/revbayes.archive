@@ -40,7 +40,7 @@ namespace RevBayesCore {
         };
 
     public:
-        
+
         /*
          * This struct determines which annotations are reported in the summary tree
          */
@@ -56,6 +56,7 @@ namespace RevBayesCore {
             double node_ages_HPD;
             bool sampled_ancestor_probs;
             bool force_positive_branch_lengths;
+            bool use_outgroup;
             
             AnnotationReport();
         };
@@ -66,7 +67,7 @@ namespace RevBayesCore {
          */
         TraceTree( bool c = true );
         virtual ~TraceTree(){}
-        
+
         TraceTree*                                 clone(void) const;
         void                                       annotateTree(Tree &inputTree, AnnotationReport report, bool verbose );
         double                                     cladeProbability(const Clade &c, bool verbose);
