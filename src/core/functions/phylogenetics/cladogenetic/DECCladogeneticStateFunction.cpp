@@ -1,15 +1,30 @@
 //#define DEBUG_DEC
 
 #include "DECCladogeneticStateFunction.h"
+
+#include <math.h>
+#include <map>
+#include <vector>
+#include <__tree>
+#include <algorithm>
+#include <cstddef>
+#include <utility>
+
 #include "BiogeographicCladoEvent.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "RbMathCombinatorialFunctions.h"
+#include "BranchHistory.h"
+#include "CharacterEventDiscrete.h"
+#include "Cloneable.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "Simplex.h"
+#include "TypedDagNode.h"
 
-#include <math.h>
-#include <map>
-#include <vector>
+namespace RevBayesCore { class CharacterEvent; }
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 
@@ -222,10 +237,6 @@ void DECCladogeneticStateFunction::buildEventMap( void ) {
         // narrow sympatry
         if (sumBits(ba) == 1)
         {
-      
-#ifdef DEBUG_DEC
-            
-#endif
             idx[1] = i;
             idx[2] = i;
             if (beforeRanges.find(i) == beforeRanges.end())

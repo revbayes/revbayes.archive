@@ -1,14 +1,16 @@
 #ifndef Parser_H
 #define Parser_H
 
-#include "Environment.h"
-#include "RbOptions.h"
-
+#include <stddef.h>
 #include <list>
 #include <string>
 #include <sstream>
 
+#include "RevPtr.h"
+#include "RevVariable.h"
+
 namespace RevLanguage {
+class Environment;
 
     class ParserInfo {
     public:

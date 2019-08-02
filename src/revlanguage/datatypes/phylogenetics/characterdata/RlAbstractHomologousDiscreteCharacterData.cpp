@@ -1,4 +1,8 @@
 #include "RlAbstractHomologousDiscreteCharacterData.h"
+
+#include <stddef.h>
+#include <iostream>
+
 #include "RlAbstractDiscreteTaxonData.h"
 #include "RlDistanceMatrix.h"
 #include "ArgumentRule.h"
@@ -9,9 +13,26 @@
 #include "RlBoolean.h"
 #include "Probability.h"
 #include "RlString.h"
-#include "RlDiscreteTaxonData.h"
 #include "RlSimplex.h"
 #include "RbBitSet.h"
+#include "AbstractDiscreteTaxonData.h"
+#include "Argument.h"
+#include "ArgumentRules.h"
+#include "DiscreteCharacterState.h"
+#include "DistanceMatrix.h"
+#include "MatrixReal.h"
+#include "MethodTable.h"
+#include "RbBoolean.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "Real.h"
+#include "RevMemberObject.h"
+#include "RevVariable.h"
+#include "RlUtils.h"
+#include "Simplex.h"
+#include "StringUtilities.h"
+#include "TypeSpec.h"
 
 
 using namespace RevLanguage;

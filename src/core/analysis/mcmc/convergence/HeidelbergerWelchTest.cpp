@@ -1,7 +1,12 @@
 #include "HeidelbergerWelchTest.h"
-#include "DistributionNormal.h"
 
+#include <stddef.h>
 #include <cmath>
+#include <__config>
+
+#include "DistributionNormal.h"
+#include "Cloner.h"
+#include "TraceNumeric.h"
 
 using namespace RevBayesCore;
 using namespace std;

@@ -1,12 +1,15 @@
 #ifndef FileMonitor_H
 #define FileMonitor_H
 
-#include "AbstractFileMonitor.h"
-
-#include <string>
+#include <stddef.h>
 #include <vector>
+#include <iosfwd>
+
+#include "AbstractFileMonitor.h"
+#include "MonteCarloAnalysisOptions.h"
 
 namespace RevBayesCore {
+class DagNode;
 
     class VariableMonitor : public AbstractFileMonitor {
 

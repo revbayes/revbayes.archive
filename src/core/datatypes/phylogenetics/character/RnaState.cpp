@@ -1,8 +1,9 @@
 #include "RnaState.h"
+
+#include <_ctype.h>
+
 #include "RbException.h"
-#include <assert.h>
-#include <sstream>
-#include <iostream>
+#include "Cloneable.h"
 
 using namespace RevBayesCore;
 

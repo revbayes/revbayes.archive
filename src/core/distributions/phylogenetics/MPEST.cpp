@@ -6,18 +6,23 @@
 //  Copyright (c) 2014 Bastien Boussau. All rights reserved.
 //
 
-#include "Clade.h"
-#include "ConstantNode.h"
-#include "DistributionExponential.h"
-#include "MPEST.h"
-#include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
-#include "RbConstants.h"
-#include "RbMathCombinatorialFunctions.h"
-#include "TopologyNode.h"
-
-#include <algorithm>
 #include <cmath>
+#include <__tree>
+#include <cstddef>
+#include <iostream>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "MPEST.h"
+#include "RbMathCombinatorialFunctions.h"
+#include "RootedTripletDistribution.h"
+#include "Taxon.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
+
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 

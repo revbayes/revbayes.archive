@@ -1,3 +1,13 @@
+#include <stddef.h>
+#include <algorithm>
+#include <__bit_reference>
+#include <iosfwd>
+#include <map>
+#include <string>
+#include <type_traits>
+#include <utility>
+#include <vector>
+
 #include "AbstractRootedTreeDistribution.h"
 #include "Clade.h"
 #include "TopologyConstrainedTreeDistribution.h"
@@ -8,10 +18,19 @@
 #include "StochasticNode.h"
 #include "Taxon.h"
 #include "TopologyNode.h"
-#include "TreeUtilities.h"
+#include "RbBitSet.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "StringUtilities.h"
+#include "TimeInterval.h"
+#include "Tree.h"
+#include "TreeChangeEventHandler.h"
+#include "TreeChangeEventMessage.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
 
-#include <algorithm>
-#include <cmath>
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { template <class valueType> class RbOrderedSet; }
 
 using namespace RevBayesCore;
 

@@ -1,8 +1,11 @@
 #include "RlMultiValueEvent.h"
-#include "RbUtil.h"
-#include "TypeSpec.h"
 
-#include <sstream>
+#include "TypeSpec.h"
+#include "RbHelpReference.h"
+#include "RevObject.h"
+#include "RevVariable.h"
+
+namespace RevLanguage { class Argument; }
 
 using namespace RevLanguage;
 

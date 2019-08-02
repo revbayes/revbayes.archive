@@ -1,17 +1,34 @@
+#include <_ctype.h>
+#include <stddef.h>
+#include <fstream>
+#include <__tree>
+#include <map>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "Func_ls.h"
 #include "OptionRule.h"
-#include "RbException.h"
 #include "RlBoolean.h"
 #include "RlUtils.h"
 #include "RlUserInterface.h"
 #include "TypeSpec.h"
 #include "Workspace.h"
-#include "RlDistribution.h"
-
-#include <fstream>
-#include <sstream>
+#include "ArgumentRules.h"
+#include "Environment.h"
+#include "FunctionTable.h"
+#include "Procedure.h"
+#include "RbBoolean.h"
+#include "RbHelpReference.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
+#include "RlString.h"
+#include "StringUtilities.h"
 
 using namespace RevLanguage;
 

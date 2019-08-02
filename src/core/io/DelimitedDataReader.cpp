@@ -1,16 +1,13 @@
 #include "DelimitedDataReader.h"
-#include "RbFileManager.h"
-#include "RbException.h"
-#include "StringUtilities.h"
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <cstdlib>
-
-#include <cctype>
+#include <_ctype.h>
 #include <functional>
 #include <algorithm>
+#include <string>
+#include <sstream> // IWYU pragma: keep
+
+#include "RbFileManager.h"
+#include "RbException.h"
 
 using namespace RevBayesCore;
 

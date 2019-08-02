@@ -11,12 +11,7 @@
 using namespace RevBayesCore;
 
 #include "RbException.h"
-#include "RbMathMatrix.h"
-
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <iomanip>
+#include "Assignable.h"
 
 using namespace RevBayesCore;
 

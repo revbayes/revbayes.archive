@@ -1,3 +1,18 @@
+#include <math.h>
+#include <stdlib.h>
+#include <iomanip>
+#include <__tree>
+#include <algorithm>
+#include <cstddef>
+#include <iterator>
+#include <limits>
+#include <map>
+#include <ostream>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "NewickConverter.h"
 #include "ProgressBar.h"
 #include "RandomNumberFactory.h"
@@ -5,15 +20,18 @@
 #include "RbConstants.h"
 #include "RbException.h"
 #include "RbMathCombinatorialFunctions.h"
-#include "RbMathLogic.h"
 #include "RbVectorUtilities.h"
 #include "RlUserInterface.h"
 #include "StringUtilities.h"
 #include "TopologyNode.h"
 #include "TraceTree.h"
 #include "TreeUtilities.h"
-
-#include <iomanip>
+#include "Clade.h"
+#include "RbBitSet.h"
+#include "Taxon.h"
+#include "TaxonMap.h"
+#include "Trace.h"
+#include "Tree.h"
 
 using namespace RevBayesCore;
 

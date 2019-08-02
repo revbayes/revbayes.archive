@@ -1,13 +1,33 @@
+#include <cmath>
+#include <__bit_reference>
+#include <__tree>
+#include <cstddef>
+#include <iosfwd>
+#include <set>
+#include <string>
+#include <vector>
+
 #include "ConstantNode.h"
 #include "DistributionNormal.h"
 #include "PhyloMultiSampleOrnsteinUhlenbeckProcessREML.h"
 #include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "StochasticNode.h"
 #include "TopologyNode.h"
+#include "AbstractPhyloContinuousCharacterProcess.h"
+#include "ContinuousCharacterData.h"
+#include "ContinuousTaxonData.h"
+#include "RbConstants.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "StringUtilities.h"
+#include "Taxon.h"
+#include "Tree.h"
+#include "TreeChangeEventHandler.h"
+#include "TypedDagNode.h"
 
-#include <cmath>
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { class RandomNumberGenerator; }
 
 
 using namespace RevBayesCore;

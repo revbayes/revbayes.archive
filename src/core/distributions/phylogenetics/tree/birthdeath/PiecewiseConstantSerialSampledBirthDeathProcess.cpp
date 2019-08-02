@@ -1,3 +1,13 @@
+#include <stddef.h>
+#include <algorithm>
+#include <cmath>
+#include <__tree>
+#include <iterator>
+#include <ostream>
+#include <set>
+#include <string>
+#include <vector>
+
 #include "DistributionExponential.h"
 #include "PiecewiseConstantSerialSampledBirthDeathProcess.h"
 #include "RandomNumberFactory.h"
@@ -5,10 +15,16 @@
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "RbMathLogic.h"
-#include "StochasticNode.h"
+#include "AbstractBirthDeathProcess.h"
+#include "DagNode.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "TopologyNode.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
 
-#include <algorithm>
-#include <cmath>
+namespace RevBayesCore { class Taxon; }
 
 using namespace RevBayesCore;
 

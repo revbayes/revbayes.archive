@@ -1,8 +1,10 @@
 #include "DnaState.h"
+
+#include <_ctype.h>
+#include <string>
+
 #include "RbException.h"
-#include <assert.h>
-#include <sstream>
-#include <iostream>
+#include "Cloneable.h"
 
 using namespace RevBayesCore;
 

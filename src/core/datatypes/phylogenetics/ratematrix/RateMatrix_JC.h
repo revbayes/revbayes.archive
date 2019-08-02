@@ -1,12 +1,15 @@
 #ifndef RateMatrix_JC_H
 #define RateMatrix_JC_H
 
+#include <stddef.h>
+
 #include "TimeReversibleRateMatrix.h"
 
 
 namespace RevBayesCore {
     
     class TransitionProbabilityMatrix;
+class Assignable;
     
     
     

@@ -6,9 +6,9 @@
 //  Copyright © 2016 Michael Landis. All rights reserved.
 //
 
+#include <boost/math/special_functions/bessel.hpp>
 #include <cmath>
-#include <iostream>
-#include <sstream>
+#include <stdexcept>
 
 #include "RbMathCombinatorialFunctions.h"
 #include "DistributionVarianceGamma.h"
@@ -17,9 +17,14 @@
 #include "RbConstants.h"
 #include "RbMathFunctions.h"
 #include "RbException.h"
-#include "RbStatisticsHelper.h"
+#include "boost/exception/exception.hpp"
+#include "boost/format/alt_sstream.hpp"
+#include "boost/format/format_implementation.hpp"
+#include "boost/math/special_functions/fpclassify.hpp"
+#include "boost/optional/optional.hpp"
 
-#include <boost/math/special_functions/bessel.hpp>
+namespace RevBayesCore { class RandomNumberGenerator; }
+namespace boost { namespace math { class rounding_error; } }
 
 using namespace RevBayesCore;
 

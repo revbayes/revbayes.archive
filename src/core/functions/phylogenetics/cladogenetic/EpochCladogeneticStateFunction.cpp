@@ -6,11 +6,18 @@
 //  Copyright © 2016 Michael Landis. All rights reserved.
 //
 
+#include <map>
+#include <vector>
+
 #include "CladogeneticProbabilityMatrix_Epoch.h"
 #include "EpochCladogeneticStateFunction.h"
-#include "RbException.h"
+#include "Assignable.h"
+#include "CladogeneticProbabilityMatrix.h"
+#include "RbVector.h"
+#include "TypedDagNode.h"
+#include "TypedFunction.h"
 
-#include <math.h>
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 

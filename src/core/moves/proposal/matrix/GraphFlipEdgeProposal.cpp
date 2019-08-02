@@ -1,12 +1,17 @@
 #include "GraphFlipEdgeProposal.h"
+
+#include <iostream>
+#include <__tree>
+#include <vector>
+
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "RbException.h"
 #include "RbVector.h"
-#include "TypedDagNode.h"
+#include "Cloneable.h"
+#include "MatrixReal.h"
+#include "StochasticNode.h"
 
-#include <cmath>
-#include <iostream>
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 

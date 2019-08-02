@@ -1,14 +1,16 @@
 #ifndef PruneTreeFunction_h
 #define PruneTreeFunction_h
 
-#include "Tree.h"
-#include "TypedDagNode.h"
-#include "TypedFunction.h"
+#include <vector>
 
-#include <map>
-#include <set>
+#include "Tree.h"
+#include "TypedFunction.h"
+#include "RbBitSet.h"
+#include "Taxon.h"
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class TypedDagNode;
     /**
      * @brief The Prune Tree Function
      *

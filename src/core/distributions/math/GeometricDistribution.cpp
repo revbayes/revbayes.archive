@@ -1,6 +1,12 @@
 #include "GeometricDistribution.h"
+
 #include "DistributionGeometric.h"
 #include "RandomNumberFactory.h"
+#include "Cloneable.h"
+#include "RbConstants.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class DagNode; }
 
 /*
  * Geometric Distribution Constructor

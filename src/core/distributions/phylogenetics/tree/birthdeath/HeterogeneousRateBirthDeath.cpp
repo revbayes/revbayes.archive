@@ -1,16 +1,42 @@
-#include "Clade.h"
+#include <boost/numeric/odeint.hpp> // IWYU pragma: keep
+#include <algorithm>
+#include <cmath>
+#include <__bit_reference>
+#include <__tree>
+#include <cstddef>
+#include <iosfwd>
+#include <set>
+#include <string>
+#include <vector>
+
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
-#include "RbMathCombinatorialFunctions.h"
 #include "StochasticNode.h"
 #include "TopologyNode.h"
 #include "HeterogeneousRateBirthDeath.h"
 #include "OdeHeterogeneousRateBirthDeath.h"
+#include "AbstractCharacterHistoryBirthDeathProcess.h"
+#include "BranchHistory.h"
+#include "BranchHistoryDiscrete.h"
+#include "CharacterEvent.h"
+#include "CharacterEventCompare.h"
+#include "CharacterEventDiscrete.h"
+#include "CharacterHistoryDiscrete.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "Taxon.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
+#include "boost/numeric/odeint/integrate/integrate_adaptive.hpp"
+#include "boost/numeric/odeint/stepper/controlled_runge_kutta.hpp"
+#include "boost/numeric/odeint/stepper/generation/make_controlled.hpp"
+#include "boost/numeric/odeint/stepper/runge_kutta_dopri5.hpp"
 
-#include <algorithm>
-#include <cmath>
-#include <boost/numeric/odeint.hpp>
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { template <class valueType> class RbOrderedSet; }
 
 using namespace RevBayesCore;
 

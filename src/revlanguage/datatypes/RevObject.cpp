@@ -1,18 +1,32 @@
+#include <stdio.h>
+#include <iostream>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
+#include <sstream> // IWYU pragma: keep
+
 #include "ArgumentRules.h"
 #include "MemberProcedure.h"
 #include "MethodTable.h"
-#include "ModelVector.h"
 #include "OptionRule.h"
 #include "RbException.h"
 #include "RbHelpType.h"
-#include "RbUtil.h"
 #include "RevObject.h"
 #include "RlUtils.h"
-#include "RlString.h"
 #include "TypeSpec.h"
+#include "ArgumentRule.h"
+#include "RbHelpArgument.h"
+#include "RbHelpEntry.h"
+#include "RbHelpFunction.h"
+#include "RevMemberObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
 
-#include <sstream>
-#include <stdio.h>
+namespace RevBayesCore { class DagNode; }
+namespace RevLanguage { class Argument; }
+namespace RevLanguage { class UserFunction; }
 
 using namespace RevLanguage;
 

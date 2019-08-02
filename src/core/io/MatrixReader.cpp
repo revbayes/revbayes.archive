@@ -1,7 +1,17 @@
 #include "MatrixReader.h"
-#include "RbFileManager.h"
 
-#include "RbConstants.h"
+#include <_ctype.h>
+#include <stdlib.h>
+#include <algorithm>
+#include <functional>
+#include <istream>
+#include <string>
+#include <vector>
+
+#include "RbFileManager.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
 
 
 using namespace RevBayesCore;

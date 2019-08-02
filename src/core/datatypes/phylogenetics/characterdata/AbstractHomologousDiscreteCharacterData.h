@@ -1,18 +1,19 @@
 #ifndef AbstractHomologousDiscreteCharacterData_H
 #define AbstractHomologousDiscreteCharacterData_H
 
-#include "AbstractDiscreteTaxonData.h"
-#include "AbstractTaxonData.h"
-#include "CharacterState.h"
-#include "DiscreteCharacterState.h"
+#include <stddef.h>
+#include <vector>
+#include <iosfwd>
+
 #include "DistanceMatrix.h"
 #include "HomologousCharacterData.h"
 #include "MatrixReal.h"
 
-#include <string>
-#include <vector>
-
 namespace RevBayesCore {
+class AbstractCharacterData;
+class AbstractDiscreteTaxonData;
+class AbstractTaxonData;
+class DiscreteCharacterState;
     
     /**
      * Abstract class for all DISCRETE character data objects.

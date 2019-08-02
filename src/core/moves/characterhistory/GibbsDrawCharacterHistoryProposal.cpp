@@ -1,11 +1,16 @@
 #include "GibbsDrawCharacterHistoryProposal.h"
+
+#include <stddef.h>
+#include <vector>
+
 #include "RbException.h"
-#include "TypedDagNode.h"
 #include "StateDependentSpeciationExtinctionProcess.h"
 #include "Tree.h"
+#include "Cloneable.h"
+#include "StochasticNode.h"
+#include "TypedDistribution.h"
 
-#include <cmath>
-#include <iostream>
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 

@@ -1,5 +1,15 @@
 #include "NexusMonitor.h"
 
+#include <stddef.h>
+#include <ostream>
+
+#include "DagNode.h"
+#include "StringUtilities.h"
+#include "Taxon.h"
+#include "TopologyNode.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+
 namespace RevBayesCore {
 
 NexusMonitor::NexusMonitor(TypedDagNode<Tree> *t, const std::vector<DagNode *> &n, bool np, unsigned long g,

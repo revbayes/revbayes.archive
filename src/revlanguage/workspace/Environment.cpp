@@ -1,12 +1,17 @@
 #include "Environment.h"
+
+#include <__tree>
+#include <sstream> // IWYU pragma: keep
+#include <utility>
+
 #include "RbException.h"
 #include "RbHelpSystem.h"
 #include "RlFunction.h"
-#include "RbUtil.h"
-#include "RbOptions.h"
 #include "RevVariable.h"
+#include "RbHelpFunction.h"
 
-#include <cstdio>
+namespace RevLanguage { class Argument; }
+namespace RevLanguage { class RevObject; }
 
 using namespace RevLanguage;
 

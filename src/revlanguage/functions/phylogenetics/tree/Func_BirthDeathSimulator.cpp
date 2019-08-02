@@ -1,22 +1,38 @@
+#include <stddef.h>
+#include <iosfwd>
+#include <vector>
+
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "BirthDeathForwardSimulator.h"
 #include "Func_BirthDeathSimulator.h"
 #include "ModelVector.h"
-#include "Natural.h"
-#include "OptionRule.h"
 #include "Probability.h"
-#include "RbException.h"
 #include "RealPos.h"
 #include "RlSimplex.h"
-#include "RlString.h"
 #include "RlTimeTree.h"
-#include "RlUtils.h"
-#include "StringUtilities.h"
-#include "Tree.h"
 #include "TypeSpec.h"
+#include "ArgumentRules.h"
+#include "ConstantNode.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "IndirectReferenceFunction.h"
+#include "ModelObject.h"
+#include "Procedure.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlConstantNode.h"
+#include "RlFunction.h"
+#include "Simplex.h"
+#include "TypedDagNode.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
 
-#include <math.h>       /* log2 */
+namespace RevBayesCore { class Tree; }
 
 using namespace RevLanguage;
 

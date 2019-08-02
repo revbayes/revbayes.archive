@@ -1,15 +1,20 @@
+#include <ostream>
+#include <string>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Mntr_Model.h"
-#include "Model.h"
 #include "ModelMonitor.h"
-#include "ModelVector.h"
 #include "Natural.h"
-#include "RbException.h"
 #include "RevObject.h"
-#include "RlModel.h"
 #include "RlString.h"
 #include "TypeSpec.h"
+#include "Monitor.h"
+#include "RbBoolean.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlBoolean.h"
+#include "RlMonitor.h"
 
 
 using namespace RevLanguage;

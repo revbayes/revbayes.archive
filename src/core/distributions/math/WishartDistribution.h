@@ -9,15 +9,12 @@
 #ifndef __revbayes__WishartDistribution__
 #define __revbayes__WishartDistribution__
 
-#include <iostream>
-
-
-
 #include "TypedDistribution.h"
 #include "MatrixReal.h"
 #include "TypedDagNode.h"
 
 namespace RevBayesCore {
+class DagNode;
     
     class WishartDistribution : public TypedDistribution<MatrixReal>   {
         

@@ -1,6 +1,14 @@
 #include "ExponentialDistribution.h"
+
+#include <assert.h>
+
 #include "DistributionExponential.h"
 #include "RandomNumberFactory.h"
+#include "Cloneable.h"
+#include "RbConstants.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 

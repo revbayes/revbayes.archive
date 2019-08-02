@@ -1,24 +1,28 @@
+#include <stddef.h>
+#include <cmath>
+#include <sstream>
+#include <string>
+#include <vector>
+
 #include "DagNode.h"
 #include "HillClimber.h"
 #include "MoveSchedule.h"
 #include "RandomMoveSchedule.h"
-#include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
-#include "RbConstants.h"
 #include "RbException.h"
 #include "RbMathLogic.h"
-#include "RbOptions.h"
 #include "RlUserInterface.h"
 #include "SingleRandomMoveSchedule.h"
-#include "ExtendedNewickTreeMonitor.h"
-
-#include <unistd.h>
-
-#include <cmath>
-#include <iomanip>
-#include <sstream>
-#include <typeinfo>
 #include "SequentialMoveSchedule.h"
+#include "MaximumLikelihoodEstimation.h"
+#include "Model.h"
+#include "Monitor.h"
+#include "Move.h"
+#include "RbConstIterator.h"
+#include "RbConstIteratorImpl.h"
+#include "RbIterator.h"
+#include "RbIteratorImpl.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
 
 
 using namespace RevBayesCore;

@@ -1,5 +1,13 @@
-#include "Clade.h"
-#include "ConstantNode.h"
+#include <stddef.h>
+#include <cmath>
+#include <__tree>
+#include <iostream>
+#include <map>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "AbstractMultispeciesCoalescent.h"
 #include "DistributionExponential.h"
 #include "RandomNumberFactory.h"
@@ -7,9 +15,13 @@
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "TopologyNode.h"
+#include "RbException.h"
+#include "Taxon.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
 
-#include <algorithm>
-#include <cmath>
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 

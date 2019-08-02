@@ -1,5 +1,15 @@
 #include "TreeBipartitions.h"
+
 #include <algorithm>
+#include <cstddef>
+#include <string>
+
+#include "TopologyNode.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+#include "boost/move/utility_core.hpp"
+
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 

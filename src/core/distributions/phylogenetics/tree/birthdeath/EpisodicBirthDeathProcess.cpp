@@ -1,16 +1,34 @@
-#include "Clade.h"
+#include <_types/_uintmax_t.h>
+#include <stddef.h>
+#include <algorithm>
+#include <cmath>
+#include <__tree>
+#include <iosfwd>
+#include <iterator>
+#include <set>
+#include <utility>
+#include <vector>
+
 #include "DivergenceTimeCDF.h"
 #include "EpisodicBirthDeathProcess.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "RbConstants.h"
-#include "RbMathCombinatorialFunctions.h"
 #include "RbMathLogic.h"
-#include "TopologyNode.h"
+#include "BirthDeathProcess.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
 
-#include <boost/math/tools/roots.hpp>
-#include <algorithm>
-#include <cmath>
+#include "boost/format/alt_sstream.hpp"
+#include "boost/math/tools/toms748_solve.hpp"
+#include "boost/optional/optional.hpp"
+#include <boost/math/tools/roots.hpp> // IWYU pragma: keep
+
+
+namespace RevBayesCore { class Clade; }
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { class Taxon; }
 
 using namespace RevBayesCore;
 

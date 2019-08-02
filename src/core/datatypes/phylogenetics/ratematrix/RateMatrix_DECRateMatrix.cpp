@@ -8,19 +8,26 @@
 
 //#define DEBUG_DEC
 
+#include <stddef.h>
+#include <cmath>
+#include <list>
+#include <__tree>
+#include <complex>
+#include <map>
+#include <ostream>
+#include <utility>
+#include <vector>
+
 #include "EigenSystem.h"
 #include "MatrixComplex.h"
 #include "MatrixReal.h"
 #include "RateMatrix_DECRateMatrix.h"
 #include "RbException.h"
-#include "RbMathMatrix.h"
 #include "RbVector.h"
 #include "TransitionProbabilityMatrix.h"
-
-#include <cmath>
-#include <string>
-#include <iomanip>
-#include <list>
+#include "Assignable.h"
+#include "GeneralRateMatrix.h"
+#include "RbVectorImpl.h"
 
 using namespace RevBayesCore;
 

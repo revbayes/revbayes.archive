@@ -1,20 +1,16 @@
+#include <stddef.h>
+#include <iostream>
+#include <string>
+
 #include "AbstractPhyloCTMCSiteHomogeneous.h"
-#include "DnaState.h"
-#include "DeterministicNode.h"
-#include "HomologousDiscreteCharacterData.h"
 #include "HomeologPhaseProposal.h"
 #include "Proposal.h"
-#include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
-#include "RbException.h"
 #include "StochasticNode.h"
-#include "TreeChangeEventMessage.h"
-#include "TypedDagNode.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
+#include "TypedDistribution.h"
 
-#include <cmath>
-#include <iostream>
-#include <set>
-#include <string>
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { class DnaState; }
 
 
 

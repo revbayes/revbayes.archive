@@ -1,10 +1,18 @@
 #include "DiscretizeLognormalQuadratureFunction.h"
 
-#include "RbMathFunctions.h"
-#include "EigenSystem.h"
-#include "RbConstants.h"
+#include <stddef.h>
 #include <cmath>
-#include <algorithm>
+#include <__tree>
+#include <map>
+#include <utility>
+#include <vector>
+
+#include "EigenSystem.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class DagNode; }
 
 
 

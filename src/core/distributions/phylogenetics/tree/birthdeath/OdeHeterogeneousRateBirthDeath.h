@@ -1,11 +1,10 @@
 #ifndef OdeHeterogeneousRateBirthDeath_H
 #define OdeHeterogeneousRateBirthDeath_H
 
-#include "AbstractBirthDeathProcess.h"
-#include "RateMatrix.h"
-
+#include <stddef.h>
 #include <vector>
-#include <boost/array.hpp>
+
+#include "RbVector.h"
 
 //typedef boost::array< double , 4 > state_type;
 typedef std::vector< double > state_type;

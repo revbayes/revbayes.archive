@@ -1,21 +1,30 @@
+#include <stddef.h>
+#include <sstream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
-#include "ConstantNode.h"
 #include "Func_annotateTree.h"
-#include "ModelVector.h"
 #include "NexusWriter.h"
 #include "Probability.h"
-#include "RbException.h"
-#include "RevNullObject.h"
 #include "RlBranchLengthTree.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "RlTraceTree.h"
-#include "RlUtils.h"
-#include "StringUtilities.h"
-
-#include <map>
-#include <set>
-#include <sstream>
+#include "Argument.h"
+#include "ArgumentRules.h"
+#include "Clade.h"
+#include "RbBoolean.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlBoolean.h"
+#include "RlFunction.h"
+#include "RlTree.h"
+#include "Taxon.h"
+#include "TopologyNode.h"
+#include "TraceTree.h"
+#include "Tree.h"
+#include "TypeSpec.h"
 
 
 using namespace RevLanguage;

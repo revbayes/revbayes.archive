@@ -1,14 +1,46 @@
+#include <stddef.h>
+#include <sstream>
+#include <__tree>
+#include <set>
+#include <string>
+#include <vector>
+
 #include "ConstantNode.h"
 #include "Ellipsis.h"
 #include "ModelVector.h"
 #include "RlClade.h"
-#include "RbUtil.h"
 #include "RealPos.h"
 #include "RlString.h"
 #include "RlTaxon.h"
 #include "TypeSpec.h"
-
-#include <sstream>
+#include "Argument.h"
+#include "ArgumentRule.h"
+#include "ArgumentRules.h"
+#include "Clade.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "IndirectReferenceFunction.h"
+#include "MemberProcedure.h"
+#include "MethodTable.h"
+#include "ModelObject.h"
+#include "Natural.h"
+#include "RbBoolean.h"
+#include "RbHelpReference.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "RevNullObject.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlBoolean.h"
+#include "RlConstantNode.h"
+#include "RlUtils.h"
+#include "StringUtilities.h"
+#include "Taxon.h"
+#include "TypedDagNode.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
 
 using namespace RevLanguage;
 

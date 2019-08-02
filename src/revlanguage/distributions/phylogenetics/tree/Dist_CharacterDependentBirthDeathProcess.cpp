@@ -1,14 +1,17 @@
+#include <math.h>
+#include <stddef.h>
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "Clade.h"
 #include "Dist_CharacterDependentBirthDeathProcess.h"
-#include "HomologousDiscreteCharacterData.h"
 #include "ModelVector.h"
 #include "Natural.h"
 #include "OptionRule.h"
 #include "Probability.h"
 #include "RateGenerator.h"
-#include "Real.h"
 #include "RealPos.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlBoolean.h"
@@ -17,10 +20,44 @@
 #include "RlRateGenerator.h"
 #include "RlSimplex.h"
 #include "RlString.h"
-#include "RlTaxon.h"
 #include "RlTimeTree.h"
 #include "StateDependentSpeciationExtinctionProcess.h"
 #include "StochasticNode.h"
+#include "CladogeneticSpeciationRateMatrix.h"
+#include "ConstantNode.h"
+#include "DagMemberFunction.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DistributionMemberFunction.h"
+#include "DynamicNode.h"
+#include "IndirectReferenceFunction.h"
+#include "Integer.h"
+#include "MemberProcedure.h"
+#include "MethodTable.h"
+#include "ModelObject.h"
+#include "RbBoolean.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RevNullObject.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlConstantNode.h"
+#include "RlDagMemberFunction.h"
+#include "RlDeterministicNode.h"
+#include "RlDistribution.h"
+#include "RlStochasticNode.h"
+#include "RlTypedDistribution.h"
+#include "RlTypedFunction.h"
+#include "RlUtils.h"
+#include "Tree.h"
+#include "TypeSpec.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
+
+namespace RevBayesCore { class Simplex; }
 
 using namespace RevLanguage;
 

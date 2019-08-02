@@ -1,6 +1,21 @@
+#include <stddef.h>
+#include <__tree>
+#include <iostream>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "DiscreteTaxonData.h"
 #include "DnaState.h"
 #include "PoMoState4Converter.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
+#include "Cloneable.h"
+#include "HomologousDiscreteCharacterData.h"
+#include "NaturalNumbersState.h"
+#include "PoMoState4.h"
+#include "RbException.h"
+#include "Taxon.h"
 
 
 using namespace RevBayesCore;

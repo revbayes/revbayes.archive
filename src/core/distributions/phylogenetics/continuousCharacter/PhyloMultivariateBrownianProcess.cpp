@@ -1,15 +1,19 @@
 #include "PhyloMultivariateBrownianProcess.h"
 
-#include "ConstantNode.h"
-#include "DistributionNormal.h"
+#include <math.h>
+#include <__bit_reference>
+#include <__tree>
+#include <set>
+
 #include "DistributionMultivariateNormal.h"
 #include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
 #include "RbConstants.h"
-
 #include "StochasticNode.h"
+#include "Cloneable.h"
+#include "Tree.h"
 
-#include <iostream>
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { class RandomNumberGenerator; }
 
 using namespace RevBayesCore;
 

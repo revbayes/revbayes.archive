@@ -1,11 +1,11 @@
-#include "ArgumentRule.h"
+#include <__tree>
+#include <map>
+
 #include "MethodTable.h"
 #include "RbException.h"
-#include "Function.h"
-#include "RbUtil.h"
-#include "MemberProcedure.h"
-
-#include <sstream>
+#include "FunctionTable.h"
+#include "RevPtr.h"
+#include "RlFunction.h"
 
 using namespace RevLanguage;
 

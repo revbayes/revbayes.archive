@@ -6,11 +6,16 @@
 //
 
 #include "RateMatrix_ReversiblePoMo.h"
-#include "RbException.h"
-#include "TransitionProbabilityMatrix.h"
 
-#include <cmath>
-#include <iomanip>
+#include <assert.h>
+#include <cstddef>
+
+#include "RbException.h"
+#include "Assignable.h"
+#include "Cloneable.h"
+#include "MatrixReal.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
 
 using namespace RevBayesCore;
 

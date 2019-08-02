@@ -1,4 +1,7 @@
 #include "RbVersion.h"
+
+#include <string>
+
 #include "GitVersion.h"
 
 #ifdef RB_MPI

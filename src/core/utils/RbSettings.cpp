@@ -1,17 +1,16 @@
 #include "RbSettings.h"
-#include "RbException.h"
-#include "RbFileManager.h"
-#include "StringUtilities.h"
 
+#include <unistd.h>
+#include <_ctype.h>
 #include <cstdlib> //includes std::atof
 #include <iostream>
 #include <string>
-#include <sys/stat.h>
-
-#include <dirent.h>
-#include <unistd.h>
-
 #include <algorithm>
+#include <vector>
+
+#include "RbException.h"
+#include "RbFileManager.h"
+#include "StringUtilities.h"
 
 #	ifdef RB_WIN
 #include <windows.h>

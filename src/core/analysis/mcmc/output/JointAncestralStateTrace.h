@@ -1,15 +1,19 @@
 #ifndef JointAncestralStateTrace_H
 #define JointAncestralStateTrace_H
 
-#include "Clade.h"
-#include "NewickConverter.h"
-#include "ProgressBar.h"
-#include "RlUserInterface.h"
+#include <stddef.h>
+#include <iosfwd>
+#include <utility>
+#include <vector>
+
 #include "TraceTree.h"
-#include "Tree.h"
-#include "TreeUtilities.h"
+#include "Cloneable.h"
+#include "Trace.h"
 
 namespace RevBayesCore {
+class ProgressBar;
+class TopologyNode;
+class Tree;
 
     class JointAncestralStateTrace : public Cloneable {
         

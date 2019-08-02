@@ -1,7 +1,9 @@
 #include "GelmanRubinTest.h"
-#include "DistributionNormal.h"
 
-#include <cmath>
+#include <__config>
+
+#include "Cloner.h"
+#include "TraceNumeric.h"
 
 using namespace RevBayesCore;
 using namespace std;

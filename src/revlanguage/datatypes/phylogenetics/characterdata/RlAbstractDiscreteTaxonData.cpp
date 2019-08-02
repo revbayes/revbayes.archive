@@ -1,10 +1,19 @@
 #include "RlAbstractDiscreteTaxonData.h"
 
+#include <stddef.h>
+
 #include "ArgumentRule.h"
 #include "MemberProcedure.h"
 #include "Natural.h"
-#include "RlBoolean.h"
 #include "RlDiscreteCharacterState.h"
+#include "Argument.h"
+#include "ArgumentRules.h"
+#include "MethodTable.h"
+#include "RbException.h"
+#include "RevVariable.h"
+#include "TypeSpec.h"
+
+namespace RevLanguage { class RevObject; }
 
 
 AbstractDiscreteTaxonData::AbstractDiscreteTaxonData(void) : ModelObject<RevBayesCore::AbstractDiscreteTaxonData >()

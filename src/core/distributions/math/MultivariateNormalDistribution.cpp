@@ -1,11 +1,21 @@
 #include "MultivariateNormalDistribution.h"
+
+#include <cmath>
+#include <__bit_reference>
+#include <string>
+
 #include "DistributionMultivariateNormal.h"
 #include "RandomNumberFactory.h"
 #include "RbConstants.h"
 #include "RbException.h"
 #include "StochasticNode.h"
+#include "Cloner.h"
+#include "RbVectorImpl.h"
+#include "RevVariable.h"
+#include "TypedDagNode.h"
 
-#include <cmath>
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { class RandomNumberGenerator; }
 
 using namespace RevBayesCore;
 

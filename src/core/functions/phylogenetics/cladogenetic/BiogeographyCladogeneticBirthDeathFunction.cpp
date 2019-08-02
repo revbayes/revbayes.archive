@@ -7,10 +7,21 @@
 //
 
 #include "BiogeographyCladogeneticBirthDeathFunction.h"
-#include "CladogeneticSpeciationRateMatrix.h"
-#include "MatrixReal.h"
-#include "RbException.h"
+
 #include <cmath>
+#include <__tree>
+#include <iostream>
+#include <utility>
+
+#include "CladogeneticSpeciationRateMatrix.h"
+#include "RbException.h"
+#include "Cloneable.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class BranchHistory; }
+namespace RevBayesCore { class DagNode; }
 
 
 using namespace RevBayesCore;
@@ -334,10 +345,6 @@ void BiogeographyCladogeneticBirthDeathFunction::buildEventMap( void ) {
         // narrow sympatry
         if (sumBits(ba) == 1)
         {
-            
-#ifdef DEBUG_DEC
-            
-#endif
             idx[1] = i;
             idx[2] = i;
             if (ranges.find(i) == ranges.end())

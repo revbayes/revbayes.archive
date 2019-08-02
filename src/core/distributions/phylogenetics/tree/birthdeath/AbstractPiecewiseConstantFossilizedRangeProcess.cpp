@@ -1,14 +1,21 @@
-#include "DistributionExponential.h"
-#include "AbstractPiecewiseConstantFossilizedRangeProcess.h"
-#include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
-#include "RbConstants.h"
-#include "RbMathLogic.h"
-#include "StochasticNode.h"
-#include "TypedDistribution.h"
-
 #include <algorithm>
 #include <cmath>
+#include <__bit_reference>
+#include <cstddef>
+#include <ostream>
+#include <vector>
+
+#include "DistributionExponential.h"
+#include "AbstractPiecewiseConstantFossilizedRangeProcess.h"
+#include "RbConstants.h"
+#include "RbMathLogic.h"
+#include "DagNode.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "Taxon.h"
+#include "TimeInterval.h"
+#include "TypedDagNode.h"
 
 using namespace RevBayesCore;
 

@@ -1,10 +1,21 @@
 //
-#include <iomanip>
-#include <cmath>
+#include <__tree>
+#include <cstddef>
+#include <ostream>
+#include <set>
+#include <vector>
 
 #include "CharacterEventDiscrete.h"
 #include "RangeEvolutionRateModifier.h"
-#include "RbConstants.h"
+#include "Assignable.h"
+#include "CharacterHistoryRateModifier.h"
+#include "Cloneable.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "TopologyNode.h"
+
+namespace RevBayesCore { class CharacterEvent; }
 
 using namespace RevBayesCore;
 

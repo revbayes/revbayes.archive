@@ -1,10 +1,17 @@
+#include <stddef.h>
+#include <algorithm>
+#include <iosfwd>
+#include <string>
+#include <vector>
+
 #include "DagNode.h"
 #include "Distribution.h"
 #include "RbException.h"
 #include "RevPtr.h"
 #include "RevVariable.h"
+#include "Parallelizable.h"
 
-#include <algorithm>
+namespace RevBayesCore { template <class valueType> class RbOrderedSet; }
 
 using namespace RevBayesCore;
 

@@ -1,11 +1,26 @@
+#include <cmath>
+#include <__bit_reference>
+#include <__tree>
+#include <cstddef>
+#include <set>
+#include <vector>
+
 #include "DistributionMultivariateNormal.h"
 #include "PhyloMultivariateBrownianProcessREML.h"
 #include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "TopologyNode.h"
+#include "AbstractPhyloBrownianProcess.h"
+#include "Cloneable.h"
+#include "ContinuousCharacterData.h"
+#include "ContinuousTaxonData.h"
+#include "MatrixReal.h"
+#include "Tree.h"
+#include "TreeChangeEventHandler.h"
+#include "TypedDagNode.h"
 
-#include <cmath>
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { class RandomNumberGenerator; }
 
 
 using namespace RevBayesCore;

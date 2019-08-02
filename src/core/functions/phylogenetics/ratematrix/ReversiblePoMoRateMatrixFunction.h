@@ -22,15 +22,14 @@
 #ifndef ReversiblePoMoRateMatrixFunction_H
 #define ReversiblePoMoRateMatrixFunction_H
 
-#include "RateMatrix_ReversiblePoMo.h"
-#include "RbVector.h"
-#include "MatrixReal.h"
-#include "TypedDagNode.h"
 #include "TypedFunction.h"
-
-#include <vector>
+#include "RateGenerator.h"
 
 namespace RevBayesCore {
+class DagNode;
+class Simplex;
+template <class valueType> class RbVector;
+template <class valueType> class TypedDagNode;
 
     class ReversiblePoMoRateMatrixFunction : public TypedFunction<RateGenerator> {
 

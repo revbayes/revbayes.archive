@@ -7,15 +7,26 @@
 //
 
 #include "ConstantRateOutgroupBirthDeathProcess.h"
-#include "DistributionExponential.h"
-#include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
-#include "RbConstants.h"
-#include "RbMathCombinatorialFunctions.h"
-#include "RbMathLogic.h"
 
 #include <cmath>
 #include <algorithm>
+#include <__bit_reference>
+#include <iostream>
+#include <map>
+#include <string>
+#include <utility>
+
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
+#include "RbMathCombinatorialFunctions.h"
+#include "AbstractRootedTreeDistribution.h"
+#include "TimeInterval.h"
+#include "Tree.h"
+#include "TreeChangeEventHandler.h"
+#include "TreeChangeEventMessage.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class DagNode; }
 
 
 using namespace RevBayesCore;

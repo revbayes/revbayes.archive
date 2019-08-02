@@ -1,7 +1,9 @@
 #include "TreeChangeEventHandler.h"
-#include "TreeChangeEventListener.h"
 
-#include <iostream>
+#include <__tree>
+
+#include "TreeChangeEventListener.h"
+#include "RbBitSet.h"
 
 using namespace RevBayesCore;
 

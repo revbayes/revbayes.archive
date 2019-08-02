@@ -17,10 +17,18 @@
 #ifndef Func_time_H
 #define Func_time_H
 
+#include <iosfwd>
+#include <vector>
+
 #include "Procedure.h"
-#include <string>
+#include "RevPtr.h"
+
+namespace RevBayesCore { class RbHelpReference; }
 
 namespace RevLanguage {
+class ArgumentRules;
+class RevVariable;
+class TypeSpec;
     
     class Func_time : public Procedure {
         

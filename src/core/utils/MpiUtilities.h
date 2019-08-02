@@ -10,7 +10,6 @@
 #define __revbayes_proj__MpiUtilities__
 
 #include <sstream>
-#include <string>
 
 namespace RevBayesCore {
     

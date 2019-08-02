@@ -1,13 +1,18 @@
+#include <iostream>
+#include <__bit_reference>
+#include <cstddef>
+#include <vector>
+
 #include "DistributionNormal.h"
 #include "SpeciesTreeNodeSlideProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
-#include "TreeUtilities.h"
-#include "TypedDagNode.h"
-
-#include <cmath>
-#include <iostream>
+#include "DagNode.h"
+#include "Proposal.h"
+#include "StochasticNode.h"
+#include "TopologyNode.h"
+#include "Tree.h"
 
 using namespace RevBayesCore;
 
