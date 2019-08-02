@@ -26,42 +26,70 @@
 
 #include <sstream>
 #include <vector>
-#include <set>
+#include <stdio.h>
 #include <cstdlib>
 
 /* Files including helper classes */
 #include "AddWorkspaceVectorType.h"
-#include "AddVectorizedWorkspaceType.h"
 #include "RlUserInterface.h"
 
 /// Miscellaneous types ///
 
+#include "AbstractHomologousDiscreteCharacterData.h"
+#include "CharacterHistoryRateModifier.h"
+#include "Clade.h"
+#include "CladogeneticProbabilityMatrix.h"
+#include "CladogeneticSpeciationRateMatrix.h"
+#include "ConstantNode.h"
+#include "ContinuousCharacterData.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DistanceMatrix.h"
+#include "DynamicNode.h"
+#include "Func__vectorIndexOperator.h"
+#include "Func_modelVector.h"
+#include "Func_workspaceVector.h"
+#include "IndirectReferenceFunction.h"
+#include "MatrixReal.h"
+#include "ModelObject.h"
+#include "RateGenerator.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "RevPtr.h"
+#include "RlConstantNode.h"
+#include "RlDeterministicNode.h"
+#include "RlDistribution.h"
+#include "RlTree.h"
+#include "RlTypedFunction.h"
+#include "Taxon.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
+#include "VectorFunction.h"
+#include "VectorIndexOperator.h"
+#include "Workspace.h"
+#include "WorkspaceToCoreWrapperObject.h"
+
 /* Base types (in folder "datatypes") */
 #include "RevObject.h"
-#include "AbstractModelObject.h"
 
 /* Container types (in folder "datatypes/container") */
-#include "RlCorrespondenceAnalysis.h"
 #include "RlMatrixReal.h"
 #include "RlMatrixRealPos.h"
 #include "RlMatrixRealSymmetric.h"
-#include "RlRateGeneratorSequence.h"
-#include "RlRateMatrix.h"
-#include "RlSimplex.h"
 
 /* Container types (in folder "datatypes/math") */
 #include "ModelVector.h"
 #include "WorkspaceVector.h"
 
 /* Character data types (in folder "datatypes/phylogenetics/datamatrix") */
-#include "RlAbstractCharacterData.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlContinuousCharacterData.h"
 
 /* Tree types (in folder "datatypes/phylogenetics/trees") */
 #include "RlClade.h"
-#include "RlRootedTripletDistribution.h"
-
 
 /* Taxon types (in folder "datatypes/phylogenetics") */
 #include "RlCladogeneticProbabilityMatrix.h"
@@ -70,14 +98,10 @@
 #include "RlCharacterHistoryRateModifier.h"
 #include "RlTaxon.h"
 
-#include "Dist_unif.h"
-
 /// Types ///
 
 /* These types are needed as template types for the moves */
 #include "RlBranchLengthTree.h"
-#include "RlMonitor.h"
-#include "RlMove.h"
 #include "RlRateGenerator.h"
 #include "RlTimeTree.h"
 
