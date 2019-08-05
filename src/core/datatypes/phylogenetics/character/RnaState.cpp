@@ -1,6 +1,5 @@
 #include "RnaState.h"
 
-#include <_ctype.h>
 
 #include "RbException.h"
 #include "Cloneable.h"

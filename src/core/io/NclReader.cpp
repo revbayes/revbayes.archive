@@ -1,4 +1,3 @@
-#include <_ctype.h>
 #include <stdio.h>
 #include <algorithm>
 #include <string>

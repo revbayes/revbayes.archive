@@ -17,7 +17,6 @@
 
 #include "StringUtilities.h"
 
-#include <_ctype.h>
 #include <stdio.h>
 #include <iomanip>
 #include <string>

@@ -1,6 +1,5 @@
 #include "DelimitedDataReader.h"
 
-#include <_ctype.h>
 #include <functional>
 #include <algorithm>
 #include <string>

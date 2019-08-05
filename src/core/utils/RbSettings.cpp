@@ -1,7 +1,6 @@
 #include "RbSettings.h"
 
 #include <unistd.h>
-#include <_ctype.h>
 #include <cstdlib> //includes std::atof
 #include <iostream>
 #include <string>

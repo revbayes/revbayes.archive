@@ -1,6 +1,5 @@
 #include "DnaState.h"
 
-#include <_ctype.h>
 #include <string>
 
 #include "RbException.h"

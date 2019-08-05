@@ -1,6 +1,5 @@
 #include "MatrixReader.h"
 
-#include <_ctype.h>
 #include <stdlib.h>
 #include <algorithm>
 #include <functional>
