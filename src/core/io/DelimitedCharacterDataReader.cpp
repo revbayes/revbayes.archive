@@ -1,6 +1,6 @@
 #include "DelimitedCharacterDataReader.h"
 
-#include "boost/algorithm/string.hpp" // IWYU pragma: keep
+#include "boost/algorithm/string/trim.hpp"
 
 using namespace RevBayesCore;
 
