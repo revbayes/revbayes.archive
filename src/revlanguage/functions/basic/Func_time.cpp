@@ -12,15 +12,10 @@
 #include "RevVariable.h"
 #include "RlFunction.h"
 #include "RlString.h"
-#include "boost/date_time/date.hpp"
-#include "boost/date_time/gregorian/greg_date.hpp"
-#include "boost/date_time/gregorian_calendar.hpp"
-#include "boost/date_time/posix_time/posix_time_config.hpp"
-#include "boost/date_time/posix_time/posix_time_types.hpp"
-#include "boost/date_time/posix_time/ptime.hpp"
-#include "boost/date_time/special_defs.hpp"
-#include "boost/date_time/time.hpp"
-#include "boost/date_time/time_system_counted.hpp"
+
+#include "boost/date_time/posix_time/posix_time.hpp" // IWYU pragma: keep
+#include "boost/date_time/gregorian/gregorian.hpp" // IWYU pragma: keep
+#include "boost/date_time/gregorian/greg_month.hpp" // IWYU pragma: keep
 
 using namespace RevLanguage;
 

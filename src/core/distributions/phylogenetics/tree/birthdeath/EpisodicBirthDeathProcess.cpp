@@ -18,7 +18,7 @@
 #include "Tree.h"
 #include "TypedDagNode.h"
 
-#include "boost/format/alt_sstream.hpp"
+#include "boost/format.hpp" // IWYU pragma: keep
 #include "boost/math/tools/toms748_solve.hpp"
 #include "boost/optional/optional.hpp"
 #include <boost/math/tools/roots.hpp> // IWYU pragma: keep

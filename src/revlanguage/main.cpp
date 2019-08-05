@@ -15,8 +15,6 @@ using po::variables_map;
 #include "RlCommandLineOutputStream.h"
 #include "RlUserInterface.h"
 #include "StringUtilities.h"
-#include "boost/lexical_cast/bad_lexical_cast.hpp"
-#include "boost/type_index/type_index_facade.hpp"
 
 #ifdef RB_MPI
 #include <mpi.h>

@@ -20,7 +20,6 @@
 #include "TopologyNode.h"
 #include "Tree.h"
 #include "boost/algorithm/string/trim.hpp"
-#include "boost/detail/basic_pointerbuf.hpp"
 
 using namespace RevBayesCore;
 

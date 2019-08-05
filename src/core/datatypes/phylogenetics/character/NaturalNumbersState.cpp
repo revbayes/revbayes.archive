@@ -5,8 +5,6 @@
 
 #include "RbException.h"
 #include "Cloneable.h"
-#include "boost/lexical_cast/bad_lexical_cast.hpp"
-
 
 using namespace RevBayesCore;
 

@@ -9,7 +9,7 @@
 #include "TypedFunction.h"
 #include "RbVector.h"
 #include "RbVectorImpl.h"
-#include "boost/dynamic_bitset/dynamic_bitset.hpp"
+#include "boost/dynamic_bitset.hpp" // IWYU pragma: keep
 
 namespace RevBayesCore {
 class DagNode;

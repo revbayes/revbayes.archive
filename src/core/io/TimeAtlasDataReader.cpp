@@ -23,12 +23,6 @@
 #include "RbException.h"
 #include "RlUserInterface.h"
 #include "GeographicArea.h"
-#include "boost/core/swap.hpp"
-#include "boost/iterator/iterator_facade.hpp"
-#include "boost/multi_index/detail/bidir_node_iterator.hpp"
-#include "boost/operators.hpp"
-#include "boost/property_tree/detail/exception_implementation.hpp"
-#include "boost/property_tree/detail/ptree_implementation.hpp"
 
 using namespace RevBayesCore;
 

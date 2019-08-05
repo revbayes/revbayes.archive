@@ -7,7 +7,6 @@
 #include "TopologyNode.h"
 #include "Tree.h"
 #include "TypedDagNode.h"
-#include "boost/move/utility_core.hpp"
 
 namespace RevBayesCore { class DagNode; }
 

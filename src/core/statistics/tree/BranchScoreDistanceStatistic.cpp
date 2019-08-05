@@ -7,7 +7,7 @@
 #include "TreeBipartitions.h"
 #include "RbVector.h"
 #include "TypedDagNode.h"
-#include "boost/dynamic_bitset/dynamic_bitset.hpp"
+#include "boost/dynamic_bitset.hpp" // IWYU pragma: keep
 
 namespace RevBayesCore { class DagNode; }
 namespace RevBayesCore { class Tree; }

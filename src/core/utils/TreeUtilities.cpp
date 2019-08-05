@@ -30,8 +30,7 @@
 #include "RbVectorImpl.h"
 #include "Taxon.h"
 #include "TopologyNode.h"
-#include "boost/move/utility_core.hpp"
-#include "boost/unordered/unordered_set.hpp"
+#include "boost/unordered_set.hpp"
 
 using namespace RevBayesCore;
 

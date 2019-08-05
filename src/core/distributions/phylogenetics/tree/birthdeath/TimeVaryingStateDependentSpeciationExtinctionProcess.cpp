@@ -46,11 +46,6 @@
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 #include "boost/numeric/odeint.hpp" // IWYU pragma: keep
-#include "boost/numeric/odeint/integrate/integrate_adaptive.hpp"
-#include "boost/numeric/odeint/stepper/controlled_runge_kutta.hpp"
-#include "boost/numeric/odeint/stepper/generation/make_controlled.hpp"
-#include "boost/numeric/odeint/stepper/runge_kutta_dopri5.hpp"
-
 namespace RevBayesCore { class DagNode; }
 namespace RevBayesCore { template <class valueType> class RbOrderedSet; }
 
