@@ -8,7 +8,6 @@
 
 #include "SemMin.h"
 
-#include <__config>
 
 #include "RbConstants.h"
 #include "RbMathLogic.h"

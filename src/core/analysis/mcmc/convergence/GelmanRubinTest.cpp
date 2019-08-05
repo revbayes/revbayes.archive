@@ -1,6 +1,5 @@
 #include "GelmanRubinTest.h"
 
-#include <__config>
 
 #include "Cloner.h"
 #include "TraceNumeric.h"

@@ -1,6 +1,5 @@
 #include "MaximumTreeFunction.h"
 
-#include <__tree>
 #include <limits>
 #include <set>
 

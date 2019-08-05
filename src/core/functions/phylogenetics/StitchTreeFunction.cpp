@@ -9,7 +9,6 @@
 #include "StitchTreeFunction.h"
 
 #include <set>
-#include <__tree>
 
 #include "RbBoolean.h"
 #include "TopologyNode.h"

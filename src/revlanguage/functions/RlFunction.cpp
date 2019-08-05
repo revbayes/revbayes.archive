@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <sstream>
-#include <__bit_reference>
 #include <cstddef>
 #include <string>
 #include <vector>

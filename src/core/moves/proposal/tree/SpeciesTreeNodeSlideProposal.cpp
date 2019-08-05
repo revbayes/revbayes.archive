@@ -1,5 +1,4 @@
 #include <iostream>
-#include <__bit_reference>
 #include <cstddef>
 #include <vector>
 

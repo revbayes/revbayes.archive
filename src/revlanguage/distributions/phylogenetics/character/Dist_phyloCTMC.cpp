@@ -1,7 +1,6 @@
 #include "Dist_phyloCTMC.h"
 
 #include <stddef.h>
-#include <__bit_reference>
 #include <ostream>
 
 #include "RlDistributionMemberFunction.h"

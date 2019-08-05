@@ -1,6 +1,5 @@
 #include "RbBitSet.h"
 
-#include <__bit_reference>
 #include <string>
 #include <sstream> // IWYU pragma: keep
 

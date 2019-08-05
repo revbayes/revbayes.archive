@@ -10,7 +10,6 @@
 
 #include <cmath>
 #include <algorithm>
-#include <__bit_reference>
 #include <iostream>
 #include <map>
 #include <string>

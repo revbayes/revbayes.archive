@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <cmath>
-#include <__bit_reference>
 #include <cstddef>
 #include <ostream>
 #include <vector>

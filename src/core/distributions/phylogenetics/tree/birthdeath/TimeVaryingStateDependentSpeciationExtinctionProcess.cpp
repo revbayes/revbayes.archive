@@ -1,7 +1,6 @@
 #include <boost/assign/list_of.hpp>
 #include <algorithm>
 #include <cmath>
-#include <__bit_reference>
 #include <cstddef>
 #include <map>
 #include <ostream>

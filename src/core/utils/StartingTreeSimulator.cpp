@@ -1,7 +1,6 @@
 #include "StartingTreeSimulator.h"
 
 #include <stddef.h>
-#include <__tree>
 #include <algorithm>
 #include <iosfwd>
 #include <iterator>

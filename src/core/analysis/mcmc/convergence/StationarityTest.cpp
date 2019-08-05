@@ -1,7 +1,6 @@
 #include "StationarityTest.h"
 
 #include <cmath>
-#include <__config>
 
 #include "DistributionNormal.h"
 #include "Cloner.h"

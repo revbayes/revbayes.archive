@@ -1,6 +1,5 @@
 #include <stddef.h>
 #include <algorithm>
-#include <__bit_reference>
 #include <iosfwd>
 #include <map>
 #include <string>

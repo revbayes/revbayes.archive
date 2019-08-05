@@ -1,7 +1,6 @@
 #include "ModelMonitor.h"
 
 #include <stddef.h>
-#include <__tree>
 #include <set>
 #include <string>
 #include <vector>

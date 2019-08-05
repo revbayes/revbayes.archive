@@ -1,6 +1,5 @@
 #include "DagNode.h"
 
-#include <__bit_reference>
 #include <algorithm>
 #include <cstddef>
 #include <ostream>

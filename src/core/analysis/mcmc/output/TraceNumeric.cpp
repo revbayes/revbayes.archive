@@ -2,7 +2,6 @@
 
 #include <math.h>
 #include <stddef.h>
-#include <__config>
 #include <vector>
 
 #include "GewekeTest.h"

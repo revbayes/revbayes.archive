@@ -8,7 +8,6 @@
 
 #include "EssMax.h"
 
-#include <__config>
 
 #include "RbMathLogic.h"
 #include "Cloneable.h"

@@ -1,6 +1,5 @@
 #include "VectorBinarySwitchProposal.h"
 
-#include <__tree>
 
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"

@@ -1,6 +1,5 @@
 #include "TreeAssemblyFunction.h"
 
-#include <__tree>
 #include <cstddef>
 #include <vector>
 

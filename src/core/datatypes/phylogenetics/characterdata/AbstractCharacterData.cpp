@@ -1,7 +1,6 @@
 #include "AbstractCharacterData.h"
 
 #include <string>
-#include <__tree>
 #include <cstddef>
 #include <iostream>
 #include <utility>

@@ -2,7 +2,6 @@
 
 #include <limits.h>
 #include <math.h>
-#include <__bit_reference>
 #include <algorithm>
 #include <bitset>
 #include <string>
