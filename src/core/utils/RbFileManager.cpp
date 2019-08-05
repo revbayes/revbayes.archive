@@ -1,7 +1,6 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <sys/types.h> // IWYU pragma: keep
-#include <sys/dirent.h>
 #include <iostream>
 #include <string>
 #include <cstring>
