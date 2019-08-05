@@ -6,7 +6,6 @@
 //  Copyright © 2016 Michael Landis. All rights reserved.
 //
 
-#include <boost/math/special_functions/bessel.hpp>
 #include <cmath>
 #include <stdexcept>
 
@@ -17,11 +16,10 @@
 #include "RbConstants.h"
 #include "RbMathFunctions.h"
 #include "RbException.h"
-#include "boost/exception/exception.hpp"
-#include "boost/format/alt_sstream.hpp"
-#include "boost/format/format_implementation.hpp"
-#include "boost/math/special_functions/fpclassify.hpp"
-#include "boost/optional/optional.hpp"
+#include "boost/exception/exception.hpp" // IWYU pragma: keep
+#include "boost/format.hpp" // IWYU pragma: keep
+#include "boost/math/special_functions.hpp" // IWYU pragma: keep
+#include "boost/optional.hpp"
 
 namespace RevBayesCore { class RandomNumberGenerator; }
 namespace boost { namespace math { class rounding_error; } }
