@@ -18,6 +18,7 @@ using po::variables_map;
 
 #ifdef RB_MPI
 #include <mpi.h>
+#include "RandomNumberFactory.h"  // IWYU pragma: keep
 #endif
 
 std::string usage()
