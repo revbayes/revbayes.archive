@@ -20,7 +20,8 @@ public:
 
     virtual void printHeader();
     virtual void monitor(unsigned long gen);
-    virtual void closeStream();
+    virtual void closeStream();    
+    void swapNode(DagNode *oldN, DagNode *newN);
 
 protected:
     bool isNodeParameter;  //!< whether data is on the nodes or branches
