@@ -126,6 +126,7 @@
 #include "Func_cpRev.h"
 #include "Func_dayhoff.h"
 #include "Func_DECRateMatrix.h"
+#include "Func_doubletEpistaticGTRRateMatrix.h"
 #include "Func_epoch.h"
 #include "Func_experimentalCodonModelRateMatrix.h"
 #include "Func_experimentalCodonModelRateMatrixVector.h"
@@ -304,10 +305,10 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_cpRev()                                       );
         addFunction( new Func_dayhoff()                                     );
         addFunction( new Func_DECRateMatrix()                               );
+        addFunction( new Func_doubletEpistaticGTRRateMatrix()               );
         addFunction( new Func_epoch()                                       );
         addFunction( new Func_experimentalCodonModelRateMatrix()            );
         // addFunction( new Func_experimentalCodonModelRateMatrixVector()      );
-        addFunction( new Func_epoch()                                       );
         addFunction( new Func_f81()                                         );
         addFunction( new Func_FreeBinary()                                  );
         addFunction( new Func_FreeK()                                       );
