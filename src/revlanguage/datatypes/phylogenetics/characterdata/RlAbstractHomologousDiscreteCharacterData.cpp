@@ -154,6 +154,14 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
         
         return new RevVariable( new Real(lnl) );
     }
+    else if (name == "computeSiteFrequencySpectrum")
+    {
+        found = true;
+        
+        std::vector<long> sfs = this->dag_node->getValue().computeSiteFrequencySpectrum();
+        
+        return new RevVariable( new ModelVector<Natural>(sfs) );
+    }
     else if (name == "computeStateFrequencies")
     {
         found = true;
@@ -539,6 +547,7 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     methods.insertInheritedMethods( charDataMethods );
     
     ArgumentRules* chartypeArgRules                 = new ArgumentRules();
+    ArgumentRules* comp_site_freq_spec_arg_rules    = new ArgumentRules();
     ArgumentRules* compStateFreqArgRules            = new ArgumentRules();
     ArgumentRules* compMultiLikeArgRules            = new ArgumentRules();
     ArgumentRules* empiricalBaseArgRules            = new ArgumentRules();
@@ -594,6 +603,7 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     
     
     methods.addFunction( new MemberProcedure( "chartype",                               RlString::getClassTypeSpec(),       chartypeArgRules                ) );
+    methods.addFunction( new MemberProcedure( "computeSiteFrequencySpectrum",           ModelVector<Natural>::getClassTypeSpec(), comp_site_freq_spec_arg_rules     ) );
     methods.addFunction( new MemberProcedure( "computeStateFrequencies",                MatrixReal::getClassTypeSpec(),     compStateFreqArgRules           ) );
     methods.addFunction( new MemberProcedure( "computeMultinomialProfileLikelihood",    Real::getClassTypeSpec(),           compMultiLikeArgRules           ) );
     methods.addFunction( new MemberProcedure( "setCodonPartition",                      RlUtils::Void,                      setCodonPartitionArgRules       ) );

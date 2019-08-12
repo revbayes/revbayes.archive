@@ -46,7 +46,7 @@ HomologousDiscreteCharacterData<BinaryState>* VCFReader::readBinaryMatrix( void 
     std::vector< DiscreteTaxonData<BinaryState> > taxa;
     if ( ploidy == HAPLOID )
     {
-        taxa = std::vector< DiscreteTaxonData<BinaryState> >( 2*NUM_SAMPLES, DiscreteTaxonData<BinaryState>( Taxon("") ) );
+        taxa = std::vector< DiscreteTaxonData<BinaryState> >( NUM_SAMPLES, DiscreteTaxonData<BinaryState>( Taxon("") ) );
         for (size_t i=0; i<NUM_SAMPLES; ++i)
         {
             Taxon this_taxon = Taxon( sample_names[i] + "" );
@@ -132,7 +132,7 @@ HomologousDiscreteCharacterData<BinaryState>* VCFReader::readBinaryMatrix( void 
                 }
                 else if ( allele_tokens[1] == "1" )
                 {
-                    taxa[j+NUM_SAMPLES].addCharacter( BinaryState("") );
+                    taxa[j+NUM_SAMPLES].addCharacter( BinaryState("1") );
                 }
                 else if ( allele_tokens[1] == "." )
                 {

@@ -44,6 +44,7 @@ namespace RevBayesCore {
 
         // CharacterData functions
         double                                              computeMultinomialProfileLikelihood( void ) const;
+        std::vector<long>                                   computeSiteFrequencySpectrum(void) const;
         MatrixReal                                          computeStateFrequencies(void) const;
         void                                                concatenate(const HomologousDiscreteCharacterData &d, std::string type = "");                       //!< Concatenate data matrices
         void                                                concatenate(const AbstractCharacterData &d, std::string type = "");                                 //!< Concatenate data matrices
@@ -351,6 +352,70 @@ RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>
     }
     
     return m;
+}
+
+
+/**
+ * Compute the site frequency spectrum.
+ *
+ * \return       A vector of occurrences for the site frequency spectrum.
+ */
+template<class charType>
+std::vector<long> RevBayesCore::HomologousDiscreteCharacterData<charType>::computeSiteFrequencySpectrum( void ) const
+{
+    bool TREAT_AMBIGUOUS_AS_DERIVED = false;
+    
+    charType tmp = this->getTaxonData(0)[0];
+    size_t num_states = tmp.getNumberOfStates();
+    size_t num_sequences = this->taxa.size();
+    std::vector<long> sfs(num_sequences+1,0);
+    
+    const DiscreteTaxonData<charType>& tmp_seq = this->getTaxonData(0);
+    size_t seq_len = tmp_seq.getNumberOfCharacters();
+    for (size_t i = 0; i < seq_len; ++i)
+    {
+        
+        size_t derived_count = 0;
+        for (size_t j = 0; j < num_sequences; ++j)
+        {
+            const charType& c = this->getTaxonData(j)[i];
+            
+            if ( c.isAmbiguous() == true )
+            {
+                if ( TREAT_AMBIGUOUS_AS_DERIVED == true )
+                {
+                    ++derived_count;
+                }
+                
+            }
+            else if ( c.isGapState() == false )
+            {
+                
+                for (size_t k=1; k<num_states; ++k)
+                {
+                    
+                    if ( c.isStateSet(k) == true )
+                    {
+                        ++derived_count;
+                        break;
+                    }
+                    
+                }
+                
+            }
+            else
+            {
+                throw RbException("Unexpected character in SFS calculation.");
+            }
+            
+            
+        }  // finished loop over taxa
+        
+        sfs[derived_count]++;
+        
+    }  // finished loop over sequence
+    
+    return sfs;
 }
 
 

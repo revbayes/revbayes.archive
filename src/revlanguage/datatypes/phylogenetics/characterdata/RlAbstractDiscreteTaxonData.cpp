@@ -15,6 +15,10 @@ AbstractDiscreteTaxonData::AbstractDiscreteTaxonData(void) : ModelObject<RevBaye
     squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "[]", DiscreteCharacterState::getClassTypeSpec(), squareBracketArgRules) );
     
+    // Add method for call "nchar" as a function
+    ArgumentRules* nchar_arg_rules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "nchar", Natural::getClassTypeSpec(), nchar_arg_rules) );
+    
 }
 
 
@@ -26,6 +30,10 @@ AbstractDiscreteTaxonData::AbstractDiscreteTaxonData( RevBayesCore::AbstractDisc
     squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "[]", DiscreteCharacterState::getClassTypeSpec(), squareBracketArgRules) );
 
+    // Add method for call "nchar" as a function
+    ArgumentRules* nchar_arg_rules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "nchar", Natural::getClassTypeSpec(), nchar_arg_rules) );
+    
 }
 
 
@@ -53,6 +61,16 @@ RevPtr<RevVariable> AbstractDiscreteTaxonData::executeMethod(std::string const &
         }
         
         RevObject* element = new DiscreteCharacterState( this->dag_node->getValue().getCharacter( size_t(index.getValue()) - 1) );
+        return new RevVariable( element );
+    }
+    else if ( name == "[]")
+    {
+        found = true;
+            
+        // get the member with give index
+        size_t n_char = this->dag_node->getValue().getNumberOfCharacters();
+            
+        Natural* element = new Natural( n_char );
         return new RevVariable( element );
     }
     
