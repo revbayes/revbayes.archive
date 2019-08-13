@@ -11,7 +11,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_ExperimentalCodonModelRateMatrixVector::Func_ExperimentalCodonModelRateMatrixVector( void ) : TypedFunction< ModelVector<RateGenerator> >( )
+Func_experimentalCodonModelRateMatrixVector::Func_experimentalCodonModelRateMatrixVector( void ) : TypedFunction< ModelVector<RateGenerator> >( )
 {
 
 }
@@ -23,14 +23,14 @@ Func_ExperimentalCodonModelRateMatrixVector::Func_ExperimentalCodonModelRateMatr
  *
  * \return A new copy of the process.
  */
-Func_ExperimentalCodonModelRateMatrixVector* Func_ExperimentalCodonModelRateMatrixVector::clone( void ) const
+Func_experimentalCodonModelRateMatrixVector* Func_experimentalCodonModelRateMatrixVector::clone( void ) const
 {
 
-    return new Func_ExperimentalCodonModelRateMatrixVector( *this );
+    return new Func_experimentalCodonModelRateMatrixVector( *this );
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* Func_ExperimentalCodonModelRateMatrixVector::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* Func_experimentalCodonModelRateMatrixVector::createFunction( void ) const
 {
 
     RevBayesCore::TypedDagNode< double >* be = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
@@ -52,11 +52,12 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<RevBayesCore::RateGenerator>
     RevBayesCore::ExperimentalCodonModelRateMatrixVectorFunction* f = new RevBayesCore::ExperimentalCodonModelRateMatrixVectorFunction( be, om, ka, aap, bf, sa );
 
     return f;
+
 }
 
 
 /* Get argument rules */
-const ArgumentRules& Func_ExperimentalCodonModelRateMatrixVector::getArgumentRules( void ) const
+const ArgumentRules& Func_experimentalCodonModelRateMatrixVector::getArgumentRules( void ) const
 {
 
     static ArgumentRules argumentRules = ArgumentRules();
@@ -68,7 +69,7 @@ const ArgumentRules& Func_ExperimentalCodonModelRateMatrixVector::getArgumentRul
         argumentRules.push_back( new ArgumentRule( "beta"                , RealPos::getClassTypeSpec(), "The stringency parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "omega"               , RealPos::getClassTypeSpec(), "The dN / dS rate ratio.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "kappa"               , RealPos::getClassTypeSpec(), "The transition-transversion rate ratio.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "aminoAcidPreferences", ModelVector<Simplex>::getClassTypeSpec(), "The (Experimentally measured) amino acid preferences.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "aminoAcidPreferences", ModelVector<Simplex>::getClassTypeSpec(), "The (experimentally measured) amino acid preferences.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "baseFrequencies"     , Simplex::getClassTypeSpec(), "The stationary frequencies.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "siteAssignments"     , ModelVector<Integer>::getClassTypeSpec(), "For each site in dataset, which set of preferences apply.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
@@ -79,17 +80,17 @@ const ArgumentRules& Func_ExperimentalCodonModelRateMatrixVector::getArgumentRul
 }
 
 
-const std::string& Func_ExperimentalCodonModelRateMatrixVector::getClassType(void)
+const std::string& Func_experimentalCodonModelRateMatrixVector::getClassType(void)
 {
 
-    static std::string rev_type = "Func_ExperimentalCodonModelRateMatrixVector";
+    static std::string rev_type = "Func_experimentalCodonModelRateMatrixVector";
 
     return rev_type;
 }
 
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_ExperimentalCodonModelRateMatrixVector::getClassTypeSpec(void)
+const TypeSpec& Func_experimentalCodonModelRateMatrixVector::getClassTypeSpec(void)
 {
 
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
@@ -101,7 +102,7 @@ const TypeSpec& Func_ExperimentalCodonModelRateMatrixVector::getClassTypeSpec(vo
 /**
  * Get the primary Rev name for this function.
  */
-std::string Func_ExperimentalCodonModelRateMatrixVector::getFunctionName( void ) const
+std::string Func_experimentalCodonModelRateMatrixVector::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
     std::string f_name = "fnExpCMVector";
@@ -110,7 +111,7 @@ std::string Func_ExperimentalCodonModelRateMatrixVector::getFunctionName( void )
 }
 
 
-const TypeSpec& Func_ExperimentalCodonModelRateMatrixVector::getTypeSpec( void ) const
+const TypeSpec& Func_experimentalCodonModelRateMatrixVector::getTypeSpec( void ) const
 {
 
     static TypeSpec type_spec = getClassTypeSpec();

@@ -308,7 +308,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_doubletEpistaticGTRRateMatrix()               );
         addFunction( new Func_epoch()                                       );
         addFunction( new Func_experimentalCodonModelRateMatrix()            );
-        // addFunction( new Func_experimentalCodonModelRateMatrixVector()      );
+        addFunction( new Func_experimentalCodonModelRateMatrixVector()      );
         addFunction( new Func_f81()                                         );
         addFunction( new Func_FreeBinary()                                  );
         addFunction( new Func_FreeK()                                       );

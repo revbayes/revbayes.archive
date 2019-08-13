@@ -1,6 +1,5 @@
 #include "Func_experimentalCodonModelRateMatrix.h"
 #include "ExperimentalCodonModelRateMatrixFunction.h"
-#include "RateMatrix_CodonSynonymousNonsynonymousHKY.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"

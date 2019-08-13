@@ -1,8 +1,8 @@
-#ifndef Func_ExperimentalCodonModelRateMatrixVector_H
-#define Func_ExperimentalCodonModelRateMatrixVector_H
+#ifndef Func_experimentalCodonModelRateMatrixVector_H
+#define Func_experimentalCodonModelRateMatrixVector_H
 
 #include "ModelVector.h"
-#include "RlRateMatrix.h"
+#include "RlRateGenerator.h"
 #include "RlTypedFunction.h"
 
 #include <string>
@@ -22,13 +22,13 @@ namespace RevLanguage {
      * @since 2014-08-14, version 1.0
      *
      */
-    class Func_ExperimentalCodonModelRateMatrixVector : public TypedFunction< ModelVector<RateGenerator> > {
+    class Func_experimentalCodonModelRateMatrixVector : public TypedFunction< ModelVector<RateGenerator> > {
 
     public:
-        Func_ExperimentalCodonModelRateMatrixVector( void );
+        Func_experimentalCodonModelRateMatrixVector( void );
 
         // Basic utility functions
-        Func_ExperimentalCodonModelRateMatrixVector*                     clone(void) const;                                          //!< Clone the object
+        Func_experimentalCodonModelRateMatrixVector*                     clone(void) const;                                          //!< Clone the object
         static const std::string&                                           getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&                                              getClassTypeSpec(void);                                     //!< Get class type spec
         std::string                                                         getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
