@@ -55,14 +55,25 @@ void ExperimentalCodonModelRateMatrixVectorFunction::update( void )
     for (size_t i=0; i<num_matrices; ++i)
     {
       const std::vector<double>& p = amino_acid_preferences->getValue()[i];
-      // set the base frequencies
-      static_cast< RateMatrix_ExperimentalCodonModel* >(&(*value)[i])->setAminoAcidPreferences( p );
-      static_cast< RateMatrix_ExperimentalCodonModel* >(&(*value)[i])->setNucleotideFrequencies( f );
-      static_cast< RateMatrix_ExperimentalCodonModel* >(&(*value)[i])->setBeta( b );
-      static_cast< RateMatrix_ExperimentalCodonModel* >(&(*value)[i])->setKappa( k );
-      static_cast< RateMatrix_ExperimentalCodonModel* >(&(*value)[i])->setOmega( o );
 
-      static_cast< RateMatrix_ExperimentalCodonModel* >(&(*value)[i])->update();
+      // set the parameters of this rate matarix
+      RateMatrix_ExperimentalCodonModel *this_matrix = static_cast< RateMatrix_ExperimentalCodonModel* >(&(*value)[i]);
+
+      this_matrix->setAminoAcidPreferences( p );
+      this_matrix->setNucleotideFrequencies( f );
+      this_matrix->setBeta( b );
+      this_matrix->setKappa( k );
+      this_matrix->setOmega( o );
+
+      this_matrix->update();
+
+      // static_cast< RateMatrix_ExperimentalCodonModel* >(&(*value)[i])->setAminoAcidPreferences( p );
+      // static_cast< RateMatrix_ExperimentalCodonModel* >(&(*value)[i])->setNucleotideFrequencies( f );
+      // static_cast< RateMatrix_ExperimentalCodonModel* >(&(*value)[i])->setBeta( b );
+      // static_cast< RateMatrix_ExperimentalCodonModel* >(&(*value)[i])->setKappa( k );
+      // static_cast< RateMatrix_ExperimentalCodonModel* >(&(*value)[i])->setOmega( o );
+      //
+      // static_cast< RateMatrix_ExperimentalCodonModel* >(&(*value)[i])->update();
 
       int num_sites_with_matrix;
       for (size_t j=0; j<s.size(); ++j)
