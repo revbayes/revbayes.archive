@@ -1,6 +1,7 @@
 #ifndef ExperimentalCodonModelRateMatrixVectorFunction_H
 #define ExperimentalCodonModelRateMatrixVectorFunction_H
 
+#include "MatrixReal.h"
 #include "RateMatrix_ExperimentalCodonModel.h"
 #include "RbVector.h"
 #include "Simplex.h"
@@ -26,7 +27,7 @@ namespace RevBayesCore {
     class ExperimentalCodonModelRateMatrixVectorFunction : public TypedFunction<RbVector<RateGenerator> > {
 
     public:
-        ExperimentalCodonModelRateMatrixVectorFunction(const TypedDagNode<double> *b, const TypedDagNode<double> *o, const TypedDagNode<double> *k, const TypedDagNode< RbVector<Simplex> > *aap, const TypedDagNode< Simplex > *bf, const TypedDagNode< RbVector<long> > *s);
+        ExperimentalCodonModelRateMatrixVectorFunction(const TypedDagNode<double> *b, const TypedDagNode<double> *o, const TypedDagNode<double> *k, const TypedDagNode< MatrixReal > *aap, const TypedDagNode< Simplex > *bf, const TypedDagNode< RbVector<long> > *s);
         virtual                                            ~ExperimentalCodonModelRateMatrixVectorFunction(void);                                                    //!< Virtual destructor
 
         // public member functions
@@ -39,7 +40,7 @@ namespace RevBayesCore {
     private:
 
         // members
-        const TypedDagNode< RbVector<Simplex> >*                amino_acid_preferences;
+        const TypedDagNode< MatrixReal >*                       amino_acid_preferences;
         const TypedDagNode< Simplex >*                          base_frequencies;
         const TypedDagNode<double>*                             beta;
         const TypedDagNode<double>*                             kappa;

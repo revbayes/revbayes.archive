@@ -4,7 +4,7 @@
 using namespace RevBayesCore;
 
 
-ExperimentalCodonModelRateMatrixVectorFunction::ExperimentalCodonModelRateMatrixVectorFunction(const TypedDagNode<double> *b, const TypedDagNode<double> *o, const TypedDagNode<double> *k, const TypedDagNode< RbVector<Simplex> > *aap, const TypedDagNode< Simplex > *bf, const TypedDagNode< RbVector<long> > *s) : TypedFunction< RbVector<RateGenerator> >( new RbVector<RateGenerator>(aap->getValue().size(), RateMatrix_ExperimentalCodonModel()) ),
+ExperimentalCodonModelRateMatrixVectorFunction::ExperimentalCodonModelRateMatrixVectorFunction(const TypedDagNode<double> *b, const TypedDagNode<double> *o, const TypedDagNode<double> *k, const TypedDagNode< MatrixReal > *aap, const TypedDagNode< Simplex > *bf, const TypedDagNode< RbVector<long> > *s) : TypedFunction< RbVector<RateGenerator> >( new RbVector<RateGenerator>(aap->getValue().size(), RateMatrix_ExperimentalCodonModel()) ),
 amino_acid_preferences( aap ),
 base_frequencies( bf ),
 beta( b ),
@@ -91,7 +91,7 @@ void ExperimentalCodonModelRateMatrixVectorFunction::swapParameterInternal(const
 
     if (oldP == amino_acid_preferences)
     {
-        amino_acid_preferences = static_cast<const TypedDagNode< RbVector<Simplex> >* >( newP );
+        amino_acid_preferences = static_cast<const TypedDagNode< MatrixReal >* >( newP );
     }
 
     if (oldP == base_frequencies)

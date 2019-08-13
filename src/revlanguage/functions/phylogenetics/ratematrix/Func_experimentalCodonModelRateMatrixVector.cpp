@@ -4,6 +4,7 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
+#include "RlMatrixRealPos.h"
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
 #include "TypedDagNode.h"
@@ -36,7 +37,10 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<RevBayesCore::RateGenerator>
     RevBayesCore::TypedDagNode< double >* be = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< double >* om = static_cast<const RealPos &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< double >* ka = static_cast<const RealPos &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::Simplex> >* aap = static_cast<const ModelVector<Simplex> &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
+    // RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::Simplex> >* aap = static_cast<const ModelVector<Simplex> &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
+
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal >* aap = static_cast<const MatrixReal& >( this->args[3].getVariable()->getRevObject() ).getDagNode();
+
     RevBayesCore::TypedDagNode< RevBayesCore::Simplex >* bf = static_cast<const Simplex &>( this->args[4].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<long> >* sa = static_cast<const ModelVector<Integer> &>( this->args[5].getVariable()->getRevObject() ).getDagNode();
     if ( bf->getValue().size() != 4 )
@@ -69,7 +73,7 @@ const ArgumentRules& Func_experimentalCodonModelRateMatrixVector::getArgumentRul
         argumentRules.push_back( new ArgumentRule( "beta"                , RealPos::getClassTypeSpec(), "The stringency parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "omega"               , RealPos::getClassTypeSpec(), "The dN / dS rate ratio.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "kappa"               , RealPos::getClassTypeSpec(), "The transition-transversion rate ratio.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "aminoAcidPreferences", ModelVector<Simplex>::getClassTypeSpec(), "The (experimentally measured) amino acid preferences.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "aminoAcidPreferences", MatrixRealPos::getClassTypeSpec(), "The (experimentally measured) amino acid preferences.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "baseFrequencies"     , Simplex::getClassTypeSpec(), "The stationary frequencies.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "siteAssignments"     , ModelVector<Integer>::getClassTypeSpec(), "For each site in dataset, which set of preferences apply.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
