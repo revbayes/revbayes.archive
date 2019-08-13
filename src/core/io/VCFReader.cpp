@@ -69,29 +69,11 @@ HomologousDiscreteCharacterData<BinaryState>* VCFReader::readBinaryMatrix( void 
         throw RbException("Currently we have only implementations for haploid and diploid organisms.");
     }
     
-    
-//    size_t ref_index = 0;
-//    size_t alt_index = 0;
-//    for (size_t j = 0; j < format_line.size(); ++j)
-//    {
-//        if ( format_line[j] == "REF" )
-//        {
-//            ref_index = j;
-//        }
-//        if ( format_line[j] == "ALT" )
-//        {
-//            alt_index = j;
-//        }
-//    }
-    
     BinaryState missing_state = BinaryState("0");
     missing_state.setMissingState( true );
     
     for (size_t i = start; i < chars.size(); ++i)
     {
-        
-//        DnaState reference_character = DnaState(chars[i][ref_index]);
-//        DnaState alternative_character = DnaState(chars[i][alt_index]);
         
         for (size_t j = 0; j < NUM_SAMPLES; ++j)
         {

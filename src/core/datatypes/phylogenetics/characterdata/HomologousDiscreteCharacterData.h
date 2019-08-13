@@ -44,7 +44,7 @@ namespace RevBayesCore {
 
         // CharacterData functions
         double                                              computeMultinomialProfileLikelihood( void ) const;
-        std::vector<long>                                   computeSiteFrequencySpectrum(void) const;
+        std::vector<long>                                   computeSiteFrequencySpectrum(bool folded, bool ambig_derived) const;
         MatrixReal                                          computeStateFrequencies(void) const;
         void                                                concatenate(const HomologousDiscreteCharacterData &d, std::string type = "");                       //!< Concatenate data matrices
         void                                                concatenate(const AbstractCharacterData &d, std::string type = "");                                 //!< Concatenate data matrices
@@ -114,6 +114,7 @@ namespace RevBayesCore {
 #include "NclReader.h"
 #include "RbConstants.h"
 #include "RbException.h"
+#include "RbMathLogic.h"
 
 #include <cmath>
 #include <fstream>
@@ -361,14 +362,23 @@ RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>
  * \return       A vector of occurrences for the site frequency spectrum.
  */
 template<class charType>
-std::vector<long> RevBayesCore::HomologousDiscreteCharacterData<charType>::computeSiteFrequencySpectrum( void ) const
+std::vector<long> RevBayesCore::HomologousDiscreteCharacterData<charType>::computeSiteFrequencySpectrum( bool folded, bool ambig_derived ) const
 {
-    bool TREAT_AMBIGUOUS_AS_DERIVED = false;
+    bool TREAT_AMBIGUOUS_AS_DERIVED = ambig_derived;
     
     charType tmp = this->getTaxonData(0)[0];
     size_t num_states = tmp.getNumberOfStates();
     size_t num_sequences = this->taxa.size();
-    std::vector<long> sfs(num_sequences+1,0);
+    std::vector<long> sfs;
+    
+    if ( folded == true )
+    {
+        sfs = std::vector<long>( int(num_sequences/2)+1,0);
+    }
+    else
+    {
+        sfs = std::vector<long>(num_sequences+1,0);
+    }
     
     const DiscreteTaxonData<charType>& tmp_seq = this->getTaxonData(0);
     size_t seq_len = tmp_seq.getNumberOfCharacters();
@@ -410,6 +420,11 @@ std::vector<long> RevBayesCore::HomologousDiscreteCharacterData<charType>::compu
             
             
         }  // finished loop over taxa
+        
+        if ( folded == true )
+        {
+            derived_count = RbMath::min(int(derived_count), int(num_sequences-derived_count));
+        }
         
         sfs[derived_count]++;
         
