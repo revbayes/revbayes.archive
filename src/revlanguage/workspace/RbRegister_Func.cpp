@@ -262,9 +262,11 @@
 /* Statistics functions (in folder "functions/statistics") */
 /* These are functions related to statistical distributions */
 #include "Func_assembleContinuousMRF.h"
+#include "Func_betaBrokenStick.h"
 #include "Func_discretizeBeta.h"
 #include "Func_discretizeBetaQuadrature.h"
 #include "Func_discretizeGamma.h"
+#include "Func_discretizeGammaFromBetaQuantiles.h"
 #include "Func_discretizeGammaQuadrature.h"
 #include "Func_discretizeLognormalQuadrature.h"
 #include "Func_discretizeDistribution.h"
@@ -543,8 +545,11 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_discretizeBeta( )    );
         addFunction( new Func_discretizeBetaQuadrature( )    );
         addFunction( new Func_discretizeGamma( )   );
+        addFunction( new Func_discretizeGammaFromBetaQuantiles( )   );
         addFunction( new Func_discretizeGammaQuadrature( )   );
         addFunction( new Func_discretizeLognormalQuadrature( )   );
+
+        addFunction( new Func_betaBrokenStick( )   );
 
         addFunction( new Func_varianceCovarianceMatrix( )           );
         addFunction( new Func_decomposedVarianceCovarianceMatrix( ) );
