@@ -49,7 +49,8 @@ namespace RevBayesCore {
                                                   bool prune,
                                                   bool condition_on_tip_states,
                                                   bool condition_on_num_tips,
-                                                  bool condition_on_tree);
+                                                  bool condition_on_tree,
+                                                  bool allow_shifts_extinct);
         
         // pure virtual member functions
         virtual StateDependentSpeciationExtinctionProcess*              clone(void) const;
@@ -146,6 +147,7 @@ namespace RevBayesCore {
         size_t                                                          max_num_lineages;
         size_t                                                          exact_num_lineages;
         double                                                          max_time;
+        bool                                                            allow_rate_shifts_on_extinct_lineages;
         bool                                                            prune_extinct_lineages;
         bool                                                            condition_on_tip_states;
         bool                                                            condition_on_num_tips;
