@@ -1,11 +1,3 @@
-//
-//  StochasticCharacterMappingMonitor.h
-//  RevBayes_development_branch
-//
-//  Created by will freyman on 12/14/16.
-//  Copyright (c) 2016 will freyman. All rights reserved.
-//
-
 #ifndef RevBayes_development_branch_StochasticCharacterMappingMonitor_h
 #define RevBayes_development_branch_StochasticCharacterMappingMonitor_h
 

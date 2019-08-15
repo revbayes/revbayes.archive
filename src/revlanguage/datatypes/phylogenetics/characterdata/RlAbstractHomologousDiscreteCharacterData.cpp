@@ -154,6 +154,17 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
         
         return new RevVariable( new Real(lnl) );
     }
+    else if (name == "computeSiteFrequencySpectrum")
+    {
+        found = true;
+        
+        bool folded = static_cast<const RlBoolean&>( args[0].getVariable()->getRevObject() ).getValue();
+        bool treat_amb_as_derived = static_cast<const RlBoolean&>( args[1].getVariable()->getRevObject() ).getValue();
+
+        std::vector<long> sfs = this->dag_node->getValue().computeSiteFrequencySpectrum(folded, treat_amb_as_derived);
+        
+        return new RevVariable( new ModelVector<Natural>(sfs) );
+    }
     else if (name == "computeStateFrequencies")
     {
         found = true;
@@ -539,6 +550,7 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     methods.insertInheritedMethods( charDataMethods );
     
     ArgumentRules* chartypeArgRules                 = new ArgumentRules();
+    ArgumentRules* comp_site_freq_spec_arg_rules    = new ArgumentRules();
     ArgumentRules* compStateFreqArgRules            = new ArgumentRules();
     ArgumentRules* compMultiLikeArgRules            = new ArgumentRules();
     ArgumentRules* empiricalBaseArgRules            = new ArgumentRules();
@@ -573,7 +585,9 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     setNumStatesPartitionArgRules->push_back(   new ArgumentRule("",        Natural::getClassTypeSpec()              , "The number of states in this partition.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     squareBracketArgRules->push_back(           new ArgumentRule( "index" , Natural::getClassTypeSpec()              , "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
     
-    expandCharactersArgRules->push_back(                new ArgumentRule( "factor"           , Natural::getClassTypeSpec()            , "The factor by which the state space is expanded.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
+    comp_site_freq_spec_arg_rules->push_back(           new ArgumentRule( "folded"           , RlBoolean::getClassTypeSpec()          , "Should we compute the folded SFS?",                   ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
+    comp_site_freq_spec_arg_rules->push_back(           new ArgumentRule( "ambigAreDerived"  , RlBoolean::getClassTypeSpec()          , "Should we treat ambiguous characters as derived?",    ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
+    expandCharactersArgRules->push_back(                new ArgumentRule( "factor"           , Natural::getClassTypeSpec()            , "The factor by which the state space is expanded.",    ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
     invSitesArgRules->push_back(                        new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
     maxGcContentArgRules->push_back(                    new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
     maxInvariableBlockLengthArgRules->push_back(        new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
@@ -594,6 +608,7 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     
     
     methods.addFunction( new MemberProcedure( "chartype",                               RlString::getClassTypeSpec(),       chartypeArgRules                ) );
+    methods.addFunction( new MemberProcedure( "computeSiteFrequencySpectrum",           ModelVector<Natural>::getClassTypeSpec(), comp_site_freq_spec_arg_rules     ) );
     methods.addFunction( new MemberProcedure( "computeStateFrequencies",                MatrixReal::getClassTypeSpec(),     compStateFreqArgRules           ) );
     methods.addFunction( new MemberProcedure( "computeMultinomialProfileLikelihood",    Real::getClassTypeSpec(),           compMultiLikeArgRules           ) );
     methods.addFunction( new MemberProcedure( "setCodonPartition",                      RlUtils::Void,                      setCodonPartitionArgRules       ) );

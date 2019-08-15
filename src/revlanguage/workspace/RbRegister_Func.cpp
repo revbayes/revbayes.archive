@@ -101,7 +101,6 @@
 #include "Func_PhylogeneticIndependentContrastsMultiSample.h"
 #include "Func_pomoState4Converter.h"
 #include "Func_pomoRootFrequencies.h"
-#include "Func_readPoMoCountFile.h"
 #include "Func_pruneTree.h"
 #include "Func_simStartingTree.h"
 #include "Func_simTree.h"
@@ -116,6 +115,7 @@
 
 
 /* Rate matrix functions (in folder "functions/phylogenetics/ratematrix") */
+#include "Func_BinaryMutationCoalescentRateMatrix.h"
 #include "Func_blosum62.h"
 #include "Func_chromosomes.h"
 #include "Func_chromosomesPloidy.h"
@@ -191,18 +191,7 @@
 #include "Func_consensusTree.h"
 #include "Func_convertToPhylowood.h"
 #include "Func_module.h"
-#include "Func_readAtlas.h"
-#include "Func_readCharacterDataDelimited.h"
-#include "Func_readContinuousCharacterData.h"
-#include "Func_readDiscreteCharacterData.h"
-#include "Func_readDistanceMatrix.h"
-#include "Func_readStochasticVariableTrace.h"
-#include "Func_readTrace.h"
-#include "Func_readTrees.h"
-#include "Func_readBranchLengthTrees.h"
-#include "Func_readTreeTrace.h"
-#include "Func_readAncestralStateTreeTrace.h"
-#include "Func_readAncestralStateTrace.h"
+#include "Func_readPoMoCountFile.h"
 #include "Func_source.h"
 #include "Func_summarizeCharacterMaps.h"
 #include "Func_TaxonReader.h"
@@ -294,6 +283,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         ///////////////////////////////////////////
 
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
+        addFunction( new Func_BinaryMutationCoalescentRateMatrix()          );
         addFunction( new Func_blosum62()                                    );
         addFunction( new Func_chromosomes()                                 );
         addFunction( new Func_chromosomesPloidy()                           );
