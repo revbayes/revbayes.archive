@@ -1,10 +1,12 @@
 #include "ExponentialDistribution.h"
 #include "DistributionExponential.h"
 #include "RandomNumberFactory.h"
-#include "RbConstants.h"
 
 using namespace RevBayesCore;
 
+/*Exponential Distribution Constructor
+ * @param l This is a double that represents the rate parameter
+ */
 
 ExponentialDistribution::ExponentialDistribution(const TypedDagNode<double> *l) : ContinuousDistribution( new double( 0.0 ) ),
     lambda( l )

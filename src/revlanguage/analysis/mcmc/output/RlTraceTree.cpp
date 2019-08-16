@@ -73,6 +73,17 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
 
         return NULL;
     }
+    else if ( name == "setOutgroup" )
+    {
+        found = true;
+
+        const RevBayesCore::Clade &c    = static_cast<const Clade &>( args[0].getVariable()->getRevObject() ).getValue();
+
+        this->value->setOutgroup(c);
+
+        return NULL;
+
+    }
     else if ( name == "summarize" )
     {
         found = true;
@@ -372,6 +383,10 @@ void TraceTree::initMethods( void )
 
     ArgumentRules* getBurninArgRules = new ArgumentRules();
     this->methods.addFunction( new MemberProcedure( "getBurnin", Natural::getClassTypeSpec(), getBurninArgRules) );
+
+    ArgumentRules* outgroupArgRules = new ArgumentRules();
+    outgroupArgRules->push_back( new ArgumentRule("clade", Clade::getClassTypeSpec(), "The (monophyletic) outgroup.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    this->methods.addFunction( new MemberProcedure( "setOutgroup", RlUtils::Void, outgroupArgRules) );
 
     ArgumentRules* summarizeArgRules = new ArgumentRules();
     summarizeArgRules->push_back( new ArgumentRule("credibleTreeSetSize", Probability::getClassTypeSpec(), "The size of the credible set to print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );

@@ -57,6 +57,7 @@ namespace RevBayesCore {
             double node_ages_HPD;
             bool sampled_ancestor_probs;
             bool force_positive_branch_lengths;
+            bool use_outgroup;
 
             AnnotationReport();
         };
@@ -88,6 +89,7 @@ namespace RevBayesCore {
         Tree*                                      mrTree(AnnotationReport report, double cutoff, bool verbose);
         void                                       printTreeSummary(std::ostream& o, double ci=0.95, bool verbose=true);
         void                                       printCladeSummary(std::ostream& o, double minP=0.05, bool verbose=true);
+        void                                       setOutgroup(const Clade &c);
 
     private:
 
@@ -110,6 +112,9 @@ namespace RevBayesCore {
         std::map<Split, std::vector<double> >                           clade_ages;
         std::map<Split, std::map<Split, std::vector<double> > >         conditional_clade_ages;
         std::map<std::string, std::map<Split, std::vector<double> > >   tree_clade_ages;
+
+        bool                                       use_outgroup;
+        Clade                                      outgroup;
     };
 
 }

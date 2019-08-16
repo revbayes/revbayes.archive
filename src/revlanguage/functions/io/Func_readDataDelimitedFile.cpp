@@ -188,7 +188,7 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
                     if ( matrix[i][j].isType(Real::getClassTypeSpec()) == false )
                     {
                         
-                        RealPos *tmp = (RealPos*)(matrix[i][j].convertTo(RealPos::getClassTypeSpec()));
+                        Real *tmp = (Real*)(matrix[i][j].convertTo(Real::getClassTypeSpec()));
                         m[i][j] = (tmp)->getValue();
                         delete tmp;
                     }

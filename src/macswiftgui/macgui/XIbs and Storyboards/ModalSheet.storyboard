@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Sheet View Controller-->
+        <scene sceneID="9qz-mX-w49">
+            <objects>
+                <viewController storyboardIdentifier="ModalSheet" id="QCX-rm-mPZ" customClass="SheetViewController" customModule="macgui" customModuleProvider="target" sceneMemberID="viewController">
+                    <containerView key="view" id="blU-tU-FUO">
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <connections>
+                            <segue destination="o1v-TK-vtg" kind="embed" id="Ypf-RE-dvB"/>
+                        </connections>
+                    </containerView>
+                </viewController>
+                <customObject id="UTh-Sl-IXG" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="182" y="-197"/>
+        </scene>
+        <!--TabViewController-->
+        <scene sceneID="uF5-GZ-ZjD">
+            <objects>
+                <controllerPlaceholder storyboardIdentifier="TabViewController" storyboardName="CanvasTool" referencedIdentifier="TabViewController" id="o1v-TK-vtg" sceneMemberID="viewController"/>
+                <customObject id="TbJ-aX-7cE" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="172" y="260"/>
+        </scene>
+    </scenes>
+</document>

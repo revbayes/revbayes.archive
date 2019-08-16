@@ -1,7 +1,7 @@
 #include "DistributionFunctionCdf.h"
 
 #include "ArgumentRule.h"
-#include "CummulativeDistributionFunction.h"
+#include "CumulativeDistributionFunction.h"
 #include "DeterministicNode.h"
 #include "DistributionFunctionPdf.h"
 #include "Probability.h"
@@ -173,7 +173,7 @@ RevBayesCore::TypedFunction<double>* DistributionFunctionCdf::createFunction( vo
     
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const Probability &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::CummulativeDistributionFunction* f = new RevBayesCore::CummulativeDistributionFunction( arg, d );
+    RevBayesCore::CumulativeDistributionFunction* f = new RevBayesCore::CumulativeDistributionFunction( arg, d );
     
     return f;
 }

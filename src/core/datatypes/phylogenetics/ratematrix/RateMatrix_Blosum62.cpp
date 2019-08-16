@@ -4,7 +4,7 @@
 
 using namespace RevBayesCore;
 
-/** Construct rate matrix with n states */
+/** Default Constructor for the Blosum62 rate matrix with 20 states */
 RateMatrix_Blosum62::RateMatrix_Blosum62( void ) : RateMatrix_Empirical( 20 )
 {
     

@@ -959,7 +959,7 @@ void JointAncestralStateTrace::computeMarginalCladogeneticStateProbs(std::vector
  * Helper function for characterMapTree() that traverses the tree from root to tips collecting stochastic character map samples.
  *
  */
-void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node_index, size_t map_parent_state, bool root, bool conditional, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::string*> &map_character_history, std::vector<std::string*> &map_character_history_posteriors, ProgressBar &progress, size_t &num_finished_nodes, int NUM_TIME_SLICES, bool verbose)
+void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node_index, size_t map_parent_state, bool root, bool conditional, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::string*> &map_character_history, std::vector<std::string*> &map_character_history_posteriors, std::vector<std::string*> &map_character_history_shift_prob, ProgressBar &progress, size_t &num_finished_nodes, int NUM_TIME_SLICES, bool verbose)
 {
     
     double dt = final_summary_tree.getRoot().getMaxDepth() / double(NUM_TIME_SLICES);
@@ -1087,6 +1087,7 @@ void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node
     // strings to hold the SIMMAP strings for the summarized character history
     std::string branch_map_history = "}";
     std::string branch_map_history_posteriors = "}";
+    std::string branch_map_history_shift_prob = "}";
     
     // loop through each time slice along this branch
     double current_time = 0.0;
@@ -1094,6 +1095,7 @@ void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node
     bool finished_branch = false;
     size_t map_state = 0;
     size_t old_map_state = 0;
+//    std::vector<double> old_state_pp = std::vector<double>();
     while ( finished_branch == false )
     {
         std::vector< std::vector< std::pair<size_t, double> > > branch_maps;
@@ -1115,6 +1117,8 @@ void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node
         
         std::vector<size_t> states = std::vector<size_t>();
         std::vector<double> posteriors = std::vector<double>();
+        
+        double this_shift_prob = 0.0;
         
         // loop through all sampled character histories for this branch
         // and compile each state sampled in this time slice
@@ -1146,6 +1150,20 @@ void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node
                         if ( branch_maps[k][l].first == old_map_state )
                         {
                             use_sample = true;
+                        }
+                    }
+                }
+                
+                if ( use_sample == true && sample_time < branch_len )
+                {
+                    if ( (current_time >= sample_time && ((current_dt-1) * dt) < sample_time) )
+                    {
+                        if ( current_time != dt || true )
+                        {
+                            if ( (sample_time+1E-5) < branch_len )
+                            {
+                                this_shift_prob += 1.0;
+                            }
                         }
                     }
                 }
@@ -1183,9 +1201,11 @@ void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node
         {
             posteriors[i] /= sum_posteriors;
         }
+        this_shift_prob /= double(branch_maps.size());
         
         // find the MAP state for this time slice
         double map_state_pp = 0.0;
+//        double shift_prob = 0.0;
         for (size_t k = 0; k < states.size(); k++)
         {
             if (posteriors[k] > map_state_pp)
@@ -1193,8 +1213,14 @@ void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node
                 map_state = states[k];
                 map_state_pp = posteriors[k];
             }
+            
+//            if ( old_state_pp.size() == states.size() )
+//            {
+//                shift_prob += old_state_pp[k] * (1-posteriors[k]);
+//            }
         }
         old_map_state = map_state;
+//        old_state_pp = posteriors;
         
         // now add this time slice to the SIMMAP strings
         
@@ -1202,14 +1228,17 @@ void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node
         
         branch_map_history = "," + StringUtilities::toString(time_slice_length) + branch_map_history;
         branch_map_history_posteriors = "," + StringUtilities::toString(time_slice_length) + branch_map_history_posteriors;
+        branch_map_history_shift_prob = "," + StringUtilities::toString(time_slice_length) + branch_map_history_shift_prob;
         
         branch_map_history = StringUtilities::toString(map_state) + branch_map_history;
         branch_map_history_posteriors = StringUtilities::toString(int(map_state_pp * 100)) + branch_map_history_posteriors;
+        branch_map_history_shift_prob = StringUtilities::toString(int(this_shift_prob * 100)) + branch_map_history_shift_prob;
         
         if (finished_branch == false )
         {
             branch_map_history = ":" + branch_map_history;
             branch_map_history_posteriors = ":" + branch_map_history_posteriors;
+            branch_map_history_shift_prob = ":" + branch_map_history_shift_prob;
         }
         
         current_dt++;
@@ -1218,8 +1247,10 @@ void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node
     // finally finish the SIMMAP strings for this node
     branch_map_history = "{" + branch_map_history;
     branch_map_history_posteriors = "{" + branch_map_history_posteriors;
+    branch_map_history_shift_prob = "{" + branch_map_history_shift_prob;
     map_character_history[node_index] = new std::string(branch_map_history);
     map_character_history_posteriors[node_index] = new std::string(branch_map_history_posteriors);
+    map_character_history_shift_prob[node_index] = new std::string(branch_map_history_shift_prob);
     
     // update nodes finished for the progress bar
     num_finished_nodes += 1;
@@ -1228,7 +1259,7 @@ void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node
     std::vector<int> children_indices = summary_nodes[node_index]->getChildrenIndices();
     for (size_t i = 0; i < children_indices.size(); i++)
     {
-        recursivelyCollectCharacterMapSamples(children_indices[i], map_state, false, conditional, final_summary_tree, summary_nodes, map_character_history, map_character_history_posteriors, progress, num_finished_nodes, NUM_TIME_SLICES, verbose);
+        recursivelyCollectCharacterMapSamples(children_indices[i], map_state, false, conditional, final_summary_tree, summary_nodes, map_character_history, map_character_history_posteriors, map_character_history_shift_prob, progress, num_finished_nodes, NUM_TIME_SLICES, verbose);
     }
 }
 
@@ -1255,6 +1286,7 @@ Tree* JointAncestralStateTrace::characterMapTree(const Tree &input_summary_tree,
     
     std::vector<std::string*> map_character_history( summary_nodes.size(), new std::string() );
     std::vector<std::string*> map_character_history_posteriors( summary_nodes.size(), new std::string() );
+    std::vector<std::string*> map_character_history_shift_prob( summary_nodes.size(), new std::string() );
     
     bool process_active = true;
     ProgressBar progress = ProgressBar( summary_nodes.size() * num_sampled_states, 0 );
@@ -1266,7 +1298,7 @@ Tree* JointAncestralStateTrace::characterMapTree(const Tree &input_summary_tree,
     // recurse through summary tree and collect ancestral state samples
     size_t node_index = final_summary_tree->getRoot().getIndex();
     size_t num_finished_nodes = 0;
-    recursivelyCollectCharacterMapSamples(node_index, 0, true, conditional, *final_summary_tree, summary_nodes, map_character_history, map_character_history_posteriors, progress, num_finished_nodes, NUM_TIME_SLICES, verbose);
+    recursivelyCollectCharacterMapSamples(node_index, 0, true, conditional, *final_summary_tree, summary_nodes, map_character_history, map_character_history_posteriors, map_character_history_shift_prob, progress, num_finished_nodes, NUM_TIME_SLICES, verbose);
     
     if ( verbose == true && process_active == true )
     {
@@ -1277,6 +1309,7 @@ Tree* JointAncestralStateTrace::characterMapTree(const Tree &input_summary_tree,
     final_summary_tree->clearNodeParameters();
     final_summary_tree->addNodeParameter("map_character_history", map_character_history, false);
     final_summary_tree->addNodeParameter("map_character_history_posteriors", map_character_history_posteriors, false);
+    final_summary_tree->addNodeParameter("map_character_history_shift_prob", map_character_history_shift_prob, false);
     
     return final_summary_tree;
     

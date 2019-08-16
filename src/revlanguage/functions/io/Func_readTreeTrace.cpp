@@ -128,6 +128,8 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
         if ( args[arg_index_outgroup].getVariable() != NULL && args[arg_index_outgroup].getVariable()->getRevObject() != RevNullObject::getInstance())
         {
             og = static_cast<const Clade &>( args[arg_index_outgroup].getVariable()->getRevObject() ).getValue();
+
+            rv->getValue().setOutgroup(og);
         }
 
         if(nexus) rv = readTreesNexus(vectorOfFileNames, false, thin);
@@ -384,24 +386,6 @@ TraceTree* Func_readTreeTrace::readTrees(const std::vector<std::string> &vector_
             {
                 RevBayesCore::NewickConverter c;
                 tau = c.convertFromNewick( columns[index] );
-                
-                // moved the reroot functionality below into
-                // RevBayesCore::TreeSummary<BranchLengthTree>::summarizeTrees()
-                // so that tree traces retain their original topology
-                // will freyman 12/12/14
-                
-                //            if ( outgroup == "" )
-                //            {
-                //                RevBayesCore::BranchLengthTree& referenceTree = *tau;
-                //                outgroup = referenceTree.getTipNode(0).getName();
-                //            }
-                //            // re-root the tree so that we can compare the the trees
-                //            tau->reroot( outgroup );
-                
-                //                if ( outgroup.size() > 0 )
-                //                {
-                //                    //                tau->reroot( outgroup, false );
-                //                }
             }
             
             t.addObject( tau );
