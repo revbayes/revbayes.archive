@@ -60,6 +60,9 @@ namespace RevBayesCore {
         unsigned int                                            num_accepted_current_period;                            //!< Number of times accepted
         unsigned int                                            num_accepted_total;                                     //!< Number of times accepted
         std::vector<Proposal*>                                  proposals;                                               //!< The proposal distributions
+        std::vector<unsigned int>                               per_move_num_accepted_current_period;
+        std::vector<unsigned int>                               per_move_num_tried_current_period;
+
     };
 
 }

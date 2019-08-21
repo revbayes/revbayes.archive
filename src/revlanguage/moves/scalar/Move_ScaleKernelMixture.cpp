@@ -10,6 +10,7 @@
 #include "RealPos.h"
 #include "RevObject.h"
 #include "ScaleProposal.h"
+#include "ScaleBactrianProposal.h"
 #include "ScaleProposalContinuous.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -57,7 +58,6 @@ void Move_ScaleKernelMixture::constructInternalObject( void )
 
     RevBayesCore::Proposal *p1 = NULL;
 		RevBayesCore::Proposal *p2 = NULL;
-		RevBayesCore::Proposal *p3 = NULL;
 
     // now allocate a new sliding move
     double d = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
@@ -67,13 +67,11 @@ void Move_ScaleKernelMixture::constructInternalObject( void )
     RevBayesCore::StochasticNode<double> *n = dynamic_cast<RevBayesCore::StochasticNode<double> *>( tmp );
 
 		p1 = new RevBayesCore::ScaleProposal(n, d, r);
-		p2 = new RevBayesCore::ScaleProposal(n, d, r);
-		p3 = new RevBayesCore::ScaleProposal(n, d, r);
+		p2 = new RevBayesCore::ScaleBactrianProposal(n, d, r);
 
 		std::vector<RevBayesCore::Proposal*> p;
 		p.push_back(p1);
 		p.push_back(p2);
-		p.push_back(p3);
 
 		bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
 

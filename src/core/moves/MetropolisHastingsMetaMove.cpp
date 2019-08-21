@@ -25,7 +25,10 @@ using namespace RevBayesCore;
 MetropolisHastingsMetaMove::MetropolisHastingsMetaMove( std::vector<Proposal*> *p, double w, bool t ) : AbstractMove(w, t),
     num_accepted_current_period( 0 ),
     num_accepted_total( 0 ),
-    proposals( *p )
+    proposals( *p ),
+    per_move_num_accepted_current_period( std::vector<unsigned int>(proposals.size(),0) ),
+    per_move_num_tried_current_period( std::vector<unsigned int>(proposals.size(),0) )
+
 {
 std::cout << "initializing meta move" << std::endl;
     // Add all nodes to move
@@ -72,7 +75,10 @@ std::cout << "initialized meta move" << std::endl;
 MetropolisHastingsMetaMove::MetropolisHastingsMetaMove(const MetropolisHastingsMetaMove &m) : AbstractMove(m),
     num_accepted_current_period( m.num_accepted_current_period ),
     num_accepted_total( m.num_accepted_total ),
-    proposals( m.proposals )
+    proposals( m.proposals ),
+    per_move_num_accepted_current_period( m.per_move_num_accepted_current_period ),
+    per_move_num_tried_current_period( m.per_move_num_tried_current_period )
+
 {
 
     // Add all nodes to move
@@ -111,9 +117,11 @@ MetropolisHastingsMetaMove& MetropolisHastingsMetaMove::operator=(const RevBayes
         // delete &proposals;
         proposals.clear();
 
-        num_accepted_current_period     = m.num_accepted_current_period;
-        num_accepted_total              = m.num_accepted_total;
-        proposals                       = m.proposals;
+        num_accepted_current_period          = m.num_accepted_current_period;
+        num_accepted_total                   = m.num_accepted_total;
+        proposals                            = m.proposals;
+        per_move_num_accepted_current_period = m.per_move_num_accepted_current_period;
+        per_move_num_tried_current_period    = m.per_move_num_tried_current_period;
 
         // Add all nodes to move
         for (size_t i=0; i<proposals.size(); ++i)
@@ -162,7 +170,7 @@ const std::string& MetropolisHastingsMetaMove::getMoveName( void ) const
 
     if (proposals.size() > 1)
     {
-      for (size_t i=0; i<proposals.size(); ++i)
+      for (size_t i=1; i<proposals.size(); ++i)
       {
         s += "+";
         s += proposals.at(i)->getProposalName();
@@ -324,6 +332,9 @@ void MetropolisHastingsMetaMove::performHillClimbingMove( double lHeat, double p
 void MetropolisHastingsMetaMove::performMcmcMove( double prHeat, double lHeat, double pHeat )
 {
     size_t idx = getActiveProposalIndex();
+
+    ++per_move_num_tried_current_period[idx];
+
     Proposal* proposal = proposals.at(idx);
 
     const RbOrderedSet<DagNode*> &affected_nodes = getAffectedNodes();
@@ -497,6 +508,10 @@ void MetropolisHastingsMetaMove::performMcmcMove( double prHeat, double lHeat, d
 
     }
 
+  if ( rejected == false)
+  {
+    ++per_move_num_accepted_current_period[idx];
+  }
 }
 
 
@@ -603,7 +618,13 @@ void MetropolisHastingsMetaMove::printSummary(std::ostream &o, bool current_peri
  */
 void MetropolisHastingsMetaMove::resetMoveCounters( void )
 {
+    // Main counter for overall move
     num_accepted_current_period = 0;
+
+    // Since our parent class does not know about our component moves, we reset both their number tried and number accepted
+    per_move_num_accepted_current_period = std::vector<unsigned int>(proposals.size(),0);
+    per_move_num_tried_current_period = std::vector<unsigned int>(proposals.size(),0);
+
 }
 
 
@@ -648,11 +669,16 @@ void MetropolisHastingsMetaMove::setNumberAcceptedTotal( size_t na )
 void MetropolisHastingsMetaMove::tune( void )
 {
     // TODO: need to vectors of make per-proposal trackers to use in tuning. For now we do not tune
-    // if ( num_tried_current_period > 2 )
-    // {
-    //     double rate = num_accepted_current_period / double(num_tried_current_period);
-    //
-    //     proposal->tune( rate );
-    // }
+
+    for (size_t i=0; i<proposals.size(); ++i)
+    {
+
+      if ( per_move_num_tried_current_period[i] > 2 )
+      {
+          double rate = double(per_move_num_accepted_current_period[i]) / double(per_move_num_tried_current_period[i]);
+
+          proposals.at(i)->tune( rate );
+      }
+    }
 
 }
