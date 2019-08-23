@@ -101,7 +101,6 @@
 #include "Func_PhylogeneticIndependentContrastsMultiSample.h"
 #include "Func_pomoState4Converter.h"
 #include "Func_pomoRootFrequencies.h"
-#include "Func_readPoMoCountFile.h"
 #include "Func_pruneTree.h"
 #include "Func_simStartingTree.h"
 #include "Func_simTree.h"
@@ -116,6 +115,7 @@
 
 
 /* Rate matrix functions (in folder "functions/phylogenetics/ratematrix") */
+#include "Func_BinaryMutationCoalescentRateMatrix.h"
 #include "Func_blosum62.h"
 #include "Func_chromosomes.h"
 #include "Func_chromosomesPloidy.h"
@@ -187,30 +187,7 @@
 
 
 /* Input/output functions (in folder "functions/io") */
-//#include "Func_ancestralStateTree.h"
-//#include "Func_consensusTree.h"
-//#include "Func_convertToPhylowood.h"
-//#include "Func_module.h"
-//#include "Func_readAtlas.h"
-//#include "Func_readCharacterDataDelimited.h"
-//#include "Func_readContinuousCharacterData.h"
-//#include "Func_readDiscreteCharacterData.h"
-//#include "Func_readDistanceMatrix.h"
-//#include "Func_readStochasticVariableTrace.h"
-//#include "Func_readTrace.h"
-//#include "Func_readTrees.h"
-//#include "Func_readBranchLengthTrees.h"
-//#include "Func_readTreeTrace.h"
-//#include "Func_readAncestralStateTreeTrace.h"
-//#include "Func_readAncestralStateTrace.h"
-//#include "Func_source.h"
-//#include "Func_summarizeCharacterMaps.h"
-//#include "Func_TaxonReader.h"
-//#include "Func_treeTrace.h"
-//#include "Func_write.h"
-//#include "Func_writeCharacterDataDelimited.h"
-//#include "Func_writeFasta.h"
-//#include "Func_writeNexus.h"
+#include "Func_readPoMoCountFile.h"
 
 
 /* Math functions (in folder "functions/math") */
@@ -262,9 +239,11 @@
 /* Statistics functions (in folder "functions/statistics") */
 /* These are functions related to statistical distributions */
 #include "Func_assembleContinuousMRF.h"
+#include "Func_betaBrokenStick.h"
 #include "Func_discretizeBeta.h"
 #include "Func_discretizeBetaQuadrature.h"
 #include "Func_discretizeGamma.h"
+#include "Func_discretizeGammaFromBetaQuantiles.h"
 #include "Func_discretizeGammaQuadrature.h"
 #include "Func_discretizeLognormalQuadrature.h"
 #include "Func_discretizeDistribution.h"
@@ -290,6 +269,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         ///////////////////////////////////////////
 
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
+        addFunction( new Func_BinaryMutationCoalescentRateMatrix()          );
         addFunction( new Func_blosum62()                                    );
         addFunction( new Func_chromosomes()                                 );
         addFunction( new Func_chromosomesPloidy()                           );
@@ -541,8 +521,11 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_discretizeBeta( )    );
         addFunction( new Func_discretizeBetaQuadrature( )    );
         addFunction( new Func_discretizeGamma( )   );
+        addFunction( new Func_discretizeGammaFromBetaQuantiles( )   );
         addFunction( new Func_discretizeGammaQuadrature( )   );
         addFunction( new Func_discretizeLognormalQuadrature( )   );
+
+        addFunction( new Func_betaBrokenStick( )   );
 
         addFunction( new Func_varianceCovarianceMatrix( )           );
         addFunction( new Func_decomposedVarianceCovarianceMatrix( ) );

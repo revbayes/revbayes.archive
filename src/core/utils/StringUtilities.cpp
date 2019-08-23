@@ -544,6 +544,20 @@ void StringUtilities::replaceSubstring(std::string& str, const std::string& oldS
 }
 
 
+void StringUtilities::replaceAllOccurrences(std::string& str, char old_ch, char new_ch)
+{
+    
+    for (size_t i=0; i<str.size(); ++i)
+    {
+        if ( str[i] == old_ch )
+        {
+            str[i] = new_ch;
+        }
+    }
+    
+}
+
+
 /** Utility function for dividing string into pieces */
 void StringUtilities::stringSplit(const std::string &s, const std::string &delim, std::vector<std::string>& results)
 {

@@ -199,23 +199,24 @@
 #include "Func_mapTree.h"
 #include "Func_mccTree.h"
 #include "Func_module.h"
+#include "Func_readAncestralStateTreeTrace.h"
+#include "Func_readAncestralStateTrace.h"
 #include "Func_readAtlas.h"
+#include "Func_readBranchLengthTrees.h"
 #include "Func_readCharacterDataDelimited.h"
 #include "Func_readCharacterDataUniversal.h"
 #include "Func_readContinuousCharacterData.h"
 #include "Func_readDataDelimitedFile.h"
 #include "Func_readDiscreteCharacterData.h"
 #include "Func_readDistanceMatrix.h"
+#include "Func_readMatrix.h"
 #include "Func_readRelativeNodeAgeConstraints.h"
 #include "Func_readRelativeNodeAgeWeightedConstraints.h"
 #include "Func_readStochasticVariableTrace.h"
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
-#include "Func_readBranchLengthTrees.h"
 #include "Func_readTreeTrace.h"
-#include "Func_readAncestralStateTreeTrace.h"
-#include "Func_readAncestralStateTrace.h"
-#include "Func_readMatrix.h"
+#include "Func_readVCF.h"
 #include "Func_source.h"
 #include "Func_summarizeCharacterMaps.h"
 #include "Func_TaxonReader.h"
@@ -529,6 +530,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func_readTreeTrace()                           );
 		addFunction( new Func_readCharacterDataDelimited()              );
         addFunction( new Func_readDataDelimitedFile()                   );
+        addFunction( new Func_readVCF()                                 );
         addFunction( new Func_source()                                  );
         addFunction( new Func_summarizeCharacterMaps()                  );
         addFunction( new Func_treeTrace()                               );

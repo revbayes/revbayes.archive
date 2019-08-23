@@ -1,12 +1,3 @@
-//
-//  Func_characterMapTree.cpp
-//  RevBayes_development_branch
-//
-//  Created by will freyman on 12/22/16.
-//  Copyright (c) 2016 will freyman. All rights reserved.
-//
-
-
 #include <math.h>
 #include <stddef.h>
 #include <sstream>
@@ -62,11 +53,13 @@ Func_characterMapTree* Func_characterMapTree::clone( void ) const
 RevPtr<RevVariable> Func_characterMapTree::execute( void )
 {
     
+    size_t arg_index = 0;
+    
     // get the input tree
-    const RevBayesCore::TypedDagNode<RevBayesCore::Tree> *it = static_cast<const Tree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode<RevBayesCore::Tree> *it = static_cast<const Tree&>( this->args[arg_index++].getVariable()->getRevObject() ).getDagNode();
     
     // get vector of ancestral state traces
-    const WorkspaceVector<AncestralStateTrace>& ast_vector = static_cast<const WorkspaceVector<AncestralStateTrace> &>( args[1].getVariable()->getRevObject() );
+    const WorkspaceVector<AncestralStateTrace>& ast_vector = static_cast<const WorkspaceVector<AncestralStateTrace> &>( args[arg_index++].getVariable()->getRevObject() );
     std::vector<RevBayesCore::AncestralStateTrace> ancestralstate_traces;
     for (int i = 0; i < ast_vector.size(); ++i)
     {
@@ -74,7 +67,7 @@ RevPtr<RevVariable> Func_characterMapTree::execute( void )
     }
     
     // get the ancestral state tree trace
-    const TraceTree& tt = static_cast<const TraceTree&>( args[2].getVariable()->getRevObject() );
+    const TraceTree& tt = static_cast<const TraceTree&>( args[arg_index++].getVariable()->getRevObject() );
     
     // make a new tree summary object
     RevBayesCore::TraceTree tree_trace;
@@ -84,13 +77,16 @@ RevPtr<RevVariable> Func_characterMapTree::execute( void )
     }
     
     // get the filename for the tree with MAP character history
-    const std::string& map_filename = static_cast<const RlString&>( args[3].getVariable()->getRevObject() ).getValue();
+    const std::string& map_filename = static_cast<const RlString&>( args[arg_index++].getVariable()->getRevObject() ).getValue();
     
     // get the filename for the tree with posteriors for the MAP character history
-    const std::string& map_pp_filename = static_cast<const RlString&>( args[4].getVariable()->getRevObject() ).getValue();
+    const std::string& map_pp_filename = static_cast<const RlString&>( args[arg_index++].getVariable()->getRevObject() ).getValue();
+    
+    // get the filename for the tree with shift probability for character history
+    const std::string& map_shift_pp_filename = static_cast<const RlString&>( args[arg_index++].getVariable()->getRevObject() ).getValue();
     
     int burnin;
-    RevObject& b = args[5].getVariable()->getRevObject();
+    RevObject& b = args[arg_index++].getVariable()->getRevObject();
     if ( b.isType( Integer::getClassTypeSpec() ) )
     {
         burnin = (int)static_cast<const Integer &>(b).getValue();
@@ -101,7 +97,7 @@ RevPtr<RevVariable> Func_characterMapTree::execute( void )
         burnin = int( floor( ancestralstate_traces[0].size() * burnin_frac ) );
     }
 
-    std::string reconstruction = static_cast<const RlString &>(args[6].getVariable()->getRevObject()).getValue();
+    std::string reconstruction = static_cast<const RlString &>(args[arg_index++].getVariable()->getRevObject()).getValue();
     bool conditional = false;
     if ( reconstruction == "conditional" )
     {
@@ -112,9 +108,9 @@ RevPtr<RevVariable> Func_characterMapTree::execute( void )
         throw RbException("Joint ancestral state summaries are not yet implemented. Coming soon!");
     }
     
-    int num_time_slices = (int)static_cast<const Integer &>(args[7].getVariable()->getRevObject()).getValue();
+    int num_time_slices = (int)static_cast<const Integer &>(args[arg_index++].getVariable()->getRevObject()).getValue();
     
-    bool verbose = static_cast<const RlBoolean &>(args[8].getVariable()->getRevObject()).getValue();
+    bool verbose = static_cast<const RlBoolean &>(args[arg_index++].getVariable()->getRevObject()).getValue();
     
     // get the tree with ancestral states
     RevBayesCore::JointAncestralStateTrace joint_trace(ancestralstate_traces, tree_trace);
@@ -145,6 +141,17 @@ RevPtr<RevVariable> Func_characterMapTree::execute( void )
         out_stream << t.getSimmapNewickRepresentation();
         out_stream.close();
     }
+    if ( map_shift_pp_filename != "" )
+    {
+        RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(map_shift_pp_filename);
+        fm.createDirectoryForFile();
+        
+        RevBayesCore::Tree t = RevBayesCore::Tree(*tree);
+        t.renameNodeParameter("map_character_history_shift_prob", "character_history");
+        out_stream.open(fm.getFullFileName().c_str(), std::fstream::out);
+        out_stream << t.getSimmapNewickRepresentation();
+        out_stream.close();
+    }
     
     // return the tree with annotations
     return new RevVariable( new Tree( tree ) );
@@ -168,6 +175,7 @@ const ArgumentRules& Func_characterMapTree::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "tree_trace",                   TraceTree::getClassTypeSpec(),                            "A trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         argumentRules.push_back( new ArgumentRule( "character_file",               RlString::getClassTypeSpec(),                             "The name of the file to store the tree annotated with the MAP character history.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "posterior_file",               RlString::getClassTypeSpec(),                             "The name of the file to store the tree annotated with the posterior probabilities for the MAP character history.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "shift_prob_file",              RlString::getClassTypeSpec(),                             "The name of the file to store the tree annotated with the shift probabilities of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
 
 		std::vector<TypeSpec> burnin_types;
         burnin_types.push_back( Probability::getClassTypeSpec() );

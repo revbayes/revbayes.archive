@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="zIC-UL-v7m">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Navigator View Controller-->
+        <scene sceneID="xBN-lo-QfV">
+            <objects>
+                <viewController id="zIC-UL-v7m" customClass="NavigatorViewController" customModule="macgui" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="8XU-F7-TRZ">
+                        <rect key="frame" x="0.0" y="0.0" width="289" height="581"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kH3-y3-DJd">
+                                <rect key="frame" x="0.0" y="21" width="289" height="560"/>
+                                <clipView key="contentView" drawsBackground="NO" id="f06-yZ-zIx">
+                                    <rect key="frame" x="1" y="0.0" width="287" height="559"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveColumns="NO" rowSizeStyle="automatic" headerView="9NU-YZ-rMa" viewBased="YES" id="TNo-lx-0sx">
+                                            <rect key="frame" x="0.0" y="0.0" width="287" height="536"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <size key="intercellSpacing" width="3" height="2"/>
+                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
+                                            <tableColumns>
+                                                <tableColumn width="284" minWidth="40" maxWidth="1000" id="5DZ-I7-2E7">
+                                                    <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Active Analyses">
+                                                        <font key="font" metaFont="smallSystem"/>
+                                                        <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                                    </tableHeaderCell>
+                                                    <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="Ucd-5V-XJr">
+                                                        <font key="font" metaFont="system"/>
+                                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                    <sortDescriptor key="sortDescriptorPrototype" selector="caseInsensitiveCompare:" sortKey="name"/>
+                                                    <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                    <prototypeCellViews>
+                                                        <tableCellView id="SCi-Av-KA4">
+                                                            <rect key="frame" x="1" y="1" width="284" height="17"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                            <subviews>
+                                                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="4ya-BD-5zw">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="284" height="17"/>
+                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" title="Table View Cell" id="6CP-fx-uiO">
+                                                                        <font key="font" metaFont="system"/>
+                                                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                                    </textFieldCell>
+                                                                    <connections>
+                                                                        <binding destination="SCi-Av-KA4" name="value" keyPath="objectValue.name" id="uke-5A-dPo"/>
+                                                                    </connections>
+                                                                </textField>
+                                                            </subviews>
+                                                            <constraints>
+                                                                <constraint firstItem="4ya-BD-5zw" firstAttribute="centerX" secondItem="SCi-Av-KA4" secondAttribute="centerX" id="CQQ-rA-FZG"/>
+                                                                <constraint firstItem="4ya-BD-5zw" firstAttribute="centerY" secondItem="SCi-Av-KA4" secondAttribute="centerY" id="hEA-Bu-cnJ"/>
+                                                                <constraint firstItem="4ya-BD-5zw" firstAttribute="leading" secondItem="SCi-Av-KA4" secondAttribute="leading" constant="2" id="w3n-Nz-UOb"/>
+                                                            </constraints>
+                                                            <connections>
+                                                                <outlet property="textField" destination="4ya-BD-5zw" id="URU-8l-wzR"/>
+                                                            </connections>
+                                                        </tableCellView>
+                                                    </prototypeCellViews>
+                                                </tableColumn>
+                                            </tableColumns>
+                                            <connections>
+                                                <action selector="selectAnalysisWithSender:" target="zIC-UL-v7m" id="Vju-Ft-HYh"/>
+                                                <binding destination="P95-GE-ATU" name="content" keyPath="arrangedObjects" id="3Yo-E0-wfM"/>
+                                                <binding destination="P95-GE-ATU" name="selectionIndexes" keyPath="selectionIndexes" previousBinding="3Yo-E0-wfM" id="tJC-bV-N8x"/>
+                                                <binding destination="P95-GE-ATU" name="sortDescriptors" keyPath="sortDescriptors" previousBinding="tJC-bV-N8x" id="TUc-6T-M6C"/>
+                                            </connections>
+                                        </tableView>
+                                    </subviews>
+                                    <nil key="backgroundColor"/>
+                                </clipView>
+                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="hK1-vO-O9u">
+                                    <rect key="frame" x="1" y="544" width="236" height="16"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="ICX-l7-r5a">
+                                    <rect key="frame" x="224" y="17" width="15" height="102"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <tableHeaderView key="headerView" id="9NU-YZ-rMa">
+                                    <rect key="frame" x="0.0" y="0.0" width="287" height="23"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableHeaderView>
+                            </scrollView>
+                            <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ouj-rp-5J4">
+                                <rect key="frame" x="0.0" y="-1" width="60" height="23"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="60" id="LdC-bo-O0b"/>
+                                </constraints>
+                                <popUpButtonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" arrowPosition="noArrow" id="DEE-j8-ndx">
+                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="menu"/>
+                                    <menu key="menu" id="4Hl-u4-ksw">
+                                        <items>
+                                            <menuItem state="on" image="NSActionTemplate" hidden="YES" id="ifp-Uv-Nah"/>
+                                            <menuItem title="Add Analysis" tag="1" id="ToU-NT-Jbh"/>
+                                            <menuItem title="Remove Analysis" tag="2" id="hvs-Aq-exA"/>
+                                            <menuItem title="Duplicate Analysis" tag="3" id="PGH-O7-Qf9"/>
+                                        </items>
+                                    </menu>
+                                </popUpButtonCell>
+                                <connections>
+                                    <action selector="actionButtonClicked:" target="zIC-UL-v7m" id="85F-YA-ttt"/>
+                                </connections>
+                            </popUpButton>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="kH3-y3-DJd" secondAttribute="trailing" id="0gn-EB-wH3"/>
+                            <constraint firstItem="Ouj-rp-5J4" firstAttribute="leading" secondItem="8XU-F7-TRZ" secondAttribute="leading" id="GB7-XO-KT0"/>
+                            <constraint firstAttribute="bottom" secondItem="Ouj-rp-5J4" secondAttribute="bottom" id="IqQ-AT-sIy"/>
+                            <constraint firstItem="kH3-y3-DJd" firstAttribute="leading" secondItem="8XU-F7-TRZ" secondAttribute="leading" id="Jxh-se-4jE"/>
+                            <constraint firstItem="kH3-y3-DJd" firstAttribute="top" secondItem="8XU-F7-TRZ" secondAttribute="top" id="Sdw-fM-RRk"/>
+                            <constraint firstAttribute="bottom" secondItem="kH3-y3-DJd" secondAttribute="bottom" constant="21" id="W4d-Pf-scr"/>
+                            <constraint firstItem="Ouj-rp-5J4" firstAttribute="top" secondItem="kH3-y3-DJd" secondAttribute="bottom" id="yKo-YW-rgX"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="actionButton" destination="Ouj-rp-5J4" id="Gof-2s-bwR"/>
+                        <outlet property="analysesTableView" destination="TNo-lx-0sx" id="PrO-LW-uGd"/>
+                        <outlet property="arrayController" destination="P95-GE-ATU" id="RsP-9j-0yM"/>
+                    </connections>
+                </viewController>
+                <customObject id="QsT-Jm-rUI" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <arrayController objectClassName="macgui.Analysis" id="P95-GE-ATU">
+                    <connections>
+                        <binding destination="zIC-UL-v7m" name="contentArray" keyPath="self.analyses" id="cUR-Vh-2fy"/>
+                    </connections>
+                </arrayController>
+            </objects>
+            <point key="canvasLocation" x="258.5" y="634.5"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="NSActionTemplate" width="14" height="14"/>
+    </resources>
+</document>
