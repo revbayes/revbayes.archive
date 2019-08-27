@@ -16,11 +16,6 @@ namespace RevBayesCore {
      * This function computes the arithmetic mean of a vector of real number:
      *   y = sum_{i=1}^{n}x[i]/n
      *
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since Version 1.0, 2014-07-04
-     *
      */
     class MeanFunction : public TypedFunction<double> {
         

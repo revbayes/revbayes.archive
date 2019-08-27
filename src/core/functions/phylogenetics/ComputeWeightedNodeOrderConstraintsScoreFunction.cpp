@@ -20,7 +20,7 @@ constrainedNodes()
 
     update();
 }
-catch (RbException e)
+catch (RbException &e)
 {
     std::cerr << e.getMessage() << std::endl;
     }
@@ -92,7 +92,7 @@ void computeWeightedNodeOrderConstraintsScoreFunction::update( void )
     try {
         updateMapOfNodeAges();
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         std::cerr << e.getMessage() << std::endl;
     }

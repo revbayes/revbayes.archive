@@ -41,16 +41,18 @@
 /* Monitor types (in folder "monitors) */
 #include "RlMonitor.h"
 #include "Mntr_AncestralState.h"
-#include "Mntr_JointConditionalAncestralState.h"
-#include "Mntr_StochasticCharacterMapping.h"
 #include "Mntr_File.h"
+#include "Mntr_HomeologPhase.h"
+#include "Mntr_JointConditionalAncestralState.h"
+#include "Mntr_NexusFile.h"
 #include "Mntr_ExtendedNewickFile.h"
 #include "Mntr_Model.h"
 #include "Mntr_Probability.h"
 #include "Mntr_Screen.h"
-#include "Mntr_StochasticVariable.h"
+#include "Mntr_StochasticCharacterMapping.h"
 #include "Mntr_StochasticBranchRate.h"
 #include "Mntr_StochasticBranchStateTimes.h"
+#include "Mntr_StochasticVariable.h"
 #include "Mntr_CharacterHistoryNewickFile.h"
 #include "Mntr_CharacterHistoryNhxFile.h"
 #include "Mntr_CharacterHistorySummary.h"
@@ -66,10 +68,12 @@ void RevLanguage::Workspace::initializeMonitorGlobalWorkspace(void)
         ////////////////////////////////////////////////////////////////////////////////
 
 		addTypeWithConstructor( new Mntr_AncestralState()                       );
+		addTypeWithConstructor( new Mntr_HomeologPhase()                        );
         addTypeWithConstructor( new Mntr_JointConditionalAncestralState()       );
         addTypeWithConstructor( new Mntr_StochasticCharacterMapping()           );
         addTypeWithConstructor( new Mntr_ExtendedNewickFile()                   );
         addTypeWithConstructor( new Mntr_File()                                 );
+        addTypeWithConstructor( new Mntr_NexusFile() );
         addTypeWithConstructor( new Mntr_Model()                                );
         addTypeWithConstructor( new Mntr_Probability()                          );
         addTypeWithConstructor( new Mntr_Screen()                               );

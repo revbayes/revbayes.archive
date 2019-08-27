@@ -8,14 +8,10 @@
 namespace RevBayesCore {
     
     /**
-     * \brief Continuous function interface.
+     * @brief Continuous function interface.
      *
      * A continuous function is defined to be continuously on the real line.
      * We use this interface if we want to allow only continuous functions.
-     *
-     * \copyright (c) Copyright 2009-2015 (GPL version 3)
-     * \author The RevBayes Development Core Team (Sebastian Hoehna)
-     * \since Version 1.0, 2012-08-13
      *
      */
     class ContinuousFunction : public TypedFunction<double> {

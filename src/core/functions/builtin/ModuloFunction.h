@@ -13,11 +13,8 @@ namespace RevBayesCore {
      * @brief Modulo operator function.
      *
      * This function performs the modulo operation, e.g., a % b = c
-     *
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since Version 1.0, 2014-07-04
+     * This functions allows this operation to be performed on
+     * TypedDagNodes
      *
      */
     class ModuloFunction : public TypedFunction<long> {

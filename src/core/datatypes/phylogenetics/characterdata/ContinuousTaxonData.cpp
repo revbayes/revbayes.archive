@@ -86,7 +86,7 @@ ContinuousTaxonData* ContinuousTaxonData::clone( void ) const
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousTaxonData& ContinuousTaxonData::concatenate(const AbstractTaxonData &obsd)
+void ContinuousTaxonData::concatenate(const AbstractTaxonData &obsd)
 {
     
     const ContinuousTaxonData* rhs = dynamic_cast<const ContinuousTaxonData* >( &obsd );
@@ -96,7 +96,7 @@ ContinuousTaxonData& ContinuousTaxonData::concatenate(const AbstractTaxonData &o
     }
     
     
-    return concatenate( *rhs );
+    concatenate( *rhs );
 }
 
 
@@ -105,13 +105,11 @@ ContinuousTaxonData& ContinuousTaxonData::concatenate(const AbstractTaxonData &o
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousTaxonData& ContinuousTaxonData::concatenate(const ContinuousTaxonData &obsd)
+void ContinuousTaxonData::concatenate(const ContinuousTaxonData &obsd)
 {
     
     sequence.insert( sequence.end(), obsd.sequence.begin(), obsd.sequence.end() );
     
-    // return a reference to this object
-    return *this;
 }
 
 

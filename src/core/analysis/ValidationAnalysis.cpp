@@ -305,9 +305,9 @@ void ValidationAnalysis::runSim(size_t idx, size_t gen)
     
     
 #ifdef RB_MPI
-    analysis->run(gen, rules, MPI_COMM_WORLD, 100, false);
+    analysis->run(gen, rules, MPI_COMM_WORLD, 100, "", 0, false);
 #else
-    analysis->run(gen, rules, 100, false);
+    analysis->run(gen, rules, 100, "", 0, false);
 #endif
 
 }

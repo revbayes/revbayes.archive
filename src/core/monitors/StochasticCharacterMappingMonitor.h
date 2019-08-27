@@ -1,17 +1,9 @@
-//
-//  StochasticCharacterMappingMonitor.h
-//  RevBayes_development_branch
-//
-//  Created by will freyman on 12/14/16.
-//  Copyright (c) 2016 will freyman. All rights reserved.
-//
-
 #ifndef RevBayes_development_branch_StochasticCharacterMappingMonitor_h
 #define RevBayes_development_branch_StochasticCharacterMappingMonitor_h
 
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "StateDependentSpeciationExtinctionProcess.h"
-#include "AbstractFileMonitor.h"
+#include "VariableMonitor.h"
 #include "TypedDagNode.h"
 #include "StochasticNode.h"
 
@@ -33,7 +25,7 @@ namespace RevBayesCore {
      *
      */
     template<class characterType>
-    class StochasticCharacterMappingMonitor : public AbstractFileMonitor {
+    class StochasticCharacterMappingMonitor : public VariableMonitor {
         
     public:
         
@@ -71,15 +63,13 @@ namespace RevBayesCore {
 #include "Model.h"
 #include "Monitor.h"
 #include "RbFileManager.h"
-#include "StochasticNode.h"
-#include "StateDependentSpeciationExtinctionProcess.h"
 
 using namespace RevBayesCore;
 
 
 /* Constructor for state dependent birth death process */
 template<class characterType>
-StochasticCharacterMappingMonitor<characterType>::StochasticCharacterMappingMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, bool is, bool sd, const std::string &del) : AbstractFileMonitor(ch, g, fname, del, false, false, false),
+StochasticCharacterMappingMonitor<characterType>::StochasticCharacterMappingMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, bool is, bool sd, const std::string &del) : VariableMonitor(ch, g, fname, del, false, false, false),
     cdbdp( ch ),
     include_simmaps( is ),
     use_simmap_default( sd )
@@ -95,7 +85,8 @@ StochasticCharacterMappingMonitor<characterType>::StochasticCharacterMappingMoni
 //StochasticCharacterMappingMonitor<characterType>::StochasticCharacterMappingMonitor(TypedDagNode<Tree> *t, StochasticNode<AbstractHomologousDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, bool is, const std::string &del) : Monitor(g),
 /* Constructor for CTMC */
 template<class characterType>
-StochasticCharacterMappingMonitor<characterType>::StochasticCharacterMappingMonitor(StochasticNode<AbstractHomologousDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, bool is, bool sd, const std::string &del) : AbstractFileMonitor(ch, g, fname, del, false, false, false),
+StochasticCharacterMappingMonitor<characterType>::StochasticCharacterMappingMonitor(StochasticNode<AbstractHomologousDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, bool is, bool sd, const std::string &del) :
+    VariableMonitor(ch, g, fname, del, false, false, false),
     ctmc( ch ),
     include_simmaps( is ),
     use_simmap_default( sd )
@@ -115,7 +106,7 @@ StochasticCharacterMappingMonitor<characterType>::StochasticCharacterMappingMoni
  * Copy constructor.
  */
 template<class characterType>
-StochasticCharacterMappingMonitor<characterType>::StochasticCharacterMappingMonitor( const StochasticCharacterMappingMonitor &m) : AbstractFileMonitor( m ),
+StochasticCharacterMappingMonitor<characterType>::StochasticCharacterMappingMonitor( const StochasticCharacterMappingMonitor &m) : VariableMonitor( m ),
     tree( m.tree ),
     cdbdp( m.cdbdp ),
     ctmc( m.ctmc ),
@@ -262,7 +253,7 @@ void StochasticCharacterMappingMonitor<characterType>::swapNode(DagNode *oldN, D
         tree = static_cast< StochasticNode<Tree> *>( newN );
     }
     
-    AbstractFileMonitor::swapNode( oldN, newN );
+    VariableMonitor::swapNode( oldN, newN );
     
 }
 

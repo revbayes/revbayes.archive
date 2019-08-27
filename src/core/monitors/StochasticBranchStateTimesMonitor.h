@@ -1,16 +1,8 @@
-//
-//  StochasticBranchStateTimesMonitor.h
-//  RevBayes_development_branch
-//
-//  Created by will freyman on 4/25/18.
-//  Copyright (c) 2018 will freyman. All rights reserved.
-//
-
 #ifndef RevBayes_development_branch_StochasticBranchStateTimesMonitor_h
 #define RevBayes_development_branch_StochasticBranchStateTimesMonitor_h
 
 #include "StateDependentSpeciationExtinctionProcess.h"
-#include "AbstractFileMonitor.h"
+#include "VariableMonitor.h"
 #include "TypedDagNode.h"
 #include "StochasticNode.h"
 
@@ -25,7 +17,7 @@ namespace RevBayesCore {
     /**
      * Monitor to print out the time spent in each state during an SSE stochastically mapped character history.
      */
-    class StochasticBranchStateTimesMonitor : public AbstractFileMonitor {
+    class StochasticBranchStateTimesMonitor : public VariableMonitor {
         
     public:
         

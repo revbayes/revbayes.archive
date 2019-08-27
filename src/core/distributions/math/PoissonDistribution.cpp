@@ -5,6 +5,10 @@
 
 using namespace RevBayesCore;
 
+/** Poisson Distribution Constructor
+ *  @param l lambda rate parameter
+*/
+
 PoissonDistribution::PoissonDistribution(const TypedDagNode<double> *l) : TypedDistribution<long>( new long( 1 ) ),
     lambda( l )
 {

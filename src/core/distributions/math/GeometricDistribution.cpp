@@ -1,8 +1,12 @@
 #include "GeometricDistribution.h"
 #include "DistributionGeometric.h"
 #include "RandomNumberFactory.h"
-#include "RbConstants.h"
 
+/*
+ * Geometric Distribution Constructor
+ * @param q The probability of success in a Bernoulli trial
+ *
+ */
 
 using namespace RevBayesCore;
 

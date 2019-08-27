@@ -1,24 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the deterministic variable class for Vectors.
- * This class is derived from the deterministic node and each instance will represent a deterministic variable
- * computing the Vector of its parameters.
- *
- * @brief Declaration of the deterministic variable for Vectors.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-07-06, version 1.0
- * @interface TypedDagNode
- *
- * $Id$
- */
-
-
-
 #ifndef GreaterThanFunction_H
 #define GreaterThanFunction_H
 
@@ -29,6 +8,10 @@
 
 namespace RevBayesCore {
     
+    /**
+     * @brief Declaration of the deterministic variable class for greater than.
+     * The function returns a boolean and assesses if the left value is greater than the right value.
+     */
     template <class leftValueType, class rightValueType>
     class GreaterThanFunction : public TypedFunction<Boolean> {
         
@@ -53,6 +36,10 @@ namespace RevBayesCore {
     
 }
 
+/** Constructor for assessing l > r
+ * @param l the left value in the statement
+ * @param r the right value in the statement
+ */
 template <class leftValueType, class rightValueType>
 RevBayesCore::GreaterThanFunction<leftValueType,rightValueType>::GreaterThanFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<Boolean>( new Boolean(false) ),
     left( l ),

@@ -11,14 +11,9 @@ namespace RevBayesCore {
      *
      * The variance-gamma distribution represents a family of distributions
      * on the real line. The variance-gamma distribution has 2 parameters:
-     *   tau      .. the rate of the Poisson process
-     *   kappa    .. the mean of the normal distribution
+     * @param tau the rate of the Poisson process
+     * @param kappa the mean of the normal distribution
      * Instances of this class can be associated to stochastic variables.
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Michael Landis)
-     * @since 2014-11-19, version 1.0
-     *
      */
     class VarianceGammaDistribution : public ContinuousDistribution {
         

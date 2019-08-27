@@ -16,11 +16,6 @@ namespace RevBayesCore {
      * This function computes the variance of a vector of real number:
      *   y = sum_{i=1}^{n}(x[i]-\bar{x})*(x[i]-\bar{x})/(n-1)
      *
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since Version 1.0, 2014-11-13
-     *
      */
     class VarianceFunction : public TypedFunction<double> {
         

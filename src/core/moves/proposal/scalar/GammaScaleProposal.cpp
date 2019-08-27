@@ -99,7 +99,7 @@ double GammaScaleProposal::propose( double &val )
         
         ln_hastings_ratio = backward - forward - log(u);
     }
-    catch (RbException e)
+	catch (RbException &e)
     {
         ln_hastings_ratio = RbConstants::Double::neginf;
     }

@@ -2,7 +2,12 @@
 #include <cmath>
 
 using namespace RevBayesCore;
-
+/**
+ * RoundFunction of a TypedDagNode of constructor with values of
+ * type double.
+ *
+ * @param x value of type double
+ */
 RoundFunction::RoundFunction(const TypedDagNode<double> *x) : TypedFunction<long>( new long(0) ),
     a( x )
 {

@@ -74,11 +74,11 @@ void Clade::constructInternalObject( void )
     bool neg = static_cast<const RlBoolean &>( is_negative_constraint->getRevObject() ).getValue();
 
     // now allocate a new Clade
-    std::vector<RevBayesCore::Taxon> n;
+    std::set<RevBayesCore::Taxon> n_set;
     for (std::vector<RevPtr<const RevVariable> >::iterator it = names.begin(); it != names.end(); ++it)
     {
         RevBayesCore::Taxon t = RevBayesCore::Taxon(static_cast<const RlString &>( (*it)->getRevObject() ).getValue());
-        n.push_back( t );
+        n_set.insert( t );
     }
 
     // now add names to new clade
@@ -89,9 +89,8 @@ void Clade::constructInternalObject( void )
         for (size_t i=0; i<tmp.size(); ++i)
         {
             RevBayesCore::Taxon t = RevBayesCore::Taxon( tmp.getElement(i)->getValue() );
-            n.push_back( t );
+            n_set.insert( t );
         }
-
     }
 
     // now allocate a new Clade
@@ -110,8 +109,16 @@ void Clade::constructInternalObject( void )
         for (size_t i=0; i<taxa.size(); ++i)
         {
             const RevBayesCore::Taxon &t = taxa[i];
-            n.push_back( t );
+            n_set.insert( t );
         }
+    }
+    
+    
+    // convert to vector
+    std::vector<RevBayesCore::Taxon> n;
+    for (std::set<RevBayesCore::Taxon>::iterator it = n_set.begin(); it != n_set.end(); it++)
+    {
+        n.push_back( *it );
     }
 
 
@@ -160,6 +167,13 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Clade::executeMethod(std::string c
         
         return new RevVariable( new Natural( this->dag_node->getValue().size() ) );
     }
+    else if (name == "getAge" )
+    {
+        found = true;
+        
+        double a = this->dag_node->getValue().getAge();
+        return new RevVariable( new RealPos( a ) );
+    }
     else if (name == "getTaxonName" )
     {
         found = true;
@@ -182,6 +196,14 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Clade::executeMethod(std::string c
         
         int n = this->dag_node->getValue().getNumberMissingTaxa();
         return new RevVariable( new Natural( n ) );
+    }
+    else if (name == "setAge" )
+    {
+        found = true;
+        double a = static_cast<const RealPos&>( args[0].getVariable()->getRevObject() ).getValue();
+        
+        this->dag_node->getValue().setAge( a );
+        return NULL;
     }
     else if (name == "setNumberOfTaxaMissing" )
     {
@@ -331,26 +353,26 @@ std::string Clade::getHelpTitle(void) const
 const MemberRules& Clade::getParameterRules(void) const
 {
 
-    static MemberRules memberRules;
+    static MemberRules member_rules;
     static bool rules_set = false;
 
-    if ( !rules_set )
+    if ( rules_set == false )
     {
 
-        memberRules.push_back( new Ellipsis( "Taxon names as string values.", RlString::getClassTypeSpec() ) );
-        memberRules.push_back( new Ellipsis("Taxon names as a vector of string values.", ModelVector<RlString>::getClassTypeSpec() ) );
-        memberRules.push_back( new Ellipsis( "Taxa as clade objects.", Clade::getClassTypeSpec() ) );
-        memberRules.push_back( new Ellipsis( "Taxon names as taxon values", Taxon::getClassTypeSpec() ) );
-        memberRules.push_back( new Ellipsis( "Taxon names as a vector of taxons", ModelVector<Taxon>::getClassTypeSpec() ) );
-        memberRules.push_back( new ArgumentRule("age", RealPos::getClassTypeSpec(), "The age of the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule("missing", Natural::getClassTypeSpec(), "Number of missing taxa in the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule("negative", RlBoolean::getClassTypeSpec(), "Is this a negative clade constraint?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-        memberRules.push_back( new ArgumentRule("optional_match", RlBoolean::getClassTypeSpec(), "Clade constraint satisfied when any Clade argument matched", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        member_rules.push_back( new Ellipsis( "Taxon names as string values.", RlString::getClassTypeSpec() ) );
+        member_rules.push_back( new Ellipsis("Taxon names as a vector of string values.", ModelVector<RlString>::getClassTypeSpec() ) );
+        member_rules.push_back( new Ellipsis( "Taxa as clade objects.", Clade::getClassTypeSpec() ) );
+        member_rules.push_back( new Ellipsis( "Taxon names as taxon values", Taxon::getClassTypeSpec() ) );
+        member_rules.push_back( new Ellipsis( "Taxon names as a vector of taxons", ModelVector<Taxon>::getClassTypeSpec() ) );
+        member_rules.push_back( new ArgumentRule("age", RealPos::getClassTypeSpec(), "The age of the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        member_rules.push_back( new ArgumentRule("missing", Natural::getClassTypeSpec(), "Number of missing taxa in the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        member_rules.push_back( new ArgumentRule("negative", RlBoolean::getClassTypeSpec(), "Is this a negative clade constraint?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        member_rules.push_back( new ArgumentRule("optional_match", RlBoolean::getClassTypeSpec(), "Clade constraint satisfied when any Clade argument matched", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
 
         rules_set = true;
     }
 
-    return memberRules;
+    return member_rules;
 }
 
 
@@ -393,6 +415,9 @@ void Clade::initMethods( void )
     ArgumentRules* ntipsArgRules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "size", RlUtils::Void, ntipsArgRules ) );
     
+    ArgumentRules* get_age_arg_rules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "getAge", RealPos::getClassTypeSpec(), get_age_arg_rules ) );
+    
     ArgumentRules* namesArgRules = new ArgumentRules();
     namesArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "getTaxonName", RlString::getClassTypeSpec(), namesArgRules ) );
@@ -403,6 +428,10 @@ void Clade::initMethods( void )
 
     ArgumentRules* get_num_missing_arg_rules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "getNumberOfTaxaMissing", Natural::getClassTypeSpec(), get_num_missing_arg_rules ) );
+
+    ArgumentRules* set_age_arg_rules = new ArgumentRules();
+    set_age_arg_rules->push_back( new ArgumentRule( "a", RealPos::getClassTypeSpec(), "The age of the cladea.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "setAge", RlUtils::Void, set_age_arg_rules ) );
 
     ArgumentRules* set_num_missing_arg_rules = new ArgumentRules();
     set_num_missing_arg_rules->push_back( new ArgumentRule( "n", Natural::getClassTypeSpec(), "The number of missing taxa.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );

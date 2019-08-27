@@ -32,7 +32,7 @@ namespace RevBayesCore {
      * specific instance of the per site parameter is integrated over. The per site parameter could be a rate scaler (e.g. the + gamma models)
      * or different rate matrices or anything else.
      *
-     * The pruning algorithm is implemented in this base class and calles some few pure virtual methods.
+     * The pruning algorithm is implemented in this base class and calls some few pure virtual methods.
      * The important functions you have to override are:
      * - computeRootLikelihood(size_t root, size_t l, size_t r, size_t m)
      * - computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r)
@@ -64,11 +64,6 @@ namespace RevBayesCore {
      * We also use twice as much memory because we store the partial likelihood along each branch and not only for each internal node.
      * This gives us a speed improvement during MCMC proposal in the order of a factor 2.
      *
-     *
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2012-06-17, version 1.0
      */
     template<class charType>
     class AbstractPhyloCTMCSiteHomogeneous : public TypedDistribution< AbstractHomologousDiscreteCharacterData >, public MemberObject< RbVector<double> >, public MemberObject < MatrixReal >, public TreeChangeEventListener {
@@ -76,8 +71,8 @@ namespace RevBayesCore {
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
         AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites, bool amb, bool wd = false, bool internal = false, bool gapmatch = true );
-        AbstractPhyloCTMCSiteHomogeneous(const AbstractPhyloCTMCSiteHomogeneous &n);                                                                                          //!< Copy constructor
-        virtual                                                            ~AbstractPhyloCTMCSiteHomogeneous(void);                                                              //!< Virtual destructor
+        AbstractPhyloCTMCSiteHomogeneous(const AbstractPhyloCTMCSiteHomogeneous &n);                                                                                    //!< Copy constructor
+        virtual                                                            ~AbstractPhyloCTMCSiteHomogeneous(void);                                                     //!< Virtual destructor
 
         // public member functions
         // pure virtual
@@ -86,7 +81,7 @@ namespace RevBayesCore {
         // non-virtual
         void                                                                bootstrap(void);
         virtual double                                                      computeLnProbability(void);
-        virtual std::vector<charType>										drawAncestralStatesForNode(const TopologyNode &n);
+        virtual std::vector<charType>                                       drawAncestralStatesForNode(const TopologyNode &n);
         virtual void                                                        drawJointConditionalAncestralStates(std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates);
         virtual void                                                        drawStochasticCharacterMap(std::vector<std::string*>& character_histories, size_t site, bool use_simmap_default=true);
         void                                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;     //!< Map the member methods to internal function calls
@@ -97,9 +92,9 @@ namespace RevBayesCore {
         virtual void                                                        redrawValue(void);
         void                                                                reInitialized(void);
         void                                                                setMcmcMode(bool tf);                                                                       //!< Change the likelihood computation to or from MCMC mode.
-        void                                                                setValue(AbstractHomologousDiscreteCharacterData *v, bool f=false);                                   //!< Set the current value, e.g. attach an observation (clamp)
+        void                                                                setValue(AbstractHomologousDiscreteCharacterData *v, bool f=false);                         //!< Set the current value, e.g. attach an observation (clamp)
         virtual void                                                        tipDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
-        void																updateMarginalNodeLikelihoods(void);
+        void	                                                                updateMarginalNodeLikelihoods(void);
         const TypedDagNode<Tree>*                                           getTree(void);
 
         void                                                                setClockRate(const TypedDagNode< double > *r);
@@ -112,6 +107,7 @@ namespace RevBayesCore {
         void                                                                setSiteRatesProbs(const TypedDagNode< Simplex > *rp);
         void                                                                setUseMarginalLikelihoods(bool tf);
         void                                                                setUseSiteMatrices(bool sm, const TypedDagNode< Simplex > *s = NULL);
+        void                                                                swap_taxon_name_2_tip_index(std::string tip1, std::string tip2);
 
 
     protected:
@@ -119,9 +115,9 @@ namespace RevBayesCore {
         // helper method for this and derived classes
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
         virtual void                                                        resizeLikelihoodVectors(void);
-        virtual void                                                        setActivePIDSpecialized(size_t i, size_t n);                                                          //!< Set the number of processes for this distribution.
+        virtual void                                                        setActivePIDSpecialized(size_t i, size_t n);                                                 //!< Set the number of processes for this distribution.
 
-        virtual void                                                        updateTransitionProbabilities(size_t node_idx, double brlen);
+        virtual void                                                        updateTransitionProbabilities(size_t node_idx);
         virtual std::vector<double>                                         getRootFrequencies( size_t mixture = 0 ) const;
         virtual void                                                        getRootFrequencies( std::vector<std::vector<double> >& ) const;
         virtual std::vector<double>                                         getMixtureProbs( void ) const;
@@ -129,7 +125,7 @@ namespace RevBayesCore {
 
 
         // Parameter management functions.
-        virtual void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                                    //!< Swap a parameter
+        virtual void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                             //!< Swap a parameter
 
 
         // virtual methods that may be overwritten, but then the derived class should call this methods
@@ -197,8 +193,6 @@ namespace RevBayesCore {
         size_t                                                              nodeOffset;
         size_t                                                              mixtureOffset;
         size_t                                                              siteOffset;
-        size_t                                                              nodeOffsetMarginal;
-        size_t                                                              siteOffsetMarginal;
 
         // flags
         bool                                                                using_ambiguous_characters;
@@ -261,8 +255,6 @@ namespace RevBayesCore {
 #include "RandomNumberGenerator.h"
 #include "RateMatrix_JC.h"
 #include "StochasticNode.h"
-#include "TopologyNode.h"
-#include "TransitionProbabilityMatrix.h"
 
 #include <cmath>
 
@@ -894,7 +886,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeMarginalNo
 {
 
     // compute the transition probability matrix
-    this->updateTransitionProbabilities( node_index, this->tau->getValue().getNode(node_index).getBranchLength() );
+    this->updateTransitionProbabilities( node_index );
 
     // get the pointers to the partial likelihoods and the marginal likelihoods
     const double*   p_node                  = this->partialLikelihoods + this->activeLikelihood[node_index]*this->activeLikelihoodOffset + node_index*this->nodeOffset;
@@ -1127,22 +1119,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawJointConditio
 
     const TopologyNode &root = tau->getValue().getRoot();
     size_t node_index = root.getIndex();
-    size_t right = root.getChild(0).getIndex();
-    size_t left = root.getChild(1).getIndex();
 
     // get the pointers to the partial likelihoods and the marginal likelihoods
     double*         p_node  = this->partialLikelihoods + this->activeLikelihood[node_index]*this->activeLikelihoodOffset + node_index*this->nodeOffset;
-    const double*   p_left  = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
-    const double*   p_right = this->partialLikelihoods + this->activeLikelihood[right]*this->activeLikelihoodOffset + right*this->nodeOffset;
 
     // get pointers the likelihood for both subtrees
     const double*   p_site           = p_node;
-    const double*   p_left_site      = p_left;
-    const double*   p_right_site     = p_right;
-
-    // get root frequencies
-    std::vector<std::vector<double> >   ff;
-    getRootFrequencies(ff);
 
     // sample root states
     std::vector<double> p( this->num_site_mixtures*this->num_chars, 0.0);
@@ -1166,37 +1148,27 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawJointConditio
 
         // get ptr to first mixture cat for site
         p_site          = p_node  + pattern * this->siteOffset;
-        p_left_site     = p_left  + pattern * this->siteOffset;
-        p_right_site    = p_right + pattern * this->siteOffset;
 
         // iterate over all mixture categories
         for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
         {
-            // get root frequencies
-            const std::vector<double>&          f           = ff[mixture % ff.size()];
 
             // get pointers to the likelihood for this mixture category
             const double* p_site_mixture_j       = p_site;
-            const double* p_left_site_mixture_j  = p_left_site;
-            const double* p_right_site_mixture_j = p_right_site;
 
             // iterate over all starting states
             for (size_t state = 0; state < this->num_chars; ++state)
             {
                 size_t k = this->num_chars*mixture + state;
-                p[k] = *p_site_mixture_j * *p_left_site_mixture_j * *p_right_site_mixture_j * f[state] * siteProbVector[mixture];
+                p[k] = *p_site_mixture_j * siteProbVector[mixture];
                 sum += p[k];
 
                 // increment the pointers to the next state for (site,rate)
                 p_site_mixture_j++;
-                p_left_site_mixture_j++;
-                p_right_site_mixture_j++;
             }
 
             // increment the pointers to the next mixture category for given site
             p_site       += this->mixtureOffset;
-            p_left_site  += this->mixtureOffset;
-            p_right_site += this->mixtureOffset;
 
         } // end-for over all mixtures (=rate categories)
 
@@ -1460,7 +1432,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::executeMethod(con
         if ( this->compressed == true && num_sites > num_patterns )
         {
             rv = RbVector<double>(num_sites, 0.0);
-            
+
             for (size_t i=0; i<num_sites; ++i)
             {
                 size_t pattern_index = site_pattern[i];
@@ -1731,7 +1703,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawJo
     //    size_t parentIndex = node.getParent().getIndex();
 
     // get transition probabilities
-    this->updateTransitionProbabilities( node_index, node.getBranchLength() );
+    this->updateTransitionProbabilities( node_index );
 
     // get the pointers to the partial likelihoods and the marginal likelihoods
     //    double*         p_node  = this->partialLikelihoods + this->activeLikelihood[node_index]*this->activeLikelihoodOffset + node_index*this->nodeOffset;
@@ -1829,7 +1801,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::tipDrawJointCondi
     size_t node_index = node.getIndex();
 
     // get transition probabilities
-    this->updateTransitionProbabilities( node_index, node.getBranchLength() );
+    this->updateTransitionProbabilities( node_index );
 
     const AbstractHomologousDiscreteCharacterData& d = this->getValue();
     const HomologousDiscreteCharacterData<charType>& dd = static_cast<const HomologousDiscreteCharacterData<charType>& >( d );
@@ -1873,7 +1845,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::tipDrawJointCondi
             {
                 bs = c.getState();
             }
-            
+
             // iterate over possible end states for each site given start state
             for (size_t j = 0; j < this->num_chars; j++)
             {
@@ -2578,7 +2550,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
             }
 
         }
-        
+
     }
     else if ( RbSettings::userSettings().getUseScaling() == true )
     {
@@ -2589,7 +2561,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
         }
 
     }
-    
+
 }
 
 
@@ -2657,9 +2629,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
 }
 
 
-/**
- * Set the active PID of this specific distribution object.
- */
 template <class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setActivePIDSpecialized(size_t a, size_t n)
 {
@@ -2673,7 +2642,7 @@ template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setValue(AbstractHomologousDiscreteCharacterData *v, bool force)
 {
 
-    if (v->getMaxObservedStateIndex() > this->num_chars - 1)
+    if ( v->getMaxObservedStateIndex() > this->num_chars - 1)
     {
         // We might use different sized matrices for different partitions depending on the observed number of states.
         std::stringstream ss;
@@ -2728,7 +2697,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::simulate( const T
         const TopologyNode &child = *(*it);
 
         // update the transition probability matrix
-        updateTransitionProbabilities( child.getIndex(), child.getBranchLength() );
+        updateTransitionProbabilities( child.getIndex() );
 
         DiscreteTaxonData< charType > &taxon = taxa[ child.getIndex() ];
         for ( size_t i = 0; i < num_sites; ++i )
@@ -2869,7 +2838,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setClockRate(cons
 /**
  * Change the likelihood computation to or from MCMC mode.
  */
-
 template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setMcmcMode(bool tf)
 {
@@ -3237,7 +3205,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
             }
             // add the likelihood for this mixture category
             per_mixture_Likelihoods[site] += tmp * site_mixture_probs[mixture];
-            
+
             // increment the pointers to the next site
             p_site_mixture+=this->siteOffset;
 
@@ -3345,7 +3313,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
             {
                 rv[site] -= this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] * *patterns;
             }
-                        
+
         }
 
     }
@@ -3699,6 +3667,15 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
 
 
 
+template<class charType>
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::swap_taxon_name_2_tip_index(std::string tip1, std::string tip2)
+{
+    size_t index1 = taxon_name_2_tip_index_map[tip1];
+    size_t index2 = taxon_name_2_tip_index_map[tip2];
+    taxon_name_2_tip_index_map[tip1] = index2;
+    taxon_name_2_tip_index_map[tip2] = index1;
+}
+
 /** Swap a parameter of the distribution */
 template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
@@ -3858,9 +3835,11 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateMarginalNod
 
 
 
-
+/*
+ * Update the transition probability matrices for the branch attached to the given node index.
+ */
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(size_t node_idx, double brlen)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(size_t node_idx)
 {
     const TopologyNode* node = tau->getValue().getNodes()[node_idx];
 

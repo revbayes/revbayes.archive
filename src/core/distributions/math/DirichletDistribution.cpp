@@ -4,6 +4,9 @@
 
 using namespace RevBayesCore;
 
+/** DirichletDistribution Constructor
+ * @param a vector of concentration parameters
+ */
 DirichletDistribution::DirichletDistribution(const TypedDagNode< RbVector<double> > *a) : TypedDistribution< Simplex >( new Simplex() ),
     alpha( a )
 {

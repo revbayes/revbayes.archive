@@ -1795,7 +1795,7 @@ void TopologyNode::setParent(TopologyNode* p)
         
     }
     
-    root_node = parent == NULL;
+    root_node = (parent == NULL);
 }
 
 void TopologyNode::setUseAges(bool tf, bool recursive)

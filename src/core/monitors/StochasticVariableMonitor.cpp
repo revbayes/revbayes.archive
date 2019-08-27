@@ -8,7 +8,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-StochasticVariableMonitor::StochasticVariableMonitor(unsigned long g, const std::string &fname, const std::string &del) : AbstractFileMonitor(std::vector<DagNode *>(),g,fname,del)
+StochasticVariableMonitor::StochasticVariableMonitor(unsigned long g, const std::string &fname, const std::string &del) : VariableMonitor(std::vector<DagNode *>(),g,fname,del)
 {
     posterior  = false;
     prior      = false;

@@ -36,30 +36,33 @@ namespace RevBayesCore {
         void                                    addMonitor(const Monitor &m);
         void                                    disableScreenMonitor(bool all, size_t rep);                                     //!< Disable/remove all screen monitors
         Mcmcmc*                                 clone(void) const;
+        void                                    checkpoint(void) const;
         void                                    finishMonitors(size_t n, MonteCarloAnalysisOptions::TraceCombinationTypes ct);  //!< Finish the monitors
         const Model&                            getModel(void) const;
         double                                  getModelLnProbability(bool likelihood_only);
         RbVector<Monitor>&                      getMonitors( void );
         std::string                             getStrategyDescription(void) const;                                             //!< Get the discription of the strategy used for this sampler.
         void                                    initializeSampler(bool priorOnly=false);                                        //!< Initialize objects for mcmc sampling
+        void                                    initializeSamplerFromCheckpoint( void );                                        //!< Initialize the MCMCMC sampler form the checkpoint file.
         void                                    monitor(unsigned long g);
         void                                    nextCycle(bool advanceCycle);
         void                                    printMoveSummary(std::ostream &o, size_t chainId, size_t moveId, Move &mv) const;
         void                                    printOperatorSummary(bool current_period);
         void                                    printSwapSummary(std::ostream &o) const;
         void                                    printSwapSummaryPair(std::ostream &o, const size_t &row, const size_t &col) const;
-        void                                    redrawStartingValues(void);                         //!< Redraw the starting values.
+        void                                    redrawStartingValues(void);                                                     //!< Redraw the starting values.
         void                                    removeMonitors(void);
-        void                                    reset(void);                                        //!< Reset the sampler for a new run.
-        void                                    resetCounters(void);                                //!< Reset the counters.
+        void                                    reset(void);                                                                    //!< Reset the sampler for a new run.
+        void                                    resetCounters(void);                                                            //!< Reset the counters.
+        void                                    setCheckpointFile(const std::string &f);
         void                                    setHeatsInitial(const std::vector<double> &ht);
         void                                    setSwapInterval2(const size_t &si2);
-        void                                    setLikelihoodHeat(double h);                        //!< Set the heat of the likelihood function.
+        void                                    setLikelihoodHeat(double h);                                                    //!< Set the heat of the likelihood function.
         void                                    setModel(Model *m, bool redraw);
         void                                    setNumberOfProcesses(size_t i);                                                 //!< Set the number of processes for this replication.
         void                                    startMonitors(size_t numCycles, bool reopen);                                   //!< Start the monitors
         void                                    tune(void);                                                                     //!< Tune the sampler and its moves.
-        void                                    writeMonitorHeaders(void);                                                      //!< Write the headers of the monitors.
+        void                                    writeMonitorHeaders(bool screen_only);                                                      //!< Write the headers of the monitors.
 
         
     protected:

@@ -25,6 +25,7 @@ namespace StringUtilities {
     int                         asIntegerNumber(const std::string& s);                                              //!< Checks if a string is an integer number
     void                        fillWithSpaces(std::string &s, int l, bool left);                                   //!< Fill up the string with spaces either left aligned or right aligned
     size_t                      findFirstOf(const std::string &s, char c);
+    size_t                      findFirstOf(const std::string &a, const std::string &b);
     size_t                      findLastOf(const std::string &s, char c);
     std::string&                firstCharToUpper(std::string& str);                                                 //!< Convert string's first character to upper case
     void                        formatFixedWidth(std::string &s, int l, bool left);                                 //!< Format the string so that it fits the width (either truncating or adding spaces)
@@ -41,6 +42,7 @@ namespace StringUtilities {
     bool                        isNumber(const std::string& s);                                                     //!< Checks if a string is a number
     std::string                 oneLiner(const std::string& input, size_t maxLen);                                  //!< Get a one-liner of specified length
     void                        replaceSubstring(std::string& str, const std::string& oldStr, const std::string& newStr);
+    void                        replaceAllOccurrences(std::string& str, char old_ch, char new_ch);
     void                        stringSplit(const std::string &str, const std::string &delim, std::vector<std::string>& results); //!< Split a string into pieces
     void                        toLower(std::string& str);                                                          //!< Convert string's characters to lower case
     std::string                 toString(double x, int digits=6);                                                          //!< Convert string's characters to lower case

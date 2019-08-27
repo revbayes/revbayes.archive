@@ -7,6 +7,13 @@
 
 using namespace RevBayesCore;
 
+/* White Noise Distribution Constructor
+ * The constructor takes 3 parameters:
+ * @param m the mean
+ * @param sd the standard deviation
+ * @param t time
+ */
+
 WhiteNoiseDistribution::WhiteNoiseDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *sd, const TypedDagNode<double> *t) : ContinuousDistribution( new double( 1.0 ) ),
     mu( m ),
     sigma( sd ),

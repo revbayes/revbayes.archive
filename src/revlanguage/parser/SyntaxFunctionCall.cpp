@@ -195,7 +195,7 @@ RevPtr<RevVariable> SyntaxFunctionCall::evaluateContent( Environment& env, bool 
     // free the memory of our copy
     delete func;
     
-    if ( dynamic == false )
+    if ( dynamic == false || isConstExpression() == true )
     {
         // Return the value, which is typically a deterministic variable with the function
         // inside it, although many functions return constant values or NULL (void).
@@ -225,6 +225,14 @@ bool SyntaxFunctionCall::isConstExpression(void) const
         // We return false if this argument is not constant
         SyntaxLabeledExpr* expr = *it;
         if ( expr->isConstExpression() == false )
+        {
+            return false;
+        }
+    }
+    
+    if ( base_variable != NULL )
+    {
+        if ( base_variable->isConstExpression() == false )
         {
             return false;
         }

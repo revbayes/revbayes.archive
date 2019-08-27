@@ -1,17 +1,12 @@
-//
-//  GammaFunction.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 10/21/16.
-//  Copyright © 2016 Michael Landis. All rights reserved.
-//
-
 #include "GammaFunction.h"
 #include "RbMathFunctions.h"
 #include <cmath>
 
 using namespace RevBayesCore;
-
+/**
+ * GammaFunction of a TypedDagNode of type double
+ * @param x a value of type double 
+ */
 GammaFunction::GammaFunction(const TypedDagNode<double> *x) : TypedFunction<double>( new double(1.0) ),
 a( x )
 {

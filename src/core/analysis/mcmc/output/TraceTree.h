@@ -40,7 +40,7 @@ namespace RevBayesCore {
         };
 
     public:
-        
+
         /*
          * This struct determines which annotations are reported in the summary tree
          */
@@ -56,6 +56,7 @@ namespace RevBayesCore {
             double node_ages_HPD;
             bool sampled_ancestor_probs;
             bool force_positive_branch_lengths;
+            bool use_outgroup;
             
             AnnotationReport();
         };
@@ -66,7 +67,7 @@ namespace RevBayesCore {
          */
         TraceTree( bool c = true );
         virtual ~TraceTree(){}
-        
+
         TraceTree*                                 clone(void) const;
         void                                       annotateTree(Tree &inputTree, AnnotationReport report, bool verbose );
         double                                     cladeProbability(const Clade &c, bool verbose);
@@ -85,6 +86,7 @@ namespace RevBayesCore {
         Tree*                                      mrTree(AnnotationReport report, double cutoff, bool verbose);
         void                                       printTreeSummary(std::ostream& o, double ci=0.95, bool verbose=true);
         void                                       printCladeSummary(std::ostream& o, double minP=0.05, bool verbose=true);
+        void                                       setOutgroup(const Clade &c);
 
     private:
 
@@ -107,6 +109,9 @@ namespace RevBayesCore {
         std::map<Split, std::vector<double> >                           clade_ages;
         std::map<Split, std::map<Split, std::vector<double> > >         conditional_clade_ages;
         std::map<std::string, std::map<Split, std::vector<double> > >   tree_clade_ages;
+
+        bool                                       use_outgroup;
+        Clade                                      outgroup;
     };
 
 }

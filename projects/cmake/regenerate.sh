@@ -9,6 +9,7 @@ echo $HERE
 boost="true"
 debug="false"
 mac="false"
+travis="false"
 win="false"
 mpi="false"
 gentoo="false"
@@ -59,18 +60,18 @@ then
 
     if [ "$mac" = "true" ]
     then
-        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
+        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization
         ./b2 link=static
     elif [ "$win" = "true" ]
     then
-        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals --with-toolset=mingw
+        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization --with-toolset=mingw
         ./b2 link=static
     elif [ "$gentoo" = "true" ]
     then
-        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
+        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization
         ./b2 link=static --ignore-site-config
     else
-        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization,signals
+        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization
         ./b2 link=static
     fi
 
@@ -100,6 +101,13 @@ project(RevBayes)
 #    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg")
 #endif ()
 
+# This is the RIGHT way, but requires cmake version >=3:
+#   set(CMAKE_CXX_STANDARD 11)
+# RHEL 7 compute clusters may have cmake 2.8.12
+#
+# So, we add the flag directly instead.
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
 ' > "$HERE/CMakeLists.txt"
 
 if [ "$debug" = "true" ]
@@ -122,12 +130,17 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 elif [ "$win" = "true" ]
 then
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3 -static -std=gnu++98")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3 -static")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -static")
 '  >> "$HERE/CMakeLists.txt"
 else
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3")
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "^arm*|aarch64")
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+   add_definitions(-DRB_ARM)
+else()
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3")
+endif()
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 '  >> "$HERE/CMakeLists.txt"
 fi
@@ -161,6 +174,13 @@ add_definitions(-DRB_XCODE)
 '  >> "$HERE/CMakeLists.txt"
 fi
 
+if [ "$travis" = "true" ]
+then
+    echo 'set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g0 -O2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g0 -O2")
+' >> "$HERE/CMakeLists.txt"
+fi
+
 echo '
 # Add extra CMake libraries into ./CMake
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake ${CMAKE_MODULE_PATH})
@@ -183,7 +203,6 @@ find_package(Boost
 COMPONENTS regex
 program_options
 thread
-signals
 system
 filesystem
 date_time
@@ -220,16 +239,7 @@ add_subdirectory(help)
 ' >> $HERE/CMakeLists.txt
 fi
 
-if [ "$mpi" = "true" ]
-then
-echo "set executable"
-echo '
-add_executable(rb-mpi ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
-
-target_link_libraries(rb-mpi rb-parser rb-core libs ${Boost_LIBRARIES} ${MPI_LIBRARIES})
-set_target_properties(rb-mpi PROPERTIES PREFIX "../")
-' >> $HERE/CMakeLists.txt
-elif [ "$help" = "true" ]
+if [ "$help" = "true" ]
 then
 echo '
 add_executable(rb-help ${PROJECT_SOURCE_DIR}/help/YAMLHelpGenerator.cpp)
@@ -258,18 +268,10 @@ PKG_CHECK_MODULES(GTK REQUIRED gtk+-2.0)
 
 # Setup CMake to use GTK+, tell the compiler where to look for headers
 # and to the linker where to look for libraries
-if [ "$win" = "true" ]
-then
-echo '
-INCLUDE_DIRECTORIES( /mingw64/include/gtk-2.0;/mingw64/lib/gtk-2.0/include;/mingw64/include/pango-1.0;/mingw64/include/fribidi;/mingw64/include/cairo;/mingw64/include/atk-1.0;/mingw64/include/cairo;/mingw64/include/pixman-1;/mingw64/include;/mingw64/include/freetype2;/mingw64/include;/mingw64/include/harfbuzz;/mingw64/include/libpng16;/mingw64/include/gdk-pixbuf-2.0;/mingw64/include/libpng16;/mingw64/include;/mingw64/include/glib-2.0;/mingw64/lib/glib-2.0/include;/mingw64/include )
-LINK_DIRECTORIES( /mingw64/lib )
-' >> $HERE/CMakeLists.txt
-else
 echo '
 INCLUDE_DIRECTORIES(${GTK_INCLUDE_DIRS})
 LINK_DIRECTORIES(${GTK_LIBRARY_DIRS})
 ' >> $HERE/CMakeLists.txt
-fi
 
 echo '
 # Add other flags to the compiler
@@ -280,30 +282,9 @@ ADD_EXECUTABLE(RevStudio ${PROJECT_SOURCE_DIR}/cmd/main.cpp)
 ' >> $HERE/CMakeLists.txt
 
 # Link the target to the GTK+ libraries
-if [ "$win" = "true" ]
-then
-echo '
-TARGET_LINK_LIBRARIES(RevStudio rb-cmd-lib rb-parser rb-core libs ${Boost_LIBRARIES}
-"/mingw64/lib/libgtk-win32-2.0.dll.a"
-"/mingw64/lib/libgdk-win32-2.0.dll.a"
-"/mingw64/lib/libpangowin32-1.0.dll.a"
-"/mingw64/lib/libpangocairo-1.0.dll.a"
-"/mingw64/lib/libpango-1.0.dll.a"
-"/mingw64/lib/libfribidi.dll.a"
-"/mingw64/lib/libatk-1.0.dll.a"
-"/mingw64/lib/libcairo.dll.a"
-"/mingw64/lib/libgdk_pixbuf-2.0.dll.a"
-"/mingw64/lib/libgio-2.0.dll.a"
-"/mingw64/lib/libgobject-2.0.dll.a"
-"/mingw64/lib/libglib-2.0.dll.a"
-"/mingw64/lib/libintl.dll.a"
-)
-' >> $HERE/CMakeLists.txt
-else
 echo '
 TARGET_LINK_LIBRARIES(RevStudio rb-cmd-lib rb-parser rb-core libs ${Boost_LIBRARIES} ${GTK_LIBRARIES})
 ' >> $HERE/CMakeLists.txt
-fi
 
 echo '
 SET_TARGET_PROPERTIES(RevStudio PROPERTIES PREFIX "../")
@@ -324,10 +305,14 @@ echo '
 add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 
 target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
+
 set_target_properties(rb PROPERTIES PREFIX "../")
 ' >> $HERE/CMakeLists.txt
+if [ "$mpi" = "true" ] ; then
+    echo 'target_link_libraries(rb ${MPI_LIBRARIES})
+' >> $HERE/CMakeLists.txt
 fi
-
+fi
 
 if [ ! -d "$HERE/libs" ]; then
 mkdir "$HERE/libs"

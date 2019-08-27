@@ -9,12 +9,13 @@ namespace RevBayesCore {
     /**
      * @brief UniformInteger distribution class.
      *
-     * The UniformInteger distribution defined on a real numbered random variable gives equal probability
+     * The Uniform Integer distribution defined on a real numbered random variable gives equal probability
      * to values between the min and the max.
      * Instances of this class can be associated to stochastic variables.
      *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     *The distribution has 2 parameters:
+     *@param min The minimum value of the distribution
+     *@param max The maximum value of the distribution
      *
      */
     class UniformIntegerDistribution : public TypedDistribution<long> {

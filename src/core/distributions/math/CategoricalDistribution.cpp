@@ -7,6 +7,12 @@
 
 using namespace RevBayesCore;
 
+/*Categorical Distribution Constructor
+ * The constructor takes has one input
+ * @param p A simplex of probabilities for each category
+ *
+ */
+
 CategoricalDistribution::CategoricalDistribution(const TypedDagNode< Simplex > *p) :
     TypedDistribution<long>( new long( 1 ) ),
     probs( p )

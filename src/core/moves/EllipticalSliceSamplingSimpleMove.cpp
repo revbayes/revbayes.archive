@@ -26,10 +26,11 @@ using namespace RevBayesCore;
  * \param[in]    w   The weight how often the proposal will be used (per iteration).
  * \param[in]    t   If auto tuning should be used.
  */
-EllipticalSliceSamplingSimpleMove::EllipticalSliceSamplingSimpleMove( std::vector< StochasticNode<double> *> n, double window_, double weight_, bool t ) : AbstractMove( std::vector<DagNode*>(), weight_ ,t),
+EllipticalSliceSamplingSimpleMove::EllipticalSliceSamplingSimpleMove( std::vector< StochasticNode<double> *> n, double window_, double weight_, bool t , bool fa) : AbstractMove( std::vector<DagNode*>(), weight_ ,t),
     variables( n ),
     window( window_ ),
-    total_movement( 0.0 )
+    total_movement( 0.0 ),
+    force_accept( fa )
 {
     // Check window is valid (in [0,2*pi])
     if (window > RbConstants::TwoPI)
@@ -105,105 +106,107 @@ double unif()
     return rng->uniform01();
 }
 
-
+namespace  {
 /// This object allow computing the probability of the current point, and also store the variables's range
 class slice_function
 {
-  std::vector<StochasticNode<double> *> variables;
-  // std::vector<DagNode*> variables_nodes; // Copy of variables, as vector of DagNodes, to avoid repeatedly constructing this vector
-  double lHeat;
-  RbOrderedSet<DagNode*> affectedNodes;
-  int num_evals;
+    std::vector<StochasticNode<double> *> variables;
+    // std::vector<DagNode*> variables_nodes; // Copy of variables, as vector of DagNodes, to avoid repeatedly constructing this vector
+    double lHeat;
+    RbOrderedSet<DagNode*> affectedNodes;
+    int num_evals;
 
 public:
 
-  int get_num_evals() const {return num_evals;}
+    int get_num_evals() const {return num_evals;}
 
-  double operator()()
-  {
-
-      double lnPrior = 0.0;
-      double lnLikelihood = 0.0;
-
-
-    // Under Murray's sampler, we're drawing new values from this prior, and we don't need to compute their probability
-    // 2. then we recompute the probability for all the affected nodes
-    for (RbOrderedSet<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it)
+    double operator()()
     {
-        if ( (*it)->isClamped() )
-            lnLikelihood += (*it)->getLnProbability();
-        else
-            lnPrior += (*it)->getLnProbability();
+
+        double lnPrior = 0.0;
+        double lnLikelihood = 0.0;
+
+
+        // Under Murray's sampler, we're drawing new values from this prior, and we don't need to compute their probability
+        // 2. then we recompute the probability for all the affected nodes
+        for (RbOrderedSet<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it)
+        {
+            if ( (*it)->isClamped() )
+                lnLikelihood += (*it)->getLnProbability();
+            else
+                lnPrior += (*it)->getLnProbability();
+        }
+
+        // 3. exponentiate with the chain heat
+        double lnPosterior = lHeat * lnLikelihood + lnPrior;
+
+        return lnPosterior;
     }
 
-      // 3. exponentiate with the chain heat
-    double lnPosterior = lHeat * lnLikelihood + lnPrior;
 
-    return lnPosterior;
-  }
+    double operator()(std::vector<double> x)
+    {
 
+        ++num_evals;
 
-  double operator()(std::vector<double> x)
-  {
+        for (size_t i=0; i<variables.size(); ++i)
+        {
+            variables[i]->getValue() = x[i];
 
-      ++num_evals;
-
-      for (size_t i=0; i<variables.size(); ++i)
-      {
-          variables[i]->getValue() = x[i];
-
-          // first we touch all the nodes
-          // that will set the flags for recomputation
-          variables[i]->touch();
-      }
+            // first we touch all the nodes
+            // that will set the flags for recomputation
+            variables[i]->touch();
+        }
 
 
-      double Pr_ = (*this)();
+        double Pr_ = (*this)();
 
-      // call accept for each node  --  automatically includes affected nodes
-      for (size_t i=0; i<variables.size(); ++i)
-      {
-        variables[i]->keep();
-      }
+        // call accept for each node  --  automatically includes affected nodes
+        for (size_t i=0; i<variables.size(); ++i)
+        {
+            variables[i]->keep();
+        }
 
-      // // keep the nodes, vectorized version avoids redundant calls
-      // (*variables_nodes.begin())->keepVector(variables_nodes);
+        // // keep the nodes, vectorized version avoids redundant calls
+        // (*variables_nodes.begin())->keepVector(variables_nodes);
 
-    return Pr_;
-  }
+        return Pr_;
+    }
 
-  std::vector<double> current_value() const
-  {
-      std::vector<double> vals;
+    std::vector<double> current_value() const
+    {
+        std::vector<double> vals;
 
-      for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
-      {
-          vals.push_back( (*it)->getValue() );
-      }
+        for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
+        {
+            vals.push_back( (*it)->getValue() );
+        }
 
-      return vals;
-  }
+        return vals;
+    }
 
     slice_function(std::vector<StochasticNode<double> *> n, double l)
-    :variables(n),
-     lHeat(l),
-     num_evals(0)
-     // variables_nodes()
-  {
-    for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
+        :variables(n),
+          lHeat(l),
+          num_evals(0)
+        // variables_nodes()
     {
-        (*it)->initiateGetAffectedNodes( affectedNodes );
+        for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
+        {
+            (*it)->initiateGetAffectedNodes( affectedNodes );
+        }
+        // // Assemble std::vector<DagNode*> of the variables to enable vectorized calls to keep and initiateGetAffected
+        // for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
+        // {
+        //     variables_nodes.push_back(*it);
+        // }
+        //
+        // // Get all affected nodes of entire vector, vectorized call avoids redundant calls
+        // (*variables_nodes.begin())->initiateGetAffectedNodesVector(affectedNodes, variables_nodes);
     }
-    // // Assemble std::vector<DagNode*> of the variables to enable vectorized calls to keep and initiateGetAffected
-    // for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
-    // {
-    //     variables_nodes.push_back(*it);
-    // }
-    //
-    // // Get all affected nodes of entire vector, vectorized call avoids redundant calls
-    // (*variables_nodes.begin())->initiateGetAffectedNodesVector(affectedNodes, variables_nodes);
-  }
 };
+
+}
 
 
 void EllipticalSliceSamplingSimpleMove::performMcmcMove( double prHeat, double lHeat, double pHeat )
@@ -232,6 +235,8 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double prHeat, double l
 
     // Log-likelihood threshold (Murray step 2)
     double L_f = lnL();
+
+    assert(L_f == lnL(f));
 
     double logy = L_f + log(unif());
 
@@ -277,7 +282,24 @@ void EllipticalSliceSamplingSimpleMove::performMcmcMove( double prHeat, double l
     }
 
     if ( loop_iterations == 1000 ) {
+      if ( force_accept )
+      {
+        // After 1000 steps we should have hit theta = 0, so it should be possible to set f_prime = f and accept
+        cos_theta = 1.0;
+
+        for (size_t j = 0; j < f.size(); ++j)
+        {
+            f_prime[j] = f[j];
+        }
+
+        // step 5 (step 6 is return value)
+        double L_f_prime = lnL(f_prime);
+
+      }
+      else
+      {
         throw(RbException("mvEllipticalSliceSamplingSimple has iterated 1000 times without success. This should not be possible, something may be wrong."));
+      }
     }
 
     total_movement += cos_theta;

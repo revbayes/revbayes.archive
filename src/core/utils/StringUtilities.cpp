@@ -84,6 +84,18 @@ size_t StringUtilities::findFirstOf(const std::string &s, char c)
 
 
 /**
+ * Find the first occurence of the given character.
+ * We return string::npos if it wasn't found.
+ */
+size_t StringUtilities::findFirstOf(const std::string &a, const std::string &b)
+{
+    size_t pos = a.find(b);
+    
+    return pos;
+}
+
+
+/**
  * Find the last occurence of the given character.
  * We return string::npos if it wasn't found.
  */
@@ -533,6 +545,20 @@ void StringUtilities::replaceSubstring(std::string& str, const std::string& oldS
 }
 
 
+void StringUtilities::replaceAllOccurrences(std::string& str, char old_ch, char new_ch)
+{
+    
+    for (size_t i=0; i<str.size(); ++i)
+    {
+        if ( str[i] == old_ch )
+        {
+            str[i] = new_ch;
+        }
+    }
+    
+}
+
+
 /** Utility function for dividing string into pieces */
 void StringUtilities::stringSplit(const std::string &s, const std::string &delim, std::vector<std::string>& results)
 {
@@ -541,7 +567,7 @@ void StringUtilities::stringSplit(const std::string &s, const std::string &delim
     std::string str = s;
 
     size_t cutAt;
-    while ( (cutAt = StringUtilities::findFirstOf(str, delim[0])) != str.npos )
+    while ( (cutAt = StringUtilities::findFirstOf(str, delim)) != str.npos )
     {
         if (cutAt > 0)
         {
@@ -551,7 +577,7 @@ void StringUtilities::stringSplit(const std::string &s, const std::string &delim
         {
             results.push_back( "" );
         }
-        str = str.substr(cutAt+1);
+        str = str.substr(cutAt+delim.size());
     }
     
     if (str.length() > 0)

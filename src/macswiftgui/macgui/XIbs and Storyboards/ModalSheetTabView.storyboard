@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Tab View Controller-->
+        <scene sceneID="Z68-No-4E7">
+            <objects>
+                <customObject id="MKF-UK-4bl" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <tabViewController identifier="ModalSheetTabView" storyboardIdentifier="ModalSheetTabView" selectedTabViewItemIndex="0" tabStyle="unspecified" id="3V7-fT-kdA" sceneMemberID="viewController">
+                    <tabViewItems>
+                        <tabViewItem identifier="ReadData" id="zmD-9m-svV"/>
+                    </tabViewItems>
+                    <tabView key="tabView" type="noTabsNoBorder" id="626-6W-VnF">
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <font key="font" metaFont="message"/>
+                        <connections>
+                            <outlet property="delegate" destination="3V7-fT-kdA" id="7YQ-hA-Fzd"/>
+                        </connections>
+                    </tabView>
+                    <connections>
+                        <outlet property="tabView" destination="626-6W-VnF" id="fIH-O1-OPa"/>
+                        <segue destination="QGg-vQ-8CM" kind="relationship" relationship="tabItems" id="uTN-gJ-a4x"/>
+                    </connections>
+                </tabViewController>
+            </objects>
+            <point key="canvasLocation" x="172" y="-313"/>
+        </scene>
+        <!--ReadData-->
+        <scene sceneID="T3n-p9-LW2">
+            <objects>
+                <customObject id="7cz-90-bDW" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <controllerPlaceholder storyboardName="ReadData" referencedIdentifier="ReadData" id="QGg-vQ-8CM" sceneMemberID="viewController"/>
+            </objects>
+            <point key="canvasLocation" x="-50" y="-9"/>
+        </scene>
+    </scenes>
+</document>

@@ -38,19 +38,21 @@ namespace RevBayesCore {
     public:
         MonteCarloSampler(void);
         MonteCarloSampler(const MonteCarloSampler &m);
-        virtual                                ~MonteCarloSampler(void);                            //!< Virtual destructor
+        virtual                                ~MonteCarloSampler(void);                                    //!< Virtual destructor
                 
         // pure virtual public methods
         virtual void                            addFileMonitorExtension(const std::string &s, bool dir) = 0;
         virtual void                            addMonitor(const Monitor &m) = 0;
         virtual void                            disableScreenMonitor(bool all, size_t rep) = 0;             //!< Disable/remove all screen monitors
         virtual MonteCarloSampler*              clone(void) const = 0;
+        virtual void                            checkpoint(void) const = 0;                                 //!< Perform checkpointing by writing the current values to a file.
 //        virtual void                            run(size_t g) = 0;
         virtual void                            finishMonitors(size_t n, MonteCarloAnalysisOptions::TraceCombinationTypes ct) = 0; //!< Finish the monitors
         virtual const Model&                    getModel(void) const = 0;
         virtual double                          getModelLnProbability(bool like_only) = 0;
         virtual RbVector<Monitor>&              getMonitors() = 0;
         virtual std::string                     getStrategyDescription(void) const = 0;                     //!< Get the discription of the strategy used for this sampler.
+        virtual void                            initializeSamplerFromCheckpoint(void) = 0;                  //!< Initialize the values from the checkpoint file
         virtual void                            initializeSampler(bool priorOnly=false) = 0;                //!< Initialize objects for mcmc sampling
         virtual void                            monitor(unsigned long g) = 0;
         virtual void                            nextCycle(bool advanceCycle) = 0;
@@ -58,12 +60,13 @@ namespace RevBayesCore {
         virtual void                            redrawStartingValues(void) = 0;                             //!< Redraw the starting values.
         virtual void                            removeMonitors(void) = 0;
         virtual void                            reset(void) = 0;                                            //!< Reset the sampler for a new run.
+        virtual void                            setCheckpointFile(const std::string &f) = 0;
         virtual void                            setLikelihoodHeat(double v) = 0;                            //!< Set the heating temparature of the likelihood of the chain
 //        virtual void                            setMasterSampler(bool tf) = 0;                            //!< Set whether this one is the master.
         virtual void                            setModel(Model *m, bool redraw) = 0;
         virtual void                            startMonitors(size_t numCycles, bool reopen) = 0;           //!< Start the monitors
         virtual void                            tune(void) = 0;                                             //!< Tune the sampler and its moves.
-        virtual void                            writeMonitorHeaders(void) = 0;                              //!< Write the headers of the monitors
+        virtual void                            writeMonitorHeaders(bool screen_only) = 0;                              //!< Write the headers of the monitors
 
         // public methods
         size_t                                  getCurrentGeneration(void) const;                           //!< Get the current generations number

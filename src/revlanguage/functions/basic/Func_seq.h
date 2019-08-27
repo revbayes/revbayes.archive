@@ -96,8 +96,12 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_seq<valType>::ex
     
     typename valType::valueType val = from;
     
+//    typename valType::valueType eps = valType::EPSILON;
+    typename valType::valueType eps = std::numeric_limits<typename valType::valueType>::epsilon();
+    
     ModelVector<valType> *seq = new ModelVector<valType>();
-    while ( (val >= from && val <= to) || (val <= from && val >= to) )
+//    while ( (val >= from && val <= to) || (val <= from && val >= to) )
+    while ( ((val - from) >= -eps && (val - to) <= eps) || ((val - from) <= eps && (val - to) >= -eps) )
     {
         seq->push_back( valType( val ) );
         val += by;

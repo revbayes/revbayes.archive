@@ -49,7 +49,6 @@ namespace RevLanguage {
 
 #include "ArgumentRule.h"
 #include "Ellipsis.h"
-#include "ModelVector.h"
 #include "RbUtil.h"
 #include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
