@@ -25,12 +25,14 @@ namespace RevBayesCore {
     class UnrootedUnconstrainedSBNProposal : public Proposal {
 
     public:
+        UnrootedUnconstrainedSBNProposal( StochasticNode<Tree> *n );                                               //!<  constructor
         UnrootedUnconstrainedSBNProposal( StochasticNode<Tree> *n, const SBNParameters sbn );                                               //!<  constructor
 
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
         UnrootedUnconstrainedSBNProposal*            clone(void) const;                                          //!< Clone object
         double                                  doProposal(void);                                           //!< Perform proposal
+        void                                    fitSBNToTreeSamples(std::vector<Tree> &t);
         const std::string&                      getProposalName(void) const;                                //!< Get the name of the proposal for summary printing
         double                                  getProposalTuningParameter(void) const;
         void                                    prepareProposal(void);                                      //!< Prepare the proposal

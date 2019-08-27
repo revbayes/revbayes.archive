@@ -3,12 +3,26 @@
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "RbException.h"
+#include "RbVectorUtilities.h"
 #include "TypedDagNode.h"
 
 #include <cmath>
 #include <iostream>
 
 using namespace RevBayesCore;
+
+/**
+ * Constructor
+ *
+ * Here we simply allocate and initialize the Proposal object.
+ */
+UnrootedUnconstrainedSBNProposal::UnrootedUnconstrainedSBNProposal( StochasticNode<Tree> *n ) : Proposal(),
+    tree( n )
+{
+    // tell the base class to add the node
+    addNode( tree );
+
+}
 
 /**
  * Constructor
@@ -48,6 +62,23 @@ UnrootedUnconstrainedSBNProposal* UnrootedUnconstrainedSBNProposal::clone( void 
     return new UnrootedUnconstrainedSBNProposal( *this );
 }
 
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the proposal.
+ */
+void UnrootedUnconstrainedSBNProposal::fitSBNToTreeSamples( std::vector<Tree> &t )
+{
+    delete &sbn;
+    delete &SBNDistribution;
+
+    std::vector<Taxon> ordered_taxa = t[0].getTaxa();
+    VectorUtilities::sort( ordered_taxa );
+
+    sbn = SBNParameters(ordered_taxa,"gammaMOM");
+    SBNDistribution = UnconstrainedSBN(sbn);
+}
 
 /**
  * Get Proposals' name of object

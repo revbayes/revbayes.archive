@@ -14,6 +14,7 @@ namespace RevBayesCore {
     class UnconstrainedSBN : public TypedDistribution<Tree> {
 
     public:
+        UnconstrainedSBN(void);
         UnconstrainedSBN(const SBNParameters parameters);
 		virtual                                            ~UnconstrainedSBN(void);                                                                    //!< Virtual destructor
 

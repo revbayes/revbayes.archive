@@ -14,6 +14,14 @@
 
 using namespace RevBayesCore;
 
+// Empty constructor (needed by smart moves)
+UnconstrainedSBN::UnconstrainedSBN(void) : TypedDistribution<Tree>( new Tree() ),
+    parameters( ),
+    taxa( )
+{
+
+}
+
 UnconstrainedSBN::UnconstrainedSBN(const SBNParameters parameters) : TypedDistribution<Tree>( new Tree() ),
     parameters( parameters ),
     taxa( parameters.getTaxa() )
