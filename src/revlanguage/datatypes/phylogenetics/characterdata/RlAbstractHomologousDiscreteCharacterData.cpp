@@ -10,6 +10,7 @@
 #include "MemberProcedure.h"
 #include "ModelVector.h"
 #include "Natural.h"
+#include "OptionRule.h"
 #include "RlBoolean.h"
 #include "Probability.h"
 #include "RlString.h"
@@ -180,9 +181,23 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
         found = true;
         
         bool folded = static_cast<const RlBoolean&>( args[0].getVariable()->getRevObject() ).getValue();
-        bool treat_amb_as_derived = static_cast<const RlBoolean&>( args[1].getVariable()->getRevObject() ).getValue();
+        const std::string& str_ambig_treat = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
+        
+        RevBayesCore::AbstractHomologousDiscreteCharacterData::SFS_AMBIGUITY_TREATMENT ambig_treat = RevBayesCore::AbstractHomologousDiscreteCharacterData::SFS_AMBIGUITY_TREATMENT::ANCESTRAL;
+        if ( str_ambig_treat == "derived" )
+        {
+            ambig_treat = RevBayesCore::AbstractHomologousDiscreteCharacterData::SFS_AMBIGUITY_TREATMENT::DERIVED;
+        }
+        else if ( str_ambig_treat == "skip" )
+        {
+            ambig_treat = RevBayesCore::AbstractHomologousDiscreteCharacterData::SFS_AMBIGUITY_TREATMENT::SKIP_COLUMN;
+        }
+        else if ( str_ambig_treat == "rescale" )
+        {
+            ambig_treat = RevBayesCore::AbstractHomologousDiscreteCharacterData::SFS_AMBIGUITY_TREATMENT::RESCALE;
+        }
 
-        std::vector<long> sfs = this->dag_node->getValue().computeSiteFrequencySpectrum(folded, treat_amb_as_derived);
+        std::vector<long> sfs = this->dag_node->getValue().computeSiteFrequencySpectrum(folded, ambig_treat);
         
         return new RevVariable( new ModelVector<Natural>(sfs) );
     }
@@ -458,7 +473,7 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
                         {
                             if (state.isSet(k) && k +1 > max)
                             {
-                                max = (int)(k+1);
+                                max = static_cast<int>(k)+1;
                             }
                         }
                     }
@@ -606,8 +621,15 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     setNumStatesPartitionArgRules->push_back(   new ArgumentRule("",        Natural::getClassTypeSpec()              , "The number of states in this partition.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     squareBracketArgRules->push_back(           new ArgumentRule( "index" , Natural::getClassTypeSpec()              , "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
     
+    std::vector<std::string> sfs_ambig_options;
+    sfs_ambig_options.push_back( "ancestral" );
+    sfs_ambig_options.push_back( "derived" );
+    sfs_ambig_options.push_back( "skip" );
+    sfs_ambig_options.push_back( "rescale" );
+//    argument_rules.push_back( new OptionRule( "type", new RlString("binary"), character_options, "The type of data to be constructed." ) );
     comp_site_freq_spec_arg_rules->push_back(           new ArgumentRule( "folded"           , RlBoolean::getClassTypeSpec()          , "Should we compute the folded SFS?",                   ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
-    comp_site_freq_spec_arg_rules->push_back(           new ArgumentRule( "ambigAreDerived"  , RlBoolean::getClassTypeSpec()          , "Should we treat ambiguous characters as derived?",    ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
+    comp_site_freq_spec_arg_rules->push_back(           new OptionRule( "ambiguityTreatment", new RlString("ancestral"), sfs_ambig_options, "How should we treat ambiguous characters as derived?" ) );
+//    comp_site_freq_spec_arg_rules->push_back(           new ArgumentRule( "ambigAreDerived"  , RlBoolean::getClassTypeSpec()          , "Should we treat ambiguous characters as derived?",    ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
     expandCharactersArgRules->push_back(                new ArgumentRule( "factor"           , Natural::getClassTypeSpec()            , "The factor by which the state space is expanded.",    ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
     invSitesArgRules->push_back(                        new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
     maxGcContentArgRules->push_back(                    new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
