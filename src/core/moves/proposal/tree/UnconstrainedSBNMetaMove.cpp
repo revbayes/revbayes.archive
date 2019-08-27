@@ -1,5 +1,5 @@
 #include "DagNode.h"
-#include "MetropolisHastingsMetaMove.h"
+#include "UnconstrainedSBNMetaMove.h"
 #include "Proposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -22,23 +22,42 @@ using namespace RevBayesCore;
  * \param[in]    w   The weight how often the proposal will be used (per iteration).
  * \param[in]    t   If auto tuning should be used.
  */
-MetropolisHastingsMetaMove::MetropolisHastingsMetaMove( std::vector<Proposal*> *p, double w, bool t ) : AbstractMove(w, t),
+UnconstrainedSBNMetaMove::UnconstrainedSBNMetaMove( UnrootedUnconstrainedSBNProposal* u, Proposal* n, Proposal* s, std::vector<double> m, size_t n0, size_t c0, double w, bool t ) : AbstractMove(w, t),
+    sbn( u ),
+    nni( n ),
+    spr( s ),
     num_accepted_current_period( 0 ),
     num_accepted_total( 0 ),
-    proposals( *p ),
-    per_move_num_accepted_current_period( std::vector<unsigned int>(proposals.size(),0) ),
-    per_move_num_tried_current_period( std::vector<unsigned int>(proposals.size(),0) )
+    relativeMoveWeights( m ),
+    waitBeforeRecording( n0 ),
+    waitBeforeFitting( c0 ),
+    per_move_num_accepted_current_period( std::vector<unsigned int>(3,0) ),
+    per_move_num_tried_current_period( std::vector<unsigned int>(3,0) ),
+    trace(  )
 
 {
+std::cout << "initializing meta move" << std::endl;
     // Add all nodes to move
-    for (size_t i=0; i<proposals.size(); ++i)
+    sbn->setMove( this );
+    nni->setMove( this );
+    spr->setMove( this );
+
+    const std::vector<DagNode*>& nodes1 = sbn->getNodes();
+    for (size_t j=0; j<nodes1.size(); ++j)
     {
-      proposals.at(i)->setMove( this );
-      const std::vector<DagNode*>& nodes = proposals.at(i)->getNodes();
-      for (size_t j=0; j<nodes.size(); ++j)
-      {
-        addNode(nodes[j]);
-      }
+      addNode(nodes1[j]);
+    }
+
+    const std::vector<DagNode*>& nodes2 = sbn->getNodes();
+    for (size_t j=0; j<nodes2.size(); ++j)
+    {
+      addNode(nodes2[j]);
+    }
+
+    const std::vector<DagNode*>& nodes3 = sbn->getNodes();
+    for (size_t j=0; j<nodes3.size(); ++j)
+    {
+      addNode(nodes3[j]);
     }
 
     // remove all "core" nodes from affectedNodes so their probabilities are not double-counted
@@ -59,6 +78,7 @@ MetropolisHastingsMetaMove::MetropolisHastingsMetaMove( std::vector<Proposal*> *
         }
 
     }
+std::cout << "initialized meta move" << std::endl;
 
 }
 
@@ -70,20 +90,24 @@ MetropolisHastingsMetaMove::MetropolisHastingsMetaMove( std::vector<Proposal*> *
  * \param[in]   m   The object to copy.
  *
  */
-MetropolisHastingsMetaMove::MetropolisHastingsMetaMove(const MetropolisHastingsMetaMove &m) : AbstractMove(m),
+UnconstrainedSBNMetaMove::UnconstrainedSBNMetaMove(const UnconstrainedSBNMetaMove &m) : AbstractMove(m),
+    sbn( m.sbn ),
+    nni( m.nni ),
+    spr( m.spr ),
     num_accepted_current_period( m.num_accepted_current_period ),
     num_accepted_total( m.num_accepted_total ),
-    proposals( m.proposals ),
+    relativeMoveWeights( m.relativeMoveWeights ),
+    waitBeforeRecording( m.waitBeforeRecording ),
+    waitBeforeFitting( m.waitBeforeRecording ),
     per_move_num_accepted_current_period( m.per_move_num_accepted_current_period ),
-    per_move_num_tried_current_period( m.per_move_num_tried_current_period )
+    per_move_num_tried_current_period( m.per_move_num_tried_current_period ),
+    trace( m.trace )
 
 {
-
     // Add all nodes to move
-    for (size_t i=0; i<proposals.size(); ++i)
-    {
-      proposals.at(i)->setMove( this );
-    }
+    sbn->setMove( this );
+    nni->setMove( this );
+    spr->setMove( this );
 
 }
 
@@ -91,11 +115,12 @@ MetropolisHastingsMetaMove::MetropolisHastingsMetaMove(const MetropolisHastingsM
 /**
  * Basic destructor doing nothing.
  */
-MetropolisHastingsMetaMove::~MetropolisHastingsMetaMove( void )
+UnconstrainedSBNMetaMove::~UnconstrainedSBNMetaMove( void )
 {
 
-    proposals.clear();
-    // delete &proposals;
+    delete sbn;
+    delete nni;
+    delete spr;
 }
 
 
@@ -103,29 +128,34 @@ MetropolisHastingsMetaMove::~MetropolisHastingsMetaMove( void )
  * Overloaded assignment operator.
  * We need a deep copy of the operator.
  */
-MetropolisHastingsMetaMove& MetropolisHastingsMetaMove::operator=(const RevBayesCore::MetropolisHastingsMetaMove &m)
+UnconstrainedSBNMetaMove& UnconstrainedSBNMetaMove::operator=(const RevBayesCore::UnconstrainedSBNMetaMove &m)
 {
-
     if ( this != &m )
     {
         // delegate
         AbstractMove::operator=( m );
 
         // free memory
-        // delete &proposals;
-        proposals.clear();
+        delete sbn;
+        delete nni;
+        delete spr;
 
+        sbn                                  = m.sbn;
+        nni                                  = m.nni;
+        spr                                  = m.spr;
         num_accepted_current_period          = m.num_accepted_current_period;
         num_accepted_total                   = m.num_accepted_total;
-        proposals                            = m.proposals;
+        relativeMoveWeights                  = m.relativeMoveWeights;
+        waitBeforeRecording                  = m.waitBeforeRecording;
+        waitBeforeFitting           = m.waitBeforeFitting;
         per_move_num_accepted_current_period = m.per_move_num_accepted_current_period;
         per_move_num_tried_current_period    = m.per_move_num_tried_current_period;
+        trace                                = m.trace;
 
         // Add all nodes to move
-        for (size_t i=0; i<proposals.size(); ++i)
-        {
-          proposals.at(i)->setMove( this );
-        }
+        sbn->setMove( this );
+        nni->setMove( this );
+        spr->setMove( this );
 
     }
 
@@ -137,18 +167,62 @@ MetropolisHastingsMetaMove& MetropolisHastingsMetaMove::operator=(const RevBayes
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
  *
- * \return A new copy of the MetropolisHastingsMetaMove.
+ * \return A new copy of the UnconstrainedSBNMetaMove.
  */
-MetropolisHastingsMetaMove* MetropolisHastingsMetaMove::clone( void ) const
+UnconstrainedSBNMetaMove* UnconstrainedSBNMetaMove::clone( void ) const
 {
 
-    return new MetropolisHastingsMetaMove( *this );
+    return new UnconstrainedSBNMetaMove( *this );
 }
 
-size_t MetropolisHastingsMetaMove::getActiveProposalIndex( void ) const
+/**
+ * This function finds which of the component we should use for this proposal.
+ * It uses the relative probabilities of the moves, and masks adaptive moves that we are not yet using.
+ *
+ * \return The index of the proposal to use for this move
+ */
+size_t UnconstrainedSBNMetaMove::getActiveProposalIndex( void ) const
 {
   double u = GLOBAL_RNG->uniform01();
-  size_t idx = std::floor(u * proposals.size());
+
+  double total_weight;
+
+  // We only use the SBN move after we've been able to fit it to tree samples
+  total_weight += num_tried_total > waitBeforeFitting ? relativeMoveWeights[0] : 0.0;
+  total_weight += relativeMoveWeights[1];
+  total_weight += relativeMoveWeights[2];
+
+  u *= total_weight;
+
+  size_t idx;
+
+  if (num_tried_total > waitBeforeFitting)
+  {
+    if ( u < relativeMoveWeights[0] )
+    {
+      idx = 0;
+    }
+    else if ( u < relativeMoveWeights[0] + relativeMoveWeights[1] )
+    {
+      idx = 1;
+    }
+    else
+    {
+      idx = 2;
+    }
+  }
+  else
+  {
+    if ( u < relativeMoveWeights[1] )
+    {
+      idx = 1;
+    }
+    else
+    {
+      idx = 2;
+    }
+  }
+
   return idx;
 }
 
@@ -157,34 +231,16 @@ size_t MetropolisHastingsMetaMove::getActiveProposalIndex( void ) const
  *
  * \return The moves' name.
  */
-const std::string& MetropolisHastingsMetaMove::getMoveName( void ) const
+const std::string& UnconstrainedSBNMetaMove::getMoveName( void ) const
 {
 
-    std::string s;
-
-    s += "MixtureMove(";
-
-    s += proposals.at(0)->getProposalName();
-
-    if (proposals.size() > 1)
-    {
-      for (size_t i=1; i<proposals.size(); ++i)
-      {
-        s += "+";
-        s += proposals.at(i)->getProposalName();
-      }
-    }
-    s += ")";
-
-    // static std::string name = "KernelMixture";
-
-    static std::string name = s;
+    static std::string name = "MixtureMove(SBN+NNI+SPR)";
 
     return(name);
 }
 
 
-double MetropolisHastingsMetaMove::getMoveTuningParameter( void ) const
+double UnconstrainedSBNMetaMove::getMoveTuningParameter( void ) const
 {
     // There are many moves, no single tuning parameter exists
     return 0.0;
@@ -194,7 +250,7 @@ double MetropolisHastingsMetaMove::getMoveTuningParameter( void ) const
 /**
  * How often was the move accepted
  */
-size_t MetropolisHastingsMetaMove::getNumberAcceptedCurrentPeriod( void ) const
+size_t UnconstrainedSBNMetaMove::getNumberAcceptedCurrentPeriod( void ) const
 {
 
     return num_accepted_current_period;
@@ -204,7 +260,7 @@ size_t MetropolisHastingsMetaMove::getNumberAcceptedCurrentPeriod( void ) const
 /**
  * How often was the move accepted
  */
-size_t MetropolisHastingsMetaMove::getNumberAcceptedTotal( void ) const
+size_t UnconstrainedSBNMetaMove::getNumberAcceptedTotal( void ) const
 {
 
     return num_accepted_total;
@@ -216,18 +272,30 @@ size_t MetropolisHastingsMetaMove::getNumberAcceptedTotal( void ) const
 //  *
 //  * \return The proposal object.
 //  */
-// Proposal& MetropolisHastingsMetaMove::getProposal( void )
+// Proposal& UnconstrainedSBNMetaMove::getProposal( void )
 // {
 //
 //     return *proposal;
 // }
 
 
-void MetropolisHastingsMetaMove::performHillClimbingMove( double lHeat, double pHeat )
+void UnconstrainedSBNMetaMove::performHillClimbingMove( double lHeat, double pHeat )
 {
 
     size_t idx = getActiveProposalIndex();
-    Proposal* proposal = proposals.at(idx);
+    Proposal* proposal;
+    if (idx == 0)
+    {
+      proposal = sbn;
+    }
+    else if (idx == 1)
+    {
+      proposal = nni;
+    }
+    else
+    {
+      proposal = spr;
+    }
 
     // Propose a new value
     proposal->prepareProposal();
@@ -327,13 +395,27 @@ void MetropolisHastingsMetaMove::performHillClimbingMove( double lHeat, double p
 
 
 
-void MetropolisHastingsMetaMove::performMcmcMove( double prHeat, double lHeat, double pHeat )
+void UnconstrainedSBNMetaMove::performMcmcMove( double prHeat, double lHeat, double pHeat )
 {
     size_t idx = getActiveProposalIndex();
 
     ++per_move_num_tried_current_period[idx];
 
-    Proposal* proposal = proposals.at(idx);
+    Proposal* proposal;
+    if (idx == 0)
+    {
+      proposal = sbn;
+    }
+    else if (idx == 1)
+    {
+      proposal = nni;
+    }
+    else
+    {
+      proposal = spr;
+    }
+
+    recordState();
 
     const RbOrderedSet<DagNode*> &affected_nodes = getAffectedNodes();
     const std::vector<DagNode*> nodes = getDagNodes();
@@ -521,7 +603,7 @@ void MetropolisHastingsMetaMove::performMcmcMove( double prHeat, double lHeat, d
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void MetropolisHastingsMetaMove::printSummary(std::ostream &o, bool current_period) const
+void UnconstrainedSBNMetaMove::printSummary(std::ostream &o, bool current_period) const
 {
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
@@ -610,18 +692,24 @@ void MetropolisHastingsMetaMove::printSummary(std::ostream &o, bool current_peri
 
 }
 
+// Record state of chain (after checking if we should be recording yet)
+void UnconstrainedSBNMetaMove::recordState( void )
+{
+
+}
+
 /**
  * Reset the move counters. Here we only reset the counter for the number of accepted moves.
  *
  */
-void MetropolisHastingsMetaMove::resetMoveCounters( void )
+void UnconstrainedSBNMetaMove::resetMoveCounters( void )
 {
     // Main counter for overall move
     num_accepted_current_period = 0;
 
     // Since our parent class does not know about our component moves, we reset both their number tried and number accepted
-    per_move_num_accepted_current_period = std::vector<unsigned int>(proposals.size(),0);
-    per_move_num_tried_current_period = std::vector<unsigned int>(proposals.size(),0);
+    per_move_num_accepted_current_period = std::vector<unsigned int>(3,0);
+    per_move_num_tried_current_period = std::vector<unsigned int>(3,0);
 
 }
 
@@ -632,29 +720,27 @@ void MetropolisHastingsMetaMove::resetMoveCounters( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new variable.
  */
-void MetropolisHastingsMetaMove::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void UnconstrainedSBNMetaMove::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
-    for (size_t i=0; i<proposals.size(); ++i)
-    {
-      proposals.at(i)->swapNode(oldN, newN);
-    }
-
+    sbn->swapNode(oldN, newN);
+    nni->swapNode(oldN, newN);
+    spr->swapNode(oldN, newN);
 }
 
 
-void MetropolisHastingsMetaMove::setMoveTuningParameter(double tp)
+void UnconstrainedSBNMetaMove::setMoveTuningParameter(double tp)
 {
     // There is no single tuning parameter, nothing to do here
 }
 
 
-void MetropolisHastingsMetaMove::setNumberAcceptedCurrentPeriod( size_t na )
+void UnconstrainedSBNMetaMove::setNumberAcceptedCurrentPeriod( size_t na )
 {
     num_accepted_current_period = na;
 }
 
 
-void MetropolisHastingsMetaMove::setNumberAcceptedTotal( size_t na )
+void UnconstrainedSBNMetaMove::setNumberAcceptedTotal( size_t na )
 {
     num_accepted_total = na;
 }
@@ -664,18 +750,11 @@ void MetropolisHastingsMetaMove::setNumberAcceptedTotal( size_t na )
  * Tune the move to accept the desired acceptance ratio.
  * We only compute the acceptance ratio here and delegate the call to the proposal.
  */
-void MetropolisHastingsMetaMove::tune( void )
+void UnconstrainedSBNMetaMove::tune( void )
 {
-
-    for (size_t i=0; i<proposals.size(); ++i)
+    if (num_tried_total > waitBeforeFitting + waitBeforeRecording)
     {
+      // Feed the SBN the trace
 
-      if ( per_move_num_tried_current_period[i] > 2 )
-      {
-          double rate = double(per_move_num_accepted_current_period[i]) / double(per_move_num_tried_current_period[i]);
-
-          proposals.at(i)->tune( rate );
-      }
     }
-
 }
