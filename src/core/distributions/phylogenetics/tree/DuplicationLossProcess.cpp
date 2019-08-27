@@ -82,7 +82,15 @@ double DuplicationLossProcess::computeLnProbability( void )
   double hap_root_length = org_time - haplotype_root_age;
   haplotype_root_node.setBranchLength(hap_root_length);
 
-  // To be safe, we always reset the tip allications at the beginning of the
+  // Make sure that the origin time is older than the root of the gene tree.
+  const TopologyNode &gene_root = value->getRoot();
+  double gene_root_age = gene_root.getAge();
+  if ( org_time < gene_root_age )
+    {
+      return RbConstants::Double::neginf;
+    }
+
+  // To be safe, we always reset the tip allocations at the beginning of the
   // probability computation. We could check if it is sufficient to do so only
   // once at initialization, when values are set.
   resetTipAllocations();
@@ -143,7 +151,7 @@ double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_ge
 
       // Walk up dt to the next duplication on the branch of the individual tree.
       // It contains 'N = num_genes_recent-i' genes.
-      // FIXME: We need to tell D what dop-loss rates to use when we want to use haplotype-branch-specific rates
+      // FIXME: We need to tell D what dup-loss rates to use when we want to use haplotype-branch-specific rates
       ln_prob += (num_genes_recent-i) * log( computeD(dt, current_ext_prob) );
 
       // Have a duplication.
