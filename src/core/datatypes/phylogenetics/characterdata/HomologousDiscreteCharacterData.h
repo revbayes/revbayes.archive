@@ -435,15 +435,21 @@ std::vector<long> RevBayesCore::HomologousDiscreteCharacterData<charType>::compu
         if ( skip_this_SNP == false )
         {
         
-            if ( folded == true )
-            {
-                derived_count = RbMath::min(int(derived_count), int(this_SNP_count-derived_count));
-            }
+//            if ( folded == true )
+//            {
+//                derived_count = RbMath::min(int(derived_count), int(this_SNP_count-derived_count));
+//            }
             
             if ( ambig_treat == RESCALE )
             {
                 double rescaled_derived_count = double(derived_count) / double(num_sequences) * double(this_SNP_count);
                 derived_count = int( round(rescaled_derived_count) );
+            }
+            
+            
+            if ( folded == true )
+            {
+                derived_count = RbMath::min(int(derived_count), int(num_sequences-derived_count));
             }
         
             sfs[derived_count]++;
