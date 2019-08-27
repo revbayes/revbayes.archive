@@ -559,6 +559,7 @@ Tree* JointAncestralStateTrace::ancestralStateTree(const Tree &input_summary_tre
             }
             
             posteriors.push_back(total_node_pp);
+            other_pp = total_node_pp - state1_pp - state2_pp - state3_pp;
             
             if (state1_pp > 0.0001)
             {
