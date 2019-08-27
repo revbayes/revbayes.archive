@@ -55,7 +55,7 @@ double GibbsDrawCharacterHistoryProposal::doProposal( void )
 {
 
     size_t num_nodes = distribution->getValue().getNumberOfNodes();
-    std::vector<std::string*> character_histories(num_nodes);
+    std::vector<std::string> character_histories(num_nodes);
     distribution->drawStochasticCharacterMap(character_histories);
     
     return 0.0;

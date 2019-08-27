@@ -166,7 +166,7 @@ void StochasticCharacterMappingMonitor<characterType>::monitorVariables(unsigned
         num_nodes = tree->getValue().getNumberOfNodes();
     }
         
-    std::vector<std::string*> character_histories( num_nodes );
+    std::vector<std::string> character_histories( num_nodes );
     
     // draw stochastic character map
     if ( ctmc != NULL )
@@ -190,7 +190,7 @@ void StochasticCharacterMappingMonitor<characterType>::monitorVariables(unsigned
             
         // print out this branch's character history in the format
         // used by SIMMAP and phytools
-        out_stream << *character_histories[ node_index ];
+        out_stream << character_histories[ node_index ];
         
     }
         

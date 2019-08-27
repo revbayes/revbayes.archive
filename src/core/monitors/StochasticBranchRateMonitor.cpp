@@ -61,7 +61,7 @@ void StochasticBranchRateMonitor::monitorVariables(unsigned long gen)
     
     StateDependentSpeciationExtinctionProcess *sse = dynamic_cast<StateDependentSpeciationExtinctionProcess*>( &cdbdp->getDistribution() );
     size_t num_nodes = cdbdp->getValue().getNumberOfNodes();
-    std::vector<std::string*> character_histories( num_nodes );
+    std::vector<std::string> character_histories( num_nodes );
     
     // draw stochastic character map
     sse->drawStochasticCharacterMap( character_histories );
