@@ -513,7 +513,7 @@ Tree* JointAncestralStateTrace::ancestralStateTree(const Tree &input_summary_tre
         
         std::vector<double> posteriors;
         
-        for (int i = 0; i < summary_nodes.size(); i++)
+        for (int node_index = 0; node_index < summary_nodes.size(); ++node_index)
         {
             
 
@@ -523,36 +523,34 @@ Tree* JointAncestralStateTrace::ancestralStateTree(const Tree &input_summary_tre
             
             std::string state = "";
             
-            std::multimap<double,std::string> state_map;
+            std::multimap<double,std::string, std::greater<double> > state_map;
             
             // loop through all states for this node
-            for (int j = 0; j < pp_end[i].size(); j++)
+            for (int j = 0; j < pp_end[node_index].size(); j++)
             {
-                total_node_pp += pp_end[i][j];
-                state_map.insert( std::pair<double, std::string>(pp_end[i][j], states[i][j]) );
+                total_node_pp += pp_end[node_index][j];
+                state_map.insert( std::pair<double, std::string>(pp_end[node_index][j], states[node_index][j]) );
             }
             
             posteriors.push_back(total_node_pp);
             other_pp = total_node_pp;
-            size_t current_state_count = 0;
-            for (std::multimap<double,std::string>::iterator it=state_map.begin(); it!=state_map.end(); ++it)
+//            size_t current_state_count = 0;
+            std::multimap<double,std::string>::iterator it=state_map.begin();
+            for (size_t j=0; j<num_states; ++j)
             {
-                state_pp = it->first;
-                other_pp -= state_pp;
-                if (state_pp > 0.0001)
+                
+                if ( it != state_map.end() )
                 {
-                    anc_state[current_state_count].push_back( it->second );
-                    anc_state_pp[current_state_count].push_back(state_pp);
+                    state_pp = it->first;
+                    other_pp -= state_pp;
+                    anc_state[j].push_back( it->second );
+                    anc_state_pp[j].push_back(state_pp);
+                    ++it;
                 }
                 else
                 {
-                    anc_state[current_state_count].push_back( "NA" );
-                    anc_state_pp[current_state_count].push_back(0.0);
-                }
-                
-                if (current_state_count >= num_states )
-                {
-                    break;
+                    anc_state[j].push_back( "NA" );
+                    anc_state_pp[j].push_back(0.0);
                 }
             }
             
