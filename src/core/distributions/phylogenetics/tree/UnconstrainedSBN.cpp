@@ -120,6 +120,7 @@ double UnconstrainedSBN::computeLnProbabilityUnrootedTopologyMarginalize( void )
         double lnl = parameters.computeLnProbabilityRootedTopology( *(tree_rooted) );
         // std::cout << "at" << ri << ", lnL_tot = " << lnl << std::endl;
         lnl_given_root.push_back(lnl);
+        delete tree_rooted;
       }
     }
     // std::cout << "marginalization complete" << std::endl;
