@@ -970,7 +970,8 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyDrawJointC
 }
 
 
-void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyFlagNodeDirty( const RevBayesCore::TopologyNode &n ) {
+void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyFlagNodeDirty( const RevBayesCore::TopologyNode &n )
+{
     
     // we need to flag this node and all ancestral nodes for recomputation
     size_t index = n.getIndex();
@@ -999,7 +1000,7 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyFlagNodeDi
 }
 
 
-void TimeVaryingStateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::vector<std::string*>& character_histories)
+void TimeVaryingStateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::vector<std::string>& character_histories)
 {
     // first populate partial likelihood vectors along all the branches
     sample_character_history = true;
@@ -1113,7 +1114,7 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::drawStochasticCharact
     }
     
     // save the character history for the root
-    std::string* simmap_string = new std::string("{" + StringUtilities::toString(a) + "," + StringUtilities::toString( root.getBranchLength() ) + "}");
+    std::string simmap_string = "{" + StringUtilities::toString(a) + "," + StringUtilities::toString( root.getBranchLength() ) + "}";
     character_histories[node_index] = simmap_string;
     
     // recurse towards tips
@@ -1131,7 +1132,7 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::drawStochasticCharact
 }
 
 
-void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string*>& character_histories)
+void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string>& character_histories)
 {
     
     size_t node_index = node.getIndex();
@@ -1317,7 +1318,7 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyDrawStocha
         average_extinction[node_index] = total_extinction_rate / num_dts;
         
         // save the character history for this branch
-        character_histories[node_index] = new std::string(simmap_string);
+        character_histories[node_index] = simmap_string;
         
     }
     else
@@ -1465,7 +1466,7 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyDrawStocha
         simmap_string = simmap_string + "}";
         
         // save the character history for this branch
-        character_histories[node_index] = new std::string(simmap_string);
+        character_histories[node_index] = simmap_string;
         
         // calculate average diversification rates on this branch
         average_speciation[node_index] = total_speciation_rate / num_dts;
@@ -1515,7 +1516,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeVaryingStateDependentSpeciatio
         
         // simulate character history over the tree conditioned on the new tip data
         size_t num_nodes = value->getNumberOfNodes();
-        std::vector<std::string*> character_histories(num_nodes);
+        std::vector<std::string> character_histories(num_nodes);
         drawStochasticCharacterMap(character_histories);
         static_cast<TreeDiscreteCharacterData*>(this->value)->setTimeInStates(time_in_states);
         
@@ -1940,7 +1941,7 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::setValue(Tree *v, boo
     size_t num_nodes = value->getNumberOfNodes();
     if (num_nodes > 2)
     {
-        std::vector<std::string*> character_histories(num_nodes);
+        std::vector<std::string> character_histories(num_nodes);
         drawStochasticCharacterMap(character_histories);
     }
     static_cast<TreeDiscreteCharacterData*>(this->value)->setTimeInStates(time_in_states);

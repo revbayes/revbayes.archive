@@ -42,7 +42,7 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
 {
     
     // get the input tree
-    const RevBayesCore::TypedDagNode<RevBayesCore::Tree> *it = static_cast<const Tree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode<RevBayesCore::Tree> *tree_node = static_cast<const Tree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
     // get vector of ancestral state traces
     const WorkspaceVector<AncestralStateTrace>& ast_vector = static_cast<const WorkspaceVector<AncestralStateTrace> &>( args[1].getVariable()->getRevObject() );
@@ -112,11 +112,14 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
     RevBayesCore::Tree* tree;
     if (start_states)
     {
-        tree = joint_trace.cladoAncestralStateTree(it->getValue(), summary_stat, site, conditional, false, verbose);
+        tree = joint_trace.cladoAncestralStateTree(tree_node->getValue(), summary_stat, site, conditional, false, verbose);
     }
     else
     {
-        tree = joint_trace.ancestralStateTree(it->getValue(), summary_stat, site, conditional, false, verbose);
+        size_t num_states = 3;
+        num_states = static_cast<const Natural &>(args[10].getVariable()->getRevObject()).getValue();
+
+        tree = joint_trace.ancestralStateTree(tree_node->getValue(), summary_stat, num_states, site, conditional, false, verbose);
     }
     
     // return the tree
@@ -173,7 +176,8 @@ const ArgumentRules& Func_ancestralStateTree::getArgumentRules( void ) const
         argumentRules.push_back( new OptionRule( "reconstruction", new RlString("marginal"), reconstruction, "'joint' and 'conditional' should only be used to summarize ancestral states sampled from the joint distribution. 'marginal' can be used for states sampled from the joint or marginal distribution." ) );
         argumentRules.push_back( new ArgumentRule( "site"     , Integer::getClassTypeSpec()  , "The character site to be summarized.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(1) ) );
         argumentRules.push_back( new ArgumentRule( "verbose"   , RlBoolean::getClassTypeSpec()  , "Printing verbose output", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        
+        argumentRules.push_back( new ArgumentRule( "nStates"   , Natural::getClassTypeSpec()  , "The number of states for which we compute the posterior probability. By default it will be the best three.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(3) ) );
+
         rules_set = true;
     }
     

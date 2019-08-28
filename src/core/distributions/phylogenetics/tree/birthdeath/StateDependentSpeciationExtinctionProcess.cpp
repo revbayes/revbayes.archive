@@ -914,7 +914,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyFlagNodeDirty( const 
 }
 
 
-void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::vector<std::string*>& character_histories, bool set_amb_char_data)
+void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::vector<std::string>& character_histories, bool set_amb_char_data)
 {
     // first populate partial likelihood vectors along all the branches
     sample_character_history = true;
@@ -1015,7 +1015,7 @@ void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::
             }
         
             // save the character history for the root
-            std::string* simmap_string = new std::string("{" + StringUtilities::toString(a) + "," + StringUtilities::toString( root.getBranchLength() ) + "}");
+            std::string simmap_string = "{" + StringUtilities::toString(a) + "," + StringUtilities::toString( root.getBranchLength() ) + "}";
             character_histories[node_index] = simmap_string;
             
             // recurse towards tips
@@ -1038,7 +1038,7 @@ void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::
 }
 
 
-bool StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string*>& character_histories, bool set_amb_char_data)
+bool StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string>& character_histories, bool set_amb_char_data)
 {
     size_t node_index = node.getIndex();
     std::vector<double> speciation_rates = calculateTotalSpeciationRatePerState();
@@ -1227,7 +1227,7 @@ bool StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         average_extinction[node_index] = total_extinction_rate / num_dts;
 
         // save the character history for this branch
-        character_histories[node_index] = new std::string(simmap_string);
+        character_histories[node_index] = simmap_string;
         
     }
     else
@@ -1357,7 +1357,7 @@ bool StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         simmap_string = simmap_string + "}";
         
         // save the character history for this branch
-        character_histories[node_index] = new std::string(simmap_string);
+        character_histories[node_index] = simmap_string;
         
         // calculate average diversification rates on this branch
         average_speciation[node_index] = total_speciation_rate / num_dts;
@@ -1409,7 +1409,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> StateDependentSpeciationExtinction
    
         // simulate character history over the tree conditioned on the new tip data
         size_t num_nodes = value->getNumberOfNodes();
-        std::vector<std::string*> character_histories(num_nodes);
+        std::vector<std::string> character_histories(num_nodes);
         drawStochasticCharacterMap(character_histories);
         static_cast<TreeDiscreteCharacterData*>(this->value)->setTimeInStates(time_in_states);
 
@@ -1684,7 +1684,7 @@ void StateDependentSpeciationExtinctionProcess::redrawValue( void )
             size_t num_nodes = value->getNumberOfNodes();
             if (num_nodes > 2)
             {
-                std::vector<std::string*> character_histories(num_nodes);
+                std::vector<std::string> character_histories(num_nodes);
                 drawStochasticCharacterMap(character_histories, true);
             }
             static_cast<TreeDiscreteCharacterData*>(this->value)->setTimeInStates(time_in_states);
@@ -1890,7 +1890,7 @@ void StateDependentSpeciationExtinctionProcess::setValue(Tree *v, bool f )
     size_t num_nodes = value->getNumberOfNodes();
     if (num_nodes > 2)
     {
-        std::vector<std::string*> character_histories(num_nodes);
+        std::vector<std::string> character_histories(num_nodes);
         drawStochasticCharacterMap(character_histories);
     }
     static_cast<TreeDiscreteCharacterData*>(this->value)->setTimeInStates(time_in_states);

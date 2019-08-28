@@ -309,19 +309,19 @@ void TopologyNode::addNodeParameters(std::string const &n, const std::vector<dou
     
 }
 
-void TopologyNode::addNodeParameters(std::string const &n, const std::vector<std::string*> &p, bool internalOnly)
+void TopologyNode::addNodeParameters(std::string const &n, const std::vector<std::string> &p, bool internal_only)
 {
     
-    if ( !internalOnly || !isTip()  )
+    if ( !internal_only || !isTip()  )
     {
         std::stringstream o;
-        o << n << "=" << *p[index];
+        o << n << "=" << p[index];
         std::string comment = o.str();
         node_comments.push_back( comment );
         
         for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
         {
-            (*it)->addNodeParameters(n, p, internalOnly);
+            (*it)->addNodeParameters(n, p, internal_only);
         }
     }
 }
