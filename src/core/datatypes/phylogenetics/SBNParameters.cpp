@@ -72,7 +72,7 @@ SBNParameters::SBNParameters( const SBNParameters &sbn ) :
 
 SBNParameters::~SBNParameters()
 {
-
+  
 }
 
 
@@ -174,10 +174,191 @@ double SBNParameters::computeLnProbabilityRootedTopology( const Tree &tree ) con
 }
 
 /* Computes the probability of the given UNROOTED tree under this SBN. */
-double SBNParameters::computeLnProbabilityUnrootedTopology( const Tree &tree ) const
+double SBNParameters::computeLnProbabilityUnrootedTopology( const Tree &t ) const
 {
   double lnProbability = 0.0;
-
+//
+//   Tree* tree = t.clone();
+//
+//   // Prep for tip to root pass
+//   std::string order = "postorder";
+//   tree->orderNodesForTraversal(order);
+//   const std::vector<TopologyNode*> &postorder_nodes = tree->getNodes();
+//
+//   double one_over_n_branches = 1.0 / (2.0 * tree->getNumberOfNodes() - 3.0); // 1 over the number of branches in an unrooted tree
+//
+//   // For storing subsplits
+//   std::vector<Subsplit> per_node_subsplit = std::vector<Subsplit>(tree->getNumberOfNodes(),Subsplit());
+//   // For storing sum of rooting probabilities from tip through this branch.
+//   std::vector<double> ttr = std::vector<double>(tree->getNumberOfNodes(),0.0);
+//
+//   // Tip to root pass, here we do two things
+//   // 1) Get all nodes' subsplits (we will need these repeatedly)
+//   //      We do not make a subsplit for the root as the root is a trifurcation in an unrooted tree
+//   // 2) accumulate tipward tree probabilities
+//   //      On each edge (the edge subtending the node we're visiting) we need
+//   for (std::vector<TopologyNode*>::const_iterator it = postorder_nodes.begin(); it != (postorder_nodes.end()-1); ++it)
+//   {
+//     size_t index = (*it)->getIndex();
+//
+//     if ( (*it)->isTip() )
+//     {
+//       // 1)
+//       per_node_subsplit[index] = (*it)->getSubsplit(taxa);
+//
+//       // 2)
+//       ttr[index] = 1.0;
+//     }
+//     else
+//     {
+//       std::vector<int> children = (*it)->getChildrenIndices();
+//
+//       // 1)
+//       RbBitSet clade_1 = per_node_subsplit[children[0]].asCladeBitset();
+//       RbBitSet clade_2 = per_node_subsplit[children[1]].asCladeBitset();
+//       per_node_subsplit[index] = Subsplit(clade_1,clade_2);
+//
+//       // 2)
+//       ttr[index] = computeSubsplitTransitionProbability(per_node_subsplit[index],per_node_subsplit[children[0]]) * ttr[children[0]] + computeSubsplitTransitionProbability(per_node_subsplit[index],per_node_subsplit[children[1]]) * ttr[children[1]];
+//     }
+//   }
+// //
+// //   // Root to tip pass (this is where the fun starts)
+// //   order = "preorder";
+// //   tree->orderNodesForTraversal(order);
+// //   const std::vector<TopologyNode*> &preorder_nodes = tree->getNodes();
+// //
+// //   // Loop over edges of tree (exploit equivalency between an edge and the node that edge subtends)
+// //   // The root has no edge so there is nothing to do for the root, so we skip it
+// //   for (std::vector<TopologyNode*>::const_iterator it = preorder_nodes.begin()+1; it != preorder_nodes.end(); ++it)
+// //   {
+// //     // std::cout << ">>>working on a root/internal/tip node " << ((*it)->isRoot()) << "/" << ((*it)->isInternal()) << "/" << ((*it)->isTip()) << std::endl;
+// //     // std::cout << ">The node's subsplit is " << per_node_subsplit[(*it)->getIndex()] << std::endl;
+// //     // std::cout << ">The node's parent's subsplit is " << per_node_subsplit[(*it)->getParent().getIndex()] << std::endl;
+// //
+// //     size_t index = (*it)->getIndex();
+// //
+// //     // Edges descending from root need to be handled differently
+// //     if ( (*it)->getParent().isRoot() )
+// //     // {
+// //       // Get subsplits for other two descendants of root
+// //       std::vector<int> root_children_indices = tree->getRoot().getChildrenIndices();
+// //
+// //       std::vector<int> sibling_indices;
+// //
+// //       for (size_t i=0; i<3; ++i)
+// //       {
+// //         if (index != root_children_indices[i])
+// //         {
+// //           sibling_indices.push_back(root_children_indices[i]);
+// //         }
+// //       }
+// //
+// //       // Get all cases for virtual rooting of this edge (including current rooting)
+// //       std::vector<std::pair<Subsplit,Subsplit> > cases = per_node_subsplit[index].doVirtualRootingRootParent(per_node_subsplit[sibling_indices[0]],per_node_subsplit[sibling_indices[1]],per_node_subsplit[index]);
+// //
+// //       // Subsplit root_on_edge = per_node_subsplit[index].rootSplitFromClade();
+// //
+// //       // Case 1
+// //       double weight = ttr[root_children_indices[0]];
+// //       incrementParentChildCount(parent_child_counts,cases[0],weight);
+// // // std::cout << "did case 1" << std::endl;
+// //
+// //       // Case 2
+// //       weight = ttr[root_children_indices[0]];
+// //       incrementParentChildCount(parent_child_counts,cases[1],weight);
+// // // std::cout << "did case 2" << std::endl;
+// //
+// //       // Case 3
+// //       // weight = doSA ? one_over_n_branches : q[root_on_edge];
+// //       weight = doSA ? one_over_n_branches : q[cases[5].first];
+// //       incrementParentChildCount(parent_child_counts,cases[2],weight);
+// // // std::cout << "did case 3" << std::endl;
+// //
+// //       if ( !((*it)->isTip()) )
+// //       {
+// //         std::vector<int> children_indices = (*it)->getChildrenIndices();
+// //         bool child_0_is_y = per_node_subsplit[index].isChildOfY(per_node_subsplit[children_indices[0]]);
+// //
+// //         // Case 4
+// //         weight = ttr[children_indices[child_0_is_y ? 0 : 1]];
+// //         incrementParentChildCount(parent_child_counts,cases[3],weight);
+// // // std::cout << "did case 4" << std::endl;
+// //
+// //         // Case 5
+// //         weight = ttr[children_indices[child_0_is_y ? 1 : 0]];
+// //         incrementParentChildCount(parent_child_counts,cases[4],weight);
+// // // std::cout << "did case 5" << std::endl;
+// //       }
+// //
+// //       // Case 6
+// //       // weight = doSA ? one_over_n_branches : q[root_on_edge];
+// //       weight = doSA ? one_over_n_branches : q[cases[5].first];
+// //       incrementParentChildCount(parent_child_counts,cases[5],weight);
+// // // std::cout << "did case 6" << std::endl;
+// //     }
+// //     else
+// //     {
+// //       // Define parent-child pair for current rooting (parent first, child second)
+// //       std::pair<Subsplit,Subsplit> this_parent_child;
+// //       this_parent_child.first = per_node_subsplit[(*it)->getParent().getIndex()];
+// //       this_parent_child.second = per_node_subsplit[index];
+// //
+// //       // Get all cases for virtual rooting of this edge (including current rooting)
+// //       std::vector<std::pair<Subsplit,Subsplit> > cases = per_node_subsplit[index].doVirtualRootingNonRootParent(this_parent_child.first,this_parent_child.second);
+// //
+// //       // Subsplit root_on_edge = per_node_subsplit[index].rootSplitFromClade();
+// //
+// //       // Case 1
+// //       double weight = 1 - ttr[(*it)->getParent().getIndex()];
+// //       double pr_parent_child = computeSubsplitTransitionProbability(this_parent_child.first,this_parent_child.second);
+// //       lnProbability += weight * pr_parent_child;
+// // // std::cout << "did case 1" << std::endl;
+// //
+// //       // Case 2
+// //       std::vector<int> my_parents_children = (*it)->getParent().getChildrenIndices();
+// //       size_t sibling = 0;
+// //       if (index == my_parents_children[0])
+// //       {
+// //         sibling = 1;
+// //       }
+// //
+// //       weight = ttr[sibling];
+// //       incrementParentChildCount(parent_child_counts,cases[1],weight);
+// // // std::cout << "did case 2" << std::endl;
+// //
+// //       // Case 3
+// //       // weight = doSA ? one_over_n_branches : q[root_on_edge];
+// //       weight = doSA ? one_over_n_branches : q[cases[5].first];
+// //       incrementParentChildCount(parent_child_counts,cases[2],weight);
+// // // std::cout << "did case 3" << std::endl;
+// //
+// //       if ( !((*it)->isTip()) )
+// //       {
+// //         std::vector<int> children_indices = (*it)->getChildrenIndices();
+// //         bool child_0_is_y = per_node_subsplit[index].isChildOfY(per_node_subsplit[children_indices[0]]);
+// //
+// //         // Case 4
+// //         weight = ttr[children_indices[child_0_is_y ? 0 : 1]];
+// //         incrementParentChildCount(parent_child_counts,cases[3],weight);
+// // // std::cout << "did case 4" << std::endl;
+// //
+// //         // Case 5
+// //         weight = ttr[children_indices[child_0_is_y ? 1 : 0]];
+// //         incrementParentChildCount(parent_child_counts,cases[4],weight);
+// // // std::cout << "did case 5" << std::endl;
+// //       }
+// //
+// //       // Case 6
+// //       // weight = doSA ? one_over_n_branches : q[root_on_edge];
+// //       weight = doSA ? one_over_n_branches : q[cases[5].first];
+// //       incrementParentChildCount(parent_child_counts,cases[5],weight);
+// // // std::cout << "did case 6" << std::endl;
+// //
+// //     }
+// //
+// //   }
+// delete tree;
   return lnProbability;
 }
 
@@ -341,7 +522,7 @@ void SBNParameters::countAllSubsplits(Tree& tree, std::map<std::pair<Subsplit,Su
   std::vector<double> ttr = std::vector<double>(tree.getNumberOfNodes(),0.0);
 
   // Tip to root pass, here we do two things
-  // 1) Get all node's subsplits (we will need these repeatedly)
+  // 1) Get all nodes' subsplits (we will need these repeatedly)
   //      We do not make a subsplit for the root as the root is a trifurcation in an unrooted tree
   // 2) accumulate cumulative rooting probabilities and add to root split counters
   //      On each edge (the edge subtending the node we're visiting) we need the probability of rooting to the split this edge induces
@@ -522,6 +703,7 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
   // Loop over all trees
   for (size_t i=0; i<trees.size(); ++i)
   {
+    double tree_length = 0.0;
     // Get branch lengths
     //unrooted trees have basal polytomies, so without fear we can take a node's clade, turn it into the split the edge below it represents, and add to that edge's observations
     const std::vector<TopologyNode*> tree_nodes = trees[i].getNodes();
@@ -544,8 +726,12 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
         // }
 
         (branch_length_observations[this_split]).push_back(tree_nodes[i]->getBranchLength());
+        tree_length += tree_nodes[i]->getBranchLength();
       }
     }
+    // Tree length
+    RbBitSet whole_tree = RbBitSet(trees[i].getNumberOfTips(),true);
+    (branch_length_observations[whole_tree]).push_back(tree_length);
   }
 
   if ( branch_length_approximation_method == "lognormalML" )
@@ -598,7 +784,7 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
   }
   else
   {
-    // Turn branch length observations into gamma distributions
+    // Turn branch length observations into some distributions
     std::pair<RbBitSet,std::vector<double> > clade_edge_observations;
     BOOST_FOREACH(clade_edge_observations, branch_length_observations) {
       if (clade_edge_observations.second.size() > 2)
@@ -621,7 +807,7 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
         // Approximate edge-length distribution using gamma
         std::pair<double,double> these_params;
 
-        if ( branch_length_approximation_method == "gammaMOM" )
+        if ( branch_length_approximation_method == "gammaMOM" || branch_length_approximation_method == "compound" )
         {
           these_params.second = mean/var;
           these_params.first = mean * these_params.second;
@@ -639,7 +825,7 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
       {
         // Basically no information on edge length distribution
         std::pair<double,double> these_params;
-        if ( branch_length_approximation_method == "gammaMOM" )
+        if ( branch_length_approximation_method == "gammaMOM" || branch_length_approximation_method == "compound" )
         {
           // Approximate edge-length distribution using an exponential(10)
           these_params.first = 1.0;
@@ -1165,7 +1351,7 @@ void SBNParameters::learnUnconstrainedSBNSA( std::vector<Tree> &trees )
 {
   time_calibrated = false;
 
-  if ( !(branch_length_approximation_method == "gammaMOM" || branch_length_approximation_method == "lognormalML" || branch_length_approximation_method == "lognormalMOM") )
+  if ( !(branch_length_approximation_method == "compound" || branch_length_approximation_method == "gammaMOM" || branch_length_approximation_method == "lognormalML" || branch_length_approximation_method == "lognormalMOM") )
   {
     throw(RbException("Invalid branch length/node height approximation method when initializing SBN object."));
   }
