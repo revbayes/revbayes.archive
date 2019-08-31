@@ -50,7 +50,8 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
                                                                                    bool prune,
                                                                                    bool condition_on_tip_states,
                                                                                    bool condition_on_num_tips,
-                                                                                   bool condition_on_tree) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
+                                                                                   bool condition_on_tree,
+                                                                                   bool allow_shifts_extinct) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
     condition( cdt ),
     active_likelihood( std::vector<bool>(5, 0) ),
     changed_nodes( std::vector<bool>(5, false) ),
@@ -81,6 +82,7 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
     max_num_lineages( max_num_lineages ),
     exact_num_lineages( exact_num_lineages ),
     max_time( max_t ),
+    allow_rate_shifts_on_extinct_lineages( allow_shifts_extinct ),
     prune_extinct_lineages( prune ),
     condition_on_tip_states( condition_on_tip_states ),
     condition_on_num_tips( condition_on_num_tips ),
@@ -912,7 +914,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyFlagNodeDirty( const 
 }
 
 
-void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::vector<std::string*>& character_histories, bool set_amb_char_data)
+void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::vector<std::string>& character_histories, bool set_amb_char_data)
 {
     // first populate partial likelihood vectors along all the branches
     sample_character_history = true;
@@ -1013,7 +1015,7 @@ void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::
             }
         
             // save the character history for the root
-            std::string* simmap_string = new std::string("{" + StringUtilities::toString(a) + "," + StringUtilities::toString( root.getBranchLength() ) + "}");
+            std::string simmap_string = "{" + StringUtilities::toString(a) + "," + StringUtilities::toString( root.getBranchLength() ) + "}";
             character_histories[node_index] = simmap_string;
             
             // recurse towards tips
@@ -1036,7 +1038,7 @@ void StateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::
 }
 
 
-bool StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string*>& character_histories, bool set_amb_char_data)
+bool StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string>& character_histories, bool set_amb_char_data)
 {
     size_t node_index = node.getIndex();
     std::vector<double> speciation_rates = calculateTotalSpeciationRatePerState();
@@ -1225,7 +1227,7 @@ bool StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         average_extinction[node_index] = total_extinction_rate / num_dts;
 
         // save the character history for this branch
-        character_histories[node_index] = new std::string(simmap_string);
+        character_histories[node_index] = simmap_string;
         
     }
     else
@@ -1355,7 +1357,7 @@ bool StateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharact
         simmap_string = simmap_string + "}";
         
         // save the character history for this branch
-        character_histories[node_index] = new std::string(simmap_string);
+        character_histories[node_index] = simmap_string;
         
         // calculate average diversification rates on this branch
         average_speciation[node_index] = total_speciation_rate / num_dts;
@@ -1407,7 +1409,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> StateDependentSpeciationExtinction
    
         // simulate character history over the tree conditioned on the new tip data
         size_t num_nodes = value->getNumberOfNodes();
-        std::vector<std::string*> character_histories(num_nodes);
+        std::vector<std::string> character_histories(num_nodes);
         drawStochasticCharacterMap(character_histories);
         static_cast<TreeDiscreteCharacterData*>(this->value)->setTimeInStates(time_in_states);
 
@@ -1682,7 +1684,7 @@ void StateDependentSpeciationExtinctionProcess::redrawValue( void )
             size_t num_nodes = value->getNumberOfNodes();
             if (num_nodes > 2)
             {
-                std::vector<std::string*> character_histories(num_nodes);
+                std::vector<std::string> character_histories(num_nodes);
                 drawStochasticCharacterMap(character_histories, true);
             }
             static_cast<TreeDiscreteCharacterData*>(this->value)->setTimeInStates(time_in_states);
@@ -1888,7 +1890,7 @@ void StateDependentSpeciationExtinctionProcess::setValue(Tree *v, bool f )
     size_t num_nodes = value->getNumberOfNodes();
     if (num_nodes > 2)
     {
-        std::vector<std::string*> character_histories(num_nodes);
+        std::vector<std::string> character_histories(num_nodes);
         drawStochasticCharacterMap(character_histories);
     }
     static_cast<TreeDiscreteCharacterData*>(this->value)->setTimeInStates(time_in_states);
@@ -3028,7 +3030,7 @@ void StateDependentSpeciationExtinctionProcess::touchSpecialization(DagNode *aff
 void StateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(state_type &likelihoods, double begin_age, double end_age, bool backward_time, bool extinction_only) const
 {
     const std::vector<double> &extinction_rates = mu->getValue();
-    SSE_ODE ode = SSE_ODE(extinction_rates, &getEventRateMatrix(), getEventRate(), backward_time, extinction_only);
+    SSE_ODE ode = SSE_ODE(extinction_rates, &getEventRateMatrix(), getEventRate(), backward_time, extinction_only, allow_rate_shifts_on_extinct_lineages);
     if ( use_cladogenetic_events == true )
     {
         cladogenesis_matrix->getValue(); // we must call getValue() to update the speciation and extinction rates in the event map

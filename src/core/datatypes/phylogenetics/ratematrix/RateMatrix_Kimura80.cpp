@@ -1,14 +1,11 @@
-#include "MatrixReal.h"
 #include "RateMatrix_Kimura80.h"
-#include "RbException.h"
 #include "TransitionProbabilityMatrix.h"
-
-#include <cmath>
-#include <string>
 
 using namespace RevBayesCore;
 
-/** Construct rate matrix with n states */
+/**  Default Constructor for a Kimura80 Rate Matrix
+ * This constructor has no parameters as it assumes the transition:transvertion ratio, Kappa, to be 1
+ *  */
 RateMatrix_Kimura80::RateMatrix_Kimura80(void) : TimeReversibleRateMatrix( 4 )
 {
     
@@ -47,7 +44,13 @@ RateMatrix_Kimura80& RateMatrix_Kimura80::assign(const Assignable &m)
 
 
 
-/** Calculate the transition probabilities */
+/** Calculate the transition probabilities along a branch
+ * @param startAge a double that denotes the start of the branch
+ * @param endAge a double that denotes the end of the branch
+ * @param rate a double that denotes the overall substitution rate
+ * @param p A transition probability matrix
+ *
+ *  */
 void RateMatrix_Kimura80::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
     double t = rate * (startAge - endAge);
@@ -91,7 +94,10 @@ RateMatrix_Kimura80* RateMatrix_Kimura80::clone( void ) const
     return new RateMatrix_Kimura80( *this );
 }
 
-
+/*
+ * Sets Kapps of the rate matrix
+ * @param k Kappa, the transition:transversion ratio
+ */
 void RateMatrix_Kimura80::setKappa( double k )
 {
     

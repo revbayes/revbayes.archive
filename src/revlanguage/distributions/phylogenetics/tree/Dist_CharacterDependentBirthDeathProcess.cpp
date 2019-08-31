@@ -119,9 +119,10 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirt
     
     size_t prune = static_cast<const RlBoolean &>( prune_extinct_lineages->getRevObject() ).getValue();
     
+    bool allow_shifts_extinct = static_cast<const RlBoolean &>( allow->getRevObject() ).getValue();
     
     // finally make the distribution 
-    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, bf, rh, cond, uo, min_l, max_l, exact_l, max_t, prune, cond_tip_states, cond_num_tips, cond_tree );
+    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, bf, rh, cond, uo, min_l, max_l, exact_l, max_t, prune, cond_tip_states, cond_num_tips, cond_tree, allow_shifts_extinct );
    
     
     size_t ex_size = ex->getValue().size();
@@ -301,6 +302,7 @@ const MemberRules& Dist_CharacterDependentBirthDeathProcess::getParameterRules(v
         memberRules.push_back( new ArgumentRule("exactNumLineages", Natural::getClassTypeSpec(), "The exact number of lineages to simulate; applied under the numTips condition.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100) ) );
         memberRules.push_back( new ArgumentRule("maxTime", RealPos::getClassTypeSpec(), "Maximum time for lineages to coalesce when simulating; applied under the numTips and tipStates condition.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(1000.0) ) );
         memberRules.push_back( new ArgumentRule("pruneExtinctLineages", RlBoolean::getClassTypeSpec(), "When simulating should extinct lineages be pruned off?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        memberRules.push_back( new ArgumentRule("allowRateShiftsAtExtinctLineages", RlBoolean::getClassTypeSpec(), "Should we allow rate shifts to occur on extinct lineages?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
 
         rules_set = true;
     }
@@ -386,6 +388,10 @@ void Dist_CharacterDependentBirthDeathProcess::setConstParameter(const std::stri
     else if ( name == "simulateCondition" )
     {
         simulation_condition = var;
+    }
+    else if ( name == "allowRateShiftsAtExtinctLineages" )
+    {
+        allow = var;
     }
     else
     {

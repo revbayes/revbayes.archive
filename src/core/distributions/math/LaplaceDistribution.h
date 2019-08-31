@@ -5,6 +5,18 @@
 #include "TypedDagNode.h"
 
 namespace RevBayesCore {
+
+/**
+  * @brief Laplace distribution class.
+  *
+  * The Laplace distribution represents a family of distributions
+  * defined on the real numbers. The Laplace distribution has 2 parameters:
+  * @param Location The location of the distribution
+  * @param Scale The scale parameter of the distribution
+  * Instances of this class can be associated to stochastic variables.
+  *
+  */
+
     
     class LaplaceDistribution : public ContinuousDistribution {
         

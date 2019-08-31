@@ -16,31 +16,34 @@
  * $Id: RandomNumberFactory.h 1643 2012-06-20 20:57:09Z hoehna $
  */
 
-#ifndef CummulativeDistributionFunction_H
-#define CummulativeDistributionFunction_H
+#ifndef DiscretizeGammaFromBetaQuantilesFunction_H
+#define DiscretizeGammaFromBetaQuantilesFunction_H
 
-#include "ContinuousFunction.h"
+#include "TypedFunction.h"
 #include "ContinuousDistribution.h"
+#include "RbVector.h"
 #include "TypedDagNode.h"
 
 namespace RevBayesCore {
-    
-    class CummulativeDistributionFunction : public ContinuousFunction {
-        
+
+    class DiscretizeGammaFromBetaQuantilesFunction : public TypedFunction< RbVector<double> >{
+
     public:
-        CummulativeDistributionFunction(const TypedDagNode<double> *x, ContinuousDistribution *d);
-        CummulativeDistributionFunction(const CummulativeDistributionFunction &pdf);
-        virtual                            ~CummulativeDistributionFunction(void);
-        
-        CummulativeDistributionFunction*    clone(void) const;                                                  //!< Create a clon.
+        DiscretizeGammaFromBetaQuantilesFunction(const TypedDagNode<double> *a, const TypedDagNode<double> *b, const TypedDagNode<double> *s, const TypedDagNode<double> *r, const TypedDagNode<long> *nc, bool med);
+
+        DiscretizeGammaFromBetaQuantilesFunction*            clone(void) const;                                                  //!< Create a clon.
         void                                update(void);                                                       //!< Recompute the value
-        
+
     protected:
         void                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);    //!< Implementation of swaping parameters
-        
+
     private:
-        const TypedDagNode<double>*         x;
-        ContinuousDistribution*             dist;
+        const TypedDagNode<double>*         alpha;
+        const TypedDagNode<double>*         beta;
+        const TypedDagNode<double>*         shape;
+        const TypedDagNode<double>*         rate;
+        const TypedDagNode<long>*           numCats;
+        bool                                median;
     };
 }
 

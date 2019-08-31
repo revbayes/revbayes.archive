@@ -9,7 +9,18 @@
 #include <set>
 
 namespace RevBayesCore {
-    
+    /**
+     * @brief The Prune Tree Function
+     *
+     * A core function for pruning taxa from a tree.
+     * The class also has the following member variables:
+     *  @param prune_map An RbBitSet map for the Tree::pruneTaxa() function
+     *  @param tau The tree to prune
+     *  @param taxa The list of taxon names to remove
+     *  @param retain Boolean: if true, then retain the tips in taxa instead of removing them
+     *  @param prune_fossils Boolean: if true, then prune all of the non-extant tips/sampled ancestors from the tree
+     */
+
     class PruneTreeFunction : public TypedFunction<Tree> {
         
     public:

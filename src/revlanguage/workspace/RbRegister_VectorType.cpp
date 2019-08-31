@@ -108,6 +108,8 @@ void RevLanguage::Workspace::initializeVectorTypeGlobalWorkspace(void)
 //        AddWorkspaceVectorType<Dist_unif,1>::addTypeToWorkspace( *this, new Dist_unif() );
 //        this->addFunction(new Func_workspaceVector<Dist_unif>() );
         this->addFunction(new Func_workspaceVector<Distribution>() );
+        this->addFunction(new Func_workspaceVector<TypedDistribution<Real> >() );
+        this->addFunction(new Func_workspaceVector<TypedDistribution<RealPos> >() );
 //        this->addFunction(new Func_workspaceVector<ContinuousDistribution>() );
 //        AddWorkspaceVectorType<Distribution,1>::addTypeToWorkspace( *this, new Distribution() );
 

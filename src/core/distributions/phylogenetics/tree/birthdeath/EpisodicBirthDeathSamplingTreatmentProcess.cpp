@@ -453,12 +453,20 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
         double root_age = (&value->getRoot())->getAge();
         lnProbTimes -= log( 1 - E(findIndex(root_age),root_age) );
     }
-    // condition on nTaxa
-    else if ( condition == "nTaxa" )
-    {
-        throw(RbException("Cannot condition on number of taxa in episodic serially-sampled birth-death process."));
-        // lnProbTimes -= lnProbNumTaxa( value->getNumberOfTips(), 0, process_time, true );
-    }
+    // else if ( condition == "persistence" )
+    // {
+    //   // Condition on extand descendant(s) at time 0 and sample being left
+    //   double root_age = (&value->getRoot())->getAge();
+    //   double pr_no_samples = modifiedE(findIndex(root_age),root_age,1);
+    //   double pr_extinction_and_no_samples = modifiedE(findIndex(root_age),root_age,2);
+    //   double pr_no_extant_descendants = modifiedE(findIndex(root_age),root_age,4);
+    //   lnProbTimes -= log( (1.0 - pr_no_samples) - pr_no_extant_descendants + pr_extinction_and_no_samples );
+    //   // Condition on the other root (if there is one) child leaving sample
+    //   if (num_initial_lineages > 1)
+    //   {
+    //     lnProbTimes -= log( 1.0 - pr_no_samples );
+    //   }
+    // }
 
     if ( RbMath::isFinite(lnProbTimes) == false )
     {
@@ -513,7 +521,8 @@ void EpisodicBirthDeathSamplingTreatmentProcess::countAllNodes(void) const
         // node is sampled ancestor
           int at_event = whichIntervalTime(t);
 
-          if (at_event == -1)
+          // If this tip is not at an event time (and specifically at an event time with Phi[i] > 0), it's a serial tip
+          if (at_event == -1 || phi_event[at_event] < DBL_EPSILON)
           {
             serial_sampled_ancestor_ages.push_back(t);
           }
@@ -527,7 +536,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::countAllNodes(void) const
           // node is serial leaf
           int at_event = whichIntervalTime(t);
 
-          // If this tip is not at an event time (and at an event time with Phi[i] > 0), it's a serial tip
+          // If this tip is not at an event time (and specifically at an event time with Phi[i] > 0), it's a serial tip
           if (at_event == -1 || phi_event[at_event] < DBL_EPSILON)
           {
             serial_tip_ages.push_back(t);
@@ -558,7 +567,8 @@ void EpisodicBirthDeathSamplingTreatmentProcess::countAllNodes(void) const
               // node is bifurcation event (a "true" node)
               int at_event = whichIntervalTime(t);
 
-              if (at_event == -1)
+              // If this bifurcation is not at an event time (and specifically at an event time with Lambda[i] > 0), it's a serial bifurcation
+              if (at_event == -1 || lambda_event[at_event] < DBL_EPSILON)
               {
                 serial_bifurcation_times.push_back(t);
               }
@@ -651,6 +661,93 @@ double EpisodicBirthDeathSamplingTreatmentProcess::E(size_t i, double t) const
     return E_i;
   // }
 }
+
+/**
+ * Recursively compute one of the four extinction probabilities that may be desired.
+ * Argument type is one of:
+ *                         1: no sampled descendants at any point in time (this is the same as E(i,t))
+ *                         2: no sampled descendants at any point in time AND lineage goes extinct before present day
+ *                         3: no sampled descendants at time 0 (this only works if 1 > Phi[0] > 0)
+ *                         4: no extant descendants at time 0
+ */
+double EpisodicBirthDeathSamplingTreatmentProcess::modifiedE(int i, double t, size_t condition_type) const
+{
+  if (i < 0) {
+    if ( t < DBL_EPSILON )
+    {
+      if (condition_type == 1 || condition_type == 3)
+      {
+        if ( phi_event[0] > DBL_EPSILON )
+        {
+          return 1.0;
+        }
+        else
+        {
+          return 1.0 - phi_event[0];
+        }
+      }
+      else
+      {
+        return 0.0;
+      }
+    }
+    else
+    {
+      throw(RbException("Cannot compute E for index -1 at t > 0."));
+    }
+  }
+  else
+  {
+
+    // E <- (b + d + s - A *(1+B-exp(-A*(next_t-current_t))*(1-B))/(1+B+exp(-A*(next_t-current_t))*(1-B)) ) / (2*b)
+    double s = timeline[i];
+    double E_i;
+
+    if ( condition_type == 1 || condition_type == 2 ) {
+      // E_i = lambda[i] + mu[i] + phi[i];
+      // E_i -= A_i[i] * (1 + B_i[i] - exp(-A_i[i] * (t - s)) * (1 - B_i[i])) / (1 + B_i[i] + exp(-A_i[i] * (t - s)) * (1 - B_i[i]));
+      // E_i /= (2 * lambda[i]);
+
+      double E_i_minus_1 = modifiedE(i-1,s,condition_type);
+
+      double A = sqrt( pow(lambda[i] - mu[i] - phi[i],2.0) + 4 * lambda[i] * phi[i]);
+
+      double C = (1.0 - lambda_event[i]) * (1 - mu_event[i]) * E_i_minus_1;
+      C += (1.0 - mu_event[i]) * lambda_event[i] * E_i_minus_1 * E_i_minus_1;
+      C += (1.0 - lambda_event[i]) * mu_event[i];
+      C *= (1.0 - phi_event[i]);
+
+      double B = (1.0 - 2.0 * C) * lambda[i] + mu[i] + phi[i];
+      B /= A;
+
+      E_i = lambda[i] + mu[i] + phi[i];
+      E_i -= A * (1.0 + B - exp(-A * (t - s)) * (1.0 - B)) / (1.0 + B + exp(-A * (t - s)) * (1.0 - B));
+      E_i /= (2.0 * lambda[i]);
+
+    }
+    else
+    {
+      // TODO: double check this is giving us appropriate r(t_s)
+      double E_i_minus_1 = modifiedE(i-1,s,condition_type);
+
+      double delta = mu[i] + phi[i] * r[i];
+
+      double G = mu_event[i] + (1.0 - mu_event[i])*phi_event[i]*r[i] + ((1.0 - mu_event[i])*(1.0 - phi_event[i]*r[i]))*E_i_minus_1;
+
+      double F = (1 - lambda_event[i])*G + lambda_event[i]*G*G;
+
+      double neg_rate = delta - lambda[i];
+
+      double tmp1 = (F - 1.0) * exp(neg_rate * s);
+      double tmp2 = (delta - lambda[i] * F) * exp(neg_rate * t);
+
+      E_i = (delta * tmp1 + tmp2) / (lambda[i] * tmp1 + tmp2);
+    }
+
+    return E_i;
+  }
+}
+
 
 /**
  * return the index i so that t_{i-1} <= t < t_i

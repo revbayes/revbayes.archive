@@ -215,6 +215,7 @@
 #include "Dist_dpp.h"
 #include "Dist_event.h"
 #include "Dist_mixture.h"
+#include "Dist_mixtureVector.h"
 #include "Dist_MultiValueEvent.h"
 #include "Dist_reversibleJumpMixtureConstant.h"
 #include "Dist_upp.h"
@@ -496,7 +497,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         // and the so-called "decomposed" Inverse Wishart
         AddDistribution< MatrixReal                 >( new Dist_decomposedInverseWishart() );
 
-        /* Mixture distributions (in folder "distributions/mixture") */
+        /* Empirical sample distributions (in folder "distributions/mixture") */
         AddDistribution< ModelVector<TimeTree>      >( new Dist_EmpiricalSample<TimeTree>());
         AddDistribution< ModelVector<TimeTree>      >( new Dist_WeightedSample<TimeTree>());
         AddDistribution< ModelVector<AbstractHomologousDiscreteCharacterData>      >( new Dist_WeightedSample<AbstractHomologousDiscreteCharacterData>());
@@ -532,6 +533,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 //        AddDistribution< RateGenerator              >( new Dist_mixture<RateGenerator>() );
         addDistribution( new Dist_mixture<RateGenerator>() );
         AddDistribution< TimeTree                   >( new Dist_mixture<TimeTree>() );
+        
+        AddDistribution< ModelVector<Real>          >( new Dist_mixtureVector<Real>() );
+        AddDistribution< ModelVector<RealPos>       >( new Dist_mixtureVector<RealPos>() );
 
         // Ornstein-Uhlenbeck process
         AddDistribution< Real                       >( new OrnsteinUhlenbeckProcess() );
