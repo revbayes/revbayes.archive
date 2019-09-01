@@ -1,13 +1,5 @@
-//
-//  WishartDistribution.h
-//  revbayes
-//
-//  Created by Nicolas Lartillot on 2014-03-26.
-//  Copyright (c) 2014 revbayes team. All rights reserved.
-//
-
-#ifndef __revbayes__WishartDistribution__
-#define __revbayes__WishartDistribution__
+#ifndef WishartDistribution_H
+#define WishartDistribution_H
 
 #include <iostream>
 
@@ -57,4 +49,4 @@ namespace RevBayesCore {
 }
 
 
-#endif /* defined(__revbayes__WishartDistribution__) */
+#endif /* defined(WishartDistribution_H) */

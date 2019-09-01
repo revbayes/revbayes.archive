@@ -24,7 +24,7 @@ namespace RevBayesCore {
         
     public:
         
-        SSE_ODE( const std::vector<double> &m, const RateGenerator* q, double r, bool backward_time, bool extinction_only);
+        SSE_ODE( const std::vector<double> &m, const RateGenerator* q, double r, bool backward_time, bool extinction_only, bool allow_shifts_extint=true );
         
         void operator() ( const state_type &x , state_type &dxdt , const double t );
         
@@ -46,6 +46,7 @@ namespace RevBayesCore {
         bool                                        extinction_only;                    //!< calculate only extinction probabilities
         bool                                        use_speciation_from_event_map;      //!< do we use the speciation rates from the event map?
         bool                                        backward_time;                      //!< computation backward in time (otherwise forward)?
+        bool                                        allow_rate_shifts_extinction;       //!< should we allow for rate-shifts in the extinct lineages?
 
     };
     

@@ -144,7 +144,7 @@ void Tree::addNodeParameter(std::string const &name, const std::vector<double> &
 
 }
 
-void Tree::addNodeParameter(std::string const &name, const std::vector<std::string*> &parameters, bool internalOnly)
+void Tree::addNodeParameter(std::string const &name, const std::vector<std::string> &parameters, bool internalOnly)
 {
 
     getRoot().addNodeParameters(name,parameters,internalOnly);
