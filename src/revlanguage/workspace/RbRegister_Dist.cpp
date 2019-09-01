@@ -197,6 +197,7 @@
 #include "Dist_normTruncated.h"
 #include "Dist_normTruncatedPositive.h"
 #include "Dist_pointMass.h"
+#include "Dist_pointMassPositive.h"
 #include "Dist_poisson.h"
 #include "Dist_scaledDirichlet.h"
 #include "Dist_softBoundUniformNormal.h"
@@ -431,6 +432,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // point mass distribution
         AddDistribution< Real                       >( new Dist_pointMass() );
+        AddDistribution< RealPos                    >( new Dist_pointMassPositive() );
 
         // poisson distribution
         AddDistribution< Natural                    >( new Dist_poisson() );
