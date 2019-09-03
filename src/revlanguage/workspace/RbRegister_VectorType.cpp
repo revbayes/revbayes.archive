@@ -60,6 +60,7 @@
 #include "RlConstantNode.h"
 #include "RlDeterministicNode.h"
 #include "RlDistribution.h"
+#include "RlTypedDistribution.h"
 #include "RlTree.h"
 #include "RlTypedFunction.h"
 #include "Taxon.h"
