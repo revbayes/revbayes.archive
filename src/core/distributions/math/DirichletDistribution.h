@@ -1,14 +1,13 @@
 #ifndef DirichletDistribution_H
 #define DirichletDistribution_H
 
-#include "RbVector.h"
 #include "Simplex.h"
-#include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
-#include <vector>
-
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class RbVector;
+template <class valueType> class TypedDagNode;
     
 /** Dirichlet distribution class.
  * The Dirichlet distribution represents a family of distributions

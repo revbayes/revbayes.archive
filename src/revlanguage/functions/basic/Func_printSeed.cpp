@@ -1,16 +1,16 @@
 #include "Func_printSeed.h"
-#include "ArgumentRule.h"
-#include "DeterministicNode.h"
-#include "Ellipsis.h"
-#include "Natural.h"
+
+#include <stddef.h>
+#include <iostream>
+
 #include "RandomNumberGenerator.h"
 #include "RandomNumberFactory.h"
-#include "RbUtil.h"
 #include "RevNullObject.h"
-#include "RealPos.h"
-#include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include <ostream>
+#include "ArgumentRules.h"
+#include "RbHelpReference.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
 
 using namespace RevLanguage;
 

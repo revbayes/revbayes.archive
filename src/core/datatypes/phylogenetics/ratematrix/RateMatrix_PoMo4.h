@@ -24,14 +24,18 @@
 #ifndef __RateMatrix_PoMo4__
 #define __RateMatrix_PoMo4__
 
-#include "AbstractRateMatrix.h"
-#include <complex>
+#include <stddef.h>
 #include <vector>
+
+#include "AbstractRateMatrix.h"
+#include "RateGenerator.h"
+#include "RateMatrix.h"
 
 
 namespace RevBayesCore {
     
     class TransitionProbabilityMatrix;
+class Assignable;
     
     class RateMatrix_PoMo4 : public AbstractRateMatrix {
         

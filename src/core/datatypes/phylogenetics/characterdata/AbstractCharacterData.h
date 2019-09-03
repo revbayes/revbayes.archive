@@ -1,15 +1,16 @@
 #ifndef AbstractCharacterData_H
 #define AbstractCharacterData_H
 
-#include "CharacterState.h"
+#include <stddef.h>
+#include <map>
+#include <vector>
+#include <iosfwd>
+#include <set>
+
 #include "Cloneable.h"
 #include "AbstractTaxonData.h"
 #include "Serializable.h"
 #include "Taxon.h"
-
-#include <map>
-#include <string>
-#include <vector>
 
 namespace RevBayesCore {
 

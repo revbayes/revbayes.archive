@@ -2,6 +2,7 @@
 #define DynamicNode_H
 
 #include "TypedDagNode.h"
+#include "DagNodeMap.h"
 #include <set>
 
 namespace RevBayesCore {

@@ -24,13 +24,10 @@
  */
 
 #include <sstream>
-#include <vector>
-#include <set>
+#include <stdio.h>
 #include <cstdlib>
 
 /* Files including helper classes */
-#include "AddWorkspaceVectorType.h"
-#include "AddVectorizedWorkspaceType.h"
 #include "RbException.h"
 #include "RlUserInterface.h"
 #include "Workspace.h"
@@ -39,7 +36,6 @@
 /// Monitors ///
 
 /* Monitor types (in folder "monitors) */
-#include "RlMonitor.h"
 #include "Mntr_AncestralState.h"
 #include "Mntr_File.h"
 #include "Mntr_HomeologPhase.h"

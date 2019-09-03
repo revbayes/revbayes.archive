@@ -15,9 +15,10 @@
 #ifndef RateMatrix_Ordered_H
 #define RateMatrix_Ordered_H
 
-#include "AbstractRateMatrix.h"
-#include <complex>
+#include <stddef.h>
 #include <vector>
+
+#include "AbstractRateMatrix.h"
 
 
 namespace RevBayesCore {

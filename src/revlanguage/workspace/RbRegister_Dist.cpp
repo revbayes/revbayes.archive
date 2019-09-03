@@ -25,29 +25,73 @@
 
 #include <sstream>
 #include <vector>
-#include <set>
 #include <cstdlib>
+#include <math.h>
+#include <stdio.h>
+#include <string>
 
 /* Files including helper classes */
 #include "AddContinuousDistribution.h"
 #include "AddDistribution.h"
-#include "AddWorkspaceVectorType.h"
-#include "AddVectorizedWorkspaceType.h"
 #include "RbException.h"
 #include "RlUserInterface.h"
 #include "Workspace.h"
 
 /// Miscellaneous types ///
 
+#include "AbstractHomologousDiscreteCharacterData.h"
+#include "ConstantNode.h"
+#include "ContinuousCharacterData.h"
+#include "DagMemberFunction.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DirichletProcessPriorDistribution.h"
+#include "DistanceMatrix.h"
+#include "DistributionMemberFunction.h"
+#include "DynamicNode.h"
+#include "EmpiricalSampleDistribution.h"
+#include "EventDistribution.h"
+#include "IndirectReferenceFunction.h"
+#include "MatrixReal.h"
+#include "MixtureDistribution.h"
+#include "ModelObject.h"
+#include "MultiValueEvent.h"
+#include "ProbabilityDensityFunction.h"
+#include "RateGenerator.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "RevPtr.h"
+#include "ReversibleJumpMixtureConstantDistribution.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
+#include "RlConstantNode.h"
+#include "RlContinuousCharacterData.h"
+#include "RlDagMemberFunction.h"
+#include "RlDeterministicNode.h"
+#include "RlDistanceMatrix.h"
+#include "RlDistributionMemberFunction.h"
+#include "RlMultiValueEvent.h"
+#include "RlStochasticNode.h"
+#include "RlTimeTree.h"
+#include "RlTree.h"
+#include "RlTypedDistribution.h"
+#include "RlTypedFunction.h"
+#include "Simplex.h"
+#include "StochasticNode.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
+#include "TypedFunction.h"
+#include "UniformPartitioningDistribution.h"
+#include "UserFunctionNode.h"
+#include "WeightedSampleDistribution.h"
+#include "WorkspaceToCoreWrapperObject.h"
+
 /* Base types (in folder "datatypes") */
-#include "RevObject.h"
 
 /* Primitive types (in folder "datatypes/basic") */
 #include "Integer.h"
 #include "Natural.h"
 #include "Probability.h"
-#include "RlBoolean.h"
-#include "RlString.h"
 #include "Real.h"
 #include "RealPos.h"
 
@@ -58,18 +102,10 @@
 /* Evolution types (in folder "datatypes/phylogenetics") */
 
 /* Character state types (in folder "datatypes/phylogenetics/character") */
-#include "RlAminoAcidState.h"
-#include "RlDnaState.h"
-#include "RlRnaState.h"
-#include "RlStandardState.h"
 
 /* Character data types (in folder "datatypes/phylogenetics/characterdata") */
-#include "RlAbstractCharacterData.h"
 
 /* Tree types (in folder "datatypes/phylogenetics/trees") */
-#include "RlClade.h"
-#include "RlRootedTripletDistribution.h"
-
 
 
 /// Types ///
@@ -78,14 +114,9 @@
 #include "RlBranchLengthTree.h"
 #include "RlRateGenerator.h"
 
-
-
-
 /* Math types (in folder "datatypes/math") */
 #include "RlMatrixReal.h"
 #include "RlMatrixRealSymmetric.h"
-#include "RlRateGeneratorSequence.h"
-#include "RlRateMatrix.h"
 #include "RlSimplex.h"
 
 /// Distributions ///
@@ -224,16 +255,10 @@
 /// Functions ///
 
 /* Helper functions for creating functions (in folder "functions") */
-#include "DistributionFunctionCdf.h"
 #include "DistributionFunctionPdf.h"
-#include "DistributionFunctionQuantileContinuous.h"
-#include "DistributionFunctionQuantilePositiveContinuous.h"
 #include "DistributionFunctionRv.h"
 
-
 /* Argument rules (in folder "functions/argumentrules") */
-#include "ArgumentRule.h"
-
 
 
 /** Initialize global workspace */

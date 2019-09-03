@@ -10,13 +10,23 @@
 #include "ReversiblePoMoRateMatrixFunction.h"
 #include "ModelVector.h"
 #include "Natural.h"
-#include "RateMatrix_ReversiblePoMo.h"
 #include "Real.h"
-#include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
 #include "TypedDagNode.h"
+#include "Argument.h"
+#include "ArgumentRule.h"
+#include "ArgumentRules.h"
+#include "ModelObject.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
+#include "Simplex.h"
+#include "TypeSpec.h"
+
+namespace RevLanguage { class RealPos; }
 
 using namespace RevLanguage;
 

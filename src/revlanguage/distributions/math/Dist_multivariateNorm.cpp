@@ -1,14 +1,50 @@
+#include <math.h>
+#include <stddef.h>
+#include <iosfwd>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "ContinuousStochasticNode.h"
 #include "Dist_multivariateNorm.h"
-#include "DistributionMemberFunction.h"
 #include "MemberProcedure.h"
 #include "MultivariateNormalDistribution.h"
 #include "ModelVector.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlMatrixRealSymmetric.h"
+#include "ConstantNode.h"
+#include "DagMemberFunction.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "IndirectReferenceFunction.h"
+#include "MethodTable.h"
+#include "ModelObject.h"
+#include "Natural.h"
+#include "RbException.h"
+#include "RbHelpReference.h"
+#include "RbVector.h"
+#include "RevNullObject.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlConstantNode.h"
+#include "RlDagMemberFunction.h"
+#include "RlDeterministicNode.h"
+#include "RlDistribution.h"
+#include "RlStochasticNode.h"
+#include "RlTypedDistribution.h"
+#include "RlTypedFunction.h"
+#include "RlUtils.h"
+#include "StochasticNode.h"
+#include "TypeSpec.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
+
+namespace RevBayesCore { class MatrixReal; }
 
 using namespace RevLanguage;
 

@@ -2,8 +2,6 @@
 #define CumulativeDistributionFunction_H
 
 #include "ContinuousFunction.h"
-#include "ContinuousDistribution.h"
-#include "TypedDagNode.h"
 /**
  * @file
  * This file contains the declaration of the cumulative distribution function for some distribution.
@@ -14,6 +12,9 @@
  */
 
 namespace RevBayesCore {
+class ContinuousDistribution;
+class DagNode;
+template <class valueType> class TypedDagNode;
     
     class CumulativeDistributionFunction : public ContinuousFunction {
         

@@ -6,6 +6,11 @@
 //  Copyright (c) 2015 Michael Landis. All rights reserved.
 //
 
+#include <iomanip>
+#include <cstddef>
+#include <iostream>
+#include <vector>
+
 #include "AbstractRateMatrix.h"
 #include "DistributionPoisson.h"
 #include "RateGenerator_Epoch.h"
@@ -13,14 +18,14 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
-#include "RbMathMatrix.h"
 #include "TransitionProbabilityMatrix.h"
-
 #include "RateMatrix.h"
-
-#include <cmath>
-#include <string>
-#include <iomanip>
+#include "Assignable.h"
+#include "Cloneable.h"
+#include "MatrixReal.h"
+#include "RateGenerator.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
 
 using namespace RevBayesCore;
 

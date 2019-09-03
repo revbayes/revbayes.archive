@@ -1,5 +1,7 @@
 #include "OdeHeterogeneousRateBirthDeath.h"
 
+#include "RbVectorImpl.h"
+
 using namespace RevBayesCore;
 
 

@@ -1,10 +1,16 @@
+#include <stddef.h>
+#include <cmath>
+#include <vector>
+
 #include "MatrixReal.h"
 #include "RateMatrix_HKY.h"
 #include "RbException.h"
 #include "TransitionProbabilityMatrix.h"
-
-#include <cmath>
-#include <string>
+#include "Assignable.h"
+#include "Cloneable.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "TimeReversibleRateMatrix.h"
 
 using namespace RevBayesCore;
 

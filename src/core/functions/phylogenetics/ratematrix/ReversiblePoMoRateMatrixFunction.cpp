@@ -1,6 +1,12 @@
 #include "ReversiblePoMoRateMatrixFunction.h"
-#include "RateMatrix_PoMo.h"
-#include "RbException.h"
+
+#include "Cloneable.h"
+#include "RateMatrix_ReversiblePoMo.h"
+#include "RbVector.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { class Simplex; }
 
 using namespace RevBayesCore;
 

@@ -1,9 +1,25 @@
 #include "JointAncestralStateTrace.h"
 
-#include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
-
+#include <assert.h>
 #include <numeric>
+#include <algorithm>
+#include <cstddef>
+#include <cstdlib>
+#include <iterator>
+#include <map>
+#include <sstream>
+#include <string>
+
+#include "ProgressBar.h"
+#include "RbBitSet.h"
+#include "RbException.h"
+#include "RbFileManager.h"
+#include "RlUserInterface.h"
+#include "StringUtilities.h"
+#include "TopologyNode.h"
+#include "Tree.h"
+#include "boost/algorithm/string/trim.hpp"
 
 using namespace RevBayesCore;
 

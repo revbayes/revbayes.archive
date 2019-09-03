@@ -1,15 +1,20 @@
 #include "DistributionFunctionCdf.h"
 
+#include <stddef.h>
+
 #include "ArgumentRule.h"
 #include "CumulativeDistributionFunction.h"
 #include "DeterministicNode.h"
-#include "DistributionFunctionPdf.h"
 #include "Probability.h"
 #include "Real.h"
-#include "RevObject.h"
 #include "TypeSpec.h"
+#include "Argument.h"
+#include "RevVariable.h"
+#include "RlContinuousDistribution.h"
+#include "RlFunction.h"
+#include "RlPositiveContinuousDistribution.h"
 
-#include <sstream>
+namespace RevBayesCore { class ContinuousDistribution; }
 
 using namespace RevLanguage;
 

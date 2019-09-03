@@ -1,14 +1,20 @@
+#include <cmath>
+#include <iostream>
+#include <cstddef>
+#include <vector>
+
 #include "DistributionUniform.h"
 #include "TipTimeSlideUniformProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "RbConstants.h"
 #include "RbException.h"
-#include "TreeUtilities.h"
 #include "TypedDagNode.h"
+#include "Proposal.h"
+#include "StochasticNode.h"
+#include "TopologyNode.h"
+#include "Tree.h"
 
-#include <cmath>
-#include <iostream>
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 

@@ -1,9 +1,11 @@
 #ifndef AbstractRateMatrix_H
 #define AbstractRateMatrix_H
 
+#include <stddef.h>
+#include <vector>
+
 #include "MatrixReal.h"
 #include "RateMatrix.h"
-#include <vector>
 
 
 namespace RevBayesCore {

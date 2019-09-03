@@ -1,5 +1,11 @@
-#include <cmath>
+#include <stddef.h>
+#include <map>
+#include <utility>
+#include <vector>
+
 #include "SSE_ODE.h"
+#include "RateGenerator.h"
+#include "TimeInterval.h"
 
 using namespace RevBayesCore;
 

@@ -2,9 +2,10 @@
 #define GeometricDistribution_H
 
 #include "TypedDistribution.h"
-#include "TypedDagNode.h"
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class TypedDagNode;
     
     /**
      * @brief Geometric distribution class.

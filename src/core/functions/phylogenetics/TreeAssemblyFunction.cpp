@@ -1,5 +1,13 @@
 #include "TreeAssemblyFunction.h"
+
+#include <cstddef>
+#include <vector>
+
 #include "RbException.h"
+#include "DagNode.h"
+#include "RbVector.h"
+#include "TopologyNode.h"
+#include "TypedDagNode.h"
 
 using namespace RevBayesCore;
 

@@ -3,6 +3,7 @@
 
 #include "DirichletProcessPriorDistribution.h"
 #include "AbstractGibbsMove.h"
+#include "RbMathLogic.h"
 
 namespace RevBayesCore {
 

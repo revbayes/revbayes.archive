@@ -1,12 +1,12 @@
 #ifndef DiscreteCharacterState_H
 #define DiscreteCharacterState_H
 
+#include <stddef.h>
+#include <ostream>
+#include <vector>
+
 #include "CharacterState.h"
 #include "RbBitSet.h"
-
-#include <ostream>
-#include <string>
-#include <vector>
 
 namespace RevBayesCore {
 

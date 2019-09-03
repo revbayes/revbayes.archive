@@ -1,5 +1,12 @@
 #include "QuantileFunction.h"
 
+#include <vector>
+
+#include "ContinuousDistribution.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class DagNode; }
+
 
 RevBayesCore::QuantileFunction::QuantileFunction(const TypedDagNode<double> *q, ContinuousDistribution* d) :
     ContinuousFunction( new double(0.0) ),

@@ -5,7 +5,6 @@
 #include "RateMatrix.h"
 
 #include <vector>
-#include <boost/array.hpp>
 
 typedef std::vector< double > state_type;
 

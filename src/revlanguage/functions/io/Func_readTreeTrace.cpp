@@ -1,6 +1,13 @@
+#include <math.h>
+#include <stddef.h>
+#include <map>
+#include <set>
+#include <sstream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "Ellipsis.h"
 #include "Func_readTreeTrace.h"
 #include "ModelVector.h"
 #include "NclReader.h"
@@ -10,20 +17,40 @@
 #include "ProgressBar.h"
 #include "RbException.h"
 #include "RbFileManager.h"
-#include "RlBranchLengthTree.h"
 #include "RlClade.h"
 #include "RlString.h"
-#include "RlTimeTree.h"
 #include "RlTraceTree.h"
 #include "RlUserInterface.h"
-#include "RlUtils.h"
 #include "StringUtilities.h"
 #include "TraceTree.h"
 #include "TreeUtilities.h"
+#include "Argument.h"
+#include "ArgumentRules.h"
+#include "Clade.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "IndirectReferenceFunction.h"
+#include "Integer.h"
+#include "ModelObject.h"
+#include "Natural.h"
+#include "RbBoolean.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "RevNullObject.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlBoolean.h"
+#include "RlConstantNode.h"
+#include "RlFunction.h"
+#include "Trace.h"
+#include "TypeSpec.h"
+#include "TypedDagNode.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
 
-#include <map>
-#include <set>
-#include <sstream>
+namespace RevBayesCore { class Tree; }
 
 
 using namespace RevLanguage;

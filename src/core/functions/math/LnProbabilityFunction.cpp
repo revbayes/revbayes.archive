@@ -1,5 +1,10 @@
 #include "LnProbabilityFunction.h"
 
+#include "Cloneable.h"
+#include "StochasticNode.h"
+
+namespace RevBayesCore { class DagNode; }
+
 using namespace RevBayesCore;
 /**
  * LnProbabilityFunction of a StochasticNode containing a value of type double

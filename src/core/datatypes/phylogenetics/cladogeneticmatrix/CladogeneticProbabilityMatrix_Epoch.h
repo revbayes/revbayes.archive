@@ -9,9 +9,17 @@
 #ifndef CladogeneticProbabilityMatrix_Epoch_Epoch_h
 #define CladogeneticProbabilityMatrix_Epoch_Epoch_h
 
+#include <stddef.h>
+#include <iosfwd>
+#include <map>
+#include <vector>
+
 #include "CladogeneticProbabilityMatrix.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
 
 namespace RevBayesCore {
+class Assignable;
     
     //    class TransitionProbabilityMatrix;
     
