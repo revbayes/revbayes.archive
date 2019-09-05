@@ -45,6 +45,14 @@
 #include "WorkspaceToCoreWrapperObject.h"
 
 
+TraceTree::TraceTree(void) : WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>()
+{
+
+    // initialize the methods
+    initMethods();
+
+}
+
 
 TraceTree::TraceTree(const RevBayesCore::TraceTree& x) : WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>( new RevBayesCore::TraceTree(x) )
 {
