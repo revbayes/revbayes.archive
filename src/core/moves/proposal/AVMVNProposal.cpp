@@ -1,20 +1,20 @@
 #include "AVMVNProposal.h"
-#include "CholeskyDecomposition.h"
-#include "DistributionMultivariateNormal.h"
-#include "DistributionNormal.h"
-#include "EigenSystem.h"
-#include "MultivariateNormalDistribution.h"
-#include "NormalDistribution.h"
-#include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
-#include "RbConstants.h"
-#include "RbException.h"
-#include "RbMathLogic.h"
-#include "TreeUtilities.h"
-#include "TypedDagNode.h"
 
 #include <cmath>
-#include <iostream>
+#include <algorithm>
+
+#include "CholeskyDecomposition.h"
+#include "DistributionNormal.h"
+#include "RandomNumberFactory.h"
+#include "RbException.h"
+#include "ContinuousStochasticNode.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "Simplex.h"
+#include "StochasticNode.h"
+
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { class RandomNumberGenerator; }
 
 using namespace RevBayesCore;
 

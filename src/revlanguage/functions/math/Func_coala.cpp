@@ -1,7 +1,9 @@
+#include <iosfwd>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "CoalaFunction.h"
 #include "Func_coala.h"
-#include "MatrixReal.h"
 #include "ModelVector.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -9,6 +11,25 @@
 #include "RlMatrixReal.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
+#include "Argument.h"
+#include "ArgumentRules.h"
+#include "ConstantNode.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "IndirectReferenceFunction.h"
+#include "ModelObject.h"
+#include "RbHelpReference.h"
+#include "RbVector.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlConstantNode.h"
+#include "RlFunction.h"
+#include "RlTypedFunction.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
+
+namespace RevBayesCore { class MatrixReal; }
 
 
 using namespace RevLanguage;

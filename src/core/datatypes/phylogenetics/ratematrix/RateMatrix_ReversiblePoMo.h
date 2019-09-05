@@ -21,17 +21,18 @@
 #ifndef __RateMatrix_ReversiblePoMo__
 #define __RateMatrix_ReversiblePoMo__
 
-#include "AbstractRateMatrix.h"
-#include "RateMatrix_GTR.h"
-#include "Simplex.h"
-#include <complex>
+#include <stddef.h>
 #include <vector>
+
+#include "AbstractRateMatrix.h"
+#include "Simplex.h"
+#include "RateMatrix.h"
 
 
 namespace RevBayesCore {
 
-    class EigenSystem;
     class TransitionProbabilityMatrix;
+class Assignable;
 
     class RateMatrix_ReversiblePoMo : public AbstractRateMatrix {
 

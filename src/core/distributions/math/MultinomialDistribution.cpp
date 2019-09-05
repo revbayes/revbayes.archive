@@ -1,6 +1,14 @@
 #include "MultinomialDistribution.h"
+
+#include <stddef.h>
+
 #include "DistributionMultinomial.h"
 #include "RandomNumberFactory.h"
+#include "Cloneable.h"
+#include "Simplex.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 

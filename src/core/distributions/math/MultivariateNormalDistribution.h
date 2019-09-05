@@ -15,14 +15,20 @@
 #ifndef MultivariateNormalDistribution_H
 #define MultivariateNormalDistribution_H
 
+#include <stddef.h>
+#include <vector>
+#include <iosfwd>
+
 #include "RbVector.h"
-#include "TypedDagNode.h"
 #include "TypedDistribution.h"
 #include "MatrixReal.h"
+#include "RevPtr.h"
 
-#include <vector>
+namespace RevLanguage { class RevVariable; }
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class TypedDagNode;
     
     class MultivariateNormalDistribution : public TypedDistribution< RbVector<double> > {
         

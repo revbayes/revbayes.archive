@@ -1,4 +1,9 @@
 #include "RlAbstractCharacterData.h"
+
+#include <stddef.h>
+#include <iostream>
+#include <string>
+
 #include "ArgumentRule.h"
 #include "MemberProcedure.h"
 #include "ModelVector.h"
@@ -7,6 +12,26 @@
 #include "RlBoolean.h"
 #include "RlString.h"
 #include "RlTaxon.h"
+#include "AbstractCharacterData.h"
+#include "Argument.h"
+#include "ArgumentRules.h"
+#include "ConstantNode.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "IndirectReferenceFunction.h"
+#include "ModelObject.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "RevObject.h"
+#include "RevVariable.h"
+#include "RlConstantNode.h"
+#include "RlUtils.h"
+#include "Taxon.h"
+#include "TypeSpec.h"
+#include "TypedDagNode.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
 
 
 using namespace RevLanguage;

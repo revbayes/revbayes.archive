@@ -1,10 +1,16 @@
 #include "StochasticBranchRateMonitor.h"
-#include "DagNode.h"
-#include "Model.h"
-#include "Monitor.h"
-#include "RbFileManager.h"
+
+#include <stddef.h>
+#include <ostream>
+#include <vector>
+
 #include "StochasticNode.h"
 #include "StateDependentSpeciationExtinctionProcess.h"
+#include "Cloneable.h"
+#include "Tree.h"
+#include "TypedDistribution.h"
+
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 

@@ -1,12 +1,15 @@
 #include "UpDownSlideProposal.h"
+
+#include <stddef.h>
+#include <algorithm>
+
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "RbException.h"
-#include "TreeUtilities.h"
-#include "TypedDagNode.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "StochasticNode.h"
 
-#include <cmath>
-#include <iostream>
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 

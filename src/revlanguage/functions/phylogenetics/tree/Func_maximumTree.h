@@ -18,12 +18,25 @@
 #ifndef Func_maximumTree_H
 #define Func_maximumTree_H
 
+#include <string>
+#include <iosfwd>
+#include <vector>
+
 #include "RlTimeTree.h"
 #include "RlTypedFunction.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "RevPtr.h"
+#include "RlDeterministicNode.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+#include "TypedFunction.h"
 
-#include <string>
+namespace RevBayesCore { class RbHelpReference; }
 
 namespace RevLanguage {
+class ArgumentRules;
+class TypeSpec;
 
     class Func_maximumTree : public TypedFunction<TimeTree> {
 

@@ -23,12 +23,11 @@
  * $Id$
  */
 
+#include <cmath>
+
 #include "RbConstants.h"
-#include "RbException.h"
 #include "RbMathLogic.h"
 #include "RbSettings.h"
-#include <cassert>
-#include <cmath>
 
 
 using namespace RevBayesCore;

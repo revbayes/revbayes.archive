@@ -1,10 +1,15 @@
-#include "DagNode.h"
+#include <map>
+#include <ostream>
+#include <string>
+#include <utility>
+
 #include "HomeologPhaseMonitor.h"
-#include "Model.h"
 #include "Monitor.h"
-#include "RbFileManager.h"
-#include "PhyloCTMCSiteHomogeneous.h"
-#include "AbstractPhyloCTMCSiteHomogeneous.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
+#include "StochasticNode.h"
+#include "VariableMonitor.h"
+
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 

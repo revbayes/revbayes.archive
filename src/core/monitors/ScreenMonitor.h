@@ -1,9 +1,14 @@
 #ifndef ScreenMonitor_H
 #define ScreenMonitor_H
 
+#include <ctime>
+#include <iosfwd>
+#include <vector>
+
 #include "Monitor.h"
 
 namespace RevBayesCore {
+class DagNode;
 
     /** @brief Monitor to write data to standard output
      *

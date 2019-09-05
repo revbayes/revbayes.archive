@@ -156,7 +156,7 @@ template <typename valType>
 RevLanguage::MethodTable RevLanguage::Dist_mixtureVector<valType>::getDistributionMethods( void ) const
 {
     
-    MethodTable methods = TypedDistribution<valType>::getDistributionMethods();
+    MethodTable methods = TypedDistribution< ModelVector<valType> >::getDistributionMethods();
     
     // member functions
     ArgumentRules* get_mixture_prob_arg_rules = new ArgumentRules();
@@ -217,7 +217,7 @@ void RevLanguage::Dist_mixtureVector<valType>::setConstParameter(const std::stri
     }
     else
     {
-        TypedDistribution< valType >::setConstParameter(name, var);
+        TypedDistribution< ModelVector<valType> >::setConstParameter(name, var);
     }
 }
 

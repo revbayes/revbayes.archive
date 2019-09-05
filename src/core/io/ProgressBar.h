@@ -1,8 +1,7 @@
 #ifndef ProgressBar_H
 #define ProgressBar_H
 
-#include <vector>
-#include <string>
+#include <stddef.h>
 
 #include "Parallelizable.h"
 

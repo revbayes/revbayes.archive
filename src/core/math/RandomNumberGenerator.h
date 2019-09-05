@@ -18,7 +18,6 @@
 #ifndef RandomNumberGenerator_H
 #define RandomNumberGenerator_H
 
-#include <vector>
 #include <boost/random/uniform_01.hpp>
 #include <boost/random/linear_congruential.hpp>
 

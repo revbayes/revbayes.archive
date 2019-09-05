@@ -1,3 +1,18 @@
+#include <math.h>
+#include <stdlib.h>
+#include <boost/functional/hash/extensions.hpp>
+#include <algorithm>
+#include <iostream>
+#include <limits>
+#include <set>
+#include <cstddef>
+#include <functional>
+#include <iterator>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "MatrixReal.h"
 #include "RandomNumberFactory.h"
@@ -7,11 +22,15 @@
 #include "StringUtilities.h"
 #include "Tree.h"
 #include "TreeUtilities.h"
-
-#include <algorithm>
-#include <iostream>
-#include <limits>
-#include <set>
+#include "AbstractDiscreteTaxonData.h"
+#include "Cloneable.h"
+#include "DiscreteCharacterState.h"
+#include "DistanceMatrix.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "Taxon.h"
+#include "TopologyNode.h"
+#include "boost/unordered_set.hpp"
 
 using namespace RevBayesCore;
 

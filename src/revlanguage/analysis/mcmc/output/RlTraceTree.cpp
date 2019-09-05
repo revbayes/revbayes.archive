@@ -1,3 +1,9 @@
+#include <math.h>
+#include <stddef.h>
+#include <iostream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRules.h"
 #include "MemberProcedure.h"
 #include "MethodTable.h"
@@ -11,6 +17,32 @@
 #include "RlTraceTree.h"
 #include "RlTree.h"
 #include "RlUtils.h"
+#include "Argument.h"
+#include "ArgumentRule.h"
+#include "Clade.h"
+#include "ConstantNode.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "IndirectReferenceFunction.h"
+#include "Integer.h"
+#include "ModelObject.h"
+#include "RbBoolean.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "RealPos.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlConstantNode.h"
+#include "TraceTree.h"
+#include "Tree.h"
+#include "TypeSpec.h"
+#include "TypedDagNode.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
+#include "WorkspaceToCoreWrapperObject.h"
 
 
 

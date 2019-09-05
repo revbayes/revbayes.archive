@@ -1,13 +1,21 @@
+#include <stddef.h>
+#include <cmath>
+#include <iostream>
+#include <string>
+#include <vector>
+
 #include "DagNode.h"
 #include "MaxIterationStoppingRule.h"
 #include "MonteCarloAnalysis.h"
-#include "MonteCarloSampler.h"
 #include "PosteriorPredictiveAnalysis.h"
 #include "RbException.h"
-#include "RlUserInterface.h"
-
-#include <cmath>
-#include <typeinfo>
+#include "Cloneable.h"
+#include "Model.h"
+#include "Parallelizable.h"
+#include "RbFileManager.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "StoppingRule.h"
 
 #ifdef RB_MPI
 #include <mpi.h>

@@ -1,19 +1,20 @@
 #ifndef AVMVNProposal_H
 #define AVMVNProposal_H
 
-#include "RbVector.h"
-#include "Proposal.h"
-#include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
-#include "Simplex.h"
-#include "ContinuousStochasticNode.h"
-#include "StochasticNode.h"
-
+#include <stddef.h>
 #include <ostream>
 #include <vector>
-#include <string>
+
+#include "Proposal.h"
+#include "MatrixReal.h"
 
 namespace RevBayesCore {
+class ContinuousStochasticNode;
+class DagNode;
+class RandomNumberGenerator;
+class Simplex;
+template <class valueType> class RbVector;
+template <class valueType> class StochasticNode;
 
     /**
      * @brief Smart Multivariate Proposal for several parameters jointly.

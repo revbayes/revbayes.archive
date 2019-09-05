@@ -1,12 +1,33 @@
 #ifndef Dist_PhyloMultivariateBrownianREML_H
 #define Dist_PhyloMultivariateBrownianREML_H
 
+#include <math.h>
+#include <iosfwd>
+#include <string>
+#include <vector>
+
 #include "ContinuousCharacterData.h"
 #include "RlContinuousCharacterData.h"
 #include "RlTypedDistribution.h"
-#include "Tree.h"
+#include "DagMemberFunction.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlDagMemberFunction.h"
+#include "RlDeterministicNode.h"
+#include "RlStochasticNode.h"
+#include "RlTypedFunction.h"
+#include "StochasticNode.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
+#include "TypedFunction.h"
+
+namespace RevBayesCore { class RbHelpReference; }
 
 namespace RevLanguage {
+class TypeSpec;
     
     class Dist_PhyloMultivariateBrownianREML :  public TypedDistribution< ContinuousCharacterData > {
         

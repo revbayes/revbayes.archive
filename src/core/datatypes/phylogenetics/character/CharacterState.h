@@ -1,10 +1,10 @@
 #ifndef Character_H
 #define Character_H
 
-#include "Cloneable.h"
-
+#include <stddef.h>
 #include <ostream>
-#include <string>
+
+#include "Cloneable.h"
 
 namespace RevBayesCore {
 

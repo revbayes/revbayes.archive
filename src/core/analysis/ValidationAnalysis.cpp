@@ -1,21 +1,32 @@
+#include <stddef.h>
+#include <cmath>
+#include <algorithm>
+#include <iostream>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "DagNode.h"
 #include "DistributionBinomial.h"
-#include "DistributionUniform.h"
 #include "MaxIterationStoppingRule.h"
 #include "MonteCarloAnalysis.h"
-#include "MonteCarloSampler.h"
 #include "ProgressBar.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "RbException.h"
 #include "RlUserInterface.h"
 #include "StochasticVariableMonitor.h"
 #include "Trace.h"
 #include "TraceReader.h"
 #include "ValidationAnalysis.h"
-
-#include <cmath>
-#include <typeinfo>
+#include "Cloneable.h"
+#include "Model.h"
+#include "Parallelizable.h"
+#include "RbFileManager.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "StoppingRule.h"
+#include "StringUtilities.h"
 
 
 using namespace RevBayesCore;

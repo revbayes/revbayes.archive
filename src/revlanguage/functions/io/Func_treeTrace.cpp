@@ -9,19 +9,29 @@
 
 
 #include "Func_treeTrace.h"
+
+#include <math.h>
+#include <stddef.h>
+
 #include "ArgumentRule.h"
-#include "ConstantNode.h"
 #include "ModelVector.h"
-#include "OptionRule.h"
 #include "Probability.h"
-#include "RbException.h"
 #include "RlTree.h"
 #include "RlTraceTree.h"
 #include "TypedDagNode.h"
-
-#include <map>
-#include <set>
-#include <sstream>
+#include "Argument.h"
+#include "ArgumentRules.h"
+#include "Integer.h"
+#include "ModelObject.h"
+#include "RbVector.h"
+#include "RevObject.h"
+#include "RevVariable.h"
+#include "RlBranchLengthTree.h"
+#include "RlFunction.h"
+#include "RlTimeTree.h"
+#include "TraceTree.h"
+#include "Tree.h"
+#include "TypeSpec.h"
 
 
 using namespace RevLanguage;
