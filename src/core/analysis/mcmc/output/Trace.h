@@ -50,6 +50,7 @@ class Serializable;
         virtual void                    addObject(valueType* d);
         virtual bool                    isCoveredInInterval(const std::string &v, double i, bool verbose);
         bool                            isDirty(void) const                             { return dirty; };
+        void                            isDirty(bool d) const                             { dirty = d; };
         void                            removeLastObject();
         void                            removeObjectAtIndex(int index);
         
