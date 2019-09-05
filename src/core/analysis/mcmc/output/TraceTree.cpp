@@ -6,7 +6,7 @@ using namespace RevBayesCore;
 /*
  * TraceTree constructor
  */
-TraceTree::TraceTree( bool c ) : TreeSummary(this,c)
+TraceTree::TraceTree( bool c ) : TreeSummary(this, c)
 {
 }
 
@@ -14,7 +14,7 @@ TraceTree::TraceTree( bool c ) : TreeSummary(this,c)
 /*
  * TraceTree copy constructor
  */
-TraceTree::TraceTree(const TraceTree& t ) : TreeSummary(this,t.isClock())
+TraceTree::TraceTree(const TraceTree& t ) : TreeSummary(this, t.isClock())
 {
     *this = t;
 

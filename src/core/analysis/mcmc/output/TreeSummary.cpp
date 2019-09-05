@@ -30,6 +30,7 @@
 #include "Taxon.h"
 #include "TaxonMap.h"
 #include "Trace.h"
+#include "TraceTree.h"
 #include "Tree.h"
 
 using namespace RevBayesCore;
@@ -56,7 +57,7 @@ TreeSummary::AnnotationReport::AnnotationReport() :
 /*
  * TreeSummary constructor
  */
-TreeSummary::TreeSummary( Trace<Tree>* t, bool c ) :
+TreeSummary::TreeSummary( TraceTree* t, bool c ) :
     clock( c ),
     rooted( true ),
     use_outgroup(false)
@@ -68,7 +69,7 @@ TreeSummary::TreeSummary( Trace<Tree>* t, bool c ) :
 /*
  * TreeSummary constructor
  */
-TreeSummary::TreeSummary( std::vector<Trace<Tree>* > t, bool c ) :
+TreeSummary::TreeSummary( std::vector<TraceTree* > t, bool c ) :
     traces(t),
     clock( c ),
     rooted( true ),
@@ -82,7 +83,7 @@ TreeSummary::TreeSummary( std::vector<Trace<Tree>* > t, bool c ) :
     std::vector<std::string> tip_names = traces.front()->objectAt(0).getTipNames();
     std::sort(tip_names.begin(),tip_names.end());
 
-    for(std::vector<Trace<Tree>* >::iterator trace = traces.begin(); trace != traces.end(); trace++)
+    for(std::vector<TraceTree* >::iterator trace = traces.begin(); trace != traces.end(); trace++)
     {
         std::vector<std::string> t = (*trace)->objectAt(0).getTipNames();
         std::sort(t.begin(),t.end());
@@ -207,7 +208,7 @@ void TreeSummary::mapDiscrete(Tree &tree, const std::string &n, size_t paramInde
     
     size_t total_size = 0;
 
-    for(std::vector<Trace<Tree>* >::const_iterator trace = traces.begin(); trace != traces.end(); trace++)
+    for(std::vector<TraceTree* >::const_iterator trace = traces.begin(); trace != traces.end(); trace++)
     {
         total_size += (*trace)->size(true);
 
@@ -424,7 +425,7 @@ void TreeSummary::mapContinuous(Tree &tree, const std::string &n, size_t paramIn
     
     size_t count = 0;
 
-    for(std::vector<Trace<Tree>* >::const_iterator trace = traces.begin(); trace != traces.end(); trace++)
+    for(std::vector<TraceTree* >::const_iterator trace = traces.begin(); trace != traces.end(); trace++)
     {
         // loop through all trees in tree trace
         for (size_t i = (*trace)->getBurnin(); i < (*trace)->size(); ++i)
@@ -1055,7 +1056,7 @@ std::vector<double> TreeSummary::computeTreeLengths( void )
     
     std::vector<double> tree_lengths;
     
-    for(std::vector<Trace<Tree>* >::iterator trace = traces.begin(); trace != traces.end(); trace++)
+    for(std::vector<TraceTree* >::iterator trace = traces.begin(); trace != traces.end(); trace++)
     {
         for (size_t i = (*trace)->getBurnin(); i < (*trace)->size(); ++i)
         {
@@ -1363,12 +1364,68 @@ bool TreeSummary::isDirty(void) const
 {
     bool dirty = false;
 
-    for(std::vector<Trace<Tree>* >::const_iterator trace = traces.begin(); trace != traces.end(); trace++)
+    for(std::vector<TraceTree* >::const_iterator trace = traces.begin(); trace != traces.end(); trace++)
     {
         dirty = dirty || (*trace)->isDirty();
     }
 
     return dirty;
+}
+
+double TreeSummary::maxdiff( bool verbose )
+{
+    if(traces.size() <= 1)
+    {
+        throw RbException("At least 2 traces are required to compute maxdiff");
+    }
+
+    std::set<Sample<Split> > splits_union;
+
+    for(std::vector<TraceTree* >::const_iterator trace = traces.begin(); trace != traces.end(); trace++)
+    {
+        (*trace)->summarize(verbose);
+
+        splits_union.insert((*trace)->clade_samples.begin(), (*trace)->clade_samples.end());
+    }
+
+
+    double maxdiff = 0;
+
+    for (std::set<Sample<Split> >::const_iterator split = splits_union.begin(); split != splits_union.end(); ++split)
+    {
+        std::vector<double> split_freqs;
+
+        for(std::vector<TraceTree* >::const_iterator trace = traces.begin(); trace != traces.end(); trace++)
+        {
+            double total_samples = (*trace)->size(true);
+
+            std::set<Sample<Split> >::const_iterator it = find_if((*trace)->clade_samples.begin(), (*trace)->clade_samples.end(), split->first );
+
+            double freq = 0;
+
+            if ( it != (*trace)->clade_samples.end() )
+            {
+                freq = it->second/total_samples;
+            }
+
+            split_freqs.push_back(freq);
+        }
+
+        for(size_t i = 0; i < split_freqs.size(); i++)
+        {
+            for(size_t j = i+1; j < split_freqs.size(); j++)
+            {
+                double diff = abs(split_freqs[i] - split_freqs[j]);
+
+                if(diff > maxdiff)
+                {
+                    maxdiff = diff;
+                }
+            }
+        }
+    }
+
+    return maxdiff;
 }
 
 
@@ -1784,7 +1841,7 @@ long TreeSummary::sampleSize(bool post) const
 {
     long total = 0;
 
-    for(std::vector<Trace<Tree>* >::const_iterator trace = traces.begin(); trace != traces.end(); trace++)
+    for(std::vector<TraceTree* >::const_iterator trace = traces.begin(); trace != traces.end(); trace++)
     {
         total += (*trace)->size(post);
     }
@@ -1827,7 +1884,7 @@ void TreeSummary::summarize( bool verbose )
     
     size_t count = 0;
 
-    for (std::vector<Trace<Tree>* >::iterator trace = traces.begin(); trace != traces.end(); ++trace)
+    for (std::vector<TraceTree* >::iterator trace = traces.begin(); trace != traces.end(); ++trace)
     {
         for (size_t i = (*trace)->getBurnin(); i < (*trace)->size(); ++i)
         {
@@ -1884,7 +1941,7 @@ void TreeSummary::summarize( bool verbose )
         progress.finish();
     }
     
-    for (std::vector<Trace<Tree>* >::iterator trace = traces.begin(); trace != traces.end(); ++trace)
+    for (std::vector<TraceTree* >::iterator trace = traces.begin(); trace != traces.end(); ++trace)
     {
         (*trace)->isDirty(false);
     }

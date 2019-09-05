@@ -60,7 +60,7 @@ RevPtr<RevVariable> Func_mccTree::execute( void )
     {
         std::vector<TraceTree>& tt = static_cast<const WorkspaceVector<TraceTree> &>(b).getValue();
 
-        std::vector<RevBayesCore::Trace<RevBayesCore::Tree>* > vec;
+        std::vector<RevBayesCore::TraceTree* > vec;
         for(size_t i = 0; i < tt.size(); i++)
         {
             vec.push_back(&(tt[i].getValue()));

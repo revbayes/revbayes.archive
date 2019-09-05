@@ -7,6 +7,8 @@
 
 namespace RevBayesCore {
 
+    class TraceTree;
+
     class TreeSummary {
 
         /*
@@ -65,8 +67,8 @@ namespace RevBayesCore {
         /*
          * Declaration of the TreeTrace class
          */
-        TreeSummary( Trace<Tree>* t, bool c = true );
-        TreeSummary( std::vector<Trace<Tree>* > t, bool c = true );
+        TreeSummary( TraceTree* t, bool c = true );
+        TreeSummary( std::vector<TraceTree* > t, bool c = true );
         virtual ~TreeSummary(){}
 
         TreeSummary*                               clone(void) const;
@@ -82,6 +84,7 @@ namespace RevBayesCore {
         bool                                       isCoveredInInterval(const std::string &v, double size, bool verbose);
         bool                                       isCoveredInInterval(const Tree &t, double size, bool verbose);
         bool                                       isDirty(void) const;
+        double                                     maxdiff(bool verbose);
         Tree*                                      mapTree(AnnotationReport report, bool verbose);
         Tree*                                      mccTree(AnnotationReport report, bool verbose);
         Tree*                                      mrTree(AnnotationReport report, double cutoff, bool verbose);
@@ -101,7 +104,7 @@ namespace RevBayesCore {
         void                                       mapParameters(Tree &inputTree, bool verbose) const;
         void                                       summarize(bool verbose);
 
-        std::vector<Trace<Tree>* >                 traces;
+        std::vector<TraceTree* >                   traces;
 
         bool                                       clock;
         bool                                       rooted;
