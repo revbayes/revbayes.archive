@@ -176,6 +176,7 @@
 #include "Dist_exponentialOffset.h"
 #include "Dist_exponentialOffsetPositive.h"
 #include "Dist_gamma.h"
+#include "Dist_generalizedGamma.h"
 #include "Dist_geom.h"
 #include "Dist_GilbertGraph.h"
 #include "Dist_halfCauchy.h"
@@ -423,6 +424,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // gamma distribution
         AddContinuousDistribution< RealPos          >( new Dist_gamma() );
+
+        // generalized gamma distribution
+        AddContinuousDistribution< RealPos          >( new Dist_generalizedGamma() );
 
         // geometric distribution
         AddDistribution< Natural                    >( new Dist_geom() );
