@@ -1,11 +1,3 @@
-//
-//  RlModelTrace.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 3/27/13.
-//  Copyright 2013 __MyCompanyName__. All rights reserved.
-//
-
 #include "RlModelTrace.h"
 
 #include "ArgumentRules.h"

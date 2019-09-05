@@ -3,6 +3,7 @@
 #include "ArgumentRules.h"
 #include "MemberProcedure.h"
 #include "MethodTable.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "Probability.h"
 #include "RlUserInterface.h"
@@ -19,6 +20,10 @@ Trace::Trace() : WorkspaceToCoreWrapperObject<RevBayesCore::TraceNumeric>()
     burninTypes.push_back( Integer::getClassTypeSpec() );
     summarizeArgRules->push_back( new ArgumentRule("burnin", burninTypes, "The fraction/number of samples to discregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25)) );
     methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
+    
+    
+    ArgumentRules* get_values_arg_rules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "getValues", RlUtils::Void, get_values_arg_rules) );
 
 }
 
@@ -32,6 +37,10 @@ Trace::Trace(const RevBayesCore::TraceNumeric &t) : WorkspaceToCoreWrapperObject
     burninTypes.push_back( Integer::getClassTypeSpec() );
     summarizeArgRules->push_back( new ArgumentRule("burnin", burninTypes, "The fraction/number of samples to discregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25)) );
     methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
+    
+    
+    ArgumentRules* get_values_arg_rules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "getValues", RlUtils::Void, get_values_arg_rules) );
 
 }
 
@@ -87,6 +96,33 @@ RevPtr<RevVariable> Trace::executeMethod(std::string const &name, const std::vec
         RBOUT(ss.str());
 
         return NULL;
+    }
+    else if ( name == "getValues" )
+    {
+        found = true;
+        
+        const std::vector<double> &vals = value->getValues();
+        
+        bool positive = true;
+        for (size_t i=0; i<vals.size(); ++i)
+        {
+            if ( vals[i] < 0.0 )
+            {
+                positive = false;
+                break;
+            }
+        }
+        if ( positive == true )
+        {
+            ModelVector<RealPos> *rl_vals = new ModelVector<RealPos>( vals );
+            return new RevVariable( rl_vals );
+        }
+        else
+        {
+            ModelVector<Real> *rl_vals = new ModelVector<Real>( vals );
+            return new RevVariable( rl_vals );
+        }
+        
     }
     
     return RevObject::executeMethod( name, args, found );
