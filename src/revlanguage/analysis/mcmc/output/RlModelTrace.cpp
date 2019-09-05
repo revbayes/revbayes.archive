@@ -1,11 +1,3 @@
-//
-//  RlModelTrace.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 3/27/13.
-//  Copyright 2013 __MyCompanyName__. All rights reserved.
-//
-
 #include "RlModelTrace.h"
 
 #include <string>
@@ -26,13 +18,13 @@ using namespace RevLanguage;
 
 ModelTrace::ModelTrace() : WorkspaceToCoreWrapperObject<RevBayesCore::ModelTrace>()
 {
-    
+    initMethods();
 }
 
 
 ModelTrace::ModelTrace(const RevBayesCore::ModelTrace &t) : WorkspaceToCoreWrapperObject<RevBayesCore::ModelTrace>( new RevBayesCore::ModelTrace( t ) )
 {
-    
+    initMethods();
 }
 
 
@@ -156,9 +148,6 @@ void ModelTrace::initMethods( void )
 
     ArgumentRules* getBurninArgRules = new ArgumentRules();
     this->methods.addFunction( new MemberProcedure( "getBurnin", Natural::getClassTypeSpec(), getBurninArgRules) );
-
-    ArgumentRules* summarizeArgRules = new ArgumentRules();
-    this->methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
 
     ArgumentRules* getNumberSamplesArgRules = new ArgumentRules();
     getNumberSamplesArgRules->push_back( new ArgumentRule("post", RlBoolean::getClassTypeSpec(), "Get the post-burnin number of samples?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false)) );

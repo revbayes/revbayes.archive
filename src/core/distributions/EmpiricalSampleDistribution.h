@@ -223,7 +223,7 @@ double RevBayesCore::EmpiricalSampleDistribution<valueType>::computeLnProbabilit
     {
         if ( i >= sample_block_start && i < sample_block_end )
         {
-            ln_probs[i] = base_distribution_instances[i]->computeLnProbability() / num_samples;
+            ln_probs[i] = base_distribution_instances[i]->computeLnProbability();
         }
         
     }
@@ -322,6 +322,8 @@ void RevBayesCore::EmpiricalSampleDistribution<mixtureType>::executeMethod(const
 
         rv.clear();
         rv.resize(num_samples);
+        
+        // Sebastian: Remember that ln_probs is not normalized and would need to be divided by num_samples!
         for (size_t i = 0; i < num_samples; ++i)
         {
             rv[i] = (log_transorm ? ln_probs[i] : exp(ln_probs[i]));

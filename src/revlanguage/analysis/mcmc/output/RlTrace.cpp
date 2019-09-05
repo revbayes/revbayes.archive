@@ -7,6 +7,7 @@
 #include "ArgumentRules.h"
 #include "MemberProcedure.h"
 #include "MethodTable.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "Probability.h"
 #include "RlUserInterface.h"
@@ -24,12 +25,7 @@ using namespace RevLanguage;
 Trace::Trace() : WorkspaceToCoreWrapperObject<RevBayesCore::TraceNumeric>()
 {
 
-    ArgumentRules* summarizeArgRules = new ArgumentRules();
-    std::vector<TypeSpec> burninTypes;
-    burninTypes.push_back( Probability::getClassTypeSpec() );
-    burninTypes.push_back( Integer::getClassTypeSpec() );
-    summarizeArgRules->push_back( new ArgumentRule("burnin", burninTypes, "The fraction/number of samples to discregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25)) );
-    methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
+    initMethods();
 
 }
 
@@ -37,12 +33,7 @@ Trace::Trace() : WorkspaceToCoreWrapperObject<RevBayesCore::TraceNumeric>()
 Trace::Trace(const RevBayesCore::TraceNumeric &t) : WorkspaceToCoreWrapperObject<RevBayesCore::TraceNumeric>( new RevBayesCore::TraceNumeric( t ) )
 {
 
-    ArgumentRules* summarizeArgRules = new ArgumentRules();
-    std::vector<TypeSpec> burninTypes;
-    burninTypes.push_back( Probability::getClassTypeSpec() );
-    burninTypes.push_back( Integer::getClassTypeSpec() );
-    summarizeArgRules->push_back( new ArgumentRule("burnin", burninTypes, "The fraction/number of samples to discregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25)) );
-    methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
+    initMethods();
 
 }
 
@@ -137,6 +128,33 @@ RevPtr<RevVariable> Trace::executeMethod(std::string const &name, const std::vec
 
         return NULL;
     }
+    else if ( name == "getValues" )
+    {
+        found = true;
+        
+        const std::vector<double> &vals = value->getValues();
+        
+        bool positive = true;
+        for (size_t i=0; i<vals.size(); ++i)
+        {
+            if ( vals[i] < 0.0 )
+            {
+                positive = false;
+                break;
+            }
+        }
+        if ( positive == true )
+        {
+            ModelVector<RealPos> *rl_vals = new ModelVector<RealPos>( vals );
+            return new RevVariable( rl_vals );
+        }
+        else
+        {
+            ModelVector<Real> *rl_vals = new ModelVector<Real>( vals );
+            return new RevVariable( rl_vals );
+        }
+        
+    }
     
     return RevObject::executeMethod( name, args, found );
 }
@@ -203,6 +221,9 @@ void Trace::initMethods( void )
 
     ArgumentRules* summarizeArgRules = new ArgumentRules();
     this->methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
+
+    ArgumentRules* get_values_arg_rules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "getValues", RlUtils::Void, get_values_arg_rules) );
 
     ArgumentRules* getNumberSamplesArgRules = new ArgumentRules();
     getNumberSamplesArgRules->push_back( new ArgumentRule("post", RlBoolean::getClassTypeSpec(), "Get the post-burnin number of samples?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false)) );
