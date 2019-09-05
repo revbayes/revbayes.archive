@@ -380,10 +380,6 @@ const TypeSpec& TraceTree::getTypeSpec( void ) const
 void TraceTree::initMethods( void )
 {
     
-    ArgumentRules* burninFracArgRules = new ArgumentRules();
-    burninFracArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), "The fraction of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
-    this->methods.addFunction( new MemberProcedure( "setBurninFrac", RlUtils::Void, burninFracArgRules) );
-    
     ArgumentRules* burninArgRules = new ArgumentRules();
     std::vector<TypeSpec> burninTypes;
     burninTypes.push_back( Probability::getClassTypeSpec() );
