@@ -16,6 +16,7 @@
 
 #include <boost/foreach.hpp>
 #include "DistributionGamma.h"
+#include "DistributionGeneralizedGamma.h"
 #include "DistributionKumaraswamy.h"
 #include "DistributionLognormal.h"
 #include "RandomNumberFactory.h"
@@ -133,6 +134,197 @@ const std::vector<Taxon>& SBNParameters::getTaxa(void) const
 {
   return taxa;
 }
+
+
+//Need for fitting time-SBNs and unrooted SBNs
+std::vector<double> fit_gamma_MOM(std::vector<double> &samples)
+{
+  // Get mean/var of observations
+  double mean;
+  for (size_t i=0; i<samples.size(); ++i)
+  {
+    mean += samples[i];
+  }
+  mean /= samples.size();
+
+  double var;
+  for (size_t i=0; i<samples.size(); ++i)
+  {
+    var += pow(samples[i] - mean,2.0);
+  }
+  var /= samples.size();
+
+  std::vector<double> par = std::vector<double>(2,0.0);
+  par[1] = mean/var;
+  par[0] = mean * par[1];
+
+  return par;
+
+}
+
+// Need for fitting time-SBNs
+// Jones (2009) eqn 5.2, Score function for Kumaraswamy distribution
+double kumar_score(double a, std::vector<double> &samples)
+{
+  double n = (double)samples.size();
+
+  double T1 = 0.0;
+  double T2 = 0.0;
+  double T3 = 0.0;
+
+  for (size_t i=0; i<samples.size(); ++i)
+  {
+    double y = pow(samples[i],a);
+    double log_y = log(y);
+    double one_minus_y = 1.0 - y;
+    T1 += log_y/one_minus_y;
+    T2 += (y * log_y)/one_minus_y;
+    T3 += log(one_minus_y);
+  }
+
+  T1 *= 1.0/n;
+  T2 *= 1.0/n;
+  T3 *= 1.0/n;
+
+  return n/a * (1 + T1 + T2/T3);
+
+}
+
+// Need for fitting time-SBNs
+// Fits a Kumaraswamy distribution via Nesterov's accelerated gradient descent
+std::vector<double> fit_kumar_agd(std::vector<double> &samples)
+{
+
+  double x_s = 1.0;
+  double x_s_1;
+
+  double y_s = 1.0;
+  double y_s_1;
+
+  double lambda_s = 1.0;
+  double lambda_s_1 = (1.0 + sqrt(1.0 + 4.0 * lambda_s*lambda_s)) / 2.0;
+
+  double d = 10000000.0;
+  double beta_inv = 1.0/1000.0;
+  double eps = 0.001;
+  // Run accelerated gradient descent
+  while (d > eps)
+  {
+    double gamma_s = (1.0 - lambda_s) / lambda_s_1;
+
+    y_s_1 = x_s + beta_inv * kumar_score(x_s,samples);
+    x_s_1 = (1.0 - gamma_s) * y_s_1 + gamma_s * y_s;
+
+    d = fabs(x_s_1 - x_s);
+
+    x_s = x_s_1;
+    y_s = y_s_1;
+
+    lambda_s = lambda_s_1;
+    lambda_s_1 = (1.0 + sqrt(1.0 + 4.0 * lambda_s*lambda_s)) / 2.0;
+
+  }
+
+  std::vector<double> alphabeta;
+  alphabeta.push_back(x_s_1);
+
+  // Get beta parameter of Kumaraswamy distribution (x_s_1 is alpha)
+  double s = 0.0;
+  for (size_t i=0; i<samples.size(); ++i)
+  {
+    s += log(1.0 - pow(samples[i],x_s_1));
+  }
+
+  alphabeta.push_back(-(double)samples.size()/s);
+
+  return alphabeta;
+}
+
+// Need for unrooted SBNs to fit generalized gamma distributions
+double fn_fixed_c_gengamma_lnl(double c, std::vector<double> &samples)
+{
+  // y = x^c
+  std::vector<double> y;
+  for (size_t i=0; i<samples.size(); ++i)
+  {
+    y.push_back(pow(samples[i],c));
+  }
+  // ypar = gammaMoments2Params(mean(y),var(y))
+  std::vector<double> transformed_par = fit_gamma_MOM(samples);
+  double l = transformed_par[0];
+  double a = pow(transformed_par[1],(1.0/c));
+
+  double lnL = 0.0;
+  for (size_t i=0; i<samples.size(); ++i)
+  {
+    lnL += RbStatistics::GeneralizedGamma::lnPdf(a,c,l,y[i]);
+  }
+
+  return lnL;
+}
+
+// Need for unrooted SBNs
+// Fits a Generalized Gamma distribution by optimizing over the c parameter, for any given value fits a,l by MOM
+std::vector<double> fit_gengam_gss(std::vector<double> &samples)
+{
+
+  // Constants
+  double eps = 1e-5; // tolerance for minimum
+  double gold_ratio = (1 + sqrt(5.0))/2.0; // the golden ratio (should eventually be moved to RbConstants)
+
+  double x1 = 1.0/10.0;
+  double x2 = 10.0;
+
+  double f_x1 = -fn_fixed_c_gengamma_lnl(x1,samples);
+  double f_x2 = -fn_fixed_c_gengamma_lnl(x2,samples);
+
+  double x3 = x2 - (x2 - x1)/gold_ratio;
+  double x4 = x1 + (x2 - x1)/gold_ratio;
+
+  double f_x3 = -fn_fixed_c_gengamma_lnl(x3,samples);
+  double f_x4 = -fn_fixed_c_gengamma_lnl(x4,samples);
+
+  while ( fabs(x3 - x4) > eps)
+  {
+    if (f_x3 < f_x4) {
+      x2 = x4;
+      x4 = x3;
+      f_x4 = f_x3;
+      x3 = x2 - (x2 - x1)/gold_ratio;
+      x4 = x1 + (x2 - x1)/gold_ratio;
+      f_x3 = -fn_fixed_c_gengamma_lnl(x3,samples);
+    } else {
+      x1 = x3;
+      x3 = x4;
+      f_x3 = f_x4;
+      x3 = x2 - (x2 - x1)/gold_ratio;
+      x4 = x1 + (x2 - x1)/gold_ratio;
+      f_x4 = -fn_fixed_c_gengamma_lnl(x4,samples);
+    }
+  }
+
+  // Best value
+  double c = (x1+x2)/2.0;
+
+  // Get a,l
+  std::vector<double> y;
+  for (size_t i=0; i<samples.size(); ++i)
+  {
+    y.push_back(pow(samples[i],c));
+  }
+
+  std::vector<double> transformed_par = fit_gamma_MOM(samples);
+  double l = transformed_par[0];
+  double a = pow(transformed_par[1],(1.0/c));
+
+  std::vector<double> par;
+  par.push_back(a);
+  par.push_back(c);
+  par.push_back(l);
+
+  return par;
+}
+
 
 /* Computes the probability of the given ROOTED tree under this SBN. */
 double SBNParameters::computeLnProbabilityRootedTopology( const Tree &tree ) const
@@ -828,82 +1020,6 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
   }
 
 }
-
-// Jones (2009) eqn 5.2, Score function for Kumaraswamy distribution
-double kumar_score(double a, std::vector<double> &samples)
-{
-  double n = (double)samples.size();
-
-  double T1 = 0.0;
-  double T2 = 0.0;
-  double T3 = 0.0;
-
-  for (size_t i=0; i<samples.size(); ++i)
-  {
-    double y = std::pow(samples[i],a);
-    double log_y = log(y);
-    double one_minus_y = 1.0 - y;
-    T1 += log_y/one_minus_y;
-    T2 += (y * log_y)/one_minus_y;
-    T3 += log(one_minus_y);
-  }
-
-  T1 *= 1.0/n;
-  T2 *= 1.0/n;
-  T3 *= 1.0/n;
-
-  return n/a * (1 + T1 + T2/T3);
-
-}
-
-std::vector<double> fit_kumar_agd(std::vector<double> &samples)
-{
-
-  double x_s = 1.0;
-  double x_s_1;
-
-  double y_s = 1.0;
-  double y_s_1;
-
-  double lambda_s = 1.0;
-  double lambda_s_1 = (1.0 + sqrt(1.0 + 4.0 * lambda_s*lambda_s)) / 2.0;
-
-  double d = 10000000.0;
-  double beta_inv = 1.0/1000.0;
-  double eps = 0.001;
-  // Run accelerated gradient descent
-  while (d > eps)
-  {
-    double gamma_s = (1.0 - lambda_s) / lambda_s_1;
-
-    y_s_1 = x_s + beta_inv * kumar_score(x_s,samples);
-    x_s_1 = (1.0 - gamma_s) * y_s_1 + gamma_s * y_s;
-
-    d = fabs(x_s_1 - x_s);
-
-    x_s = x_s_1;
-    y_s = y_s_1;
-
-    lambda_s = lambda_s_1;
-    lambda_s_1 = (1.0 + sqrt(1.0 + 4.0 * lambda_s*lambda_s)) / 2.0;
-
-  }
-
-  std::vector<double> alphabeta;
-  alphabeta.push_back(x_s_1);
-
-  // Get beta parameter of Kumaraswamy distribution (x_s_1 is alpha)
-  double s = 0.0;
-  for (size_t i=0; i<samples.size(); ++i)
-  {
-    s += log(1.0 - std::pow(samples[i],x_s_1));
-  }
-
-  alphabeta.push_back(-(double)samples.size()/s);
-
-  return alphabeta;
-}
-
 
 void SBNParameters::fitNodeTimeDistributions(std::vector<Tree> &trees )
 {
