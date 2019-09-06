@@ -59,7 +59,7 @@ double TimeCalibratedSBN::computeLnProbabilityNodeTimes( void )
 {
     double lnProbability = 0.0;
 
-    std::map<RbBitSet,std::pair<double,double> > node_age_params = parameters.getEdgeLengthDistributionParameters();
+    std::map<RbBitSet,std::vector<double> > node_age_params = parameters.getEdgeLengthDistributionParameters();
 
     const std::vector<TopologyNode*> tree_nodes = value->getNodes();
 
@@ -80,7 +80,7 @@ double TimeCalibratedSBN::computeLnProbabilityNodeTimes( void )
 
     // Get root height prob
     RbBitSet root_clade = RbBitSet(taxa.size(),true);
-    std::pair<double,double> root_params = node_age_params[root_clade];
+    std::vector<double> root_params = node_age_params[root_clade];
     double max_leaf_age = 0.0;
 
     for (size_t j=0; j<taxa.size(); ++j)
@@ -96,7 +96,7 @@ double TimeCalibratedSBN::computeLnProbabilityNodeTimes( void )
       double root_age_offset = value->getRoot().getAge() - max_leaf_age;
       // std::cout << "gamma shape: " << root_params.first << "; gamma rate: " << root_params.second << std::endl;
       // std::cout << "Computing probability for root age (minus offset) " << root_age_offset << ", lnProb = " << RbStatistics::Gamma::lnPdf(root_params.first, root_params.second, root_age_offset) << std::endl;
-      lnProbability += RbStatistics::Gamma::lnPdf(root_params.first, root_params.second, root_age_offset);
+      lnProbability += RbStatistics::Gamma::lnPdf(root_params[0], root_params[1], root_age_offset);
     }
     else
     {
@@ -112,7 +112,7 @@ double TimeCalibratedSBN::computeLnProbabilityNodeTimes( void )
         // RbBitSet this_split = this_subsplit.asSplitBitset();
         RbBitSet this_clade = tree_nodes[i]->getSubsplit(taxa).asCladeBitset();
 
-        std::pair<double,double> these_params = node_age_params[this_clade];
+        std::vector<double> these_params = node_age_params[this_clade];
 
         double max_descendant_leaf_age = 0.0;
 
@@ -130,9 +130,9 @@ double TimeCalibratedSBN::computeLnProbabilityNodeTimes( void )
 
         if (approx_prop_kumar)
         {
-          // std::cout << "Computing probability for node age with proportion p = " << p << ", lnProb = " << RbStatistics::Kumaraswamy::lnPdf(these_params.first, these_params.second, p) << std::endl;
-          // std::cout << "Kumaraswamy alpha: " << these_params.first << "; Kumaraswamy beta: " << these_params.second << std::endl;
-          lnProbability += RbStatistics::Kumaraswamy::lnPdf(these_params.first, these_params.second, p);
+          // std::cout << "Computing probability for node age with proportion p = " << p << ", lnProb = " << RbStatistics::Kumaraswamy::lnPdf(these_params[0], these_params[1], p) << std::endl;
+          // std::cout << "Kumaraswamy alpha: " << these_params[0] << "; Kumaraswamy beta: " << these_params[1] << std::endl;
+          lnProbability += RbStatistics::Kumaraswamy::lnPdf(these_params[0], these_params[1], p);
         }
         else
         {
@@ -175,7 +175,7 @@ void TimeCalibratedSBN::simulateTree( void )
     psi->setRooted(true);
 
     // For drawing branch lengths
-    std::map<RbBitSet,std::pair<double,double> > node_age_params = parameters.getNodeTimeDistributionParameters();
+    std::map<RbBitSet,std::vector<double> > node_age_params = parameters.getNodeTimeDistributionParameters();
 
     // create the tip nodes, this will always result in tip node i being the ith taxon in our ordered set (convenient)
     std::vector<TopologyNode*> tip_nodes;
@@ -211,11 +211,11 @@ void TimeCalibratedSBN::simulateTree( void )
 
     // Draw root age
     RbBitSet root_clade = RbBitSet(taxa.size(),true);
-    std::pair<double,double> root_params = node_age_params[root_clade];
+    std::vector<double> root_params = node_age_params[root_clade];
 
     if ( approx_root_gamma )
     {
-      double offset_age  = RbStatistics::Gamma::rv(root_params.first, root_params.second, *rng);
+      double offset_age  = RbStatistics::Gamma::rv(root_params[0], root_params[1], *rng);
       root->setAge(offset_age + max_leaf_age);
     }
     else
@@ -251,7 +251,7 @@ void TimeCalibratedSBN::simulateTree( void )
 
         RbBitSet y_clade = Y_child.asCladeBitset();
 
-        std::pair<double,double> these_params = node_age_params[y_clade];
+        std::vector<double> these_params = node_age_params[y_clade];
 
         double max_descendant_leaf_age = 0.0;
 
@@ -266,7 +266,7 @@ void TimeCalibratedSBN::simulateTree( void )
         double p;
         if ( approx_prop_kumar )
         {
-          p  = RbStatistics::Kumaraswamy::rv(these_params.first, these_params.second, *rng);
+          p  = RbStatistics::Kumaraswamy::rv(these_params[0], these_params[1], *rng);
         }
         else
         {
@@ -296,7 +296,7 @@ void TimeCalibratedSBN::simulateTree( void )
 
         RbBitSet z_clade = Z_child.asCladeBitset();
 
-        std::pair<double,double> these_params = node_age_params[z_clade];
+        std::vector<double> these_params = node_age_params[z_clade];
 
         double max_descendant_leaf_age = 0.0;
 
@@ -311,7 +311,7 @@ void TimeCalibratedSBN::simulateTree( void )
         double p;
         if ( approx_prop_kumar )
         {
-          p  = RbStatistics::Kumaraswamy::rv(these_params.first, these_params.second, *rng);
+          p  = RbStatistics::Kumaraswamy::rv(these_params[0], these_params[1], *rng);
         }
         else
         {

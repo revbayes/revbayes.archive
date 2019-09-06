@@ -99,12 +99,12 @@ const std::string& SBNParameters::getBranchLengthApproximationMethod(void) const
   return branch_length_approximation_method;
 }
 
-std::map<RbBitSet,std::pair<double,double> >& SBNParameters::getEdgeLengthDistributionParameters(void)
+std::map<RbBitSet,std::vector<double> >& SBNParameters::getEdgeLengthDistributionParameters(void)
 {
   return edge_length_distribution_parameters;
 }
 
-std::map<RbBitSet,std::pair<double,double> >& SBNParameters::getNodeTimeDistributionParameters(void)
+std::map<RbBitSet,std::vector<double> >& SBNParameters::getNodeTimeDistributionParameters(void)
 {
   return edge_length_distribution_parameters;
 }
@@ -177,7 +177,7 @@ double SBNParameters::computeLnProbabilityRootedTopology( const Tree &tree ) con
 double SBNParameters::computeLnProbabilityUnrootedTopology( const Tree &t ) const
 {
   double lnProbability = 0.0;
-// 
+
 //   Tree* tree = t.clone();
 //
 //   // Prep for tip to root pass
@@ -235,6 +235,9 @@ double SBNParameters::computeLnProbabilityUnrootedTopology( const Tree &t ) cons
 //
 //   std::vector<double> pr_tree_and_root = std::vector<double>(tree->getNumberOfNodes(),0.0);
 //
+//   // For storing subsplits from alternative orientations of the tree
+//   std::vector<Subsplit> per_node_reversed_subsplit = std::vector<Subsplit>(tree->getNumberOfNodes(),Subsplit());
+//
 //   // Loop over edges of tree (exploit equivalency between an edge and the node that edge subtends)
 //   // The root has no edge so there is nothing to do for the root, so we skip it
 //   for (std::vector<TopologyNode*>::const_iterator it = preorder_nodes.begin()+1; it != preorder_nodes.end(); ++it)
@@ -248,18 +251,21 @@ double SBNParameters::computeLnProbabilityUnrootedTopology( const Tree &t ) cons
 //     // Edges descending from root need to be handled differently
 //     if ( (*it)->getParent().isRoot() )
 //     {
-// //       // Get subsplits for other two descendants of root
-// //       std::vector<int> root_children_indices = tree->getRoot().getChildrenIndices();
-// //
-// //       std::vector<int> sibling_indices;
-// //
-// //       for (size_t i=0; i<3; ++i)
-// //       {
-// //         if (index != root_children_indices[i])
-// //         {
-// //           sibling_indices.push_back(root_children_indices[i]);
-// //         }
-// //       }
+//       // Get subsplits for other two descendants of root
+//       std::vector<int> root_children_indices = tree->getRoot().getChildrenIndices();
+//
+//       std::vector<int> sibling_indices;
+//
+//       for (size_t i=0; i<3; ++i)
+//       {
+//         if (index != root_children_indices[i])
+//         {
+//           sibling_indices.push_back(root_children_indices[i]);
+//         }
+//       }
+//
+//       per_node_reversed_subsplit[index] = Subsplit(per_node_subsplit[sibling_indices[0]].asCladeBitset(),per_node_subsplit[sibling_indices[1]].asCladeBitset());
+//
 // //
 // //       // Get all cases for virtual rooting of this edge (including current rooting)
 // //       std::vector<std::pair<Subsplit,Subsplit> > cases = per_node_subsplit[index].doVirtualRootingRootParent(per_node_subsplit[sibling_indices[0]],per_node_subsplit[sibling_indices[1]],per_node_subsplit[index]);
@@ -322,10 +328,10 @@ double SBNParameters::computeLnProbabilityUnrootedTopology( const Tree &t ) cons
 //       std::vector<std::pair<Subsplit,Subsplit> > cases = per_node_subsplit[index].doVirtualRootingNonRootParent(this_parent_child.first,this_parent_child.second);
 //
 //       // 1) Propagate rtt
-//       RbBitSet parents_clade = per_node_subsplit[index];
+//       RbBitSet parents_clade = per_node_subsplit[index].asCladeBitset();
 //       RbBitSet everyone_else = parents_clade;
-//       ~ everyone_else;
-//       subsplit everyone_else_from_sister = ;
+//       ~everyone_else;
+//       Subsplit everyone_else_from_sister = ;
 //
 //       rtt[index] = ttr[sibling_index] * computeSubsplitTransitionProbability(cases[3].second,per_node_subsplit[sibling_index]) + rtt[parent_index] * computeSubsplitTransitionProbability(cases[3].second,??);
 //       // 2) Compute Pr(tree,root here)
@@ -741,9 +747,9 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
         log_sd = sqrt(log_sd);
 
         // Approximate edge-length distribution using lognormal, use MLE parameters
-        std::pair<double,double> these_params;
-        these_params.first = log_mean;
-        these_params.second = log_sd;
+        std::vector<double> these_params = std::vector<double>(2,0.0);
+        these_params[0] = log_mean;
+        these_params[1] = log_sd;
 
         edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
 
@@ -752,9 +758,9 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
       {
         // Basically no information on edge length distribution
         // Approximate edge-length distribution using a lognormal resembling an exponential(10)
-        std::pair<double,double> these_params;
-        these_params.first = -2.8;
-        these_params.second = 1.0;
+        std::vector<double> these_params = std::vector<double>(2,0.0);
+        these_params[0] = -2.8;
+        these_params[1] = 1.0;
 
         edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
       }
@@ -783,17 +789,17 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
         var /= clade_edge_observations.second.size();
 
         // Approximate edge-length distribution using gamma
-        std::pair<double,double> these_params;
+        std::vector<double> these_params = std::vector<double>(2,0.0);
 
         if ( branch_length_approximation_method == "gammaMOM" || branch_length_approximation_method == "compound" )
         {
-          these_params.second = mean/var;
-          these_params.first = mean * these_params.second;
+          these_params[1] = mean/var;
+          these_params[0] = mean * these_params[1];
         }
         else
         {
-          these_params.first = log(mean/sqrt(1 + var/(pow(mean,2.0))));
-          these_params.second = sqrt(log(1 + var/(pow(mean,2.0))));
+          these_params[0] = log(mean/sqrt(1 + var/(pow(mean,2.0))));
+          these_params[1] = sqrt(log(1 + var/(pow(mean,2.0))));
         }
 
         edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
@@ -802,19 +808,19 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
       else
       {
         // Basically no information on edge length distribution
-        std::pair<double,double> these_params;
+        std::vector<double> these_params = std::vector<double>(2,0.0);
         if ( branch_length_approximation_method == "gammaMOM" || branch_length_approximation_method == "compound" )
         {
           // Approximate edge-length distribution using an exponential(10)
-          these_params.first = 1.0;
-          these_params.second = 10.0;
+          these_params[0] = 1.0;
+          these_params[1] = 10.0;
         }
         else
         {
           // Basically no information on edge length distribution
           // Approximate edge-length distribution using a lognormal resembling an exponential(10)
-          these_params.first = -2.8;
-          these_params.second = 1.0;
+          these_params[0] = -2.8;
+          these_params[1] = 1.0;
         }
         edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
       }
@@ -850,7 +856,7 @@ double kumar_score(double a, std::vector<double> &samples)
 
 }
 
-std::pair<double,double> fit_kumar_agd(std::vector<double> &samples)
+std::vector<double> fit_kumar_agd(std::vector<double> &samples)
 {
 
   double x_s = 1.0;
@@ -883,8 +889,8 @@ std::pair<double,double> fit_kumar_agd(std::vector<double> &samples)
 
   }
 
-  std::pair<double,double> alphabeta;
-  alphabeta.first = x_s_1;
+  std::vector<double> alphabeta;
+  alphabeta.push_back(x_s_1);
 
   // Get beta parameter of Kumaraswamy distribution (x_s_1 is alpha)
   double s = 0.0;
@@ -893,7 +899,7 @@ std::pair<double,double> fit_kumar_agd(std::vector<double> &samples)
     s += log(1.0 - std::pow(samples[i],x_s_1));
   }
 
-  alphabeta.second = -(double)samples.size()/s;
+  alphabeta.push_back(-(double)samples.size()/s);
 
   return alphabeta;
 }
@@ -989,10 +995,10 @@ void SBNParameters::fitNodeTimeDistributions(std::vector<Tree> &trees )
     var /= root_age_observations.size();
 
     // Approximate edge-length distribution using gamma
-    std::pair<double,double> root_params;
+    std::vector<double> root_params = std::vector<double>(2,0.0);
 
-    root_params.second = mean/var;
-    root_params.first = mean * root_params.second;
+    root_params[1] = mean/var;
+    root_params[0] = mean * root_params[1];
 
     edge_length_distribution_parameters[root_clade] = root_params;
 
@@ -1011,9 +1017,9 @@ void SBNParameters::fitNodeTimeDistributions(std::vector<Tree> &trees )
         {
           // Basically no information on node proportion distribution
           // Approximate node proportion distribution using a uniform
-          std::pair<double,double> these_params;
-          these_params.first = 1.0;
-          these_params.second = 1.0;
+          std::vector<double> these_params = std::vector<double>(2,0.0);
+          these_params[0] = 1.0;
+          these_params[1] = 1.0;
 
           edge_length_distribution_parameters[node_proportion_observation.first] = these_params;
         }

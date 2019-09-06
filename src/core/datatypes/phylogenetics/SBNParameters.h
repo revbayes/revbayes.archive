@@ -42,8 +42,8 @@ namespace RevBayesCore {
 
         // Access to members
         const std::string &                                                 getBranchLengthApproximationMethod(void) const; // Tell someone how this SBN is approximating branch lengths
-        std::map<RbBitSet,std::pair<double,double> >&                       getEdgeLengthDistributionParameters(void); // For each split in an unrooted tree, the parameters of the edge length distribution
-        std::map<RbBitSet,std::pair<double,double> >&                       getNodeTimeDistributionParameters(void); // For each clade in a rooted tree, the parameters of the edge length distribution
+        std::map<RbBitSet,std::vector<double> >&                            getEdgeLengthDistributionParameters(void); // For each split in an unrooted tree, the parameters of the edge length distribution
+        std::map<RbBitSet,std::vector<double> >&                            getNodeTimeDistributionParameters(void); // For each clade in a rooted tree, the parameters of the edge length distribution
         const size_t                                                        getNumTaxa(void) const; // The number of taxa in the tree the SBN describes
         std::vector<std::pair<Subsplit,double> >&                           getRootSplits(void); // The root splits in the tree and their probabilities
         std::map<Subsplit,std::vector<std::pair<Subsplit,double> > >&       getSubsplitCPDs(void); // For each subsplit, its children and their probabilities
@@ -52,6 +52,7 @@ namespace RevBayesCore {
 
         // Helper functions for SBN distributions
         double                              computeLnProbabilityRootedTopology( const Tree &tree ) const;
+        std::vector<double>                 computeLnProbabilityTopologyAndRooting( const Tree &tree ) const;
         double                              computeLnProbabilityUnrootedTopology( const Tree &tree ) const;
         double                              computeRootSplitProbability( const Subsplit &root_split ) const;
         double                              computeSubsplitTransitionProbability( const Subsplit &parent, const Subsplit &child ) const;
@@ -85,7 +86,7 @@ namespace RevBayesCore {
         std::vector<Taxon>                             taxa; // The taxa in the tree the SBN describes
         std::vector<std::pair<Subsplit,double> >       root_splits; // The root splits in the tree and their probabilities
         std::map<Subsplit,std::vector<std::pair<Subsplit,double> > >        subsplit_cpds; // For each subsplit, its children and their probabilities
-        std::map<RbBitSet,std::pair<double,double> >    edge_length_distribution_parameters; // In an unconstrained SBN, we learn branch lengths as functions of the splits they represent
+        std::map<RbBitSet,std::vector<double> >         edge_length_distribution_parameters; // In an unconstrained SBN, we learn branch lengths as functions of the splits they represent
         std::string                                     branch_length_approximation_method;
     };
 
