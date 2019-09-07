@@ -135,9 +135,8 @@ const std::vector<Taxon>& SBNParameters::getTaxa(void) const
   return taxa;
 }
 
-
-//Need for fitting time-SBNs and unrooted SBNs
-std::vector<double> fit_gamma_MOM(std::vector<double> &samples)
+// Needed for fitting a number of branch-length distributions
+std::vector<double> get_moments(std::vector<double> &samples)
 {
   // Get mean/var of observations
   double mean;
@@ -154,12 +153,21 @@ std::vector<double> fit_gamma_MOM(std::vector<double> &samples)
   }
   var /= samples.size();
 
+  std::vector<double> moments;
+  moments.push_back(mean);
+  moments.push_back(var);
+
+  return moments;
+}
+
+//Need for fitting time-SBNs and unrooted SBNs
+std::vector<double> fit_gamma_MOM(std::vector<double> &samples)
+{
+  std::vector<double> moments = get_moments(samples);
   std::vector<double> par = std::vector<double>(2,0.0);
-  par[1] = mean/var;
-  par[0] = mean * par[1];
-
+  par[1] = moments[0]/moments[1];
+  par[0] = moments[0] * par[1];
   return par;
-
 }
 
 // Need for fitting time-SBNs
@@ -890,17 +898,6 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
         Subsplit this_subsplit = tree_nodes[i]->getSubsplit(taxa);
         RbBitSet this_split = this_subsplit.asSplitBitset();
 
-        // // Polarize split if needed (fewer than half the bits should be set)
-        // if ((this_split.getNumberSetBits() > size_t(std::floor(this_split.size()/2.0))) )
-        // {
-        //   this_split = ~this_split;
-        // }
-        // // If even, and half bits are set, make sure first bit is 1
-        // else if ( size_t(this_split.size() % 2) == 0 && (this_split.getNumberSetBits() == size_t(std::floor(this_split.size()/2.0))) && this_split[0] == 0)
-        // {
-        //   this_split = ~this_split;
-        // }
-
         (branch_length_observations[this_split]).push_back(tree_nodes[i]->getBranchLength());
         tree_length += tree_nodes[i]->getBranchLength();
       }
@@ -915,6 +912,8 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
     // Turn branch length observations into lognormal distributions
     std::pair<RbBitSet,std::vector<double> > clade_edge_observations;
     BOOST_FOREACH(clade_edge_observations, branch_length_observations) {
+      std::vector<double> these_params = std::vector<double>(2,0.0);
+
       // std::cout << "Learning branch distribution for clade " << clade_edge_observations.first << ", observations are:" << std::endl;
       if (clade_edge_observations.second.size() > 2)
       {
@@ -939,7 +938,6 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
         log_sd = sqrt(log_sd);
 
         // Approximate edge-length distribution using lognormal, use MLE parameters
-        std::vector<double> these_params = std::vector<double>(2,0.0);
         these_params[0] = log_mean;
         these_params[1] = log_sd;
 
@@ -958,64 +956,73 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
       }
     }
   }
-  else
+  else if ( branch_length_approximation_method == "lognormalMOM" )
   {
     // Turn branch length observations into some distributions
     std::pair<RbBitSet,std::vector<double> > clade_edge_observations;
-    BOOST_FOREACH(clade_edge_observations, branch_length_observations) {
+
+    BOOST_FOREACH(clade_edge_observations, branch_length_observations)
+    {
+      std::vector<double> these_params = std::vector<double>(2,0.0);
       if (clade_edge_observations.second.size() > 2)
       {
-        // Get mean/var of observations
-        double mean;
-        for (size_t i=0; i<clade_edge_observations.second.size(); ++i)
-        {
-          mean += clade_edge_observations.second[i];
-        }
-        mean /= clade_edge_observations.second.size();
-
-        double var;
-        for (size_t i=0; i<clade_edge_observations.second.size(); ++i)
-        {
-          var += pow(clade_edge_observations.second[i] - mean,2.0);
-        }
-        var /= clade_edge_observations.second.size();
-
-        // Approximate edge-length distribution using gamma
-        std::vector<double> these_params = std::vector<double>(2,0.0);
-
-        if ( branch_length_approximation_method == "gammaMOM" || branch_length_approximation_method == "compound" )
-        {
-          these_params[1] = mean/var;
-          these_params[0] = mean * these_params[1];
-        }
-        else
-        {
-          these_params[0] = log(mean/sqrt(1 + var/(pow(mean,2.0))));
-          these_params[1] = sqrt(log(1 + var/(pow(mean,2.0))));
-        }
-
-        edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
-
+        std::vector<double> moments = get_moments(clade_edge_observations.second);
+        these_params[0] = log(moments[0]/sqrt(1 + moments[1]/(pow(moments[0],2.0))));
+        these_params[1] = sqrt(log(1 + moments[1]/(pow(moments[0],2.0))));
       }
       else
       {
         // Basically no information on edge length distribution
-        std::vector<double> these_params = std::vector<double>(2,0.0);
-        if ( branch_length_approximation_method == "gammaMOM" || branch_length_approximation_method == "compound" )
-        {
-          // Approximate edge-length distribution using an exponential(10)
-          these_params[0] = 1.0;
-          these_params[1] = 10.0;
-        }
-        else
-        {
-          // Basically no information on edge length distribution
-          // Approximate edge-length distribution using a lognormal resembling an exponential(10)
-          these_params[0] = -2.8;
-          these_params[1] = 1.0;
-        }
-        edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
+        // Approximate edge-length distribution using a lognormal resembling an exponential(10)
+        these_params[0] = -2.8;
+        these_params[1] = 1.0;
       }
+      edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
+    }
+  }
+  else if ( branch_length_approximation_method == "generalizedGamma" )
+  {
+    // Turn branch length observations into some distributions
+    std::pair<RbBitSet,std::vector<double> > clade_edge_observations;
+
+    BOOST_FOREACH(clade_edge_observations, branch_length_observations)
+    {
+      std::vector<double> these_params = std::vector<double>(2,0.0);
+      if (clade_edge_observations.second.size() > 2)
+      {
+        these_params = fit_gengam_gss(clade_edge_observations.second);
+      }
+      else
+      {
+        // Basically no information on edge length distribution
+        // Approximate edge-length distribution using an exponential(10)
+        these_params[0] = 10.0;
+        these_params[1] = 1.0;
+        these_params[2] = 1.0;
+      }
+      edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
+    }
+  }
+  else if ( branch_length_approximation_method == "gammaMOM" || branch_length_approximation_method == "compound" )
+  {
+    // Turn branch length observations into some distributions
+    std::pair<RbBitSet,std::vector<double> > clade_edge_observations;
+    BOOST_FOREACH(clade_edge_observations, branch_length_observations)
+    {
+      std::vector<double> these_params = std::vector<double>(2,0.0);
+
+      if (clade_edge_observations.second.size() > 2)
+      {
+        these_params = fit_gamma_MOM(clade_edge_observations.second);
+      }
+      else
+      {
+        // Basically no information on edge length distribution
+        // Approximate edge-length distribution using a lognormal resembling an exponential(10)
+        these_params[0] = 1.0;
+        these_params[1] = 10.0;
+      }
+      edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
     }
   }
 
