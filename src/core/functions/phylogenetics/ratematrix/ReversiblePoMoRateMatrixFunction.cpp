@@ -11,23 +11,18 @@ namespace RevBayesCore { class Simplex; }
 using namespace RevBayesCore;
 
 
-//  //MJL 140822: caused compile error
-// ReversiblePoMoRateMatrixFunction::ReversiblePoMoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RateGenerator > *mm ) : TypedFunction<RateGenerator>( new RateMatrix_ReversiblePoMo(4 + 6*(ps->getValue() - 1), mm->getValue(), ps->getValue() ) ), populationSize( ps ), mutationMatrix( mm ) {
-//     // add the lambda parameter as a parent
-//     addParameter( populationSize );
-//     addParameter( mutationMatrix );
-//
-//     update();
-// }
+ReversiblePoMoRateMatrixFunction::ReversiblePoMoRateMatrixFunction(const TypedDagNode< long > *ps, const TypedDagNode< RbVector<double> > *rho, const TypedDagNode< Simplex > *pi   ) : TypedFunction<RateGenerator>( new RateMatrix_ReversiblePoMo(4 + 6*(ps->getValue() - 1), rho->getValue(), pi->getValue(), ps->getValue() ) ),
+    population_size( ps ),
+    exchangeabilities( rho ),
+    equilibrium_frequencies( pi )
+{
 
+    // add the lambda parameter as a parent
+    addParameter( population_size );
+    addParameter( exchangeabilities );
+    addParameter( equilibrium_frequencies );
 
-ReversiblePoMoRateMatrixFunction::ReversiblePoMoRateMatrixFunction(const TypedDagNode< long > *ps, const TypedDagNode< RbVector<double> > *rho, const TypedDagNode< Simplex > *pi   ) : TypedFunction<RateGenerator>( new RateMatrix_ReversiblePoMo(4 + 6*(ps->getValue() - 1), rho->getValue(), pi->getValue(), ps->getValue() ) ), populationSize( ps ), exchangeabilities( rho ), equilibriumFrequencies( pi ) {
-   // add the lambda parameter as a parent
-   addParameter( populationSize );
-   addParameter( exchangeabilities );
-   addParameter( equilibriumFrequencies );
-
-   update();
+    update();
 }
 
 
@@ -48,8 +43,13 @@ ReversiblePoMoRateMatrixFunction* ReversiblePoMoRateMatrixFunction::clone( void 
 void ReversiblePoMoRateMatrixFunction::update( void )
 {
 
-    // set the mutation rates
-    //static_cast< RateMatrix_ReversiblePoMo* >(value)->setMutationRates( static_cast< const RateMatrix& > ( mutationMatrix->getValue() ) );
+    // set the exchangeability rates
+    static_cast< RateMatrix_ReversiblePoMo* >(value)->setExchangeabilityRates( static_cast< const RbVector<double>& > ( exchangeabilities->getValue() ) );
+
+    // set the stationary frequencies
+    static_cast< RateMatrix_ReversiblePoMo* >(value)->setStationaryFrequencies( static_cast< const Simplex& > ( equilibrium_frequencies->getValue() ) );
+
+    // now update the matrix
     static_cast< RateMatrix_ReversiblePoMo* >(value)->update();
 
 }
@@ -67,9 +67,9 @@ void ReversiblePoMoRateMatrixFunction::swapParameterInternal(const DagNode *oldP
     {
         exchangeabilities = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
-    else if (oldP == equilibriumFrequencies)
+    else if (oldP == equilibrium_frequencies)
     {
-        equilibriumFrequencies = static_cast<const TypedDagNode< Simplex >* >( newP );
+        equilibrium_frequencies = static_cast<const TypedDagNode< Simplex >* >( newP );
     }
 
 }

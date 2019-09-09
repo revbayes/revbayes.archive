@@ -21,8 +21,8 @@
  */
 
 
-#ifndef __RateMatrix_PoMo4__
-#define __RateMatrix_PoMo4__
+#ifndef RateMatrix_PoMo4_H
+#define RateMatrix_PoMo4_H
 
 #include <stddef.h>
 #include <vector>
@@ -50,10 +50,10 @@ class Assignable;
         virtual                         ~RateMatrix_PoMo4(void);                     //!< Destructor
         
         // RateMatrix functions
-        virtual RateMatrix_PoMo4&                    assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
+        virtual RateMatrix_PoMo4&                   assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
         double                                      averageRate(void) const;
         void                                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
-        RateMatrix_PoMo4*                            clone(void) const;
+        RateMatrix_PoMo4*                           clone(void) const;
         std::vector<double>                         getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, although in the PoMo4 model I don't know them
         
         void                                        update(void);

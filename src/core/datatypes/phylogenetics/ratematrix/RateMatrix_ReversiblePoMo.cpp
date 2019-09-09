@@ -358,7 +358,8 @@ void RateMatrix_ReversiblePoMo::buildRateMatrix(void)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_ReversiblePoMo::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
+void RateMatrix_ReversiblePoMo::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+{
 
 
   // We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
@@ -423,6 +424,19 @@ std::vector<double> RateMatrix_ReversiblePoMo::getStationaryFrequencies( void ) 
 
   return stationaryVector;
 }
+
+void RateMatrix_ReversiblePoMo::setExchangeabilityRates(const std::vector<double>& r)
+{
+    rho = r;
+}
+
+
+
+void RateMatrix_ReversiblePoMo::setStationaryFrequencies(const Simplex& s)
+{
+    pi = s;
+}
+
 
 
 void RateMatrix_ReversiblePoMo::update( void )

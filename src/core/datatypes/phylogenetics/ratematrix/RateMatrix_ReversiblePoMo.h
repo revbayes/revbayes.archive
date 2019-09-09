@@ -18,8 +18,8 @@
  */
 
 
-#ifndef __RateMatrix_ReversiblePoMo__
-#define __RateMatrix_ReversiblePoMo__
+#ifndef RateMatrix_ReversiblePoMo_H
+#define RateMatrix_ReversiblePoMo_H
 
 #include <stddef.h>
 #include <vector>
@@ -32,7 +32,7 @@
 namespace RevBayesCore {
 
     class TransitionProbabilityMatrix;
-class Assignable;
+    class Assignable;
 
     class RateMatrix_ReversiblePoMo : public AbstractRateMatrix {
 
@@ -48,39 +48,41 @@ class Assignable;
 
         RateMatrix_ReversiblePoMo(const RateMatrix_ReversiblePoMo& m) ;
 
-        RateMatrix_ReversiblePoMo& operator=(const RateMatrix_ReversiblePoMo &r) ;
-        virtual                         ~RateMatrix_ReversiblePoMo(void);                     //!< Destructor
+        RateMatrix_ReversiblePoMo&                  operator=(const RateMatrix_ReversiblePoMo &r) ;
+        virtual                                    ~RateMatrix_ReversiblePoMo(void);                     //!< Destructor
 
         // RateMatrix functions
-        virtual RateMatrix_ReversiblePoMo&        assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
-        double                          averageRate(void) const;
-        void                            calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
-        RateMatrix_ReversiblePoMo*      clone(void) const;
-        std::vector<double>             getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, which are the stationary frequencies of the Q_mut matrix
+        virtual RateMatrix_ReversiblePoMo&          assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
+        double                                      averageRate(void) const;
+        void                                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
+        RateMatrix_ReversiblePoMo*                  clone(void) const;
+        std::vector<double>                         getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, which are the stationary frequencies of the Q_mut matrix
 
-        void                            update(void);
+        void                                        update(void);
+        void                                        setExchangeabilityRates(const std::vector<double>& r);
+        void                                        setStationaryFrequencies(const Simplex& s);
 
 
     private:
 
-       std::vector<double> rho; //!< Holds the exchangeabilities
-       Simplex                 pi;        //!< Holds the stationary frequencies
+        std::vector<double>                         rho;                                        //!< Holds the exchangeabilities
+        Simplex                                     pi;                                         //!< Holds the stationary frequencies
 
-        size_t N;							 //!< Number of individuals in idealized population
-        size_t matrixSize;                  //!< Number of elements in a row or column of the rate matrix
-        double precision;                  //!< Precision for exponentiation through repeated squaring
+        size_t                                      N;							                //!< Number of individuals in idealized population
+        size_t                                      matrixSize;                                 //!< Number of elements in a row or column of the rate matrix
+        double                                      precision;                                  //!< Precision for exponentiation through repeated squaring
 
-        void decomposeState(int state, int &i, int &nt1, int &nt2) ;
-        double mutCoeff(int nt1, int nt2) ;
-        double computeProbBoundaryMutation(int state1, int state2) ;
-        void buildRateMatrix(void) ;
-        void calculateCijk(void) ;
-        void tiProbsEigens(double t, TransitionProbabilityMatrix& P) const ;
-        void tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const ;
-        void updateEigenSystem(void);
+        void                                        decomposeState(int state, int &i, int &nt1, int &nt2) ;
+        double                                      mutCoeff(int nt1, int nt2) ;
+        double                                      computeProbBoundaryMutation(int state1, int state2) ;
+        void                                        buildRateMatrix(void) ;
+        void                                        calculateCijk(void) ;
+        void                                        tiProbsEigens(double t, TransitionProbabilityMatrix& P) const ;
+        void                                        tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const ;
+        void                                        updateEigenSystem(void);
 
-        void computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const ;
-        inline void squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const ;
+        void                                        computeExponentialMatrixByRepeatedSquaring(double t, TransitionProbabilityMatrix& P ) const ;
+        inline void                                 squareMatrix( TransitionProbabilityMatrix& P, TransitionProbabilityMatrix& P2) const ;
     };
 
 }

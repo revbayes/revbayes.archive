@@ -10,7 +10,7 @@
 #include "RevVariable.h"
 
 namespace RevLanguage {
-class Environment;
+
 
     class ParserInfo {
     public:
@@ -24,6 +24,7 @@ class Environment;
         RevPtr<RevVariable> base_variable;
     };
     
+    class Environment;
     class SyntaxElement;
     class SyntaxFunctionCall;
     class SyntaxVariable;
