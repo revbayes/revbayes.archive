@@ -291,8 +291,8 @@ std::vector<double> fit_gengam_gss(std::vector<double> samples)
   double eps = 1e-5; // tolerance for minimum
   double gold_ratio = (1.0 + sqrt(5.0))/2.0; // the golden ratio (should eventually be moved to RbConstants)
 
-  double x1 = 0.1;
-  double x2 = 10.0;
+  double x1 = 0.01;
+  double x2 = 5.0;
 
   double f_x1 = -fn_fixed_c_gengamma_lnl(x1,samples);
   double f_x2 = -fn_fixed_c_gengamma_lnl(x2,samples);
@@ -1002,18 +1002,36 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
     BOOST_FOREACH(clade_edge_observations, branch_length_observations)
     {
       std::vector<double> these_params = std::vector<double>(3,0.0);
-      if (clade_edge_observations.second.size() > 20)
+      if (clade_edge_observations.second.size() > 100)
       {
-        these_params = fit_gengam_gss(clade_edge_observations.second);
-        // std::cout << "fit gengamma to observations, params are a = " << these_params[0] << "; c = " << these_params[1] << "; l = " << these_params[2] << "; split was " << clade_edge_observations.first << std::endl;
+        std::vector<double> gg_params = std::vector<double>(3,-1.0);
+        gg_params = fit_gengam_gss(clade_edge_observations.second);
+
+        double gg_aic = 6 - fn_fixed_c_gengamma_lnl(gg_params[1],clade_edge_observations.second);
+        double gamma_aic = 4 - fn_fixed_c_gengamma_lnl(1.0,clade_edge_observations.second);
+
+        // AIC-based comparison
+        if (gg_aic < gamma_aic)
+        {
+          these_params = gg_params;
+        }
+        else
+        {
+          std::vector<double> gamma_par = std::vector<double>(2,-1.0);
+          gamma_par = fit_gamma_MOM(clade_edge_observations.second);
+          these_params[0] = gamma_par[1];
+          these_params[1] = 1.0;
+          these_params[2] = gamma_par[0];
+        }
+
       }
       else if (clade_edge_observations.second.size() > 2)
       {
         std::vector<double> gamma_par = std::vector<double>(2,-1.0);
         gamma_par = fit_gamma_MOM(clade_edge_observations.second);
-        these_params[0] = gamma_par[0];
+        these_params[0] = gamma_par[1];
         these_params[1] = 1.0;
-        these_params[2] = gamma_par[1];
+        these_params[2] = gamma_par[0];
       }
       else
       {
@@ -1023,6 +1041,7 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
         these_params[1] = 1.0;
         these_params[2] = 1.0;
       }
+      std::cout << "fit gengamma to observations, params are a = " << these_params[0] << "; c = " << these_params[1] << "; l = " << these_params[2] << "; split was " << clade_edge_observations.first << std::endl;
       edge_length_distribution_parameters[clade_edge_observations.first] = these_params;
     }
   }

@@ -357,7 +357,6 @@ void UnconstrainedSBN::simulateTree( void )
         }
         else if ( parameters.getBranchLengthApproximationMethod() == "generalizedGamma" )
         {
-          if(these_params.size() != 3){std::cout << "fuck" << std::endl;}
           brlen = RbStatistics::GeneralizedGamma::rv(these_params[0], these_params[1], these_params[2], *rng);
         }
         else
