@@ -1,6 +1,7 @@
 #include <boost/foreach.hpp>
 #include "Clade.h"
 #include "DistributionGamma.h"
+#include "DistributionGeneralizedGamma.h"
 #include "DistributionLognormal.h"
 #include "DistributionScaledDirichlet.h"
 #include "RandomNumberFactory.h"
@@ -83,6 +84,7 @@ double UnconstrainedSBN::computeLnProbabilityBranchLengths( void )
         // Subsplit this_subsplit = tree_nodes[i]->getSubsplit(taxa);
         // RbBitSet this_split = this_subsplit.asSplitBitset();
         RbBitSet this_split = tree_nodes[i]->getSubsplit(taxa).asSplitBitset();
+        // std::cout << "About to get branch length parameters for split " << this_split << std::endl;
 
         std::vector<double> these_params = edge_length_params[this_split];
         if ( parameters.getBranchLengthApproximationMethod() == "compound" )
@@ -96,6 +98,12 @@ double UnconstrainedSBN::computeLnProbabilityBranchLengths( void )
           // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::Gamma::pdf(these_params[0], these_params[1], tree_nodes[i]->getBranchLength()) << std::endl;
           // std::cout << "gamma shape: " << these_params[0] << "; gamma rate: " << these_params[1] << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
           lnProbability += RbStatistics::Gamma::lnPdf(these_params[0], these_params[1], tree_nodes[i]->getBranchLength());
+        }
+        else if ( parameters.getBranchLengthApproximationMethod() == "generalizedGamma" )
+        {
+          // std::cout << "generalized gamma a: " << these_params[0] << "; generalized gamma c: " << these_params[1] << "; generalized gamma l: " << these_params[2] << "; evaluating density at x=" << tree_nodes[i]->getBranchLength() << std::endl;
+          // std::cout << "Computing branch length probability for branch " << i << ", lnProb = " << RbStatistics::GeneralizedGamma::lnPdf(these_params[0], these_params[1], these_params[2], tree_nodes[i]->getBranchLength()) << std::endl;
+          lnProbability += RbStatistics::GeneralizedGamma::lnPdf(these_params[0], these_params[1], these_params[2], tree_nodes[i]->getBranchLength());
         }
         else
         {
@@ -293,23 +301,6 @@ void UnconstrainedSBN::simulateTree( void )
         active.push_back(std::make_pair(Y_child,Y_child_node));
       }
 
-      // // Add branchlength to Y
-      // // Draw a branch length
-      // std::vector<double> these_params = edge_length_params[Y_child.asSplitBitset()];
-      //
-      // double brlen;
-      //
-      // if ( parameters.getBranchLengthApproximationMethod() == "gammaMOM" || parameters.getBranchLengthApproximationMethod() == "compound" )
-      // {
-      //   brlen  = RbStatistics::Gamma::rv(these_params[0], these_params[1], *rng);
-      // }
-      // else
-      // {
-      //   brlen  = RbStatistics::Lognormal::rv(these_params[0], these_params[1], *rng);
-      // }
-      //
-      // Y_child_node->setBranchLength(brlen,false);
-
       // Choose subsplit of Z
       Subsplit Z_child = parameters.drawSubsplitForZ(this_parent_subsplit);
       if ( Z_child.isFake() )
@@ -323,21 +314,6 @@ void UnconstrainedSBN::simulateTree( void )
         Z_child_node = new TopologyNode();
         active.push_back(std::make_pair(Z_child,Z_child_node));
       }
-
-      // // Add branchlength to Z
-      //
-      // these_params = edge_length_params[Z_child.asSplitBitset()];
-      //
-      // if ( parameters.getBranchLengthApproximationMethod() == "gammaMOM" || parameters.getBranchLengthApproximationMethod() == "compound" )
-      // {
-      //   brlen = RbStatistics::Gamma::rv(these_params[0], these_params[1], *rng);
-      // }
-      // else
-      // {
-      //   brlen  = RbStatistics::Lognormal::rv(these_params[0], these_params[1], *rng);
-      // }
-      //
-      // Z_child_node->setBranchLength(brlen,false);
 
       // Attach nodes to eachother
       this_parent_node->addChild(Y_child_node);
@@ -378,6 +354,11 @@ void UnconstrainedSBN::simulateTree( void )
         if ( parameters.getBranchLengthApproximationMethod() == "gammaMOM" || parameters.getBranchLengthApproximationMethod() == "compound" )
         {
           brlen = RbStatistics::Gamma::rv(these_params[0], these_params[1], *rng);
+        }
+        else if ( parameters.getBranchLengthApproximationMethod() == "generalizedGamma" )
+        {
+          if(these_params.size() != 3){std::cout << "fuck" << std::endl;}
+          brlen = RbStatistics::GeneralizedGamma::rv(these_params[0], these_params[1], these_params[2], *rng);
         }
         else
         {

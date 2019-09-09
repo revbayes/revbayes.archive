@@ -136,7 +136,7 @@ const std::vector<Taxon>& SBNParameters::getTaxa(void) const
 }
 
 // Needed for fitting a number of branch-length distributions
-std::vector<double> get_moments(std::vector<double> &samples)
+std::vector<double> get_moments(std::vector<double> samples)
 {
   // Get mean/var of observations
   double mean;
@@ -161,12 +161,19 @@ std::vector<double> get_moments(std::vector<double> &samples)
 }
 
 //Need for fitting time-SBNs and unrooted SBNs
-std::vector<double> fit_gamma_MOM(std::vector<double> &samples)
+std::vector<double> fit_gamma_MOM(std::vector<double> samples)
 {
-  std::vector<double> moments = get_moments(samples);
-  std::vector<double> par = std::vector<double>(2,0.0);
+  std::vector<double> moments = std::vector<double>(2,-1.0);
+  moments = get_moments(samples);
+  std::vector<double> par = std::vector<double>(2,-1.0);
   par[1] = moments[0]/moments[1];
-  par[0] = moments[0] * par[1];
+  par[0] = moments[0]*moments[0]/moments[1];
+
+
+// std::cout << "fitting gamma via MOM" << std::endl;
+// std::cout << "moments are mean = " << moments[0] << " and var = " << moments[1] << std::endl;
+// std::cout << "params are alpha = " << par[0] << " and beta = " << par[1] << std::endl;
+
   return par;
 }
 
@@ -249,8 +256,9 @@ std::vector<double> fit_kumar_agd(std::vector<double> &samples)
 }
 
 // Need for unrooted SBNs to fit generalized gamma distributions
-double fn_fixed_c_gengamma_lnl(double c, std::vector<double> &samples)
+double fn_fixed_c_gengamma_lnl(double c, std::vector<double> samples)
 {
+// std::cout << "calling fn_fixed_c_gengamma_lnl with c = " << c << std::endl;
   // y = x^c
   std::vector<double> y;
   for (size_t i=0; i<samples.size(); ++i)
@@ -258,29 +266,32 @@ double fn_fixed_c_gengamma_lnl(double c, std::vector<double> &samples)
     y.push_back(pow(samples[i],c));
   }
   // ypar = gammaMoments2Params(mean(y),var(y))
-  std::vector<double> transformed_par = fit_gamma_MOM(samples);
+  std::vector<double> transformed_par = std::vector<double>(2,-1.0);
+  transformed_par = fit_gamma_MOM(y);
+// std::cout << "transformed_par[0] = " << transformed_par[0] << "; transformed_par[1] = " << transformed_par[1] << std::endl;
   double l = transformed_par[0];
   double a = pow(transformed_par[1],(1.0/c));
 
+// std::cout << "a = " << a << "; l = " << l << std::endl;
   double lnL = 0.0;
   for (size_t i=0; i<samples.size(); ++i)
   {
-    lnL += RbStatistics::GeneralizedGamma::lnPdf(a,c,l,y[i]);
+    lnL += RbStatistics::GeneralizedGamma::lnPdf(a,c,l,samples[i]);
   }
-
+// std::cout << "fn_fixed_c_gengamma_lnl is " << lnL << " for a = " << a << "; c = " << c << "; l = " << l << std::endl;
   return lnL;
 }
 
 // Need for unrooted SBNs
 // Fits a Generalized Gamma distribution by optimizing over the c parameter, for any given value fits a,l by MOM
-std::vector<double> fit_gengam_gss(std::vector<double> &samples)
+std::vector<double> fit_gengam_gss(std::vector<double> samples)
 {
 
   // Constants
   double eps = 1e-5; // tolerance for minimum
-  double gold_ratio = (1 + sqrt(5.0))/2.0; // the golden ratio (should eventually be moved to RbConstants)
+  double gold_ratio = (1.0 + sqrt(5.0))/2.0; // the golden ratio (should eventually be moved to RbConstants)
 
-  double x1 = 1.0/10.0;
+  double x1 = 0.1;
   double x2 = 10.0;
 
   double f_x1 = -fn_fixed_c_gengamma_lnl(x1,samples);
@@ -292,6 +303,7 @@ std::vector<double> fit_gengam_gss(std::vector<double> &samples)
   double f_x3 = -fn_fixed_c_gengamma_lnl(x3,samples);
   double f_x4 = -fn_fixed_c_gengamma_lnl(x4,samples);
 
+// std::cout << "starting search, f_x1 = " << f_x1 << "; f_x2 = " << f_x2 << "; f_x3 = " << f_x3  << "; f_x4 = " << f_x4 << std::endl;
   while ( fabs(x3 - x4) > eps)
   {
     if (f_x3 < f_x4) {
@@ -309,6 +321,7 @@ std::vector<double> fit_gengam_gss(std::vector<double> &samples)
       x4 = x1 + (x2 - x1)/gold_ratio;
       f_x4 = -fn_fixed_c_gengamma_lnl(x4,samples);
     }
+// std::cout << "    x3 = " << x3 << "; x4 = " << x4 << "; f_x3 = " << f_x3 << "; f_x4 = " << f_x4 << std::endl;
   }
 
   // Best value
@@ -321,7 +334,8 @@ std::vector<double> fit_gengam_gss(std::vector<double> &samples)
     y.push_back(pow(samples[i],c));
   }
 
-  std::vector<double> transformed_par = fit_gamma_MOM(samples);
+  std::vector<double> transformed_par = std::vector<double>(2,-1.0);
+  transformed_par = fit_gamma_MOM(y);
   double l = transformed_par[0];
   double a = pow(transformed_par[1],(1.0/c));
 
@@ -329,7 +343,7 @@ std::vector<double> fit_gengam_gss(std::vector<double> &samples)
   par.push_back(a);
   par.push_back(c);
   par.push_back(l);
-
+  // std::cout << "completed fit_gengam_gss, got parameters par[0] = " << par[0] << "; par[1] = " << par[1]  << "; par[2] = " << par[2] << std::endl;
   return par;
 }
 
@@ -912,7 +926,7 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
     // Turn branch length observations into lognormal distributions
     std::pair<RbBitSet,std::vector<double> > clade_edge_observations;
     BOOST_FOREACH(clade_edge_observations, branch_length_observations) {
-      std::vector<double> these_params = std::vector<double>(2,0.0);
+      std::vector<double> these_params = std::vector<double>(3,0.0);
 
       // std::cout << "Learning branch distribution for clade " << clade_edge_observations.first << ", observations are:" << std::endl;
       if (clade_edge_observations.second.size() > 2)
@@ -987,10 +1001,19 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
 
     BOOST_FOREACH(clade_edge_observations, branch_length_observations)
     {
-      std::vector<double> these_params = std::vector<double>(2,0.0);
-      if (clade_edge_observations.second.size() > 2)
+      std::vector<double> these_params = std::vector<double>(3,0.0);
+      if (clade_edge_observations.second.size() > 20)
       {
         these_params = fit_gengam_gss(clade_edge_observations.second);
+        // std::cout << "fit gengamma to observations, params are a = " << these_params[0] << "; c = " << these_params[1] << "; l = " << these_params[2] << "; split was " << clade_edge_observations.first << std::endl;
+      }
+      else if (clade_edge_observations.second.size() > 2)
+      {
+        std::vector<double> gamma_par = std::vector<double>(2,-1.0);
+        gamma_par = fit_gamma_MOM(clade_edge_observations.second);
+        these_params[0] = gamma_par[0];
+        these_params[1] = 1.0;
+        these_params[2] = gamma_par[1];
       }
       else
       {
@@ -1458,7 +1481,7 @@ void SBNParameters::learnUnconstrainedSBNSA( std::vector<Tree> &trees )
 {
   time_calibrated = false;
 
-  if ( !(branch_length_approximation_method == "compound" || branch_length_approximation_method == "gammaMOM" || branch_length_approximation_method == "lognormalML" || branch_length_approximation_method == "lognormalMOM") )
+  if ( !(branch_length_approximation_method == "generalizedGamma" || branch_length_approximation_method == "compound" || branch_length_approximation_method == "gammaMOM" || branch_length_approximation_method == "lognormalML" || branch_length_approximation_method == "lognormalMOM") )
   {
     throw(RbException("Invalid branch length/node height approximation method when initializing SBN object."));
   }
