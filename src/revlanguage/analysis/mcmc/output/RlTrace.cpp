@@ -114,9 +114,9 @@ RevPtr<RevVariable> Trace::executeMethod(std::string const &name, const std::vec
         const std::vector<double> &vals_tmp = value->getValues();
         size_t burnin = value->getBurnin();
         std::vector<double> vals = std::vector<double>(vals_tmp.size() - burnin, 0);
-        for (size_t i=0; i<vals_tmp.size(); ++i)
+        for (size_t i=burnin; i<vals_tmp.size(); ++i)
         {
-            vals[i] = vals_tmp[burnin + i];
+            vals[i-burnin] = vals_tmp[i];
         }
         bool positive = true;
         for (size_t i=0; i<vals.size(); ++i)
