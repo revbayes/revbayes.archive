@@ -20,7 +20,7 @@ namespace RevBayesCore {
     class ProgressBar : public Parallelizable {
         
     public:
-        ProgressBar(size_t m, size_t o);
+        ProgressBar(size_t m, size_t o = 0);
         
         
         void                            finish(void);

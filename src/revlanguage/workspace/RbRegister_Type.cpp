@@ -93,6 +93,8 @@
 #include "RlPowerPosteriorAnalysis.h"
 #include "RlSteppingStoneSampler.h"
 #include "RlValidationAnalysis.h"
+#include "RlTrace.h"
+#include "RlTraceTree.h"
 #include "RlAncestralStateTrace.h"
 
 /// Stopping Rules ///
@@ -137,6 +139,8 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
 
 //        addFunction( new Func_workspaceVector<Dist_bdp>() );
         addFunction( new Func_workspaceVector<TypedDistribution<TimeTree> >() );
+        addFunction( new Func_workspaceVector<Trace>() );
+        addFunction( new Func_workspaceVector<TraceTree>() );
 		addFunction( new Func_workspaceVector<AncestralStateTrace>() );
 
 //        AddVectorizedWorkspaceType<Monitor,3>::addTypeToWorkspace( *this, new Monitor() );

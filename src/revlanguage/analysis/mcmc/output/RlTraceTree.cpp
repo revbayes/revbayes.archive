@@ -45,6 +45,14 @@
 #include "WorkspaceToCoreWrapperObject.h"
 
 
+TraceTree::TraceTree(void) : WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>()
+{
+
+    // initialize the methods
+    initMethods();
+
+}
+
 
 TraceTree::TraceTree(const RevBayesCore::TraceTree& x) : WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>( new RevBayesCore::TraceTree(x) )
 {
@@ -379,10 +387,6 @@ const TypeSpec& TraceTree::getTypeSpec( void ) const
 
 void TraceTree::initMethods( void )
 {
-    
-    ArgumentRules* burninFracArgRules = new ArgumentRules();
-    burninFracArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), "The fraction of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
-    this->methods.addFunction( new MemberProcedure( "setBurninFrac", RlUtils::Void, burninFracArgRules) );
     
     ArgumentRules* burninArgRules = new ArgumentRules();
     std::vector<TypeSpec> burninTypes;
