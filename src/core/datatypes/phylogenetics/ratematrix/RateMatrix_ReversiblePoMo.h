@@ -65,13 +65,6 @@ namespace RevBayesCore {
 
     private:
 
-        std::vector<double>                         rho;                                        //!< Holds the exchangeabilities
-        Simplex                                     pi;                                         //!< Holds the stationary frequencies
-
-        size_t                                      N;							                //!< Number of individuals in idealized population
-        size_t                                      matrixSize;                                 //!< Number of elements in a row or column of the rate matrix
-        double                                      precision;                                  //!< Precision for exponentiation through repeated squaring
-
         void                                        decomposeState(int state, int &i, int &nt1, int &nt2) ;
         double                                      mutCoeff(int nt1, int nt2) ;
         double                                      computeProbBoundaryMutation(int state1, int state2) ;
@@ -83,6 +76,16 @@ namespace RevBayesCore {
 
         void                                        computeExponentialMatrixByRepeatedSquaring(double t, TransitionProbabilityMatrix& P ) const ;
         inline void                                 squareMatrix( TransitionProbabilityMatrix& P, TransitionProbabilityMatrix& P2) const ;
+        
+        
+        std::vector<double>                         rho;                                        //!< Holds the exchangeabilities
+        Simplex                                     pi;                                         //!< Holds the stationary frequencies
+        
+        size_t                                      N;                                            //!< Number of individuals in idealized population
+        size_t                                      matrixSize;                                 //!< Number of elements in a row or column of the rate matrix
+        double                                      precision;                                  //!< Precision for exponentiation through repeated squaring
+        
+        
     };
 
 }

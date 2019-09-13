@@ -44,8 +44,8 @@ class Assignable;
         using RateMatrix::getRate;
         
         RateMatrix_PoMo4(size_t n);                                                  //!< Construct rate matrix with n states
-        RateMatrix_PoMo4(size_t n,  const size_t vps, const std::vector<double> &mr, const std::vector<double> &sc);  //!< Construct rate matrix with n states, a vector of mutation rates, and a vector of selection coefficients
-        RateMatrix_PoMo4(size_t n,  const size_t vps, const RateGenerator &mm, const std::vector<double> sc);  //!< Construct rate matrix with n states, a matrix of mutation rates, and a vector of selection coefficients
+        RateMatrix_PoMo4(size_t n, const size_t vps, const std::vector<double> &mr, const std::vector<double> &sc);  //!< Construct rate matrix with n states, a vector of mutation rates, and a vector of selection coefficients
+        RateMatrix_PoMo4(size_t n, const size_t vps, const RateGenerator &mm, const std::vector<double> sc);  //!< Construct rate matrix with n states, a matrix of mutation rates, and a vector of selection coefficients
         
         virtual                         ~RateMatrix_PoMo4(void);                     //!< Destructor
         
@@ -59,22 +59,23 @@ class Assignable;
         void                                        update(void);
         void                                        setMutationRates(const std::vector<double>& mr);
         void                                        setMutationRates(const RateGenerator& mm);
+        void                                        setMutationRates(const std::vector<double>& r, const Simplex& s);
         void                                        setSelectionCoefficients(const std::vector<double>& sc);
         
         
     private:
         void                                        buildRateMatrix(void);
         double                                      computeEntryFromMoranProcessWithSelection(size_t state1, size_t state2, double& count1);
-        void                                        computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const;
-        inline void                                 squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const;
+        void                                        computeExponentialMatrixByRepeatedSquaring(double t, TransitionProbabilityMatrix& P ) const;
+        inline void                                 squareMatrix( TransitionProbabilityMatrix& P, TransitionProbabilityMatrix& P2) const;
         
         
-        size_t                                      N;                        //!< Number of individuals in idealized population
-        size_t                                      matrixSize;             //!< Number of elements in a row or column of the rate matrix
-        std::vector < std::vector < double > >      mu;                        //!< Matrix of 12 mutation rates and 0s elsewhere
-        std::vector < double >                      s;                        //!< Vector of 4 selection coefficients
-        double                                      precision;              //!< Precision for exponentiation through repeated squaring
-        std::vector<double>                         stationary_freqs;       //!< Holds the stationary frequencies
+        size_t                                      N;                          //!< Number of individuals in idealized population
+        size_t                                      matrixSize;                 //!< Number of elements in a row or column of the rate matrix
+        std::vector < std::vector < double > >      mu;                         //!< Matrix of 12 mutation rates and 0s elsewhere
+        std::vector < double >                      s;                          //!< Vector of 4 selection coefficients
+        double                                      precision;                  //!< Precision for exponentiation through repeated squaring
+        std::vector<double>                         stationary_freqs;           //!< Holds the stationary frequencies
         
     };
     
