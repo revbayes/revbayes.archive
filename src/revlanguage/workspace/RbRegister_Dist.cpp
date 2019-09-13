@@ -557,6 +557,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 		AddDistribution< Integer                    >( new Dist_mixture<Integer>() );
         AddDistribution< Probability                >( new Dist_mixture<Probability>() );
         AddDistribution< Simplex                    >( new Dist_mixture<Simplex>() );
+        AddDistribution< ModelVector<Real>          >( new Dist_mixture< ModelVector<Real> >() );
+        AddDistribution< ModelVector<RealPos>       >( new Dist_mixture< ModelVector<RealPos> >() );
 //        AddDistribution< RateGenerator              >( new Dist_mixture<RateGenerator>() );
         addDistribution( new Dist_mixture<RateGenerator>() );
         AddDistribution< TimeTree                   >( new Dist_mixture<TimeTree>() );

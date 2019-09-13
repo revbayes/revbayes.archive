@@ -345,6 +345,8 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_MixtureAllocation<Integer>( ) );
         addTypeWithConstructor( new Move_MixtureAllocation<Probability>( ) );
         addTypeWithConstructor( new Move_MixtureAllocation<Simplex>( ) );
+        addTypeWithConstructor( new Move_MixtureAllocation<ModelVector<RealPos> >( ) );
+        addTypeWithConstructor( new Move_MixtureAllocation<ModelVector<Real> >( ) );
         addTypeWithConstructor( new Move_MixtureAllocation<RateGenerator>( ) );
         addTypeWithConstructor( new Move_MixtureAllocation<Tree>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Real>( ) );
