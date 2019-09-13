@@ -67,7 +67,9 @@ void TreeAssemblyFunction::keep(DagNode *affecter)
     //delegate to base class
     TypedFunction< Tree >::keep( affecter );
     
-//    touchedNodeIndices.clear();
+    // SH (20190913): There seems to be an issue if we use two replicates
+    // So we need to make sure keep is only called after update!
+    update();
 }
 
 
@@ -103,7 +105,7 @@ void TreeAssemblyFunction::touch(DagNode *toucher)
 
 void TreeAssemblyFunction::update( void )
 {
-    
+
     if ( touchedNodeIndices.size() > 0 )
     {
         const std::vector<double> &v = brlen->getValue();
@@ -122,7 +124,7 @@ void TreeAssemblyFunction::update( void )
         }
         
     }
-    
+
 }
 
 

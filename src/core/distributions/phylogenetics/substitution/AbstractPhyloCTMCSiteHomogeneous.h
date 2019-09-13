@@ -802,7 +802,7 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeLnProbab
     // That means we should probabily call this function as a job,
     // where a job is defined as computing the lnProbability for a subset of the data (block)
     // Sebastian: this call is very slow; a lot of work happens in nextCycle()
-
+    
 
     // we need to check here if we still are listining to this tree for change events
     // the tree could have been replaced without telling us

@@ -202,7 +202,9 @@ void Monitor::closeStream( void )
  * @param ct combining mode (sequential or mixed)
  */
 void Monitor::combineReplicates( size_t n_reps, MonteCarloAnalysisOptions::TraceCombinationTypes ct )
-{}
+{
+    
+}
 
 
 /**

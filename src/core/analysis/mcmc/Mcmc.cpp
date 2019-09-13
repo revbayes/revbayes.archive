@@ -1098,7 +1098,7 @@ void Mcmc::redrawStartingValues( void )
         
         if ( the_node->isClamped() == false && the_node->isStochastic() == true )
         {
-            
+
             the_node->redraw();
             the_node->reInitialized();
             
@@ -1106,7 +1106,7 @@ void Mcmc::redrawStartingValues( void )
         else if ( the_node->isClamped() == true )
         {
             // make sure that the clamped node also recompute their probabilities
-            the_node->touch();
+            // the_node->touch(); // SH (20190913): This is a duplicate call and thus not necessary.
         }
         
         the_node->touch();
