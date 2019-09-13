@@ -116,22 +116,22 @@ namespace RevLanguage {
         }
         
    private:
-                            Parser(void);                                                           //!< Prevent public construction
-                            Parser(const Parser& x) {}                                              //!< Prevent copy construction
+                                Parser(void);                                                           //!< Prevent public construction
+                                Parser(const Parser& x) {}                                              //!< Prevent copy construction
 
-        Parser&             operator=(const Parser& w) { return (*this); }                          //! Prevent assignment
+        Parser&                 operator=(const Parser& w) { return (*this); }                          //! Prevent assignment
 
         // Help functions
-        ParserInfo          breakIntoLines(const std::string& cmd, std::list<std::string>& lines, bool validate) const;    //!< Break a command string buffer into Rev lines
-        ParserInfo          breakIntoLines(const std::string& cmd, std::list<std::string>& lines) const;    //!< Break a command string buffer into Rev lines
-        void                setParserMode(ParserMode mode);                                         //!< Set the parser mode
+        ParserInfo              breakIntoLines(const std::string& cmd, std::list<std::string>& lines, bool validate) const;    //!< Break a command string buffer into Rev lines
+        ParserInfo              breakIntoLines(const std::string& cmd, std::list<std::string>& lines) const;    //!< Break a command string buffer into Rev lines
+        void                    setParserMode(ParserMode mode);                                         //!< Set the parser mode
         
         // Member variables
-        ParserMode          parser_mode;                                             //!< The current parser mode
-        std::string         function_name;                                           //!< Function name of end state, if any
-        std::string         argument_label;                                          //!< Argument label of end state, if any
-        SyntaxVariable*     base_variable_expr;                                       //!< Base variable expression of end state
-        RevPtr<RevVariable>    base_variable;                                           //!< Base variable of end state
+        ParserMode              parser_mode;                                             //!< The current parser mode
+        std::string             function_name;                                           //!< Function name of end state, if any
+        std::string             argument_label;                                          //!< Argument label of end state, if any
+        SyntaxVariable*         base_variable_expr;                                       //!< Base variable expression of end state
+        RevPtr<RevVariable>     base_variable;                                           //!< Base variable of end state
 
     };
 

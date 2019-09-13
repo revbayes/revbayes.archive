@@ -525,6 +525,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< MatrixReal                 >( new Dist_decomposedInverseWishart() );
 
         /* Empirical sample distributions (in folder "distributions/mixture") */
+        AddDistribution< ModelVector<Natural>       >( new Dist_EmpiricalSample<Natural>());
+        AddDistribution< ModelVector<Real>          >( new Dist_EmpiricalSample<Real>());
+        AddDistribution< ModelVector<RealPos>       >( new Dist_EmpiricalSample<RealPos>());
         AddDistribution< ModelVector<TimeTree>      >( new Dist_EmpiricalSample<TimeTree>());
         AddDistribution< ModelVector<TimeTree>      >( new Dist_WeightedSample<TimeTree>());
         AddDistribution< ModelVector<AbstractHomologousDiscreteCharacterData>      >( new Dist_WeightedSample<AbstractHomologousDiscreteCharacterData>());

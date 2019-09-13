@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <string>
 
+#include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "MemberProcedure.h"
 #include "MethodTable.h"
@@ -11,10 +12,10 @@
 #include "Probability.h"
 #include "RlUserInterface.h"
 #include "RlUtils.h"
-#include "ArgumentRule.h"
 #include "Integer.h"
 #include "RbException.h"
 #include "RevVariable.h"
+#include "RlBoolean.h"
 #include "TypeSpec.h"
 
 namespace RevLanguage { class Argument; }
@@ -24,16 +25,7 @@ using namespace RevLanguage;
 Trace::Trace() : WorkspaceToCoreWrapperObject<RevBayesCore::TraceNumeric>()
 {
 
-    ArgumentRules* summarizeArgRules = new ArgumentRules();
-    std::vector<TypeSpec> burninTypes;
-    burninTypes.push_back( Probability::getClassTypeSpec() );
-    burninTypes.push_back( Integer::getClassTypeSpec() );
-    summarizeArgRules->push_back( new ArgumentRule("burnin", burninTypes, "The fraction/number of samples to discregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25)) );
-    methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
-    
-    
-    ArgumentRules* get_values_arg_rules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getValues", RlUtils::Void, get_values_arg_rules) );
+    initMethods();
 
 }
 
@@ -41,16 +33,7 @@ Trace::Trace() : WorkspaceToCoreWrapperObject<RevBayesCore::TraceNumeric>()
 Trace::Trace(const RevBayesCore::TraceNumeric &t) : WorkspaceToCoreWrapperObject<RevBayesCore::TraceNumeric>( new RevBayesCore::TraceNumeric( t ) )
 {
 
-    ArgumentRules* summarizeArgRules = new ArgumentRules();
-    std::vector<TypeSpec> burninTypes;
-    burninTypes.push_back( Probability::getClassTypeSpec() );
-    burninTypes.push_back( Integer::getClassTypeSpec() );
-    summarizeArgRules->push_back( new ArgumentRule("burnin", burninTypes, "The fraction/number of samples to discregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.25)) );
-    methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
-    
-    
-    ArgumentRules* get_values_arg_rules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "getValues", RlUtils::Void, get_values_arg_rules) );
+    initMethods();
 
 }
 
@@ -84,8 +67,46 @@ void Trace::constructInternalObject( void )
 /* Map calls to member methods */
 RevPtr<RevVariable> Trace::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
-    
-    if (name == "summarize")
+    if ( name == "setBurnin" )
+    {
+        found = true;
+
+        int burnin = 0;
+
+        RevObject& b = args[0].getVariable()->getRevObject();
+        if ( b.isType( Integer::getClassTypeSpec() ) )
+        {
+            burnin = (int)static_cast<const Integer &>(b).getValue();
+        }
+        else
+        {
+            double burninFrac = static_cast<const Probability &>(b).getValue();
+            burnin = int( floor( value->size()*burninFrac ) );
+        }
+
+        this->value->setBurnin( burnin );
+
+        return NULL;
+    }
+    else if ( name == "size" || name == "getNumberSamples" )
+    {
+        found = true;
+
+        bool post = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getValue();
+
+        int n = (int)this->value->size(post);
+
+        return new RevVariable( new Natural( n ) );
+    }
+    else if ( name == "getBurnin" )
+    {
+        found = true;
+
+        int n = this->value->getBurnin();
+
+        return new RevVariable( new Natural( n ) );
+    }
+    else if (name == "summarize")
     {
         found = true;
 
@@ -111,8 +132,13 @@ RevPtr<RevVariable> Trace::executeMethod(std::string const &name, const std::vec
     {
         found = true;
         
-        const std::vector<double> &vals = value->getValues();
-        
+        const std::vector<double> &vals_tmp = value->getValues();
+        size_t burnin = value->getBurnin();
+        std::vector<double> vals = std::vector<double>(vals_tmp.size() - burnin, 0);
+        for (size_t i=burnin; i<vals_tmp.size(); ++i)
+        {
+            vals[i-burnin] = vals_tmp[i];
+        }
         bool positive = true;
         for (size_t i=0; i<vals.size(); ++i)
         {
@@ -183,6 +209,34 @@ const TypeSpec& Trace::getTypeSpec( void ) const
     static TypeSpec type_spec = getClassTypeSpec();
     
     return type_spec;
+}
+
+
+void Trace::initMethods( void )
+{
+    ArgumentRules* burninArgRules = new ArgumentRules();
+    std::vector<TypeSpec> burninTypes;
+    burninTypes.push_back( Probability::getClassTypeSpec() );
+    burninTypes.push_back( Integer::getClassTypeSpec() );
+    burninArgRules->push_back( new ArgumentRule("burnin",      burninTypes, "The fraction/number of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    this->methods.addFunction( new MemberProcedure( "setBurnin", RlUtils::Void, burninArgRules) );
+
+    ArgumentRules* getBurninArgRules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "getBurnin", Natural::getClassTypeSpec(), getBurninArgRules) );
+
+    ArgumentRules* summarizeArgRules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
+
+    ArgumentRules* get_values_arg_rules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "getValues", RlUtils::Void, get_values_arg_rules) );
+
+    ArgumentRules* getNumberSamplesArgRules = new ArgumentRules();
+    getNumberSamplesArgRules->push_back( new ArgumentRule("post", RlBoolean::getClassTypeSpec(), "Get the post-burnin number of samples?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false)) );
+    this->methods.addFunction( new MemberProcedure( "getNumberSamples", Natural::getClassTypeSpec(), getNumberSamplesArgRules) );
+
+    ArgumentRules* getSizeArgRules = new ArgumentRules();
+    getSizeArgRules->push_back( new ArgumentRule("post", RlBoolean::getClassTypeSpec(), "Get the post-burnin number of samples?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false)) );
+    this->methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), getSizeArgRules) );
 }
 
 

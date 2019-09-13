@@ -351,7 +351,7 @@ void Mcmc::finishMonitors( size_t n_reps, MonteCarloAnalysisOptions::TraceCombin
             monitors[i].closeStream();
             
             // combine results if we used more than one replicate
-            if ( n_reps > 1 )
+            if ( n_reps > 1 && tc != MonteCarloAnalysisOptions::NONE )
             {
                 monitors[i].combineReplicates( n_reps, tc );
             }

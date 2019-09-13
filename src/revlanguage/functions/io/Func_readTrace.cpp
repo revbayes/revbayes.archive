@@ -182,7 +182,7 @@ RevPtr<RevVariable> Func_readTrace::execute( void )
         else
         {
             double burninFrac = static_cast<const Probability &>(b).getValue();
-            burnin = int( floor( rv->getValue().size()*burninFrac ) );
+            burnin = int( floor( it->size()*burninFrac ) );
         }
 
         it->computeStatistics();

@@ -7,6 +7,7 @@
 namespace po = boost::program_options;
 using po::variables_map;
 
+#include "Parser.h"
 #include "RbVersion.h"
 #include "RbException.h"
 #include "RbSettings.h"
@@ -15,6 +16,7 @@ using po::variables_map;
 #include "RlCommandLineOutputStream.h"
 #include "RlUserInterface.h"
 #include "StringUtilities.h"
+#include "Workspace.h"
 
 #ifdef RB_MPI
 #include <mpi.h>

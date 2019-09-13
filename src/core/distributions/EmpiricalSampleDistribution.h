@@ -425,7 +425,7 @@ void RevBayesCore::EmpiricalSampleDistribution<valueType>::setValue(RbVector<val
     {
         TypedDistribution<valueType> *base_distribution_clone = base_distribution->clone();
         base_distribution_instances[i] = base_distribution_clone;
-        base_distribution_clone->setValue( (*v)[i].clone() );
+        base_distribution_clone->setValue( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( (*v)[i]) );
     }
     
 #ifdef RB_MPI
