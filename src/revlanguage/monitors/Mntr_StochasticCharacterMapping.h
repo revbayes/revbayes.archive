@@ -9,14 +9,17 @@
 #ifndef __RevBayes_development_branch__Mntr_StochasticCharacterMapping__
 #define __RevBayes_development_branch__Mntr_StochasticCharacterMapping__
 
-#include "StochasticCharacterMappingMonitor.h"
-#include "RlMonitor.h"
-
 #include <ostream>
-#include <string>
+#include <vector>
+
+#include "RlMonitor.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
 
 
 namespace RevLanguage {
+class TypeSpec;
     
     class Mntr_StochasticCharacterMapping : public Monitor {
         

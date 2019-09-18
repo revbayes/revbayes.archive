@@ -1,16 +1,15 @@
 #ifndef AbstractTaxonData_H
 #define AbstractTaxonData_H
 
+#include <stddef.h>
+#include <set>
+#include <iosfwd>
+
 #include "Cloneable.h"
 #include "Taxon.h"
 
-#include <string>
-#include <set>
-
 namespace RevBayesCore {
     
-    class CharacterState;
-
     /**
      * Abstract class for all taxon objects.
      *

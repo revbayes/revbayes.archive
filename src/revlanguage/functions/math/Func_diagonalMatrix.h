@@ -1,12 +1,18 @@
 #ifndef Func_diagonalMatrix_H
 #define Func_diagonalMatrix_H
 
-#include "Real.h"
-#include "Procedure.h"
+#include <iosfwd>
+#include <vector>
 
-#include <string>
+#include "Procedure.h"
+#include "RevPtr.h"
+
+namespace RevBayesCore { class RbHelpReference; }
 
 namespace RevLanguage {
+class ArgumentRules;
+class RevVariable;
+class TypeSpec;
     
     /**
      * \brief Create a diagonal matrix.

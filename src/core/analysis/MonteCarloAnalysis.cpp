@@ -1,16 +1,30 @@
+#include <cmath>
+#include <cstddef>
+#include <cstdlib>
+#include <ostream>
+#include <string>
+#include <type_traits>
+#include <vector>
+
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-
 #include "AbstractFileMonitor.h"
 #include "DagNode.h"
 #include "MonteCarloAnalysis.h"
 #include "MonteCarloSampler.h"
-#include "MpiUtilities.h"
 #include "ProgressBar.h"
 #include "RlUserInterface.h"
-
-#include <algorithm>
-#include <cmath>
+#include "Cloneable.h"
+#include "Model.h"
+#include "Monitor.h"
+#include "MonteCarloAnalysisOptions.h"
+#include "Parallelizable.h"
+#include "RbException.h"
+#include "RbFileManager.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "StoppingRule.h"
+#include "Trace.h"
 
 
 using namespace RevBayesCore;
@@ -28,14 +42,7 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r, MonteCarl
 {
     
     runs[0] = m;
-
-#ifdef RB_MPI
-    MPI_Comm analysis_comm;
-    MPI_Comm_split(MPI_COMM_WORLD, active_PID, pid, &analysis_comm);
-    resetReplicates(analysis_comm);
-#else
     resetReplicates();
-#endif
     
 }
 
@@ -255,7 +262,7 @@ void MonteCarloAnalysis::disableScreenMonitors(bool all)
         if ( runs[i] != NULL )
         {
             
-            runs[i]->disableScreenMonitor(all, i);
+            return runs[i]->disableScreenMonitor(all, i);
         }
         
     }
@@ -423,11 +430,7 @@ void MonteCarloAnalysis::removeMonitors( void )
 /**
  * Reset the replicates.
  */
-#ifdef RB_MPI
-void MonteCarloAnalysis::resetReplicates( const MPI_Comm &analysis_comm )
-#else
 void MonteCarloAnalysis::resetReplicates( void )
-#endif
 {
     
     // free the runs
@@ -539,7 +542,6 @@ void MonteCarloAnalysis::resetReplicates( void )
         
     }
     
-    // get new random starting values
     size_t replicate_start = size_t(floor( (double(pid-active_PID) / num_processes ) * replicates ) ) + active_PID;
     
     RandomNumberGenerator *rng = GLOBAL_RNG;
@@ -575,10 +577,6 @@ void MonteCarloAnalysis::resetReplicates( void )
         
     }
     
-    // to be safe, we should synchronize the random number generators
-#ifdef RB_MPI
-    MpiUtilities::synchronizeRNG( analysis_comm );
-#endif
 }
 
 
@@ -796,9 +794,6 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
 #ifdef RB_MPI
     // wait until all replicates complete
     MPI_Barrier( analysis_comm );
-    
-    // to be safe, we should synchronize the random number generators
-    MpiUtilities::synchronizeRNG( analysis_comm );
 #endif
     
 }
@@ -980,11 +975,7 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingR
 #ifdef RB_MPI
     // wait until all replicates complete
     MPI_Barrier( MPI_COMM_WORLD );
-    
-    // to be safe, we should synchronize the random number generators
-    MpiUtilities::synchronizeRNG( MPI_COMM_WORLD );
 #endif
-    
     
 }
 
@@ -995,13 +986,7 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingR
 void MonteCarloAnalysis::setActivePIDSpecialized(size_t a, size_t n)
 {
     
-#ifdef RB_MPI
-    MPI_Comm analysis_comm;
-    MPI_Comm_split(MPI_COMM_WORLD, active_PID, pid, &analysis_comm);
-    resetReplicates(analysis_comm);
-#else
     resetReplicates();
-#endif
     
 }
 
@@ -1009,11 +994,7 @@ void MonteCarloAnalysis::setActivePIDSpecialized(size_t a, size_t n)
 /**
  * Set the model by delegating the model to the Monte Carlo samplers (replicates).
  */
-#ifdef RB_MPI
-void MonteCarloAnalysis::setModel(Model *m, bool redraw, const MPI_Comm &analysis_comm)
-#else
 void MonteCarloAnalysis::setModel(Model *m, bool redraw)
-#endif
 {
     
     // reset the counters for the move schedules
@@ -1038,11 +1019,6 @@ void MonteCarloAnalysis::setModel(Model *m, bool redraw)
         
     }
     
-    
-#ifdef RB_MPI
-    resetReplicates(analysis_comm);
-#else
     resetReplicates();
-#endif
     
 }

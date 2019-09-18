@@ -8,12 +8,11 @@
      *
      */
 
-#include <stdio.h>
-
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { template <class valueType> class TypedDagNode; }
 #ifndef StudentTDistribution_H
 #define StudentTDistribution_H
 
-#include "TypedDagNode.h"
 #include "ContinuousDistribution.h"
 
 namespace RevBayesCore {

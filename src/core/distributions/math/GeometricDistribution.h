@@ -2,15 +2,19 @@
 #define GeometricDistribution_H
 
 #include "TypedDistribution.h"
-#include "TypedDagNode.h"
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class TypedDagNode;
     
     /**
      * @brief Geometric distribution class.
      *
-     * The geometric distribution represents
-     * Instances of this class can be associated to stochastic variables.
+     * The geometric distribution represents a family of distributions defined on the natural numbers.
+     * Instances of this class can be associated to stochastic variables. The Geometric Distribution has 1 parameter:
+     * @param p The probability of success in a Bernoulli trial
+     *
+     *
      */
     class GeometricDistribution : public TypedDistribution<long> {
         

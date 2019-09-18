@@ -1,10 +1,9 @@
 #ifndef Taxon_H
 #define Taxon_H
 
-#include "TimeInterval.h"
-
-#include <string>
 #include <ostream>
+
+#include "TimeInterval.h"
 
 namespace RevBayesCore {
     

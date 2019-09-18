@@ -1,14 +1,31 @@
+#include <stddef.h>
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "MetropolisHastingsMove.h"
-#include "ModelVector.h"
 #include "Move_SpeciesSubtreeScale.h"
 #include "SpeciesSubtreeScaleProposal.h"
-#include "RbException.h"
 #include "RealPos.h"
 #include "RlTimeTree.h"
-#include "TypedDagNode.h"
 #include "TypeSpec.h"
+#include "Argument.h"
+#include "MemberProcedure.h"
+#include "MethodTable.h"
+#include "Move.h"
+#include "RbHelpReference.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlMove.h"
+#include "RlUtils.h"
+#include "StochasticNode.h"
+
+namespace RevBayesCore { class Proposal; }
+namespace RevBayesCore { class Tree; }
+namespace RevBayesCore { template <class valueType> class TypedDagNode; }
 
 
 using namespace RevLanguage;

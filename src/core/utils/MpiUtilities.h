@@ -1,11 +1,15 @@
-#ifndef MpiUtilities_H
+//
+//  MpiUtilities.h
+//  revbayes-proj
+//
+//  Created by Michael Landis on 4/2/15.
+//  Copyright (c) 2015 Michael Landis. All rights reserved.
+//
 
-#ifdef RB_MPI
-#include <mpi.h>
-#endif
+#ifndef __revbayes_proj__MpiUtilities__
+#define __revbayes_proj__MpiUtilities__
 
 #include <sstream>
-#include <string>
 
 namespace RevBayesCore {
     
@@ -17,14 +21,10 @@ namespace RevBayesCore {
         void DebugMsg(const std::string& s, int x);
         void DebugMsg(const std::string& s, double x);
         void DebugMsgPid(const std::string& s, int pid);
-        
-#ifdef RB_MPI
-        void synchronizeRNG(const MPI_Comm &analysis_comm);
-#endif
 
 
     }
 }
 
-#endif /* MpiUtilities_H */
+#endif /* defined(__revbayes_proj__MpiUtilities__) */
 

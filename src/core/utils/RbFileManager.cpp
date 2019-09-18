@@ -1,18 +1,17 @@
-#include "RbException.h"
-#include "RbFileManager.h"
-#include "RbSettings.h"
-#include "StringUtilities.h"
-
+#include <sys/stat.h>
+#include <stdio.h>
+#include <sys/types.h> // IWYU pragma: keep
 #include <iostream>
 #include <string>
 #include <cstring>
-#include <sys/stat.h>
 #include <cstdlib>
 #include <algorithm>
+#include <vector>
 
-#ifndef RB_XCODE
-#include <boost/filesystem.hpp>
-#endif
+#include "RbFileManager.h"
+#include "RbSettings.h"
+#include "StringUtilities.h"
+#include "boost/filesystem/path.hpp"
 
 #ifdef RB_WIN
 #	include <dirent.h>

@@ -1,11 +1,3 @@
-//
-//  StochasticCharacterMappingMonitor.h
-//  RevBayes_development_branch
-//
-//  Created by will freyman on 12/14/16.
-//  Copyright (c) 2016 will freyman. All rights reserved.
-//
-
 #ifndef RevBayes_development_branch_StochasticCharacterMappingMonitor_h
 #define RevBayes_development_branch_StochasticCharacterMappingMonitor_h
 
@@ -178,9 +170,9 @@ void StochasticCharacterMappingMonitor<characterType>::monitorVariables(unsigned
         sse_process = dynamic_cast<StateDependentSpeciationExtinctionProcess*>( &nodes[0]->getDistribution() );
         num_nodes = tree->getValue().getNumberOfNodes();
     }
-
-    std::vector<std::string*> character_histories( num_nodes );
-
+        
+    std::vector<std::string> character_histories( num_nodes );
+    
     // draw stochastic character map
     if ( ctmc != NULL )
     {
@@ -203,8 +195,8 @@ void StochasticCharacterMappingMonitor<characterType>::monitorVariables(unsigned
 
         // print out this branch's character history in the format
         // used by SIMMAP and phytools
-        out_stream << *character_histories[ node_index ];
-
+        out_stream << character_histories[ node_index ];
+        
     }
 
     if ( include_simmaps == true )

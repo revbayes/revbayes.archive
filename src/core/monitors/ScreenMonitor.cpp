@@ -1,9 +1,14 @@
 #include "ScreenMonitor.h"
-#include "DagNode.h"
-#include "Model.h"
 
 #include <cmath>
 #include <iomanip>
+#include <iostream>
+#include <string>
+
+#include "DagNode.h"
+#include "Model.h"
+#include "Cloneable.h"
+#include "StringUtilities.h"
 
 using namespace RevBayesCore;
 

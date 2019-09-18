@@ -1,29 +1,53 @@
+#include <boost/assign/list_of.hpp>
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <map>
+#include <ostream>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "SSE_ODE.h"
-#include "Clade.h"
 #include "CladogeneticSpeciationRateMatrix.h"
 #include "DistributionExponential.h"
 #include "HomologousDiscreteCharacterData.h"
 #include "TimeVaryingStateDependentSpeciationExtinctionProcess.h"
-#include "DeterministicNode.h"
-#include "MatrixReal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RateMatrix_JC.h"
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
-#include "RealPos.h"
 #include "RlString.h"
-#include "StandardState.h"
 #include "StochasticNode.h"
 #include "TopologyNode.h"
-
-#include <algorithm>
-#include <cmath>
-#include <boost/assign/list_of.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/numeric/odeint.hpp>
+#include "AbstractDiscreteTaxonData.h"
+#include "AbstractTaxonData.h"
+#include "Cloneable.h"
+#include "DiscreteCharacterState.h"
+#include "DiscreteTaxonData.h"
+#include "NaturalNumbersState.h"
+#include "RateGenerator.h"
+#include "RbBitSet.h"
+#include "RbException.h"
+#include "RbSettings.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "Simplex.h"
+#include "StringUtilities.h"
+#include "Taxon.h"
+#include "Tree.h"
+#include "TreeChangeEventHandler.h"
+#include "TreeDiscreteCharacterData.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
+#include "boost/numeric/odeint.hpp" // IWYU pragma: keep
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { template <class valueType> class RbOrderedSet; }
 
 
 using namespace RevBayesCore;
@@ -970,7 +994,8 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyDrawJointC
 }
 
 
-void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyFlagNodeDirty( const RevBayesCore::TopologyNode &n ) {
+void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyFlagNodeDirty( const RevBayesCore::TopologyNode &n )
+{
     
     // we need to flag this node and all ancestral nodes for recomputation
     size_t index = n.getIndex();
@@ -999,7 +1024,7 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyFlagNodeDi
 }
 
 
-void TimeVaryingStateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::vector<std::string*>& character_histories)
+void TimeVaryingStateDependentSpeciationExtinctionProcess::drawStochasticCharacterMap(std::vector<std::string>& character_histories)
 {
     // first populate partial likelihood vectors along all the branches
     sample_character_history = true;
@@ -1113,7 +1138,7 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::drawStochasticCharact
     }
     
     // save the character history for the root
-    std::string* simmap_string = new std::string("{" + StringUtilities::toString(a) + "," + StringUtilities::toString( root.getBranchLength() ) + "}");
+    std::string simmap_string = "{" + StringUtilities::toString(a) + "," + StringUtilities::toString( root.getBranchLength() ) + "}";
     character_histories[node_index] = simmap_string;
     
     // recurse towards tips
@@ -1131,7 +1156,7 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::drawStochasticCharact
 }
 
 
-void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string*>& character_histories)
+void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string>& character_histories)
 {
     
     size_t node_index = node.getIndex();
@@ -1317,7 +1342,7 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyDrawStocha
         average_extinction[node_index] = total_extinction_rate / num_dts;
         
         // save the character history for this branch
-        character_histories[node_index] = new std::string(simmap_string);
+        character_histories[node_index] = simmap_string;
         
     }
     else
@@ -1465,7 +1490,7 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyDrawStocha
         simmap_string = simmap_string + "}";
         
         // save the character history for this branch
-        character_histories[node_index] = new std::string(simmap_string);
+        character_histories[node_index] = simmap_string;
         
         // calculate average diversification rates on this branch
         average_speciation[node_index] = total_speciation_rate / num_dts;
@@ -1515,7 +1540,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeVaryingStateDependentSpeciatio
         
         // simulate character history over the tree conditioned on the new tip data
         size_t num_nodes = value->getNumberOfNodes();
-        std::vector<std::string*> character_histories(num_nodes);
+        std::vector<std::string> character_histories(num_nodes);
         drawStochasticCharacterMap(character_histories);
         static_cast<TreeDiscreteCharacterData*>(this->value)->setTimeInStates(time_in_states);
         
@@ -1940,7 +1965,7 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::setValue(Tree *v, boo
     size_t num_nodes = value->getNumberOfNodes();
     if (num_nodes > 2)
     {
-        std::vector<std::string*> character_histories(num_nodes);
+        std::vector<std::string> character_histories(num_nodes);
         drawStochasticCharacterMap(character_histories);
     }
     static_cast<TreeDiscreteCharacterData*>(this->value)->setTimeInStates(time_in_states);
