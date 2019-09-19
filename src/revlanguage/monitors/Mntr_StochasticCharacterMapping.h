@@ -20,13 +20,13 @@
 
 namespace RevLanguage {
 class TypeSpec;
-    
+
     class Mntr_StochasticCharacterMapping : public Monitor {
-        
+
     public:
-        
+
         Mntr_StochasticCharacterMapping(void);                                                                                            //!< Default constructor
-        
+
         // Basic utility functions
         virtual Mntr_StochasticCharacterMapping*  clone(void) const;                                                                      //!< Clone object
         void                                            constructInternalObject(void);                                                          //!< We construct the a new internal monitor.
@@ -36,11 +36,11 @@ class TypeSpec;
         const MemberRules&                              getParameterRules(void) const;                                                          //!< Get member rules (const)
         virtual const TypeSpec&                         getTypeSpec(void) const;                                                                //!< Get language type of the object
         virtual void                                    printValue(std::ostream& o) const;                                                      //!< Print value (for user)
-        
+
     protected:
-        
+
         void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
-        
+
         std::vector<RevPtr<const RevVariable> >         vars;
         RevPtr<const RevVariable>                       filename;
         RevPtr<const RevVariable>                       printgen;
@@ -51,9 +51,10 @@ class TypeSpec;
         RevPtr<const RevVariable>                       append;
         RevPtr<const RevVariable>                       include_simmap;
         RevPtr<const RevVariable>                       use_simmap_default;
+        RevPtr<const RevVariable>                       index;
 
     };
-    
+
 }
 
 
