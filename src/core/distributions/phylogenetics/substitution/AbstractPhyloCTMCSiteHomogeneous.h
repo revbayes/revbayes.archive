@@ -1271,7 +1271,11 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawStochasticCha
         std::string simmap_string = "{" + end_states[root_index][site].getStringValue() + "," + StringUtilities::toString( root.getBranchLength() ) + "}";
         character_histories[root_index] = simmap_string;
 
-        // determine the mixture component (if any)
+        // the mixture components are in a vector that is a flattened version of a
+        // matrix with rate components in columns and matrix components in rows.
+        // the matrix is in row-major order.
+        // here, we compute the row and column indices from the vector index.
+
         size_t mixture_component_index = this->sampled_site_mixtures[site];
 
         // get the number of rate categories
@@ -1281,14 +1285,14 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawStochasticCha
         	num_site_rates = this->site_rates->getValue().size();
         }
 
-        // compute the rate
+        // determine the rate (column index)
         sampled_site_rate_component = 0;
         if (this->site_rates != NULL)
         {
         	sampled_site_rate_component = mixture_component_index % num_site_rates;
         }
 
-        // compute the matrix
+        // determine the matrix (row index)
         sampled_site_matrix_component = 0;
         if (this->site_matrix_probs != NULL)
         {
@@ -1333,7 +1337,7 @@ bool RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawSt
     std::vector<double> transition_times;
     transition_states.push_back(start_state);
 
-    // get the rate matrix for this branch (or site)
+    // get the rate matrix for this branch (or site if using a mixture of matrices over sites)
     RateMatrix_JC jc(this->num_chars);
     const RateGenerator *rate_matrix = &jc;
     if ( this->branch_heterogeneous_substitution_matrices == true )
