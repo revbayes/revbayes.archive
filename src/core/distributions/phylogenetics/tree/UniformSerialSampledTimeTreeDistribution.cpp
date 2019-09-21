@@ -229,6 +229,9 @@ double UniformSerialSampledTimeTreeDistribution::computeLnProbability( void )
 
 		// compute the probability of the coalescent event
 		lnProb += std::log(2.0) - std::log( static_cast<double>(current_num_taxa) ) - std::log( static_cast<double>(current_num_taxa - 1) );
+
+		// decrement the number of lineages after the coalescent event
+		current_num_taxa--;
 	}
 
 	// compute the node-age probabilities
@@ -286,7 +289,7 @@ std::vector<double> UniformSerialSampledTimeTreeDistribution::simulateCoalescent
     for(size_t i = 0; i < num_ages; ++i)
     {
     	// get the age of the tip
-    	double a = taxa[i].getAge();
+    	double a = taxa[i + 1].getAge();
 
     	// simulate the age of a node
     	double new_age = a + rng->uniform01() * (max_age - a);
@@ -332,6 +335,7 @@ void UniformSerialSampledTimeTreeDistribution::simulateTree( void )
         node->setSpeciesName(taxa[i].getSpeciesName());
         node->setAge(taxa[i].getAge());
         node->setNodeType( true, false, false );
+        node->setTaxon(taxa[i]);
         // add to tips
         nodes.push_back(node);
     }

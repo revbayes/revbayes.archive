@@ -94,7 +94,7 @@ namespace RevBayesCore {
         void                                                                setMcmcMode(bool tf);                                                                       //!< Change the likelihood computation to or from MCMC mode.
         void                                                                setValue(AbstractHomologousDiscreteCharacterData *v, bool f=false);                         //!< Set the current value, e.g. attach an observation (clamp)
         virtual void                                                        tipDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
-        void	                                                                updateMarginalNodeLikelihoods(void);
+        void	                                                            updateMarginalNodeLikelihoods(void);
         const TypedDagNode<Tree>*                                           getTree(void);
 
         void                                                                setClockRate(const TypedDagNode< double > *r);
@@ -109,6 +109,9 @@ namespace RevBayesCore {
         void                                                                setUseSiteMatrices(bool sm, const TypedDagNode< Simplex > *s = NULL);
         void                                                                swap_taxon_name_2_tip_index(std::string tip1, std::string tip2);
 
+        bool                                                                hasSiteRateMixture();
+        bool                                                                hasSiteMatrixMixture();
+        void                                                                getSampledMixtureComponents(size_t &site_index, size_t &rate_component, size_t &matrix_component );
 
     protected:
 
@@ -150,7 +153,6 @@ namespace RevBayesCore {
         virtual void                                                        computeRootLikelihoodsPerSiteRate( MatrixReal &rv ) const;
         virtual double                                                      sumRootLikelihood( void );
         virtual std::vector<size_t>                                         getIncludedSiteIndices();
-
 
         // members
         double                                                              lnProb;
@@ -1314,6 +1316,47 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawStochasticCha
     if (n_draws == max_draws) {
         throw RbException("Stochastic mapping failed due to numerical instability.");
     }
+
+}
+
+template<class charType>
+bool RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::hasSiteRateMixture()
+{
+	bool ret = this->num_site_rates > 1;
+	return ret;
+}
+
+template<class charType>
+bool RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::hasSiteMatrixMixture()
+{
+	bool ret = false;
+
+	if ( this->site_matrix_probs != NULL ) {
+		ret = this->site_matrix_probs->getValue().size() > 1;
+	}
+
+	return ret;
+}
+template<class charType>
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getSampledMixtureComponents(size_t &site_index, size_t &rate_component, size_t &matrix_component )
+{
+
+	// get the mixture component (in vector form)
+	size_t mixture_component_index = this->sampled_site_mixtures[site_index];
+
+	rate_component = 0;
+    if (this->site_rates != NULL)
+    {
+    	rate_component = mixture_component_index % num_site_rates;
+    }
+
+    // determine the matrix (row index)
+    matrix_component = 0;
+    if (this->site_matrix_probs != NULL)
+    {
+    	matrix_component = (mixture_component_index - rate_component) / num_site_rates;
+    }
+
 
 }
 
