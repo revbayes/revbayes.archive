@@ -21,11 +21,10 @@ namespace RevBayesCore {
      *
      * @file
 	 * Declaration and implementation of the SiteMixtureAllocationMonitor class which
-	 * monitors the ancestral states of each internal node and
-	 * prints their value into a file.
+	 * monitors the allocation of sites to mixture categories and prints their value into a file.
      *
-     * @copyright Copyright 2014-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @copyright Copyright 2015-
+     * @author The RevBayes Development Core Team (Michael R. May)
      * @version 1.0
      *
      */
@@ -160,7 +159,7 @@ void SiteMixtureAllocationMonitor<characterType>::monitorVariables(unsigned long
 		{
 			// add a separator before every new element
 			out_stream << separator;
-			out_stream << rate_components[i];
+			out_stream << rate_components[i] + 1;
 		}
 	}
 
@@ -171,7 +170,7 @@ void SiteMixtureAllocationMonitor<characterType>::monitorVariables(unsigned long
 		{
 			// add a separator before every new element
 			out_stream << separator;
-			out_stream << matrix_components[i];
+			out_stream << matrix_components[i] + 1;
 		}
 	}
 
