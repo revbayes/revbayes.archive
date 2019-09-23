@@ -16,6 +16,7 @@ help="false"
 jupyter="false"
 LOCAL_BOOST_ROOT=""
 LOCAL_BOOST_LIBRARY=""
+exec_name=""
 
 # parse command line arguments
 while echo $1 | grep ^- > /dev/null; do
@@ -77,6 +78,16 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 ' > "$HERE/CMakeLists.txt"
 
+
+if [ "${exec_name}" = "" ]; then
+    if [ "${mpi}" = "true" ]; then
+        exec_name="rb-mpi"
+    else
+        exec_name="rb"
+    fi
+fi
+
+echo "set (RB_EXEC_NAME \"${exec_name}\")" >> "$HERE/CMakeLists.txt"
 if [ "$debug" = "true" ]
 then
 echo '
@@ -269,14 +280,14 @@ ADD_LIBRARY(rb-cmd-lib ${CMD_FILES})'  >> "$HERE/cmd/CMakeLists.txt"
 
 else
 echo '
-add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
+add_executable(${RB_EXEC_NAME} ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 
-target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
+target_link_libraries(${RB_EXEC_NAME} rb-parser rb-core libs ${Boost_LIBRARIES})
 
-set_target_properties(rb PROPERTIES PREFIX "../")
+set_target_properties(${RB_EXEC_NAME} PROPERTIES PREFIX "../")
 ' >> $HERE/CMakeLists.txt
 if [ "$mpi" = "true" ] ; then
-    echo 'target_link_libraries(rb-mpi ${MPI_LIBRARIES})
+    echo 'target_link_libraries(${execRB_EXEC_NAME_name} ${MPI_LIBRARIES})
 ' >> $HERE/CMakeLists.txt
 fi
 fi

@@ -93,7 +93,7 @@ script:
 # Build
   - cd projects/cmake
   - mkdir build
-  - ./regenerate.sh -travis true ${MAYBE_MPI}
+  - ./regenerate.sh -travis true ${MAYBE_MPI} -exec_name rb
   - cd build
   - cmake .
   - make -j4
