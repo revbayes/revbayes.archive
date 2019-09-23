@@ -155,7 +155,7 @@ template <typename valType>
 RevLanguage::MethodTable RevLanguage::Dist_mixtureAnalytical<valType>::getDistributionMethods( void ) const
 {
     
-    MethodTable methods = TypedDistribution< ModelVector<valType> >::getDistributionMethods();
+    MethodTable methods = TypedDistribution< valType >::getDistributionMethods();
     
     // member functions
     ArgumentRules* get_mixture_prob_arg_rules = new ArgumentRules();
