@@ -46,6 +46,7 @@
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 #include "boost/numeric/odeint.hpp" // IWYU pragma: keep
+
 namespace RevBayesCore { class DagNode; }
 namespace RevBayesCore { template <class valueType> class RbOrderedSet; }
 
@@ -693,14 +694,14 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::drawJointConditionalA
     // now begin the root-to-tip pass, drawing ancestral states conditional on the start states
     
     // get the likelihoods of descendant nodes
-    const TopologyNode  &root               = value->getRoot();
-    size_t               node_index         = root.getIndex();
-    const TopologyNode  &left               = root.getChild(0);
-    size_t               left_index         = left.getIndex();
-    const state_type    &left_likelihoods   = node_partial_likelihoods[left_index][active_likelihood[left_index]];
-    const TopologyNode  &right              = root.getChild(1);
-    size_t               right_index        = right.getIndex();
-    const state_type    &right_likelihoods  = node_partial_likelihoods[right_index][active_likelihood[right_index]];
+    const TopologyNode          &root               = value->getRoot();
+    size_t                       node_index         = root.getIndex();
+    const TopologyNode          &left               = root.getChild(0);
+    size_t                       left_index         = left.getIndex();
+    const std::vector< double > &left_likelihoods   = node_partial_likelihoods[left_index][active_likelihood[left_index]];
+    const TopologyNode          &right              = root.getChild(1);
+    size_t                       right_index        = right.getIndex();
+    const std::vector< double > &right_likelihoods  = node_partial_likelihoods[right_index][active_likelihood[right_index]];
     
     
     std::map<std::vector<unsigned>, double> eventMap;
@@ -826,7 +827,7 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyDrawJointC
         else
         {
             // initialize the conditional likelihoods for this branch
-            state_type branch_conditional_probs = std::vector<double>(2 * num_states, 0);
+            std::vector< double > branch_conditional_probs = std::vector<double>(2 * num_states, 0);
             size_t start_state = startStates[node_index];
             branch_conditional_probs[ num_states + start_state ] = 1.0;
             
@@ -873,7 +874,7 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyDrawJointC
         // sample characters by their probability conditioned on the branch's start state going to end states
         
         // initialize the conditional likelihoods for this branch
-        state_type branch_conditional_probs = std::vector<double>(2 * num_states, 0);
+        std::vector< double > branch_conditional_probs = std::vector<double>(2 * num_states, 0);
         size_t start_state = startStates[node_index];
         branch_conditional_probs[ num_states + start_state ] = 1.0;
         
@@ -901,10 +902,10 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyDrawJointC
         // get likelihoods of descendant nodes
         const TopologyNode &left = node.getChild(0);
         size_t left_index = left.getIndex();
-        state_type left_likelihoods = node_partial_likelihoods[left_index][active_likelihood[left_index]];
+        std::vector< double > left_likelihoods = node_partial_likelihoods[left_index][active_likelihood[left_index]];
         const TopologyNode &right = node.getChild(1);
         size_t right_index = right.getIndex();
-        state_type right_likelihoods = node_partial_likelihoods[right_index][active_likelihood[right_index]];
+        std::vector< double > right_likelihoods = node_partial_likelihoods[right_index][active_likelihood[right_index]];
         
         std::map<std::vector<unsigned>, double> sample_probs;
         double sample_probs_sum = 0.0;
@@ -1036,14 +1037,14 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::drawStochasticCharact
     }
     
     // get the likelihoods of descendant nodes
-    const TopologyNode  &root               = value->getRoot();
-    size_t               node_index         = root.getIndex();
-    const TopologyNode  &left               = root.getChild(0);
-    size_t               left_index         = left.getIndex();
-    const state_type    &left_likelihoods   = node_partial_likelihoods[left_index][active_likelihood[left_index]];
-    const TopologyNode  &right              = root.getChild(1);
-    size_t               right_index        = right.getIndex();
-    const state_type    &right_likelihoods  = node_partial_likelihoods[right_index][active_likelihood[right_index]];
+    const TopologyNode          &root               = value->getRoot();
+    size_t                       node_index         = root.getIndex();
+    const TopologyNode          &left               = root.getChild(0);
+    size_t                       left_index         = left.getIndex();
+    const std::vector< double > &left_likelihoods   = node_partial_likelihoods[left_index][active_likelihood[left_index]];
+    const TopologyNode          &right              = root.getChild(1);
+    size_t                       right_index        = right.getIndex();
+    const std::vector< double > &right_likelihoods  = node_partial_likelihoods[right_index][active_likelihood[right_index]];
     
     
     // now begin the root-to-tip pass, drawing ancestral states for each time slice conditional on the start states
@@ -1164,7 +1165,7 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyDrawStocha
     // sample characters by their probability conditioned on the branch's start state going to end states
     
     // initialize the conditional likelihoods for this branch
-    state_type branch_conditional_probs = std::vector<double>(2 * num_states, 0);
+    std::vector< double > branch_conditional_probs = std::vector<double>(2 * num_states, 0);
     branch_conditional_probs[ num_states + start_state ] = 1.0;
     
     // first calculate extinction likelihoods via a backward time pass
@@ -1359,10 +1360,10 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::recursivelyDrawStocha
         // get likelihoods of descendant nodes
         const TopologyNode &left = node.getChild(0);
         size_t left_index = left.getIndex();
-        state_type left_likelihoods = node_partial_likelihoods[left_index][active_likelihood[left_index]];
+        std::vector< double > left_likelihoods = node_partial_likelihoods[left_index][active_likelihood[left_index]];
         const TopologyNode &right = node.getChild(1);
         size_t right_index = right.getIndex();
-        state_type right_likelihoods = node_partial_likelihoods[right_index][active_likelihood[right_index]];
+        std::vector< double > right_likelihoods = node_partial_likelihoods[right_index][active_likelihood[right_index]];
         
         std::map<std::vector<unsigned>, double> sample_probs;
         double sample_probs_sum = 0.0;
@@ -1734,7 +1735,7 @@ std::vector<double> TimeVaryingStateDependentSpeciationExtinctionProcess::pExtin
 {
     
     double samplingProbability = rho->getValue();
-    state_type initial_state = std::vector<double>(2*num_states,0);
+    std::vector< double > initial_state = std::vector<double>(2*num_states,0);
     for (size_t i=0; i<num_states; ++i)
     {
         initial_state[i] = 1.0 - samplingProbability;
@@ -1750,7 +1751,7 @@ std::vector<double> TimeVaryingStateDependentSpeciationExtinctionProcess::pExtin
 double TimeVaryingStateDependentSpeciationExtinctionProcess::pSurvival(double start, double end) const
 {
     
-    state_type initial_state = pExtinction(start,end);
+    std::vector< double > initial_state = pExtinction(start,end);
     
     double prob = 0.0;
     const RbVector<double> &freqs = getRootFrequencies();
@@ -2573,7 +2574,7 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::touchSpecialization(D
 /**
  * Wrapper function for the ODE time stepper function.
  */
-void TimeVaryingStateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(state_type &likelihoods, double begin_age, double end_age, bool backward_time, bool extinction_only) const
+void TimeVaryingStateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(std::vector< double > &likelihoods, double begin_age, double end_age, bool backward_time, bool extinction_only) const
 {
     
     size_t index_epoch_begin = 0;
@@ -2619,7 +2620,7 @@ void TimeVaryingStateDependentSpeciationExtinctionProcess::numericallyIntegrateP
             ode.setSerialSamplingRate( serial_sampling_rates );
         }
     
-        typedef boost::numeric::odeint::runge_kutta_dopri5< state_type > stepper_type;
+        typedef boost::numeric::odeint::runge_kutta_dopri5< std::vector< double > > stepper_type;
         boost::numeric::odeint::integrate_adaptive( make_controlled( 1E-6 , 1E-6 , stepper_type() ) , ode , likelihoods , current_begin_age , current_end_age , dt );
     
         // catch negative extinction probabilities that can result from

@@ -7,7 +7,7 @@
 #include "RbVector.h"
 
 //typedef boost::array< double , 4 > state_type;
-typedef std::vector< double > state_type;
+//typedef std::vector< double > state_type;
 
 namespace RevBayesCore {
     
@@ -30,7 +30,7 @@ namespace RevBayesCore {
         
         OdeHeterogeneousRateBirthDeath( const RbVector<double> &l, const RbVector<double> &m, double r, bool a);
         
-        void operator() ( const state_type &x , state_type &dxdt , const double t );
+        void operator() ( const std::vector< double > &x , std::vector< double > &dxdt , const double t );
 
         void                        setCurrentRateCategory(size_t i);
         

@@ -186,10 +186,10 @@ void DagNode::clearVisitFlag( const size_t& flagType )
 
     // Clear the designated flagType from all descedants (including node calling this)
     // Also clear the flags we just flagged to keep descedant searching fast
-    for (auto d: descendants)
+    for (RbOrderedSet<DagNode*>::const_iterator it=descendants.begin(); it!= descendants.end(); ++it)
     {
-        d->visit_flags[FIND_FLAG] = false;
-        d->visit_flags[flagType] = false;
+        (*it)->visit_flags[FIND_FLAG] = false;
+        (*it)->visit_flags[flagType] = false;
     }
 
 
@@ -945,7 +945,7 @@ void DagNode::removeChild(DagNode *child) const
 {
 
     // test if we even have this node as a child
-    std::vector<DagNode*>::const_iterator it = std::find( children.begin(), children.end(), child );
+    std::vector<DagNode*>::iterator it = std::find( children.begin(), children.end(), child );
     if ( it != children.end() )
     {
         children.erase( it );

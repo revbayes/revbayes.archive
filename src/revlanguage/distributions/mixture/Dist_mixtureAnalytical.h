@@ -1,11 +1,13 @@
-#ifndef Dist_mixtureVector_H
-#define Dist_mixtureVector_H
+#ifndef Dist_mixtureAnalytical_H
+#define Dist_mixtureAnalytical_H
 
-#include "VectorMixtureDistribution.h"
+#include "AnalyticalMixtureDistribution.h"
 #include "RealPos.h"
 #include "RlTypedDistribution.h"
 #include "ModelVector.h"
 #include "TypeSpec.h"
+
+#include <vector>
 
 namespace RevLanguage {
     
@@ -24,14 +26,14 @@ namespace RevLanguage {
      *
      */
     template <typename valType>
-    class Dist_mixtureVector : public TypedDistribution< ModelVector<valType> >{
+    class Dist_mixtureAnalytical : public TypedDistribution< valType >{
         
     public:
-        Dist_mixtureVector( void );
-        virtual                                        ~Dist_mixtureVector();
+        Dist_mixtureAnalytical( void );
+        virtual                                        ~Dist_mixtureAnalytical();
         
         // Basic utility functions
-        Dist_mixtureVector*                             clone(void) const;                                                                      //!< Clone the object
+        Dist_mixtureAnalytical*                         clone(void) const;                                                                      //!< Clone the object
         static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::string                                     getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
@@ -41,7 +43,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::VectorMixtureDistribution<typename valType::valueType>*            createDistribution(void) const;
+        RevBayesCore::AnalyticalMixtureDistribution<typename valType::valueType>*            createDistribution(void) const;
         
     protected:
         
@@ -52,7 +54,6 @@ namespace RevLanguage {
         
         RevPtr<const RevVariable>                       base_distributions;
         RevPtr<const RevVariable>                       probabilities;
-        RevPtr<const RevVariable>                       num_values;
         
     };
     
@@ -67,17 +68,16 @@ namespace RevLanguage {
 
 
 template <typename valType>
-RevLanguage::Dist_mixtureVector<valType>::Dist_mixtureVector() : TypedDistribution< ModelVector<valType> >(),
+RevLanguage::Dist_mixtureAnalytical<valType>::Dist_mixtureAnalytical() : TypedDistribution< valType >(),
     base_distributions( NULL ),
-    probabilities( NULL ),
-    num_values( NULL )
+    probabilities( NULL )
 {
     
 }
 
 
 template <typename valType>
-RevLanguage::Dist_mixtureVector<valType>::~Dist_mixtureVector()
+RevLanguage::Dist_mixtureAnalytical<valType>::~Dist_mixtureAnalytical()
 {
     
 }
@@ -85,15 +85,15 @@ RevLanguage::Dist_mixtureVector<valType>::~Dist_mixtureVector()
 
 
 template <typename valType>
-RevLanguage::Dist_mixtureVector<valType>* RevLanguage::Dist_mixtureVector<valType>::clone( void ) const
+RevLanguage::Dist_mixtureAnalytical<valType>* RevLanguage::Dist_mixtureAnalytical<valType>::clone( void ) const
 {
     
-    return new Dist_mixtureVector(*this);
+    return new Dist_mixtureAnalytical(*this);
 }
 
 
 template <typename valType>
-RevBayesCore::VectorMixtureDistribution< typename valType::valueType >* RevLanguage::Dist_mixtureVector<valType>::createDistribution( void ) const
+RevBayesCore::AnalyticalMixtureDistribution< typename valType::valueType >* RevLanguage::Dist_mixtureAnalytical<valType>::createDistribution( void ) const
 {
     
     // get the parameters
@@ -104,11 +104,10 @@ RevBayesCore::VectorMixtureDistribution< typename valType::valueType >* RevLangu
         RevBayesCore::TypedDistribution<typename valType::valueType>* tmp = static_cast<RevBayesCore::TypedDistribution<typename valType::valueType>* >( rl_bd[i].createDistribution() );
         bd.push_back( tmp );
     }
-
+    
     RevBayesCore::TypedDagNode< RevBayesCore::Simplex >* p = static_cast<const Simplex &>( probabilities->getRevObject() ).getDagNode();
-    long n = static_cast<const Natural &>( num_values->getRevObject() ).getValue();
-
-    RevBayesCore::VectorMixtureDistribution<typename valType::valueType>* d = new RevBayesCore::VectorMixtureDistribution<typename valType::valueType>(bd,p,n);
+    
+    RevBayesCore::AnalyticalMixtureDistribution<typename valType::valueType>* d = new RevBayesCore::AnalyticalMixtureDistribution<typename valType::valueType>(bd,p);
     
     return d;
 }
@@ -117,17 +116,17 @@ RevBayesCore::VectorMixtureDistribution< typename valType::valueType >* RevLangu
 
 /* Get Rev type of object */
 template <typename valType>
-const std::string& RevLanguage::Dist_mixtureVector<valType>::getClassType(void)
+const std::string& RevLanguage::Dist_mixtureAnalytical<valType>::getClassType(void)
 {
     
-    static std::string rev_type = "Dist_mixtureVector";
+    static std::string rev_type = "Dist_mixtureAnalytical";
     
     return rev_type;
 }
 
 /* Get class type spec describing type of object */
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Dist_mixtureVector<valType>::getClassTypeSpec(void)
+const RevLanguage::TypeSpec& RevLanguage::Dist_mixtureAnalytical<valType>::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< valType >::getClassTypeSpec() ) );
@@ -144,23 +143,23 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_mixtureVector<valType>::getClassT
  * \return Rev name of constructor function.
  */
 template <typename valType>
-std::string RevLanguage::Dist_mixtureVector<valType>::getDistributionFunctionName( void ) const
+std::string RevLanguage::Dist_mixtureAnalytical<valType>::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
-    std::string d_name = "MixtureVector";
+    std::string d_name = "MixtureAnalytical";
     
     return d_name;
 }
 
 template <typename valType>
-RevLanguage::MethodTable RevLanguage::Dist_mixtureVector<valType>::getDistributionMethods( void ) const
+RevLanguage::MethodTable RevLanguage::Dist_mixtureAnalytical<valType>::getDistributionMethods( void ) const
 {
     
-    MethodTable methods = TypedDistribution< ModelVector<valType> >::getDistributionMethods();
+    MethodTable methods = TypedDistribution< valType >::getDistributionMethods();
     
     // member functions
     ArgumentRules* get_mixture_prob_arg_rules = new ArgumentRules();
-    methods.addFunction( new DistributionMemberFunction<Dist_mixtureVector, Simplex >( "getMixtureProbabilities", this->variable, get_mixture_prob_arg_rules, true ) );
+    methods.addFunction( new DistributionMemberFunction<Dist_mixtureAnalytical, Simplex >( "getMixtureProbabilities", this->variable, get_mixture_prob_arg_rules, true ) );
     
     return methods;
 }
@@ -168,7 +167,7 @@ RevLanguage::MethodTable RevLanguage::Dist_mixtureVector<valType>::getDistributi
 
 /** Return member rules (no members) */
 template <typename valType>
-const RevLanguage::MemberRules& RevLanguage::Dist_mixtureVector<valType>::getParameterRules(void) const
+const RevLanguage::MemberRules& RevLanguage::Dist_mixtureAnalytical<valType>::getParameterRules(void) const
 {
     
     static MemberRules dist_member_rules;
@@ -178,8 +177,7 @@ const RevLanguage::MemberRules& RevLanguage::Dist_mixtureVector<valType>::getPar
     {
         dist_member_rules.push_back( new ArgumentRule( "baseDistributions", WorkspaceVector< TypedDistribution<valType> >::getClassTypeSpec(), "The base distribution for the per category values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         dist_member_rules.push_back( new ArgumentRule( "probabilities"    , Simplex::getClassTypeSpec(), "The probabilitoes for each value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        dist_member_rules.push_back( new ArgumentRule( "numValues",        Natural::getClassTypeSpec(), "The number of values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-
+        
         rules_set = true;
     }
     
@@ -188,7 +186,7 @@ const RevLanguage::MemberRules& RevLanguage::Dist_mixtureVector<valType>::getPar
 
 
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Dist_mixtureVector<valType>::getTypeSpec( void ) const
+const RevLanguage::TypeSpec& RevLanguage::Dist_mixtureAnalytical<valType>::getTypeSpec( void ) const
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -200,7 +198,7 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_mixtureVector<valType>::getTypeSp
 
 /** Set a member variable */
 template <typename valType>
-void RevLanguage::Dist_mixtureVector<valType>::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void RevLanguage::Dist_mixtureAnalytical<valType>::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "baseDistributions" )
@@ -211,13 +209,9 @@ void RevLanguage::Dist_mixtureVector<valType>::setConstParameter(const std::stri
     {
         probabilities = var;
     }
-    else if ( name == "numValues" )
-    {
-        num_values = var;
-    }
     else
     {
-        TypedDistribution< ModelVector<valType> >::setConstParameter(name, var);
+        TypedDistribution< valType >::setConstParameter(name, var);
     }
 }
 

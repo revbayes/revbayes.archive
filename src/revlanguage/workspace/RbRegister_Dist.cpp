@@ -247,7 +247,9 @@
 /* Mixture distributions (in folder "distributions/mixture") */
 #include "Dist_dpp.h"
 #include "Dist_event.h"
+#include "Dist_IID.h"
 #include "Dist_mixture.h"
+#include "Dist_mixtureAnalytical.h"
 #include "Dist_mixtureVector.h"
 #include "Dist_MultiValueEvent.h"
 #include "Dist_reversibleJumpMixtureConstant.h"
@@ -553,6 +555,13 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< ModelVector<Integer>       >( new Dist_event<Integer>()      );
         AddDistribution< ModelVector<Probability>   >( new Dist_event<Probability>()  );
         AddDistribution< MultiValueEvent            >( new Dist_MultiValueEvent()     );
+        
+        // IID distribution
+        AddDistribution< ModelVector<Real>          >( new Dist_IID<Real>()         );
+        AddDistribution< ModelVector<RealPos>       >( new Dist_IID<RealPos>()      );
+        AddDistribution< ModelVector<Natural>       >( new Dist_IID<Natural>()      );
+        AddDistribution< ModelVector<Integer>       >( new Dist_IID<Integer>()      );
+        AddDistribution< ModelVector<Probability>   >( new Dist_IID<Probability>()  );
 
         // uniform partitions prior
         AddDistribution< ModelVector<RealPos>       >( new Dist_upp<RealPos>() );
@@ -569,6 +578,18 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 //        AddDistribution< RateGenerator              >( new Dist_mixture<RateGenerator>() );
         addDistribution( new Dist_mixture<RateGenerator>() );
         AddDistribution< TimeTree                   >( new Dist_mixture<TimeTree>() );
+        
+        
+        // analytical mixture distribution
+        AddDistribution< Real                       >( new Dist_mixtureAnalytical<Real>() );
+        AddDistribution< RealPos                    >( new Dist_mixtureAnalytical<RealPos>() );
+        AddDistribution< Natural                    >( new Dist_mixtureAnalytical<Natural>() );
+        AddDistribution< Integer                    >( new Dist_mixtureAnalytical<Integer>() );
+        AddDistribution< Probability                >( new Dist_mixtureAnalytical<Probability>() );
+        AddDistribution< Simplex                    >( new Dist_mixtureAnalytical<Simplex>() );
+        AddDistribution< ModelVector<Real>          >( new Dist_mixtureAnalytical< ModelVector<Real> >() );
+        AddDistribution< ModelVector<RealPos>       >( new Dist_mixtureAnalytical< ModelVector<RealPos> >() );
+        AddDistribution< TimeTree                   >( new Dist_mixtureAnalytical<TimeTree>() );
         
         AddDistribution< ModelVector<Real>          >( new Dist_mixtureVector<Real>() );
         AddDistribution< ModelVector<RealPos>       >( new Dist_mixtureVector<RealPos>() );

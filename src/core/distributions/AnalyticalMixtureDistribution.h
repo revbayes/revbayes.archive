@@ -1,8 +1,7 @@
-#ifndef VectorMixtureDistribution_H
-#define VectorMixtureDistribution_H
+#ifndef AnalyticalMixtureDistribution_H
+#define AnalyticalMixtureDistribution_H
 
 #include "MemberObject.h"
-#include "RbVector.h"
 #include "Simplex.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
@@ -13,8 +12,8 @@ namespace RevBayesCore {
     /**
      * This class implements a generic mixture distribution between several possible values.
      *
-     * This mixture can be considered as a multinomial distribution. We specify a vector of probabilities
-     * and a vector of values. Then, a value drawn from this distribution takes each value corresponding to
+     * This mixture can be considered as a multinomial distribution. We specify a Analytical of probabilities
+     * and a Analytical of values. Then, a value drawn from this distribution takes each value corresponding to
      * its probability.
      * The values are already of the correct mixture type. You may want to apply a mixture allocation move
      * to change between the current value. The values themselves change automatically when the input parameters change.
@@ -24,19 +23,19 @@ namespace RevBayesCore {
      * @since 2014-11-18, version 1.0
      */
     template <class mixtureType>
-    class VectorMixtureDistribution : public TypedDistribution< RbVector<mixtureType> >, public MemberObject< Simplex > {
+    class AnalyticalMixtureDistribution : public TypedDistribution< mixtureType >, public MemberObject< Simplex > {
         
     public:
         // constructor(s)
-        VectorMixtureDistribution(std::vector<TypedDistribution< mixtureType > *> base_dist, const TypedDagNode< Simplex > *p, long num_elements);
-        VectorMixtureDistribution(const VectorMixtureDistribution<mixtureType> &d);
-
+        AnalyticalMixtureDistribution(std::vector<TypedDistribution< mixtureType > *> base_dist, const TypedDagNode< Simplex > *p);
+        AnalyticalMixtureDistribution(const AnalyticalMixtureDistribution<mixtureType> &d);
+        
         // public member functions
-        VectorMixtureDistribution*                              clone(void) const;                                                                      //!< Create an independent clone
+        AnalyticalMixtureDistribution*                          clone(void) const;                                                                      //!< Create an independent clone
         double                                                  computeLnProbability(void);
         void                                                    executeMethod(const std::string &n, const std::vector<const DagNode*> &args, Simplex &rv) const;     //!< Map the member methods to internal function calls
         void                                                    redrawValue(void);
-//        void                                                    setValue(RbVector<mixtureType> *v, bool f=false);
+        //        void                                                    setValue(RbAnalytical<mixtureType> *v, bool f=false);
         
         // special handling of state changes
         void                                                    getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                          //!< get affected nodes
@@ -55,8 +54,7 @@ namespace RevBayesCore {
         // private members
         std::vector<TypedDistribution< mixtureType >* >         base_distributions;
         const TypedDagNode< Simplex >*                          probabilities;
-        long                                                    num_values;
-
+        
         bool                                                    dirty;
         std::vector<double>                                     ln_probabilities;
     };
@@ -71,10 +69,9 @@ namespace RevBayesCore {
 #include <cmath>
 
 template <class mixtureType>
-RevBayesCore::VectorMixtureDistribution<mixtureType>::VectorMixtureDistribution(std::vector<TypedDistribution< mixtureType > *> base_dists, const TypedDagNode< Simplex > *p, long num_elements) : TypedDistribution< RbVector<mixtureType> >( new RbVector<mixtureType>(num_elements) ),
+RevBayesCore::AnalyticalMixtureDistribution<mixtureType>::AnalyticalMixtureDistribution(std::vector<TypedDistribution< mixtureType > *> base_dists, const TypedDagNode< Simplex > *p) : TypedDistribution< mixtureType >( new mixtureType() ),
     base_distributions( base_dists ),
-    probabilities( p ),
-    num_values( num_elements )
+    probabilities( p )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
@@ -99,10 +96,9 @@ RevBayesCore::VectorMixtureDistribution<mixtureType>::VectorMixtureDistribution(
 
 
 template <class mixtureType>
-RevBayesCore::VectorMixtureDistribution<mixtureType>::VectorMixtureDistribution( const VectorMixtureDistribution<mixtureType> &d ) : TypedDistribution< RbVector<mixtureType> >(d),
+RevBayesCore::AnalyticalMixtureDistribution<mixtureType>::AnalyticalMixtureDistribution( const AnalyticalMixtureDistribution<mixtureType> &d ) : TypedDistribution< mixtureType >(d),
     base_distributions(),
     probabilities( d.probabilities ),
-    num_values( d.num_values ),
     dirty( d.dirty ),
     ln_probabilities( d.ln_probabilities )
 {
@@ -125,16 +121,16 @@ RevBayesCore::VectorMixtureDistribution<mixtureType>::VectorMixtureDistribution(
 
 
 template <class mixtureType>
-RevBayesCore::VectorMixtureDistribution<mixtureType>* RevBayesCore::VectorMixtureDistribution<mixtureType>::clone( void ) const
+RevBayesCore::AnalyticalMixtureDistribution<mixtureType>* RevBayesCore::AnalyticalMixtureDistribution<mixtureType>::clone( void ) const
 {
     
-    return new VectorMixtureDistribution<mixtureType>( *this );
+    return new AnalyticalMixtureDistribution<mixtureType>( *this );
 }
 
 
 
 template <class mixtureType>
-double RevBayesCore::VectorMixtureDistribution<mixtureType>::computeLnProbability( void )
+double RevBayesCore::AnalyticalMixtureDistribution<mixtureType>::computeLnProbability( void )
 {
     dirty = false;
     
@@ -148,12 +144,10 @@ double RevBayesCore::VectorMixtureDistribution<mixtureType>::computeLnProbabilit
         ln_probabilities[i] = log( probs[i] );
         
         // now compute the probability for each value under this base distribution
-        for (size_t j=0; j<num_values; ++j)
-        {
-            const mixtureType &tmp_val = (*this->value)[j];
-            this_base_dist->setValue( Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( tmp_val ) );
-            ln_probabilities[i] += this_base_dist->computeLnProbability();
-        }
+        const mixtureType &tmp_val = (*this->value);
+        this_base_dist->setValue( Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( tmp_val ) );
+        ln_probabilities[i] = this_base_dist->computeLnProbability();
+
     }
     
     double max_prob = ln_probabilities[0];
@@ -179,7 +173,7 @@ double RevBayesCore::VectorMixtureDistribution<mixtureType>::computeLnProbabilit
 
 
 template <class mixtureType>
-void RevBayesCore::VectorMixtureDistribution<mixtureType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, Simplex &rv) const
+void RevBayesCore::AnalyticalMixtureDistribution<mixtureType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, Simplex &rv) const
 {
     
     if ( n == "getMixtureProbabilities" )
@@ -188,7 +182,7 @@ void RevBayesCore::VectorMixtureDistribution<mixtureType>::executeMethod(const s
         
         if (dirty == true)
         {
-            const_cast< VectorMixtureDistribution<mixtureType>* >(this)->computeLnProbability();
+            const_cast< AnalyticalMixtureDistribution<mixtureType>* >(this)->computeLnProbability();
         }
         
         // first, find the maximum probability
@@ -218,34 +212,34 @@ void RevBayesCore::VectorMixtureDistribution<mixtureType>::executeMethod(const s
     }
     else
     {
-        throw RbException("A vector-mixture distribution does not have a member method called '" + n + "'.");
+        throw RbException("A Analytical-mixture distribution does not have a member method called '" + n + "'.");
     }
     
 }
 
 
 template <class mixtureType>
-void RevBayesCore::VectorMixtureDistribution<mixtureType>::getAffected(RbOrderedSet<DagNode *> &affected, DagNode* affecter)
+void RevBayesCore::AnalyticalMixtureDistribution<mixtureType>::getAffected(RbOrderedSet<DagNode *> &affected, DagNode* affecter)
 {
-
+    
     
 }
 
 
 template <class mixtureType>
-void RevBayesCore::VectorMixtureDistribution<mixtureType>::keepSpecialization( DagNode* affecter )
+void RevBayesCore::AnalyticalMixtureDistribution<mixtureType>::keepSpecialization( DagNode* affecter )
 {
     // only do this when the toucher was our parameters
-//    if ( affecter == parameterValues && this->dag_node != NULL )
-//    {
-//        this->dag_node->keepAffected();
-//    }
+    //    if ( affecter == parameterValues && this->dag_node != NULL )
+    //    {
+    //        this->dag_node->keepAffected();
+    //    }
     
 }
 
 
 template <class mixtureType>
-void RevBayesCore::VectorMixtureDistribution<mixtureType>::redrawValue( void )
+void RevBayesCore::AnalyticalMixtureDistribution<mixtureType>::redrawValue( void )
 {
     
     const Simplex &probs = probabilities->getValue();
@@ -260,20 +254,17 @@ void RevBayesCore::VectorMixtureDistribution<mixtureType>::redrawValue( void )
     }
     
     TypedDistribution<mixtureType> *selected_base_dist = base_distributions[index];
-    for (size_t i=0; i<num_values; ++i)
-    {
-        selected_base_dist->redrawValue();
-        (*this->value)[i] = selected_base_dist->getValue();
-    }
+    selected_base_dist->redrawValue();
+    (*this->value) = selected_base_dist->getValue();
     
-//    Assign<mixtureType, IsDerivedFrom<mixtureType, Assignable>::Is >::doAssign( (*this->value), simulate() );
+    //    Assign<mixtureType, IsDerivedFrom<mixtureType, Assignable>::Is >::doAssign( (*this->value), simulate() );
     
 }
 
 
 /** Swap a parameter of the distribution */
 template <class mixtureType>
-void RevBayesCore::VectorMixtureDistribution<mixtureType>::swapParameterInternal( const DagNode *old_p, const DagNode *new_p )
+void RevBayesCore::AnalyticalMixtureDistribution<mixtureType>::swapParameterInternal( const DagNode *old_p, const DagNode *new_p )
 {
     bool found = false;
     
@@ -310,18 +301,18 @@ void RevBayesCore::VectorMixtureDistribution<mixtureType>::swapParameterInternal
 
 
 template <class mixtureType>
-void RevBayesCore::VectorMixtureDistribution<mixtureType>::restoreSpecialization( DagNode *restorer )
+void RevBayesCore::AnalyticalMixtureDistribution<mixtureType>::restoreSpecialization( DagNode *restorer )
 {
     
     // only do this when the toucher was our parameters
     dirty = true;
-
+    
     
 }
 
 
 template <class mixtureType>
-void RevBayesCore::VectorMixtureDistribution<mixtureType>::touchSpecialization( DagNode *toucher, bool touchAll )
+void RevBayesCore::AnalyticalMixtureDistribution<mixtureType>::touchSpecialization( DagNode *toucher, bool touchAll )
 {
     // only do this when the toucher was our parameters
     dirty = true;

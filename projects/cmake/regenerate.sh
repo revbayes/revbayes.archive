@@ -14,6 +14,9 @@ mpi="false"
 gentoo="false"
 help="false"
 jupyter="false"
+boost_root=""
+boost_lib=""
+exec_name=""
 
 # parse command line arguments
 while echo $1 | grep ^- > /dev/null; do
@@ -71,9 +74,22 @@ project(RevBayes)
 # RHEL 7 compute clusters may have cmake 2.8.12
 #
 # So, we add the flag directly instead.
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++98")
 
 ' > "$HERE/CMakeLists.txt"
+
+
+if [ "${exec_name}" = "" ]; then
+    if [ "${mpi}" = "true" ]; then
+        exec_name="rb-mpi"
+    else
+        exec_name="rb"
+    fi
+fi
+
+echo "set (RB_EXEC_NAME \"${exec_name}\")" >> "$HERE/CMakeLists.txt"
+echo "set (LOCAL_BOOST_ROOT \"${boost_root}\")" >> "$HERE/CMakeLists.txt"
+echo "set (LOCAL_BOOST_LIBRARY \"${boost_lib}\")" >> "$HERE/CMakeLists.txt"
 
 if [ "$debug" = "true" ]
 then
@@ -152,6 +168,26 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake ${CMAKE_MODULE_PATH})
 
 # Set source root relate to project file
 set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../src)
+
+MESSAGE("My Boost information:")
+MESSAGE("  Boost_INCLUDE_DIRS: ${LOCAL_BOOST_ROOT}")
+MESSAGE("  Boost_LIBRARIES: ${LOCAL_BOOST_LIBRARY}")
+if ( NOT ${LOCAL_BOOST_ROOT} STREQUAL "" )
+  MESSAGE("Boost root provided")
+endif()
+if ( NOT ${LOCAL_BOOST_LIBRARY} STREQUAL "" )
+  MESSAGE("Boost lib provided")
+endif()
+
+if ( NOT ${LOCAL_BOOST_ROOT} STREQUAL "" AND NOT ${LOCAL_BOOST_LIBRARY} STREQUAL "" )
+#   SET(BOOST_ROOT "../../../boost_1_60_0")
+#   SET(BOOST_LIBRARY "../../../boost_1_60_0/stage/lib")
+   SET(BOOST_ROOT ${LOCAL_BOOST_ROOT})
+   SET(BOOST_LIBRARY ${LOCAL_BOOST_LIBRARY})
+   SET(Boost_NO_SYSTEM_PATHS ON)
+   SET(Boost_USE_STATIC_RUNTIME ON)
+   SET(Boost_USE_STATIC_LIBS ON)
+endif()
 
 find_package(Boost
 1.60.0
@@ -257,14 +293,14 @@ ADD_LIBRARY(rb-cmd-lib ${CMD_FILES})'  >> "$HERE/cmd/CMakeLists.txt"
 
 else
 echo '
-add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
+add_executable(${RB_EXEC_NAME} ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 
-target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
+target_link_libraries(${RB_EXEC_NAME} rb-parser rb-core libs ${Boost_LIBRARIES})
 
-set_target_properties(rb PROPERTIES PREFIX "../")
+set_target_properties(${RB_EXEC_NAME} PROPERTIES PREFIX "../")
 ' >> $HERE/CMakeLists.txt
 if [ "$mpi" = "true" ] ; then
-    echo 'target_link_libraries(rb ${MPI_LIBRARIES})
+    echo 'target_link_libraries(${RB_EXEC_NAME} ${MPI_LIBRARIES})
 ' >> $HERE/CMakeLists.txt
 fi
 fi

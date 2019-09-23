@@ -21,12 +21,12 @@ MultispeciesCoalescentMigrationODE::MultispeciesCoalescentMigrationODE( const st
 }
 
 
-void MultispeciesCoalescentMigrationODE::operator()(const state_type &x, state_type &dxdt, const double t)
+void MultispeciesCoalescentMigrationODE::operator()(const std::vector< double > &x, std::vector< double > &dxdt, const double t)
 {
     
     // catch negative extinction probabilities that can result from
     // rounding errors in the ODE stepper
-//    state_type safe_x = x;
+//    std::vector< double > safe_x = x;
 //    for (size_t i = 0; i < (num_individuals*num_populations+1); ++i)
 //    {
 //        safe_x[i] = ( x[i] < 0.0 ? 0.0 : x[i] );
