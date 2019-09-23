@@ -155,8 +155,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake ${CMAKE_MODULE_PATH})
 # Set source root relate to project file
 set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../src)
 
-
-if ( ${LOCAL_BOOST_ROOT} != "" && ${LOCAL_BOOST_LIBRARY} != "" )
+if ( NOT ${LOCAL_BOOST_ROOT} STREQUAL "" AND NOT ${LOCAL_BOOST_LIBRARY} STREQUAL "" )
 #   SET(BOOST_ROOT "../../../boost_1_60_0")
 #   SET(BOOST_LIBRARY "../../../boost_1_60_0/stage/lib")
    SET(BOOST_ROOT ${LOCAL_BOOST_ROOT})
