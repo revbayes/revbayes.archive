@@ -628,7 +628,7 @@ size_t AbstractPiecewiseConstantFossilizedRangeProcess::l(double t) const
  */
 double AbstractPiecewiseConstantFossilizedRangeProcess::p( size_t i, double t ) const
 {
-    if ( t == 0) return 1.0;
+    if (t == 0.0) return 1.0;
 
     // get the parameters
     double b = birth[i];
