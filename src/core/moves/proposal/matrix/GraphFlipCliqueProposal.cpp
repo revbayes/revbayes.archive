@@ -2,7 +2,6 @@
 #include <iostream>
 #include <cstddef>
 #include <set>
-//#include <type_traits>
 #include <vector>
 
 #include "DistributionBinomial.h"
