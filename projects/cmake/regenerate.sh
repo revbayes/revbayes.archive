@@ -14,6 +14,8 @@ mpi="false"
 gentoo="false"
 help="false"
 jupyter="false"
+LOCAL_BOOST_ROOT=""
+LOCAL_BOOST_LIBRARY=""
 
 # parse command line arguments
 while echo $1 | grep ^- > /dev/null; do
@@ -153,6 +155,17 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake ${CMAKE_MODULE_PATH})
 # Set source root relate to project file
 set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../src)
 
+
+if ( ${LOCAL_BOOST_ROOT} != "" && ${LOCAL_BOOST_LIBRARY} != "" )
+#   SET(BOOST_ROOT "../../../boost_1_60_0")
+#   SET(BOOST_LIBRARY "../../../boost_1_60_0/stage/lib")
+   SET(BOOST_ROOT ${LOCAL_BOOST_ROOT})
+   SET(BOOST_LIBRARY ${LOCAL_BOOST_LIBRARY})
+   SET(Boost_NO_SYSTEM_PATHS ON)
+   SET(Boost_USE_STATIC_RUNTIME ON)
+   SET(Boost_USE_STATIC_LIBS ON)
+endif()
+
 find_package(Boost
 1.60.0
 COMPONENTS regex
@@ -264,7 +277,7 @@ target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
 set_target_properties(rb PROPERTIES PREFIX "../")
 ' >> $HERE/CMakeLists.txt
 if [ "$mpi" = "true" ] ; then
-    echo 'target_link_libraries(rb ${MPI_LIBRARIES})
+    echo 'target_link_libraries(rb-mpi ${MPI_LIBRARIES})
 ' >> $HERE/CMakeLists.txt
 fi
 fi
