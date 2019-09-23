@@ -300,7 +300,7 @@ target_link_libraries(${RB_EXEC_NAME} rb-parser rb-core libs ${Boost_LIBRARIES})
 set_target_properties(${RB_EXEC_NAME} PROPERTIES PREFIX "../")
 ' >> $HERE/CMakeLists.txt
 if [ "$mpi" = "true" ] ; then
-    echo 'target_link_libraries(${execRB_EXEC_NAME_name} ${MPI_LIBRARIES})
+    echo 'target_link_libraries(${RB_EXEC_NAME} ${MPI_LIBRARIES})
 ' >> $HERE/CMakeLists.txt
 fi
 fi
