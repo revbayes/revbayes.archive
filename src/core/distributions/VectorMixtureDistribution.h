@@ -104,7 +104,7 @@ RevBayesCore::VectorMixtureDistribution<mixtureType>::VectorMixtureDistribution(
     probabilities( d.probabilities ),
     num_values( d.num_values ),
     dirty( d.dirty ),
-    ln_probabilities( d.num_values )
+    ln_probabilities( d.ln_probabilities )
 {
     
     // add the parameters of the distribution
@@ -287,7 +287,7 @@ void RevBayesCore::VectorMixtureDistribution<mixtureType>::swapParameterInternal
         for (int j = 0; j < base_distributions.size(); ++j)
         {
             
-            TypedDistribution<double> *this_prior = base_distributions[j];
+            TypedDistribution<mixtureType> *this_prior = base_distributions[j];
             try {
                 this_prior->swapParameter(old_p,new_p);
                 // if the statement succeeded and didn't throw an error, then the distribution had this parameter
