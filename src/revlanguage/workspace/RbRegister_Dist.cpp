@@ -185,6 +185,7 @@
 #include "Dist_TimeVaryingStateDependentSpeciationExtinctionProcess.h"
 #include "Dist_UltrametricTree.h"
 #include "Dist_uniformTimeTree.h"
+#include "Dist_uniformSerialSampledTimeTree.h"
 #include "Dist_uniformTopology.h"
 #include "Dist_uniformTopologyBranchLength.h"
 
@@ -379,6 +380,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // uniform time tree distribution
         AddDistribution< TimeTree                   >( new Dist_uniformTimeTree() );
+
+        // uniform serial-sampled time tree distribution
+        AddDistribution< TimeTree                   >( new Dist_uniformSerialSampledTimeTree() );
 
         // uniform topology distribution
         AddDistribution< BranchLengthTree           >( new Dist_uniformTopology() );

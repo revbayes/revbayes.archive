@@ -210,6 +210,8 @@
 #include "Move_NodeTimeSlidePathTruncatedNormal.h"
 #include "Move_NodeTimeSlideBeta.h"
 #include "Move_RateAgeBetaShift.h"
+#include "Move_RateAgeProposal.h"
+#include "Move_RateAgeSubtreeProposal.h"
 #include "Move_RootTimeScaleBactrian.h"
 #include "Move_RootTimeSlideUniform.h"
 #include "Move_SpeciesNarrowExchange.h"
@@ -402,6 +404,8 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_NodeTimeSlideUniformAgeConstrained());
         addTypeWithConstructor( new Move_NodeTimeSlideBeta()                );
         addTypeWithConstructor( new Move_RateAgeBetaShift()                 );
+        addTypeWithConstructor( new Move_RateAgeProposal()                  );
+        addTypeWithConstructor( new Move_RateAgeSubtreeProposal()           );
         addTypeWithConstructor( new Move_RootTimeScaleBactrian()            );
         addTypeWithConstructor( new Move_RootTimeSlideUniform()             );
         addTypeWithConstructor( new Move_SubtreeScale()                     );
