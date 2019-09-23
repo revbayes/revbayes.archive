@@ -14,8 +14,8 @@ mpi="false"
 gentoo="false"
 help="false"
 jupyter="false"
-LOCAL_BOOST_ROOT=""
-LOCAL_BOOST_LIBRARY=""
+boost_root=""
+boost_lib=""
 exec_name=""
 
 # parse command line arguments
@@ -88,6 +88,9 @@ if [ "${exec_name}" = "" ]; then
 fi
 
 echo "set (RB_EXEC_NAME \"${exec_name}\")" >> "$HERE/CMakeLists.txt"
+echo "set (LOCAL_BOOST_ROOT \"${boost_root}\")" >> "$HERE/CMakeLists.txt"
+echo "set (LOCAL_BOOST_LIRBARY \"${boost_lib}\")" >> "$HERE/CMakeLists.txt"
+
 if [ "$debug" = "true" ]
 then
 echo '
@@ -165,6 +168,16 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake ${CMAKE_MODULE_PATH})
 
 # Set source root relate to project file
 set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../src)
+
+MESSAGE("My Boost information:")
+MESSAGE("  Boost_INCLUDE_DIRS: ${LOCAL_BOOST_ROOT}")
+MESSAGE("  Boost_LIBRARIES: ${LOCAL_BOOST_LIBRARY}")
+if ( NOT ${LOCAL_BOOST_ROOT} STREQUAL "" )
+  MESSAGE("Boost root provided")
+endif()
+if ( NOT ${LOCAL_BOOST_LIBRARY} STREQUAL "" )
+  MESSAGE("Boost lib provided")
+endif()
 
 if ( NOT ${LOCAL_BOOST_ROOT} STREQUAL "" AND NOT ${LOCAL_BOOST_LIBRARY} STREQUAL "" )
 #   SET(BOOST_ROOT "../../../boost_1_60_0")
