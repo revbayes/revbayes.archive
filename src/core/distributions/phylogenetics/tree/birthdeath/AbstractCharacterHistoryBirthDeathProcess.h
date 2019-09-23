@@ -6,9 +6,10 @@
 #include "TypedDistribution.h"
 
 namespace RevBayesCore {
-class CharacterHistory;
-class DagNode;
-template <class valueType> class RbOrderedSet;
+    
+    class CharacterHistory;
+    class DagNode;
+    template <class valueType> class RbOrderedSet;
     
     class AbstractCharacterHistoryBirthDeathProcess : public TypedDistribution<Tree> {
         

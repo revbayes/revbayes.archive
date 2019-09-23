@@ -6,8 +6,6 @@
 
 #include <vector>
 
-typedef std::vector< double > state_type;
-
 namespace RevBayesCore {
     
     /**
@@ -25,7 +23,7 @@ namespace RevBayesCore {
         
         SSE_ODE( const std::vector<double> &m, const RateGenerator* q, double r, bool backward_time, bool extinction_only, bool allow_shifts_extint=true );
         
-        void operator() ( const state_type &x , state_type &dxdt , const double t );
+        void operator() ( const std::vector< double > &x, std::vector< double > &dxdt , const double t );
         
         void            setEventMap( const std::map<std::vector<unsigned>, double> &e );
         void            setSpeciationRate( const std::vector<double> &s );

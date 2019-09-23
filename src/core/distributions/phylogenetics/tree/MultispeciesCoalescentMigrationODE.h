@@ -6,8 +6,6 @@
 
 #include <vector>
 
-typedef std::vector< double > state_type;
-
 namespace RevBayesCore {
     
     /**
@@ -25,7 +23,7 @@ namespace RevBayesCore {
         
         MultispeciesCoalescentMigrationODE( const std::vector<double> &t, const RateGenerator* q, double r, size_t n_ind, size_t n_pop);
         
-        void operator() ( const state_type &x , state_type &dxdt , const double t );
+        void operator() ( const std::vector< double > &x, std::vector< double > &dxdt , const double t );
                 
         private:
         
