@@ -101,6 +101,8 @@
 
 /// Types ///
 
+#include "Probability.h"
+
 /* These types are needed as template types for the moves */
 #include "RlBranchLengthTree.h"
 #include "RlRateGenerator.h"
@@ -132,9 +134,16 @@ void RevLanguage::Workspace::initializeVectorTypeGlobalWorkspace(void)
 
 //        AddWorkspaceVectorType<Dist_unif,1>::addTypeToWorkspace( *this, new Dist_unif() );
 //        this->addFunction(new Func_workspaceVector<Dist_unif>() );
-        this->addFunction(new Func_workspaceVector<Distribution>() );
-        this->addFunction(new Func_workspaceVector<TypedDistribution<Real> >() );
-        this->addFunction(new Func_workspaceVector<TypedDistribution<RealPos> >() );
+        addFunction(new Func_workspaceVector<Distribution>() );
+        addFunction( new Func_workspaceVector<TypedDistribution<Natural> >() );
+        addFunction(new Func_workspaceVector<TypedDistribution<Real> >() );
+        addFunction(new Func_workspaceVector<TypedDistribution<RealPos> >() );
+        addFunction(new Func_workspaceVector<TypedDistribution<Probability> >() );
+        addFunction(new Func_workspaceVector<TypedDistribution<ModelVector<Natural> > >() );
+        addFunction(new Func_workspaceVector<TypedDistribution<ModelVector<Real> > >() );
+        addFunction(new Func_workspaceVector<TypedDistribution<ModelVector<RealPos> > >() );
+        addFunction(new Func_workspaceVector<TypedDistribution<ModelVector<Probability> > >() );
+        addFunction( new Func_workspaceVector<TypedDistribution<TimeTree> >() );
 //        this->addFunction(new Func_workspaceVector<ContinuousDistribution>() );
 //        AddWorkspaceVectorType<Distribution,1>::addTypeToWorkspace( *this, new Distribution() );
 

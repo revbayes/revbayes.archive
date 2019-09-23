@@ -138,7 +138,6 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
 //        addFunction( new Func_workspaceVector<AbstractModelObject>() );
 
 //        addFunction( new Func_workspaceVector<Dist_bdp>() );
-        addFunction( new Func_workspaceVector<TypedDistribution<TimeTree> >() );
         addFunction( new Func_workspaceVector<Trace>() );
         addFunction( new Func_workspaceVector<TraceTree>() );
 		addFunction( new Func_workspaceVector<AncestralStateTrace>() );
