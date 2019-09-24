@@ -2,7 +2,6 @@
 #include <iostream>
 #include <cstddef>
 #include <set>
-#include <type_traits>
 #include <vector>
 
 #include "DistributionBinomial.h"
@@ -26,21 +25,22 @@ using namespace RevBayesCore;
  * Here we simply allocate and initialize the Proposal object.
  */
 GraphFlipCliqueProposal::GraphFlipCliqueProposal( StochasticNode<MatrixReal> *n, const RbVector<long>& v, double sr, double vp, double ep, bool s) : Proposal(),
-array(NULL),
-matrix( n ),
-vertices( v ),
-set_sample_rate( sr ),
-vertex_probability( vp ),
-edge_probability( ep ),
-storedValue( 0.0 ),
-symmetric( s ),
-undo_needed( false )
+    array(NULL),
+    matrix( n ),
+    vertices( v ),
+    set_sample_rate( sr ),
+    vertex_probability( vp ),
+    edge_probability( ep ),
+    storedValue( 0.0 ),
+    symmetric( s ),
+    undo_needed( false )
 {
     // build the complete edge list if no edges are provided
     vertex_list_length = vertices.size();
     if (vertex_list_length == 0) {
         
-        for (size_t i = 0; i < n->getValue().size(); i++) {
+        for (size_t i = 0; i < n->getValue().size(); i++)
+        {
             vertices.push_back(i+1);
         }
         vertex_list_length = vertices.size();
@@ -125,8 +125,10 @@ double GraphFlipCliqueProposal::doProposal( void )
     MatrixReal& v = matrix->getValue();
     
     std::cout << "before\n";
-    for (size_t a = 0; a < v.size(); a++) {
-        for (size_t b = 0; b < v.size(); b++) {
+    for (size_t a = 0; a < v.size(); a++)
+    {
+        for (size_t b = 0; b < v.size(); b++)
+        {
             std::cout << ( v[a][b] == 0 ? "  " : ". " );
         }
         std::cout << "\n";
@@ -140,7 +142,8 @@ double GraphFlipCliqueProposal::doProposal( void )
     std::cout << "n_to_shift = " << n_to_shift << "\n";
     
     // repeat the FlipClique procedure multiple times
-    for (size_t i = 0; i < n_to_shift; i++) {
+    for (size_t i = 0; i < n_to_shift; i++)
+    {
         
         // Are we adding or deleting edges within a vertex-set?
         size_t new_edge_state = ( rng->uniform01() < 0.5 ? 0 : 1 );
@@ -200,7 +203,8 @@ double GraphFlipCliqueProposal::doProposal( void )
                 else
                 {
                     std::cout << "\t- " << idx << "," << jdx << " : " << v[idx][jdx] << " -> " << other_edge_state << "\n";
-                    if (v[idx][jdx] == other_edge_state) {
+                    if (v[idx][jdx] == other_edge_state)
+                    {
                         num_constant[other_edge_state] += 1;
                     }
                 }
@@ -231,8 +235,10 @@ double GraphFlipCliqueProposal::doProposal( void )
     }
     
     std::cout << "after\n";
-    for (size_t a = 0; a < v.size(); a++) {
-        for (size_t b = 0; b < v.size(); b++) {
+    for (size_t a = 0; a < v.size(); a++)
+    {
+        for (size_t b = 0; b < v.size(); b++)
+        {
             std::cout << ( v[a][b] == 0 ? "  " : ". " );
         }
         std::cout << "\n";
@@ -281,8 +287,10 @@ void GraphFlipCliqueProposal::undoProposal( void )
     MatrixReal& v = matrix->getValue();
     
     std::cout << "pre-undo\n";
-    for (size_t a = 0; a < v.size(); a++) {
-        for (size_t b = 0; b < v.size(); b++) {
+    for (size_t a = 0; a < v.size(); a++)
+    {
+        for (size_t b = 0; b < v.size(); b++)
+        {
             std::cout << ( v[a][b] == 0 ? "  " : ". " );
         }
         std::cout << "\n";
@@ -293,7 +301,8 @@ void GraphFlipCliqueProposal::undoProposal( void )
     {
         v[ rit->from ][ rit->to ] = rit->value;
         //        std::cout << "UNDO " << rit->from << "," << rit->to << " = " << rit->value << "\n";
-        if (symmetric) {
+        if (symmetric)
+        {
             v[ rit->to ][ rit->from ] = rit->value;
         }
     }
@@ -302,8 +311,10 @@ void GraphFlipCliqueProposal::undoProposal( void )
     matrix->clearTouchedElementIndices();
     
     std::cout << "post-undo\n";
-    for (size_t a = 0; a < v.size(); a++) {
-        for (size_t b = 0; b < v.size(); b++) {
+    for (size_t a = 0; a < v.size(); a++)
+    {
+        for (size_t b = 0; b < v.size(); b++)
+        {
             std::cout << ( v[a][b] == 0 ? "  " : ". " );
         }
         std::cout << "\n";
