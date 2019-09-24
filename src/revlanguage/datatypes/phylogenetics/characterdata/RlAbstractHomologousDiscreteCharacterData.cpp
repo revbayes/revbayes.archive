@@ -183,21 +183,18 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
         bool folded = static_cast<const RlBoolean&>( args[0].getVariable()->getRevObject() ).getValue();
         const std::string& str_ambig_treat = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
         
-        RevBayesCore::AbstractHomologousDiscreteCharacterData::SFS_AMBIGUITY_TREATMENT ambig_treat = RevBayesCore::AbstractHomologousDiscreteCharacterData::ANCESTRAL;
+        RevBayesCore::AbstractHomologousDiscreteCharacterData::SFS_AMBIGUITY_TREATMENT ambig_treat = RevBayesCore::AbstractHomologousDiscreteCharacterData::SFS_AMBIGUITY_TREATMENT::ANCESTRAL;
         if ( str_ambig_treat == "derived" )
         {
-//            ambig_treat = RevBayesCore::AbstractHomologousDiscreteCharacterData::SFS_AMBIGUITY_TREATMENT::DERIVED;
-            ambig_treat = RevBayesCore::AbstractHomologousDiscreteCharacterData::DERIVED;
-       }
+            ambig_treat = RevBayesCore::AbstractHomologousDiscreteCharacterData::SFS_AMBIGUITY_TREATMENT::DERIVED;
+        }
         else if ( str_ambig_treat == "skip" )
         {
-//            ambig_treat = RevBayesCore::AbstractHomologousDiscreteCharacterData::SFS_AMBIGUITY_TREATMENT::SKIP_COLUMN;
-            ambig_treat = RevBayesCore::AbstractHomologousDiscreteCharacterData::SKIP_COLUMN;
+            ambig_treat = RevBayesCore::AbstractHomologousDiscreteCharacterData::SFS_AMBIGUITY_TREATMENT::SKIP_COLUMN;
         }
         else if ( str_ambig_treat == "rescale" )
         {
-//            ambig_treat = RevBayesCore::AbstractHomologousDiscreteCharacterData::SFS_AMBIGUITY_TREATMENT::RESCALE;
-            ambig_treat = RevBayesCore::AbstractHomologousDiscreteCharacterData::RESCALE;
+            ambig_treat = RevBayesCore::AbstractHomologousDiscreteCharacterData::SFS_AMBIGUITY_TREATMENT::RESCALE;
         }
 
         std::vector<long> sfs = this->dag_node->getValue().computeSiteFrequencySpectrum(folded, ambig_treat);
