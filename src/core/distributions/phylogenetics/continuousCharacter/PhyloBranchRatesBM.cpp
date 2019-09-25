@@ -44,9 +44,9 @@ PhyloBranchRatesBM* PhyloBranchRatesBM::clone(void) const
 
 double PhyloBranchRatesBM::computeLnProbability(void)
 {
-    size_t n_tips = tau->getValue().getNumberOfTips()-1;
-    std::vector<double> node_values = std::vector<double>(n_tips-1, 0.0);
-    node_values[n_tips-2] = root_state->getValue();
+    size_t n_nodes = tau->getValue().getNumberOfNodes();
+    std::vector<double> node_values = std::vector<double>(n_nodes, 0.0);
+    node_values[n_nodes-1] = root_state->getValue();
     double ln_prob = recursiveLnProb(tau->getValue().getRoot(), node_values);
     
     return ln_prob;
@@ -58,7 +58,7 @@ double PhyloBranchRatesBM::recursiveLnProb( const TopologyNode& node, std::vecto
     
     double ln_prob = 0.0;
     size_t index = node.getIndex();
-    size_t n_tips = tau->getValue().getNumberOfTips();
+//    size_t n_tips = tau->getValue().getNumberOfTips();
 //    double val = (*value)[index];
     
     if ( node.isRoot() == false )
@@ -66,10 +66,19 @@ double PhyloBranchRatesBM::recursiveLnProb( const TopologyNode& node, std::vecto
         
         // x ~ normal(x_up, sigma^2 * branchLength)
         size_t parent_index = node.getParent().getIndex();
-        double parent_value = parent_values[parent_index - n_tips];
-        double standDev = sigma->getValue() * sqrt(node.getBranchLength());
+        double parent_value = parent_values[parent_index];
+        double branch_rate = (*this->value)[ index ];
+        double ln_node_value = 2*branch_rate - exp(parent_value);
+        if ( ln_node_value < 0.0 )
+        {
+            return RbConstants::Double::neginf;
+        }
+        double node_value = log(ln_node_value);
+        double stand_dev = sigma->getValue() * sqrt(node.getBranchLength());
         double mean = (*value)[parent_index] + drift->getValue() * node.getBranchLength();
-        ln_prob += RbStatistics::Normal::lnPdf(parent_value, standDev, mean);
+        ln_prob += RbStatistics::Normal::lnPdf(node_value, stand_dev, mean);
+        
+        parent_values[index] = node_value;
     }
     
     // propagate forward
@@ -93,35 +102,39 @@ void PhyloBranchRatesBM::redrawValue(void)
 void PhyloBranchRatesBM::simulate()
 {
     
-    recursiveSimulate(tau->getValue().getRoot());
+    size_t n_nodes = tau->getValue().getNumberOfNodes();
+    std::vector<double> node_values = std::vector<double>(n_nodes, 0.0);
+    node_values[n_nodes-1] = root_state->getValue();
+    recursiveSimulate(tau->getValue().getRoot(), node_values);
 }
 
 
-void PhyloBranchRatesBM::recursiveSimulate(const TopologyNode& from)
+void PhyloBranchRatesBM::recursiveSimulate(const TopologyNode& node, std::vector<double> &parent_values)
 {
     
-    size_t index = from.getIndex();
+    size_t index = node.getIndex();
     
-    if (! from.isRoot())
+    if ( node.isRoot() == false )
     {
         
         // x ~ normal(x_up, sigma^2 * branchLength)
         
-        size_t upindex = from.getParent().getIndex();
-        double standDev = sigma->getValue() * sqrt(from.getBranchLength());
-        double mean = (*value)[upindex] + drift->getValue() * from.getBranchLength();
+        size_t parent_index = node.getParent().getIndex();
+        double stand_dev = sigma->getValue() * sqrt(node.getBranchLength());
+        double mean = log(parent_values[parent_index]) + drift->getValue() * node.getBranchLength();
         
         // simulate the new Val
         RandomNumberGenerator* rng = GLOBAL_RNG;
-        (*value)[index] = RbStatistics::Normal::rv( mean, standDev, *rng);
+        parent_values[index] = exp(RbStatistics::Normal::rv( mean, stand_dev, *rng));
+        (*this->value)[index] = (parent_values[parent_index] + parent_values[index]) / 2.0;
         
     }
     
     // propagate forward
-    size_t numChildren = from.getNumberOfChildren();
-    for (size_t i = 0; i < numChildren; ++i)
+    size_t num_children = node.getNumberOfChildren();
+    for (size_t i = 0; i < num_children; ++i)
     {
-        recursiveSimulate(from.getChild(i));
+        recursiveSimulate(node.getChild(i), parent_values);
     }
     
 }
@@ -133,6 +146,11 @@ void PhyloBranchRatesBM::swapParameterInternal(const DagNode *oldP, const DagNod
     if ( oldP == tau )
     {
         tau = static_cast< const TypedDagNode<Tree> * >( newP );
+    }
+    
+    if ( oldP == root_state )
+    {
+        root_state = static_cast< const TypedDagNode<double> * >( newP );
     }
     
     if ( oldP == sigma )

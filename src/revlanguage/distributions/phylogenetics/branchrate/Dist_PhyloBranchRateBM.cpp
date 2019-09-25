@@ -5,7 +5,7 @@
 
 #include "ArgumentRule.h"
 #include "PhyloBrownianProcess.h"
-#include "Dist_PhyloBrownian.h"
+#include "Dist_PhyloBranchRateBM.h"
 #include "Real.h"
 #include "RlTimeTree.h"
 #include "ArgumentRules.h"
@@ -19,22 +19,23 @@
 using namespace RevLanguage;
 
 
-Dist_PhyloBrownian* Dist_PhyloBrownian::clone( void ) const
+Dist_PhyloBranchRateBM* Dist_PhyloBranchRateBM::clone( void ) const
 {
-    return new Dist_PhyloBrownian(*this);
+    return new Dist_PhyloBranchRateBM(*this);
 }
 
 
-RevBayesCore::PhyloBrownianProcess* Dist_PhyloBrownian::createDistribution( void ) const
+RevBayesCore::PhyloBranchRatesBM* Dist_PhyloBranchRateBM::createDistribution( void ) const
 {
     // get the parameters
 
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
+    RevBayesCore::TypedDagNode<double>* r  = static_cast<const RealPos&>( root_state->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* s  = static_cast<const RealPos&>( sigma->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* dr  = static_cast<const Real&>( drift->getRevObject() ).getDagNode();
     
-    RevBayesCore::PhyloBrownianProcess* d    = new RevBayesCore::PhyloBrownianProcess( tau, s, dr );
+    RevBayesCore::PhyloBranchRatesBM* d    = new RevBayesCore::PhyloBranchRatesBM( tau, r, s, dr );
     
     return d;
 
@@ -43,19 +44,19 @@ RevBayesCore::PhyloBrownianProcess* Dist_PhyloBrownian::createDistribution( void
 
 
 /* Get Rev type of object */
-const std::string& Dist_PhyloBrownian::getClassType(void) {
+const std::string& Dist_PhyloBranchRateBM::getClassType(void) {
     
-    static std::string rev_type = "Dist_PhyloBrownian";
+    static std::string rev_type = "Dist_PhyloBranchRateBM";
     
-	return rev_type;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_PhyloBrownian::getClassTypeSpec(void) {
+const TypeSpec& Dist_PhyloBranchRateBM::getClassTypeSpec(void) {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return rev_type_spec;
+    return rev_type_spec;
 }
 
 
@@ -64,11 +65,11 @@ const TypeSpec& Dist_PhyloBrownian::getClassTypeSpec(void) {
  *
  * \return Rev aliases of constructor function.
  */
-std::vector<std::string> Dist_PhyloBrownian::getDistributionFunctionAliases( void ) const
+std::vector<std::string> Dist_PhyloBranchRateBM::getDistributionFunctionAliases( void ) const
 {
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
-    a_names.push_back( "PhyloBM" );
+//    a_names.push_back( "PhyloBM" );
     
     return a_names;
 }
@@ -81,27 +82,28 @@ std::vector<std::string> Dist_PhyloBrownian::getDistributionFunctionAliases( voi
  *
  * \return Rev name of constructor function.
  */
-std::string Dist_PhyloBrownian::getDistributionFunctionName( void ) const
+std::string Dist_PhyloBranchRateBM::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
-    std::string d_name = "PhyloBrownian";
+    std::string d_name = "PhyloBranchRateBM";
     
     return d_name;
 }
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_PhyloBrownian::getParameterRules(void) const
+const MemberRules& Dist_PhyloBranchRateBM::getParameterRules(void) const
 {
     
     static MemberRules dist;
     static bool rules_set = false;
     
-    if ( !rules_set )
+    if ( rules_set == false )
     {
-        dist.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), "The tree along which the continuous character evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        dist.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec() , "The branch-length multiplier to scale the variance of the Brownian motion.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        dist.push_back( new ArgumentRule( "drift", Real::getClassTypeSpec()    , "The drift parameter of the Brownian motion.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
+        dist.push_back( new ArgumentRule( "tree"     , TimeTree::getClassTypeSpec(), "The tree along which the continuous character evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist.push_back( new ArgumentRule( "rootState", RealPos::getClassTypeSpec() , "The value of the root.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist.push_back( new ArgumentRule( "sigma"    , RealPos::getClassTypeSpec() , "The branch-length multiplier to scale the variance of the Brownian motion.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist.push_back( new ArgumentRule( "drift"    , Real::getClassTypeSpec()    , "The drift parameter of the Brownian motion.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
         rules_set = true;
     }
     
@@ -109,7 +111,7 @@ const MemberRules& Dist_PhyloBrownian::getParameterRules(void) const
 }
 
 
-const TypeSpec& Dist_PhyloBrownian::getTypeSpec( void ) const {
+const TypeSpec& Dist_PhyloBranchRateBM::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -121,7 +123,7 @@ const TypeSpec& Dist_PhyloBrownian::getTypeSpec( void ) const {
 
 /** Print value for user */
 
- void Dist_PhyloBrownian::printValue(std::ostream& o) const {
+ void Dist_PhyloBranchRateBM::printValue(std::ostream& o) const {
     
     o << " brownian(";
     
@@ -156,11 +158,15 @@ const TypeSpec& Dist_PhyloBrownian::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Dist_PhyloBrownian::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Dist_PhyloBranchRateBM::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
 
     if ( name == "tree" )
     {
         tree = var;
+    }
+    else if ( name == "rootState" )
+    {
+        root_state = var;
     }
     else if ( name == "sigma" )
     {
@@ -174,4 +180,5 @@ void Dist_PhyloBrownian::setConstParameter(const std::string& name, const RevPtr
         Distribution::setConstParameter(name, var);
     }
 }
+
 

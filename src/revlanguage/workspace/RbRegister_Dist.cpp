@@ -136,6 +136,7 @@
 /* Branch rate priors (in folder "distributions/phylogenetics/tree") */
 
 /* Trait evolution models (in folder "distributions/phylogenetics/branchrates") */
+#include "Dist_PhyloBranchRateBM.h"
 #include "Dist_PhyloBrownian.h"
 #include "Dist_PhyloBrownianMVN.h"
 #include "Dist_PhyloBrownianREML.h"
@@ -283,7 +284,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< ModelVector<RealPos>       >(  new Dist_PhyloWhiteNoise()          );
 
         /* trait evolution (in folder "distributions/phylogenetics/branchrate") */
-
+        
+        AddDistribution< ModelVector<RealPos>       >( new Dist_PhyloBranchRateBM()                             );
+        
         // brownian motion
         AddDistribution< ModelVector<Real>          >( new Dist_PhyloBrownian()                                 );
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianREML()                             );

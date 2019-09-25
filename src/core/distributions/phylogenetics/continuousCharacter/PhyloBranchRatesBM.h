@@ -31,7 +31,7 @@ namespace RevBayesCore {
         // helper methods
         void                                                    simulate();
         double                                                  recursiveLnProb(const TopologyNode& n, std::vector<double> &parent);
-        void                                                    recursiveSimulate(const TopologyNode& n);
+        void                                                    recursiveSimulate(const TopologyNode& n, std::vector<double> &parent);
         
         // private members
         const TypedDagNode< Tree >*                             tau;
