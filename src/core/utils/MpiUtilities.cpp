@@ -1,12 +1,9 @@
 #include "MpiUtilities.h"
-<<<<<<< HEAD
+
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 
 #include <iostream>
-=======
-
->>>>>>> af64ec661d79c5aae0e69b8a04355a1957eee605
 #include <sstream>
 
 #ifdef RB_MPI

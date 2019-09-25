@@ -5,11 +5,8 @@
 #include <vector>
 
 #include "MonteCarloSampler.h"
-<<<<<<< HEAD
 #include "MoveSchedule.h"
 #include "MpiUtilities.h"
-=======
->>>>>>> af64ec661d79c5aae0e69b8a04355a1957eee605
 #include "PowerPosteriorAnalysis.h"
 #include "ProgressBar.h"
 #include "RbException.h"

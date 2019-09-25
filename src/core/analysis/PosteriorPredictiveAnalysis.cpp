@@ -7,11 +7,8 @@
 #include "DagNode.h"
 #include "MaxIterationStoppingRule.h"
 #include "MonteCarloAnalysis.h"
-<<<<<<< HEAD
 #include "MonteCarloSampler.h"
 #include "MpiUtilities.h"
-=======
->>>>>>> af64ec661d79c5aae0e69b8a04355a1957eee605
 #include "PosteriorPredictiveAnalysis.h"
 #include "RbException.h"
 #include "Cloneable.h"

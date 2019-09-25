@@ -7,11 +7,8 @@
 namespace po = boost::program_options;
 using po::variables_map;
 
-<<<<<<< HEAD
 #include "MpiUtilities.h"
-=======
 #include "Parser.h"
->>>>>>> af64ec661d79c5aae0e69b8a04355a1957eee605
 #include "RbVersion.h"
 #include "RbException.h"
 #include "RbSettings.h"
