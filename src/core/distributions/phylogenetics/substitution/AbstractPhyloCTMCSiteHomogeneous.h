@@ -1132,8 +1132,10 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawJointConditio
 
 	// if we already have ancestral states, don't make new ones
 	if ( has_ancestral_states == true )
+    {
 		return;
-
+    }
+    
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
     // get working variables
@@ -1154,7 +1156,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawJointConditio
     // clear the container for sampling the site-rates
     sampled_site_mixtures.resize(this->num_sites);
 
-    for (size_t i = 0; i < this->num_sites; i++)
+    for (size_t i = pattern_block_start; i < this->pattern_block_end; ++i)
     {
 
         // create the character
@@ -1164,10 +1166,10 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawJointConditio
         double sum = 0.0;
 
         // if the matrix is compressed use the pattern for this site
-        size_t pattern = i;
+        size_t pattern = i - pattern_block_start;
         if ( compressed == true )
         {
-            pattern = site_pattern[i];
+            pattern = site_pattern[i - pattern_block_start];
         }
 
         // get ptr to first mixture cat for site
