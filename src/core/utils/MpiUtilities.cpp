@@ -96,16 +96,20 @@ void RevBayesCore::MpiUtilities::DebugMsgPid(const std::string& s, int p)
 }
 
 
-#ifdef RB_MPI
-// NOTE: This does more that just synchronize all the copies of the global RNG.
+// NOTE: This does more than just synchronize all the copies of the global RNG.
 //       It also resets them to the common starting seed.
-
+#ifdef RB_MPI
 void RevBayesCore::MpiUtilities::synchronizeRNG( const MPI_Comm &analysis_comm )
+#else
+void RevBayesCore::MpiUtilities::synchronizeRNG( void )
+#endif
 {
     unsigned int seed = 0;
 
     int process_id = 0;
+    #ifdef RB_MPI
     MPI_Comm_rank(analysis_comm, &process_id);
+    #endif
 
     // sync the random number generators
     if ( process_id == 0 )
@@ -113,9 +117,10 @@ void RevBayesCore::MpiUtilities::synchronizeRNG( const MPI_Comm &analysis_comm )
         seed = RevBayesCore::GLOBAL_RNG->getSeed();
     }
 
+    #ifdef RB_MPI
     MPI_Bcast(&seed, 1, MPI_INT, 0, analysis_comm);
+    #endif
 
     RevBayesCore::GLOBAL_RNG->setSeed( seed );
 
 }
-#endif

@@ -19,6 +19,8 @@ namespace RevBayesCore {
 
 #ifdef RB_MPI
         void synchronizeRNG(const MPI_Comm &analysis_comm);
+#else
+        void synchronizeRNG(void);
 #endif
 
 

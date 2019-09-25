@@ -143,6 +143,8 @@ int main(int argc, char* argv[]) {
     {
         return -1;
     }
+#else
+    RevBayesCore::MpiUtilities::synchronizeRNG(  );
 #endif
 
     /* Parse argv to get the command line arguments */

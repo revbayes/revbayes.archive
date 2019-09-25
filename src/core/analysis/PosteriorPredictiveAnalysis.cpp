@@ -191,6 +191,8 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
     
     // wait until all analysies are completed
     MPI_Barrier(MPI_COMM_WORLD);
+#else
+    MpiUtilities::synchronizeRNG(  );
 #endif
     
 }

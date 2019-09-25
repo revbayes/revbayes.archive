@@ -204,6 +204,8 @@ void PowerPosteriorAnalysis::runAll(size_t gen, double burnin_fraction, size_t p
     
     // to be safe, we should synchronize the random number generators
     MpiUtilities::synchronizeRNG( MPI_COMM_WORLD);
+#else
+    MpiUtilities::synchronizeRNG(  );
 #endif
     
     if ( process_active == true )

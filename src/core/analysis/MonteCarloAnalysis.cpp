@@ -592,6 +592,8 @@ void MonteCarloAnalysis::resetReplicates( void )
     // to be safe, we should synchronize the random number generators
 #ifdef RB_MPI
     MpiUtilities::synchronizeRNG( analysis_comm );
+#else
+    MpiUtilities::synchronizeRNG(  );
 #endif
 }
 
@@ -813,6 +815,8 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
     
     // to be safe, we should synchronize the random number generators
     MpiUtilities::synchronizeRNG( analysis_comm );
+#else
+    MpiUtilities::synchronizeRNG(  );
 #endif
     
 }
@@ -997,6 +1001,8 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingR
     
     // to be safe, we should synchronize the random number generators
     MpiUtilities::synchronizeRNG( MPI_COMM_WORLD );
+#else
+    MpiUtilities::synchronizeRNG(  );
 #endif
     
     
