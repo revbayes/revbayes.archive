@@ -1155,8 +1155,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawJointConditio
 
     // clear the container for sampling the site-rates
     sampled_site_mixtures.resize(this->num_sites);
-
-    for (size_t i = pattern_block_start; i < this->pattern_block_end; ++i)
+    
+    for (size_t i = 0; i < this->num_sites; ++i)
+//    for (size_t i = pattern_block_start; i < this->pattern_block_end; ++i)
     {
 
         // create the character

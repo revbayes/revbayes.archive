@@ -7,12 +7,11 @@
 #include "PhyloBranchRatesBM.h"
 #include "ModelVector.h"
 #include "RlTypedDistribution.h"
-#include "RlSimplex.h"
-#include "Real.h"
+#include "RealPos.h"
 
 namespace RevLanguage {
 
-    class Dist_PhyloBranchRateBM :  public TypedDistribution< ModelVector<RealPos> > {
+    class Dist_PhyloBranchRateBM : public TypedDistribution< ModelVector<RealPos> > {
         
     public:
                                                         Dist_PhyloBranchRateBM( void ) {};
@@ -48,4 +47,4 @@ namespace RevLanguage {
     
 }
 
-#endif /* defined(__revbayes__Dist_brownian__) */
+#endif

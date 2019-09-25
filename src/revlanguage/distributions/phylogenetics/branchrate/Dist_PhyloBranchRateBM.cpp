@@ -111,7 +111,8 @@ const MemberRules& Dist_PhyloBranchRateBM::getParameterRules(void) const
 }
 
 
-const TypeSpec& Dist_PhyloBranchRateBM::getTypeSpec( void ) const {
+const TypeSpec& Dist_PhyloBranchRateBM::getTypeSpec( void ) const
+{
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -123,7 +124,8 @@ const TypeSpec& Dist_PhyloBranchRateBM::getTypeSpec( void ) const {
 
 /** Print value for user */
 
- void Dist_PhyloBranchRateBM::printValue(std::ostream& o) const {
+ void Dist_PhyloBranchRateBM::printValue(std::ostream& o) const
+{
     
     o << " brownian(";
     
@@ -158,7 +160,8 @@ const TypeSpec& Dist_PhyloBranchRateBM::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Dist_PhyloBranchRateBM::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Dist_PhyloBranchRateBM::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
 
     if ( name == "tree" )
     {
@@ -176,8 +179,9 @@ void Dist_PhyloBranchRateBM::setConstParameter(const std::string& name, const Re
     {
         drift = var;
     }
-    else {
-        Distribution::setConstParameter(name, var);
+    else
+    {
+        TypedDistribution< ModelVector<RealPos> >::setConstParameter(name, var);
     }
 }
 

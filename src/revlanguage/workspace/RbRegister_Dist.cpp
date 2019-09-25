@@ -281,7 +281,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         /* Branch rate processes (in folder "distributions/phylogenetics/branchrate") */
 
         // white noise process
-        AddDistribution< ModelVector<RealPos>       >(  new Dist_PhyloWhiteNoise()          );
+        AddDistribution< ModelVector<RealPos>       >( new Dist_PhyloWhiteNoise()          );
 
         /* trait evolution (in folder "distributions/phylogenetics/branchrate") */
         
