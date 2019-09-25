@@ -1,7 +1,4 @@
 #!/bin/sh
-HERE="$(pwd)/build"
-mkdir -p "${HERE}"
-echo $HERE
 
 #################
 # command line options
@@ -50,6 +47,17 @@ done
 
 #################
 # generate cmake configuration
+
+if [ "${mpi}" = "true" ]; then
+    HERE="$(pwd)/build-mpi"
+    mkdir -p "${HERE}"
+    echo $HERE
+else
+    HERE="$(pwd)/build"
+    mkdir -p "${HERE}"
+    echo $HERE
+fi
+
 cd "$HERE"/../
 cd ../../src
 
