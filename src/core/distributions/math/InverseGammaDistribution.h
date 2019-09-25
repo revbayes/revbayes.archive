@@ -2,9 +2,10 @@
 #define __rb_mlandis__InverseGammaDistribution__
 
 #include "ContinuousDistribution.h"
-#include "TypedDagNode.h"
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class TypedDagNode;
 
 /**
  * @brief Inverse Gamma distribution class.

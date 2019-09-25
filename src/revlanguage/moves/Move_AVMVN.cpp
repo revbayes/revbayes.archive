@@ -1,3 +1,8 @@
+#include <stddef.h>
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "MetropolisHastingsMove.h"
@@ -11,10 +16,25 @@
 #include "RevObject.h"
 #include "RlBoolean.h"
 #include "RlSimplex.h"
-#include "RlString.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "WorkspaceVector.h"
+#include "Argument.h"
+#include "ContinuousStochasticNode.h"
+#include "MemberProcedure.h"
+#include "MethodTable.h"
+#include "ModelObject.h"
+#include "Move.h"
+#include "Natural.h"
+#include "RbBoolean.h"
+#include "Real.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlMove.h"
+#include "RlUtils.h"
+#include "StochasticNode.h"
+
+namespace RevBayesCore { class Simplex; }
+namespace RevBayesCore { template <class valueType> class RbVector; }
 
 
 using namespace RevLanguage;

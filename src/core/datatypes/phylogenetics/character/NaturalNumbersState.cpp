@@ -1,10 +1,10 @@
 #include "NaturalNumbersState.h"
-#include "RbException.h"
-#include <assert.h>
-#include <sstream>
-#include <iostream>
-#include <boost/lexical_cast.hpp>
 
+#include <boost/lexical_cast.hpp>
+#include <string>
+
+#include "RbException.h"
+#include "Cloneable.h"
 
 using namespace RevBayesCore;
 

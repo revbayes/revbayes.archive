@@ -1,8 +1,21 @@
+#include <stddef.h>
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Dist_whiteNoise.h"
-#include "Real.h"
 #include "RealPos.h"
+#include "RbHelpReference.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlPositiveContinuousDistribution.h"
+#include "TypeSpec.h"
+#include "WhiteNoiseDistribution.h"
+
+namespace RevBayesCore { template <class valueType> class TypedDagNode; }
 
 using namespace RevLanguage;
 

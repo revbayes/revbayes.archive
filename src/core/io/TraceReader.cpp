@@ -1,9 +1,13 @@
+#include <stddef.h>
+#include <ios>
+#include <string>
+#include <vector>
+
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "StringUtilities.h"
 #include "TraceReader.h"
-
-#include <map>
+#include "Trace.h"
 
 using namespace RevBayesCore;
 

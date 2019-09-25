@@ -5,7 +5,6 @@
 #endif
 
 #include <sstream>
-#include <string>
 
 namespace RevBayesCore {
     

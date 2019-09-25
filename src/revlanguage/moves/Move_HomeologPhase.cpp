@@ -1,18 +1,24 @@
+#include <ostream>
+#include <string>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "HomeologPhaseProposal.h"
-#include "ContinuousStochasticNode.h"
 #include "MetropolisHastingsMove.h"
 #include "Move_HomeologPhase.h"
-#include "RbException.h"
 #include "RealPos.h"
 #include "RevObject.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlString.h"
-#include "TypedDagNode.h"
 #include "TypeSpec.h"
+#include "Move.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlMove.h"
+#include "StochasticNode.h"
 
-#include "StandardState.h"
+namespace RevBayesCore { class AbstractHomologousDiscreteCharacterData; }
+namespace RevBayesCore { template <class valueType> class TypedDagNode; }
 
 
 using namespace RevLanguage;

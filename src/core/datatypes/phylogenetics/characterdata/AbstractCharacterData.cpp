@@ -1,12 +1,13 @@
 #include "AbstractCharacterData.h"
 
-#include "AbstractTaxonData.h"
-#include "RbConstants.h"
-#include "RbException.h"
-
-#include <sstream>
 #include <string>
-#include <algorithm>
+#include <cstddef>
+#include <iostream>
+#include <utility>
+#include <sstream> // IWYU pragma: keep
+
+#include "AbstractTaxonData.h"
+#include "RbException.h"
 
 using namespace RevBayesCore;
 

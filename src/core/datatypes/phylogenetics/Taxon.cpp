@@ -1,5 +1,7 @@
 #include "Taxon.h"
 
+#include <string>
+
 using namespace RevBayesCore;
 
 

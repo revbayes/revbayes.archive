@@ -8,14 +8,26 @@
 
 
 
+#include <stddef.h>
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "PhyloBrownianProcess.h"
 #include "Dist_PhyloBrownian.h"
-#include "ModelVector.h"
 #include "Real.h"
 #include "RlTimeTree.h"
-#include "StochasticNode.h"
-#include "Tree.h"
+#include "ArgumentRules.h"
+#include "RealPos.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlDistribution.h"
+#include "TypeSpec.h"
+
+namespace RevBayesCore { class Tree; }
+namespace RevBayesCore { template <class valueType> class TypedDagNode; }
 
 using namespace RevLanguage;
 

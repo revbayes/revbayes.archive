@@ -11,9 +11,10 @@
 
 
 #include "ContinuousFunction.h"
-#include "StochasticNode.h"
 
 namespace RevBayesCore {
+class DagNode;
+template <class variableType> class StochasticNode;
     
     /**
      * @brief Natural logaritm of a of a. To be used with a

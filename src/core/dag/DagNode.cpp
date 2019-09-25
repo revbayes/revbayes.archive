@@ -1,10 +1,14 @@
 #include "DagNode.h"
-#include "Distribution.h"
-#include "DynamicNode.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <ostream>
+#include <string>
+
 #include "Monitor.h"
 #include "Move.h"
 #include "RbException.h"
-#include "RbOptions.h"
+#include "RbOrderedSet.h"
 
 using namespace RevBayesCore;
 
@@ -182,11 +186,10 @@ void DagNode::clearVisitFlag( const size_t& flagType )
 
     // Clear the designated flagType from all descedants (including node calling this)
     // Also clear the flags we just flagged to keep descedant searching fast
-    RbOrderedSet<DagNode*>::iterator it;
-    for (it = descendants.begin(); it != descendants.end(); it++)
+    for (RbOrderedSet<DagNode*>::const_iterator it=descendants.begin(); it!= descendants.end(); ++it)
     {
-      (*it)->visit_flags[FIND_FLAG] = false;
-      (*it)->visit_flags[flagType] = false;
+        (*it)->visit_flags[FIND_FLAG] = false;
+        (*it)->visit_flags[flagType] = false;
     }
 
 
@@ -942,7 +945,7 @@ void DagNode::removeChild(DagNode *child) const
 {
 
     // test if we even have this node as a child
-    std::vector<DagNode *>::iterator it = std::find( children.begin(), children.end(), child );
+    std::vector<DagNode*>::iterator it = std::find( children.begin(), children.end(), child );
     if ( it != children.end() )
     {
         children.erase( it );

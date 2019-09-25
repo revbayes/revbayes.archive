@@ -1,20 +1,24 @@
+#include <stddef.h>
+#include <sstream>
+#include <map>
+#include <string>
+#include <utility>
+
 #include "ConstructorFunction.h"
 #include "FunctionTable.h"
-#include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "RbHelpSystem.h"
 #include "RevAbstractType.h"
 #include "RevObject.h"
-#include "RbUtil.h"
 #include "RlDistribution.h"
 #include "StringUtilities.h"
-#include "Function.h"
 #include "Workspace.h"
-
-#include <cassert>
-#include <sstream>
-#include <vector>
+#include "Environment.h"
+#include "RbHelpDistribution.h"
+#include "RbHelpType.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "TypeSpec.h"
 
 using namespace RevLanguage;
 

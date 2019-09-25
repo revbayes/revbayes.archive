@@ -1,6 +1,19 @@
 #include "Func_diagonalMatrix.h"
+
+#include <stddef.h>
+
 #include "Natural.h"
 #include "RlMatrixRealSymmetric.h"
+#include "Argument.h"
+#include "ArgumentRule.h"
+#include "ArgumentRules.h"
+#include "MatrixReal.h"
+#include "RbHelpReference.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
+#include "TypeSpec.h"
 
 using namespace RevLanguage;
 

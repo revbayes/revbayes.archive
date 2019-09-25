@@ -1,10 +1,11 @@
 #ifndef ChisqDistribution_H
 #define ChisqDistribution_H
 
-#include "TypedDagNode.h"
 #include "ContinuousDistribution.h"
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class TypedDagNode;
     
     /**
      * @brief Chi-square distribution class.

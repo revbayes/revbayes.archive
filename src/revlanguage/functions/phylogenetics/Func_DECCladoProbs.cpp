@@ -7,19 +7,41 @@
 //
 
 #include "Func_DECCladoProbs.h"
+
+#include <stddef.h>
+#include <map>
+#include <utility>
+
 #include "CladogeneticProbabilityMatrix.h"
 #include "ConstantNode.h"
 #include "DECCladogeneticStateFunction.h"
-#include "MatrixReal.h"
 #include "ModelVector.h"
 #include "OptionRule.h"
-#include "Real.h"
 #include "RealPos.h"
 #include "RlCladogeneticProbabilityMatrix.h"
 #include "RlDeterministicNode.h"
 #include "RlSimplex.h"
 #include "RlString.h"
 #include "TypedDagNode.h"
+#include "Argument.h"
+#include "ArgumentRule.h"
+#include "ArgumentRules.h"
+#include "DagNode.h"
+#include "IndirectReferenceFunction.h"
+#include "ModelObject.h"
+#include "Natural.h"
+#include "RbBoolean.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "RevVariable.h"
+#include "RlBoolean.h"
+#include "RlConstantNode.h"
+#include "RlFunction.h"
+#include "Simplex.h"
+#include "StringUtilities.h"
+#include "TypeSpec.h"
+#include "UserFunctionNode.h"
 
 using namespace RevLanguage;
 

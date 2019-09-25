@@ -6,7 +6,6 @@ echo $HERE
 #################
 # command line options
 # set default values
-boost="true"
 debug="false"
 mac="false"
 travis="false"
@@ -15,6 +14,9 @@ mpi="false"
 gentoo="false"
 help="false"
 jupyter="false"
+boost_root=""
+boost_lib=""
+exec_name=""
 
 # parse command line arguments
 while echo $1 | grep ^- > /dev/null; do
@@ -28,7 +30,6 @@ make
 
 Command line options are:
 -h                              : print this help and exit.
--boost          <true|false>    : true (re)compiles boost libs, false dont. Defaults to true.
 -mac            <true|false>    : set to true if you are building for a OS X - compatible with 10.6 and higher. Defaults to false.
 -win            <true|false>    : set to true if you are building on a Windows system. Defaults to false.
 -mpi            <true|false>    : set to true if you want to build the MPI version. Defaults to false.
@@ -45,39 +46,6 @@ Command line options are:
     shift
 done
 
-
-
-#################
-# build boost libraries separately
-
-if [ "$boost" = "true" ]
-then
-    echo 'Building boost libraries'
-    echo 'you can turn this off with argument "-boost false"'
-
-    cd ../../boost_1_60_0
-    rm ./project-config.jam*  # clean up from previous runs
-
-    if [ "$mac" = "true" ]
-    then
-        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization
-        ./b2 link=static
-    elif [ "$win" = "true" ]
-    then
-        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization --with-toolset=mingw
-        ./b2 link=static
-    elif [ "$gentoo" = "true" ]
-    then
-        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization
-        ./b2 link=static --ignore-site-config
-    else
-        ./bootstrap.sh --with-libraries=atomic,chrono,filesystem,system,regex,thread,date_time,program_options,math,serialization
-        ./b2 link=static
-    fi
-
-else
-    echo 'not building boost libraries'
-fi
 
 
 #################
@@ -106,9 +74,22 @@ project(RevBayes)
 # RHEL 7 compute clusters may have cmake 2.8.12
 #
 # So, we add the flag directly instead.
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++98")
 
 ' > "$HERE/CMakeLists.txt"
+
+
+if [ "${exec_name}" = "" ]; then
+    if [ "${mpi}" = "true" ]; then
+        exec_name="rb-mpi"
+    else
+        exec_name="rb"
+    fi
+fi
+
+echo "set (RB_EXEC_NAME \"${exec_name}\")" >> "$HERE/CMakeLists.txt"
+echo "set (LOCAL_BOOST_ROOT \"${boost_root}\")" >> "$HERE/CMakeLists.txt"
+echo "set (LOCAL_BOOST_LIBRARY \"${boost_lib}\")" >> "$HERE/CMakeLists.txt"
 
 if [ "$debug" = "true" ]
 then
@@ -130,8 +111,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 elif [ "$win" = "true" ]
 then
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3 -static")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -static")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 '  >> "$HERE/CMakeLists.txt"
 else
 echo '
@@ -188,11 +169,21 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake ${CMAKE_MODULE_PATH})
 # Set source root relate to project file
 set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../src)
 
-option(INTERNAL_BOOST "Use the version of boost shipped with revbayes" ON)
+MESSAGE("My Boost information:")
+MESSAGE("  Boost_INCLUDE_DIRS: ${LOCAL_BOOST_ROOT}")
+MESSAGE("  Boost_LIBRARIES: ${LOCAL_BOOST_LIBRARY}")
+if ( NOT ${LOCAL_BOOST_ROOT} STREQUAL "" )
+  MESSAGE("Boost root provided")
+endif()
+if ( NOT ${LOCAL_BOOST_LIBRARY} STREQUAL "" )
+  MESSAGE("Boost lib provided")
+endif()
 
-if (INTERNAL_BOOST)
-   SET(BOOST_ROOT "../../../boost_1_60_0")
-   SET(BOOST_LIBRARY "../../../boost_1_60_0/stage/lib")
+if ( NOT ${LOCAL_BOOST_ROOT} STREQUAL "" AND NOT ${LOCAL_BOOST_LIBRARY} STREQUAL "" )
+#   SET(BOOST_ROOT "../../../boost_1_60_0")
+#   SET(BOOST_LIBRARY "../../../boost_1_60_0/stage/lib")
+   SET(BOOST_ROOT ${LOCAL_BOOST_ROOT})
+   SET(BOOST_LIBRARY ${LOCAL_BOOST_LIBRARY})
    SET(Boost_NO_SYSTEM_PATHS ON)
    SET(Boost_USE_STATIC_RUNTIME ON)
    SET(Boost_USE_STATIC_LIBS ON)
@@ -302,14 +293,14 @@ ADD_LIBRARY(rb-cmd-lib ${CMD_FILES})'  >> "$HERE/cmd/CMakeLists.txt"
 
 else
 echo '
-add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
+add_executable(${RB_EXEC_NAME} ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 
-target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
+target_link_libraries(${RB_EXEC_NAME} rb-parser rb-core libs ${Boost_LIBRARIES})
 
-set_target_properties(rb PROPERTIES PREFIX "../")
+set_target_properties(${RB_EXEC_NAME} PROPERTIES PREFIX "../")
 ' >> $HERE/CMakeLists.txt
 if [ "$mpi" = "true" ] ; then
-    echo 'target_link_libraries(rb ${MPI_LIBRARIES})
+    echo 'target_link_libraries(${RB_EXEC_NAME} ${MPI_LIBRARIES})
 ' >> $HERE/CMakeLists.txt
 fi
 fi

@@ -1,18 +1,33 @@
+#include <iomanip>
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <algorithm>
+#include <cstddef>
+#include <functional>
+#include <string>
+
 #include "DagNode.h"
 #include "MetropolisHastingsMove.h"
 #include "Mcmcmc.h"
 #include "Proposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "RlUserInterface.h"
 #include "RbConstants.h"
 #include "RbException.h"
 #include "RbMathLogic.h"
-
-#include <iomanip>
-#include <iostream>
-#include <vector>
-#include <cmath>
+#include "Mcmc.h"
+#include "Model.h"
+#include "Monitor.h"
+#include "MonteCarloAnalysisOptions.h"
+#include "MonteCarloSampler.h"
+#include "Move.h"
+#include "RbFileManager.h"
+#include "RbIterator.h"
+#include "RbIteratorImpl.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "StringUtilities.h"
 
 #ifdef RB_MPI
 #include <mpi.h>
@@ -436,11 +451,6 @@ void Mcmcmc::nextCycle(bool advanceCycle)
         if ((current_generation == 0 && burnin_generation % swap_interval == 0) || (current_generation > 0 && current_generation % swap_interval == 0))
         {
             
-#ifdef RB_MPI
-            // wait until all chains complete
-            //        MPI::COMM_WORLD.Barrier();
-#endif
-            
             // perform chain swap
             if (swap_mode == "single")
             {
@@ -457,11 +467,6 @@ void Mcmcmc::nextCycle(bool advanceCycle)
         }
         if ((current_generation == 0 && burnin_generation % swap_interval2 == 0) || (current_generation > 0 && current_generation % swap_interval2 == 0))
         {
-            
-#ifdef RB_MPI
-            // wait until all chains complete
-            //        MPI::COMM_WORLD.Barrier();
-#endif
             
             // perform chain swap
             if (swap_mode == "single")
@@ -486,11 +491,6 @@ void Mcmcmc::nextCycle(bool advanceCycle)
         if ((current_generation == 0 && burnin_generation % swap_interval == 0) || (current_generation > 0 && current_generation % swap_interval == 0))
         {
             
-#ifdef RB_MPI
-            // wait until all chains complete
-            //        MPI::COMM_WORLD.Barrier();
-#endif
-            
             // perform chain swap
             if (swap_mode == "single")
             {
@@ -510,11 +510,6 @@ void Mcmcmc::nextCycle(bool advanceCycle)
     {
         if ((current_generation == 0 && burnin_generation % swap_interval == 0) || (current_generation > 0 && current_generation % swap_interval == 0))
         {
-            
-#ifdef RB_MPI
-            // wait until all chains complete
-            //        MPI::COMM_WORLD.Barrier();
-#endif
             
             // perform chain swap
             if (swap_mode == "single")

@@ -1,20 +1,23 @@
-#include "DagNode.h"
-#include "VariableMonitor.h"
+#include <stddef.h>
+#include <cmath>
+#include <iostream>
+#include <string>
+#include <vector>
+
 #include "MonteCarloSampler.h"
+<<<<<<< HEAD
 #include "MoveSchedule.h"
 #include "MpiUtilities.h"
+=======
+>>>>>>> af64ec661d79c5aae0e69b8a04355a1957eee605
 #include "PowerPosteriorAnalysis.h"
 #include "ProgressBar.h"
-#include "RandomMoveSchedule.h"
-#include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
-#include "RbConstants.h"
 #include "RbException.h"
 #include "RbFileManager.h"
-#include "RbOptions.h"
-#include <cmath>
-#include <typeinfo>
-#include "SequentialMoveSchedule.h"
+#include "Cloneable.h"
+#include "MonteCarloAnalysisOptions.h"
+#include "Parallelizable.h"
+#include "StringUtilities.h"
 
 
 #ifdef RB_MPI

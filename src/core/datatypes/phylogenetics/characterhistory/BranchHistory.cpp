@@ -1,9 +1,10 @@
 #include "BranchHistory.h"
-#include "CharacterEvent.h"
-#include "CharacterEventCompare.h"
 
 #include <iostream>
 #include <iomanip>
+
+#include "CharacterEvent.h"
+#include "CharacterEventCompare.h"
 
 using namespace RevBayesCore;
 
