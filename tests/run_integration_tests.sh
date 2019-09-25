@@ -97,10 +97,16 @@ while [  $i -lt ${#tests[@]} ]; do
 
     # check if output matches expected output
     errs=()
-    for f in $(ls output_expected); do
+    exp_out_dir="output_expected"
+    if [ "${mpi}" = "true" ]; then
+        if [ -d "output_expected_mpi" ]; then
+            exp_out_dir="output_expected_mpi"
+        fi
+    fi
+    for f in $(ls ${exp_out_dir}); do
         if [ ! -e output/$f ]; then
             errs+=("missing:  $f")
-        elif ! diff output/$f output_expected/$f > /dev/null; then
+        elif ! diff output/$f ${exp_out_dir}/$f > /dev/null; then
             errs+=("mismatch: $f")
         fi
     done
