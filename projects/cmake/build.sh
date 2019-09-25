@@ -1,5 +1,6 @@
 #!/bin/sh
 
+all_args=$@
 mpi="false"
 # parse command line arguments
 while echo $1 | grep ^- > /dev/null; do
@@ -39,7 +40,7 @@ fi
     cp ../../src/revlanguage/utils/GitVersion.cpp GitVersion_backup.cpp
     mv GitVersion.cpp ../../src/revlanguage/utils/
 
-	./regenerate.sh $@
+	./regenerate.sh ${all_args}
 	cd ${BUILD_DIR} 
 	CC=gcc CXX=g++ cmake .
 	make -j 8
