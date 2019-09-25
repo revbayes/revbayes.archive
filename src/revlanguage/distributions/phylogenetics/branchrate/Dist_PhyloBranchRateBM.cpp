@@ -54,7 +54,7 @@ const std::string& Dist_PhyloBranchRateBM::getClassType(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_PhyloBranchRateBM::getClassTypeSpec(void) {
     
-    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< ModelVector<RealPos> >::getClassTypeSpec() ) );
     
     return rev_type_spec;
 }
