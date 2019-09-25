@@ -45,15 +45,13 @@ morph.clamp(data_morph)
 
 
 # set up and run MCMC
-monitors[1] = mnScreen(printgen=100, rate)
+monitors[1] = mnScreen(printgen=10, rate)
 monitors[2] = mnFile(tree, filename="output/mcmc_MAP_tree_anc_states.trees", printgen=10)
 monitors[3] = mnJointConditionalAncestralState(tree=tree, ctmc=morph, type="NaturalNumbers", withTips=true, withStartStates=true, filename="output/mcmc_MAP_tree_anc_states.log", printgen=10)
 
 model = model(tree)
 mcmc = mcmc(moves, monitors, model)
 mcmc.run(500)
-
-
 
 # finally summarize MAP tree and MAP ancestral states
 state_trace = readAncestralStateTrace(file="output/mcmc_MAP_tree_anc_states.log")
