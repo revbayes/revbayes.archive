@@ -321,7 +321,7 @@ void Mcmc::disableScreenMonitor( bool all, size_t rep )
      
         if ( all == true || rep > 0 || process_active == false )
         {
-            
+
             bool is = monitors[i].isScreenMonitor();
             if ( is == true )
             {

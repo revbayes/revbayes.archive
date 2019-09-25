@@ -1,12 +1,20 @@
 #include "MpiUtilities.h"
+<<<<<<< HEAD
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
 
+#include <iostream>
+=======
+
+>>>>>>> af64ec661d79c5aae0e69b8a04355a1957eee605
 #include <sstream>
 
 #ifdef RB_MPI
 #include <mpi.h>
 #endif
 
-void RevBayesCore::MpiUtilities::DebugWait(int rank) {
+void RevBayesCore::MpiUtilities::DebugWait(int rank)
+{
     
 #ifdef RB_MPI
     char	a;
@@ -20,7 +28,8 @@ void RevBayesCore::MpiUtilities::DebugWait(int rank) {
 #endif
 }
 
-void RevBayesCore::MpiUtilities::DebugMsg(const std::stringstream& s) {
+void RevBayesCore::MpiUtilities::DebugMsg(const std::stringstream& s)
+{
 #ifdef RB_MPI
 #ifdef DEBUG_MPI_MCA
     int pid = 0;
@@ -74,7 +83,8 @@ void RevBayesCore::MpiUtilities::DebugMsg(const std::string& s, double x) {
 #endif
 }
 
-void RevBayesCore::MpiUtilities::DebugMsgPid(const std::string& s, int p) {
+void RevBayesCore::MpiUtilities::DebugMsgPid(const std::string& s, int p)
+{
 #ifdef RB_MPI
 #ifdef DEBUG_MPI_MCA
     int pid = 0;
@@ -87,3 +97,28 @@ void RevBayesCore::MpiUtilities::DebugMsgPid(const std::string& s, int p) {
 #endif
 #endif
 }
+
+
+#ifdef RB_MPI
+// NOTE: This does more that just synchronize all the copies of the global RNG.
+//       It also resets them to the common starting seed.
+
+void RevBayesCore::MpiUtilities::synchronizeRNG( const MPI_Comm &analysis_comm )
+{
+    unsigned int seed = 0;
+
+    int process_id = 0;
+    MPI_Comm_rank(analysis_comm, &process_id);
+
+    // sync the random number generators
+    if ( process_id == 0 )
+    {
+        seed = RevBayesCore::GLOBAL_RNG->getSeed();
+    }
+
+    MPI_Bcast(&seed, 1, MPI_INT, 0, analysis_comm);
+
+    RevBayesCore::GLOBAL_RNG->setSeed( seed );
+
+}
+#endif

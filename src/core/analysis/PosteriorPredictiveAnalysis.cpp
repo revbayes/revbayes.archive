@@ -7,6 +7,11 @@
 #include "DagNode.h"
 #include "MaxIterationStoppingRule.h"
 #include "MonteCarloAnalysis.h"
+<<<<<<< HEAD
+#include "MonteCarloSampler.h"
+#include "MpiUtilities.h"
+=======
+>>>>>>> af64ec661d79c5aae0e69b8a04355a1957eee605
 #include "PosteriorPredictiveAnalysis.h"
 #include "RbException.h"
 #include "Cloneable.h"
@@ -123,8 +128,6 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
         // create an independent copy of the analysis
         MonteCarloAnalysis *current_analysis = template_sampler.clone();
 
-        current_analysis->disableScreenMonitors( true );
-        
         // get the model of the analysis
         Model* current_model = current_analysis->getModel().clone();
         
@@ -145,7 +148,14 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
         RbFileManager tmp = RbFileManager( dir_names[i] );
         
         // now set the model of the current analysis
+#ifdef RB_MPI
+        current_analysis->setModel( current_model, false, analysis_comm );
+#else
         current_analysis->setModel( current_model, false );
+#endif
+        
+        // disable the screen monitor
+        current_analysis->disableScreenMonitors( true );
 
         // set the monitor index
         current_analysis->addFileMonitorExtension(tmp.getLastPathComponent(), true);
@@ -178,8 +188,11 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
     
 #ifdef RB_MPI
     MPI_Comm_free(&analysis_comm);
-
-    // wait until all chains complete
+    
+    // to be safe, we should synchronize the random number generators
+    MpiUtilities::synchronizeRNG( MPI_COMM_WORLD );
+    
+    // wait until all analysies are completed
     MPI_Barrier(MPI_COMM_WORLD);
 #endif
     

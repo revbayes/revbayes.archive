@@ -5,6 +5,11 @@
 #include <vector>
 
 #include "MonteCarloSampler.h"
+<<<<<<< HEAD
+#include "MoveSchedule.h"
+#include "MpiUtilities.h"
+=======
+>>>>>>> af64ec661d79c5aae0e69b8a04355a1957eee605
 #include "PowerPosteriorAnalysis.h"
 #include "ProgressBar.h"
 #include "RbException.h"
@@ -199,7 +204,11 @@ void PowerPosteriorAnalysis::runAll(size_t gen, double burnin_fraction, size_t p
 #ifdef RB_MPI
     // wait until all chains complete
     MPI_Barrier(MPI_COMM_WORLD);
+    
+    // to be safe, we should synchronize the random number generators
+    MpiUtilities::synchronizeRNG( MPI_COMM_WORLD);
 #endif
+    
     if ( process_active == true )
     {
         summarizeStones();
