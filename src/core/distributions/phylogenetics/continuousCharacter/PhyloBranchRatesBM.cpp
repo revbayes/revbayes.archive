@@ -17,7 +17,7 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-PhyloBranchRatesBM::PhyloBranchRatesBM(const TypedDagNode< Tree > *t, const TypedDagNode< double >* r, const TypedDagNode< double >* s, const TypedDagNode< double >* d): TypedDistribution< RbVector<double> >(new RbVector<double>()),
+PhyloBranchRatesBM::PhyloBranchRatesBM(const TypedDagNode< Tree > *t, const TypedDagNode< double >* r, const TypedDagNode< double >* s, const TypedDagNode< double >* d): TypedDistribution< RbVector<double> >(new RbVector<double>(t->getValue().getNumberOfNodes(),0.0)),
     tau( t ),
     root_state( r ),
     sigma( s ),
