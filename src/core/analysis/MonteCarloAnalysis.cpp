@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <ostream>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "RandomNumberFactory.h"

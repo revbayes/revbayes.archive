@@ -43,7 +43,7 @@ fi
 	./regenerate.sh ${all_args}
 	cd ${BUILD_DIR} 
 	CC=gcc CXX=g++ cmake .
-	make -j 8
+	make -j 4
 	cd ..
 	
     cp GitVersion_backup.cpp ../../src/revlanguage/utils/GitVersion.cpp
