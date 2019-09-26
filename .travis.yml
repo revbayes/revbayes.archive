@@ -66,6 +66,7 @@ matrix:
           - pandoc
           - boost1.67
           - libopenmpi-dev
+          - openmpi-bin
     - os: linux
       dist: xenial
       compiler: clang++
