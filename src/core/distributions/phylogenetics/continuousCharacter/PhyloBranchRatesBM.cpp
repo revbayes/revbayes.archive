@@ -17,7 +17,7 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-PhyloBranchRatesBM::PhyloBranchRatesBM(const TypedDagNode< Tree > *t, const TypedDagNode< double >* r, const TypedDagNode< double >* s, const TypedDagNode< double >* d): TypedDistribution< RbVector<double> >(new RbVector<double>(t->getValue().getNumberOfNodes(),0.0)),
+PhyloBranchRatesBM::PhyloBranchRatesBM(const TypedDagNode< Tree > *t, const TypedDagNode< double >* r, const TypedDagNode< double >* s, const TypedDagNode< double >* d): TypedDistribution< RbVector<double> >(new RbVector<double>(t->getValue().getNumberOfNodes()-1,0.0)),
     tau( t ),
     root_state( r ),
     sigma( s ),
@@ -46,7 +46,7 @@ double PhyloBranchRatesBM::computeLnProbability(void)
 {
     size_t n_nodes = tau->getValue().getNumberOfNodes();
     std::vector<double> node_values = std::vector<double>(n_nodes, 0.0);
-    node_values[n_nodes-1] = root_state->getValue();
+    node_values[n_nodes-1] = log(root_state->getValue());
     double ln_prob = recursiveLnProb(tau->getValue().getRoot(), node_values);
     
     return ln_prob;
@@ -75,7 +75,7 @@ double PhyloBranchRatesBM::recursiveLnProb( const TopologyNode& node, std::vecto
         }
         double node_value = log(ln_node_value);
         double stand_dev = sigma->getValue() * sqrt(node.getBranchLength());
-        double mean = (*value)[parent_index] + drift->getValue() * node.getBranchLength();
+        double mean = parent_value + drift->getValue() * node.getBranchLength();
         ln_prob += RbStatistics::Normal::lnPdf(node_value, stand_dev, mean);
         
         parent_values[index] = node_value;
