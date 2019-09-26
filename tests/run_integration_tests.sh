@@ -33,8 +33,7 @@ done
 
 if [ $mpi = "true" ]; then
 #    rb_exec="mpirun --oversubscribe -np 4 $@"
-#    rb_exec="mpirun -np 4 $@"
-    rb_exec="$@"
+    rb_exec="mpirun -np 4 $@"
 else
     rb_exec="$@"
 fi
