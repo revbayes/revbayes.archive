@@ -100,11 +100,12 @@ while [  $i -lt ${#tests[@]} ]; do
     # check if output matches expected output
     errs=()
     exp_out_dir="output_expected"
-    if [ "${mpi}" = "true" ]; then
-        if [ -d "output_expected_mpi" ]; then
-            exp_out_dir="output_expected_mpi"
-        fi
-    fi
+    # Sebastian: For now we only use single cores until we fix Travis mpirun
+#    if [ "${mpi}" = "true" ]; then
+#        if [ -d "output_expected_mpi" ]; then
+#            exp_out_dir="output_expected_mpi"
+#        fi
+#    fi
     for f in $(ls ${exp_out_dir}); do
         if [ ! -e output/$f ]; then
             errs+=("missing:  $f")
