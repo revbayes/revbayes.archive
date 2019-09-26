@@ -129,14 +129,14 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void )
     else
     {
         // check that the file/path name has been correctly specified
-        std::string  bn       = static_cast<const RlString&>( args[arg_index_files].getVariable()->getRevObject() ).getValue();
+        std::string  bn = static_cast<const RlString&>( args[arg_index_files].getVariable()->getRevObject() ).getValue();
         
         StringUtilities::replaceSubstring(bn,".trees","");
         
-        for(size_t i = 0; i < nruns; i++)
+        for (size_t i = 0; i < nruns; i++)
         {
             std::string run = "";
-            if( nruns > 1 )
+            if ( nruns > 1 )
             {
                 run = "_run_" + StringUtilities::to_string(i+1);
             }
@@ -416,7 +416,7 @@ WorkspaceVector<TraceTree>* Func_readTreeTrace::readTrees(const std::vector<std:
                 {
                     
                     std::string parmName = columns[j];
-                    if ( parmName == "Posterior" || parmName == "Likelihood" || parmName == "Prior")
+                    if ( parmName == "Posterior" || parmName == "Likelihood" || parmName == "Prior" || parmName == "Replicate_ID")
                     {
                         continue;
                     }

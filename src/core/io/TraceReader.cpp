@@ -18,7 +18,7 @@ std::vector<ModelTrace> TraceReader::readStochasticVariableTrace( const std::str
     
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager fm( fn );
-    if ( !fm.testFile() || !fm.testDirectory() )
+    if ( fm.testFile() == false || fm.testDirectory() == false )
     {        
         std::string errorStr = "";
         fm.formatError( errorStr );
