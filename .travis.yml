@@ -55,6 +55,7 @@ matrix:
         - CXX_COMPILER=/usr/bin/g++-7
         - C_COMPILER=/usr/bin/gcc-7
         - USE_MPI="true"
+        - MPI_IMPL=openmpi
       addons:
         apt:
           sources:
@@ -115,6 +116,7 @@ script:
   - git clone https://gitlab.com/testiphy/testiphy.git
   - cd testiphy
   - ./testiphy rb
+  - which mpirun
 
 # notifications
 notifications:
