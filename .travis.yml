@@ -116,7 +116,6 @@ script:
   - git clone https://gitlab.com/testiphy/testiphy.git
   - cd testiphy
   - ./testiphy rb
-  - which mpirun
 
 # notifications
 notifications:
