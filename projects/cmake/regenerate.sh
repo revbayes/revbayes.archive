@@ -82,7 +82,7 @@ project(RevBayes)
 # RHEL 7 compute clusters may have cmake 2.8.12
 #
 # So, we add the flag directly instead.
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++98")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 ' > "$HERE/CMakeLists.txt"
 

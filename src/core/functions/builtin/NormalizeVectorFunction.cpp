@@ -34,9 +34,9 @@ void NormalizeVectorFunction::update( void )
     
     double m = 0;
     const std::vector<double> &v = vals->getValue();
-    for ( size_t i = 0; i < v.size(); ++i ) 
+    for ( double val : v)
     {
-        m += v[i];
+        m += val;
     }
     
     m /= v.size() * sum->getValue();
