@@ -1007,22 +1007,22 @@ void SBNParameters::fitBranchLengthDistributions(std::vector<Tree> &trees )
         std::vector<double> gg_params = std::vector<double>(3,-1.0);
         gg_params = fit_gengam_gss(clade_edge_observations.second);
 
-        double gg_aic = 6 - fn_fixed_c_gengamma_lnl(gg_params[1],clade_edge_observations.second);
-        double gamma_aic = 4 - fn_fixed_c_gengamma_lnl(1.0,clade_edge_observations.second);
-
-        // AIC-based comparison
-        if (gg_aic < gamma_aic)
-        {
+        // double gg_aic = 6 - fn_fixed_c_gengamma_lnl(gg_params[1],clade_edge_observations.second);
+        // double gamma_aic = 4 - fn_fixed_c_gengamma_lnl(1.0,clade_edge_observations.second);
+        //
+        // // AIC-based comparison
+        // if (gg_aic < gamma_aic)
+        // {
           these_params = gg_params;
-        }
-        else
-        {
-          std::vector<double> gamma_par = std::vector<double>(2,-1.0);
-          gamma_par = fit_gamma_MOM(clade_edge_observations.second);
-          these_params[0] = gamma_par[1];
-          these_params[1] = 1.0;
-          these_params[2] = gamma_par[0];
-        }
+        // }
+        // else
+        // {
+        //   std::vector<double> gamma_par = std::vector<double>(2,-1.0);
+        //   gamma_par = fit_gamma_MOM(clade_edge_observations.second);
+        //   these_params[0] = gamma_par[1];
+        //   these_params[1] = 1.0;
+        //   these_params[2] = gamma_par[0];
+        // }
 
       }
       else if (clade_edge_observations.second.size() > 2)

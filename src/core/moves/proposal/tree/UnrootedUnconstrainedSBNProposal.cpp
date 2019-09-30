@@ -87,7 +87,7 @@ void UnrootedUnconstrainedSBNProposal::fitSBNToTreeSamples( std::vector<Tree> &t
  */
 const std::string& UnrootedUnconstrainedSBNProposal::getProposalName( void ) const
 {
-    static std::string name = "UnconstrainedRootedSBN";
+    static std::string name = "UnconstrainedUnrootedSBN";
 
     return name;
 }
