@@ -1,10 +1,11 @@
 #ifndef VarianceGammaDistribution_H
 #define VarianceGammaDistribution_H
 
-#include "TypedDagNode.h"
 #include "ContinuousDistribution.h"
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class TypedDagNode;
     
     /**
      * @brief Variance-gamma distribution class.

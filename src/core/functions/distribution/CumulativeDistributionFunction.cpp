@@ -1,5 +1,10 @@
 #include "CumulativeDistributionFunction.h"
 
+#include "ContinuousDistribution.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class DagNode; }
+
 /**
  * Construction for a cumulative distribution function (CDF) of TypedDagNode of type double for a distribution
  * @param z value of TypedDagNode double

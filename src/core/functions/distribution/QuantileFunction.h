@@ -2,10 +2,11 @@
 #define QuantileFunction_H
 
 #include "ContinuousFunction.h"
-#include "ContinuousDistribution.h"
-#include "TypedDagNode.h"
 
 namespace RevBayesCore {
+class ContinuousDistribution;
+class DagNode;
+template <class valueType> class TypedDagNode;
     
     /**
      * @brief Function calculating a quantile from a distribution

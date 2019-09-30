@@ -24,17 +24,21 @@
  */
 
 #include <sstream>
-#include <vector>
-#include <set>
+#include <stdio.h>
 #include <cstdlib>
 
 /* Files including helper classes */
-#include "AddWorkspaceVectorType.h"
-#include "AddVectorizedWorkspaceType.h"
 #include "RbException.h"
 #include "RlUserInterface.h"
 #include "Workspace.h"
 
+#include "Func_workspaceVector.h"              // for Func_workspaceVector
+#include "RbVector.h"                          // for RbVector
+#include "RbVectorImpl.h"                      // for RbVectorImpl
+#include "RevObject.h"                         // for operator<<
+#include "RevPtr.h"                            // for RevPtr
+#include "WorkspaceToCoreWrapperObject.h"      // for WorkspaceToCoreWrapper...
+#include "WorkspaceVector.h"                   // for WorkspaceVector
 
 /// Demographic Functions ///
 

@@ -3,11 +3,10 @@
 
 #include "RbVector.h"
 #include "TypedFunction.h"
-#include "TypedDagNode.h"
-
-#include <vector>
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class TypedDagNode;
     
     /** @brief Function to normalize a vector of values so the sum of values equals a target
      *

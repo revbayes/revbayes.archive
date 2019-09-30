@@ -1,11 +1,15 @@
+#include <stddef.h>
+#include <ostream>
+
 #include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "MaximumLikelihoodAnalysis.h"
 #include "RlUserInterface.h"
+#include "Cloneable.h"
+#include "MaximumLikelihoodEstimation.h"
+#include "Parallelizable.h"
 
-#include <algorithm>
-#include <cmath>
+namespace RevBayesCore { class Model; }
 
 #ifdef RB_MPI
 #include <mpi.h>

@@ -1,9 +1,17 @@
 #include "CategoricalDistribution.h"
+
+#include <cmath>
+#include <vector>
+
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
+#include "Cloneable.h"
+#include "RbVectorImpl.h"
+#include "Simplex.h"
+#include "TypedDagNode.h"
 
-#include <cmath>
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 

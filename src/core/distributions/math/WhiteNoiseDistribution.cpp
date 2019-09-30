@@ -1,9 +1,15 @@
 #include "WhiteNoiseDistribution.h"
+
+#include <cmath>
+
 #include "DistributionGamma.h"
 #include "RandomNumberFactory.h"
 #include "RbConstants.h"
+#include "Cloneable.h"
+#include "TypedDagNode.h"
 
-#include <cmath>
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { class RandomNumberGenerator; }
 
 using namespace RevBayesCore;
 

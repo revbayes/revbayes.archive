@@ -25,23 +25,41 @@
 
 #include <sstream>
 #include <vector>
-#include <set>
+#include <stdio.h>
 #include <cstdlib>
 
 /* Files including helper classes */
-#include "AddWorkspaceVectorType.h"
-#include "AddVectorizedWorkspaceType.h"
 #include "RbException.h"
 #include "RlUserInterface.h"
 #include "Workspace.h"
 
+#include "DPPAllocateAuxGibbsMove.h"
+#include "DPPTableValueUpdate.h"
+#include "GibbsMixtureAllocationProposal.h"
+#include "Integer.h"
+#include "MixtureAllocationProposal.h"
+#include "ModelObject.h"
+#include "ModelVector.h"
+#include "Natural.h"
+#include "RbVector.h"
+#include "Real.h"
+#include "RealPos.h"
+#include "RevPtr.h"
+#include "ReversibleJumpMixtureProposal.h"
+#include "RlTree.h"
+#include "SimpleProposal.h"
+#include "Simplex.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
+#include "UPPAllocationProposal.h"
+#include "WorkspaceToCoreWrapperObject.h"
+
+
 /// Types ///
 
 /* These types are needed as template types for the moves */
-#include "RlBranchLengthTree.h"
 #include "RlRateGenerator.h"
-
-
 #include "Probability.h"
 #include "RlSimplex.h"
 
@@ -49,7 +67,6 @@
 /// Moves ///
 
 /* Move types (in folder "datatypes/inference/moves") (grouped by parameter type) */
-#include "RlMove.h"
 
 /* Moves on real values */
 #include "Move_Mirror.h"
@@ -193,6 +210,8 @@
 #include "Move_NodeTimeSlidePathTruncatedNormal.h"
 #include "Move_NodeTimeSlideBeta.h"
 #include "Move_RateAgeBetaShift.h"
+#include "Move_RateAgeProposal.h"
+#include "Move_RateAgeSubtreeProposal.h"
 #include "Move_RootTimeScaleBactrian.h"
 #include "Move_RootTimeSlideUniform.h"
 #include "Move_SpeciesNarrowExchange.h"
@@ -203,7 +222,7 @@
 #include "Move_SubtreeScale.h"
 #include "Move_SPRNonclock.h"
 #include "Move_TreeScale.h"
-#include "Move_WeightedNodeTimeSlide.h"
+//#include "Move_WeightedNodeTimeSlide.h"
 
 
 #include "Move_NarrowExchangeRateMatrix.h"
@@ -328,6 +347,8 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_MixtureAllocation<Integer>( ) );
         addTypeWithConstructor( new Move_MixtureAllocation<Probability>( ) );
         addTypeWithConstructor( new Move_MixtureAllocation<Simplex>( ) );
+        addTypeWithConstructor( new Move_MixtureAllocation<ModelVector<RealPos> >( ) );
+        addTypeWithConstructor( new Move_MixtureAllocation<ModelVector<Real> >( ) );
         addTypeWithConstructor( new Move_MixtureAllocation<RateGenerator>( ) );
         addTypeWithConstructor( new Move_MixtureAllocation<Tree>( ) );
         addTypeWithConstructor( new Move_GibbsMixtureAllocation<Real>( ) );
@@ -383,6 +404,8 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_NodeTimeSlideUniformAgeConstrained());
         addTypeWithConstructor( new Move_NodeTimeSlideBeta()                );
         addTypeWithConstructor( new Move_RateAgeBetaShift()                 );
+        addTypeWithConstructor( new Move_RateAgeProposal()                  );
+        addTypeWithConstructor( new Move_RateAgeSubtreeProposal()           );
         addTypeWithConstructor( new Move_RootTimeScaleBactrian()            );
         addTypeWithConstructor( new Move_RootTimeSlideUniform()             );
         addTypeWithConstructor( new Move_SubtreeScale()                     );

@@ -1,8 +1,12 @@
+#include <stdlib.h>
+#include <algorithm>
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
-#include "ConstantNode.h"
 #include "DelimitedCharacterDataReader.h"
 #include "HomologousDiscreteCharacterData.h"
-#include "Ellipsis.h"
 #include "Func_readCharacterDataDelimited.h"
 #include "NaturalNumbersState.h"
 #include "OptionRule.h"
@@ -12,7 +16,20 @@
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlContinuousCharacterData.h"
 #include "RlNaturalNumbersState.h"
-#include "RlStandardState.h"
+#include "Argument.h"
+#include "ArgumentRules.h"
+#include "ContinuousCharacterData.h"
+#include "ContinuousTaxonData.h"
+#include "DiscreteTaxonData.h"
+#include "RbBoolean.h"
+#include "RbConstants.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlBoolean.h"
+#include "RlFunction.h"
+#include "StandardState.h"
+#include "Taxon.h"
+#include "TypeSpec.h"
 
 
 using namespace RevLanguage;

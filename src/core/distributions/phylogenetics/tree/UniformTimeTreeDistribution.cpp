@@ -1,4 +1,8 @@
-#include "Clade.h"
+#include <stddef.h>
+#include <algorithm>
+#include <cmath>
+#include <vector>
+
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
@@ -6,9 +10,13 @@
 #include "StochasticNode.h"
 #include "TopologyNode.h"
 #include "UniformTimeTreeDistribution.h"
+#include "Taxon.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
 
-#include <algorithm>
-#include <cmath>
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { template <class valueType> class RbOrderedSet; }
 
 using namespace RevBayesCore;
 

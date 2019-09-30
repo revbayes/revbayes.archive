@@ -1,7 +1,24 @@
+#include <stddef.h>
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "OptionRule.h"
 #include "RlMonitor.h"
+#include "Argument.h"
+#include "MemberProcedure.h"
+#include "MethodTable.h"
+#include "Monitor.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlUtils.h"
+#include "StringUtilities.h"
+#include "TypeSpec.h"
+#include "WorkspaceToCoreWrapperObject.h"
+
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevLanguage;
 

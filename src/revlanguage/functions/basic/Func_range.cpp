@@ -17,13 +17,33 @@
  * $Id: Func_source.cpp 1485 2012-05-04 16:03:37Z hoehna $
  */
 
+#include <iosfwd>
+#include <vector>
+
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "Func_range.h"
 #include "Integer.h"
 #include "ModelVector.h"
-#include "RbException.h"
 #include "TypeSpec.h"
+#include "ArgumentRules.h"
+#include "ConstantNode.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "IndirectReferenceFunction.h"
+#include "ModelObject.h"
+#include "Natural.h"
+#include "Procedure.h"
+#include "RbHelpReference.h"
+#include "RbVector.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlConstantNode.h"
+#include "RlFunction.h"
+#include "TypedDagNode.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
 
 using namespace RevLanguage;
 

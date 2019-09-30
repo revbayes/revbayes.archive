@@ -1,13 +1,27 @@
+#include <stddef.h>
+#include <iosfwd>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "Ellipsis.h"
 #include "Func_simplex.h"
-#include "RbUtil.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 #include "RlSimplex.h"
 #include "SimplexFunction.h"
+#include "Argument.h"
+#include "ArgumentRules.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
+#include "RlTypedFunction.h"
+#include "Simplex.h"
+#include "TypedFunction.h"
 
 
 using namespace RevLanguage;

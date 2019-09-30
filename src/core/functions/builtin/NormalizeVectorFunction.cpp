@@ -1,5 +1,14 @@
 #include "NormalizeVectorFunction.h"
 
+#include <stddef.h>
+#include <vector>
+
+#include "Cloner.h"
+#include "RbVectorImpl.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class DagNode; }
+
 using namespace RevBayesCore;
 
 NormalizeVectorFunction::NormalizeVectorFunction(const TypedDagNode< RbVector<double> > *v, const TypedDagNode< double > *s) : TypedFunction< RbVector<double> >( new RbVector<double>(v->getValue().size(), 1.0) ),

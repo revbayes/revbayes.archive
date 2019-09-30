@@ -1,14 +1,19 @@
+#include <stddef.h>
+#include <algorithm>
+#include <functional>
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ModelVector.h"
-#include "Model.h"
 #include "Natural.h"
 #include "Mcmcmc.h"
 #include "OptionRule.h"
 #include "Probability.h"
 #include "RevObject.h"
 #include "RbException.h"
-#include "Real.h"
 #include "RealPos.h"
 #include "RevNullObject.h"
 #include "RlModel.h"
@@ -18,6 +23,22 @@
 #include "RlString.h"
 #include "TypeSpec.h"
 #include "WorkspaceVector.h"
+#include "ModelObject.h"
+#include "Monitor.h"
+#include "MonteCarloAnalysis.h"
+#include "MonteCarloAnalysisOptions.h"
+#include "Move.h"
+#include "RbBoolean.h"
+#include "RbHelpReference.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlBoolean.h"
+#include "RlMonteCarloAnalysis.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class Model; }
 
 
 using namespace RevLanguage;

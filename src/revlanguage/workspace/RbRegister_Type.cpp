@@ -26,59 +26,56 @@
 
 #include <sstream>
 #include <vector>
-#include <set>
 #include <cstdlib>
+#include <stdio.h>
+#include <math.h>
 
 /* Files including helper classes */
-#include "AddContinuousDistribution.h"
-#include "AddDistribution.h"
-#include "AddWorkspaceVectorType.h"
-#include "AddVectorizedWorkspaceType.h"
 #include "RbException.h"
-#include "RevAbstractType.h"
 #include "RlUserInterface.h"
 #include "Workspace.h"
 
 /// Miscellaneous types ///
 
+#include "DagMemberFunction.h"                        // for DagMemberFunction
+#include "DeterministicNode.h"                        // for DeterministicNode
+#include "DynamicNode.h"                              // for DynamicNode
+#include "Func_workspaceVector.h"                     // for Func_workspaceV...
+#include "RbVector.h"                                 // for RbVector
+#include "RbVectorImpl.h"                             // for RbVectorImpl
+#include "RevPtr.h"                                   // for RevPtr
+#include "RlDagMemberFunction.h"                      // for DagMemberFunction
+#include "RlDeterministicNode.h"                      // for DeterministicNode
+#include "RlStochasticNode.h"                         // for StochasticNode
+#include "RlStoppingRule.h"                           // for StoppingRule
+#include "RlTypedDistribution.h"                      // for TypedDistribution
+#include "RlTypedFunction.h"                          // for TypedFunction
+#include "StochasticNode.h"                           // for StochasticNode
+#include "Tree.h"                                     // for Tree, operator<<
+#include "TypedDagNode.h"                             // for TypedDagNode
+#include "TypedDistribution.h"                        // for TypedDistribution
+#include "TypedFunction.h"                            // for TypedFunction
+#include "WorkspaceToCoreWrapperObject.h"             // for WorkspaceToCore...
+
 /* Base types (in folder "datatypes") */
 #include "RevObject.h"
-#include "AbstractModelObject.h"
 
 /* Container types (in folder "datatypes/container") */
 #include "RlCorrespondenceAnalysis.h"
-#include "RlMatrixReal.h"
-#include "RlMatrixRealPos.h"
-#include "RlMatrixRealSymmetric.h"
-#include "RlRateGeneratorSequence.h"
-#include "RlRateMatrix.h"
-#include "RlSimplex.h"
 
 /* Container types (in folder "datatypes/math") */
-#include "ModelVector.h"
 #include "WorkspaceVector.h"
 
 /* Container types (in folder "distributions/phylogenetics") */
-#include "Dist_bdp.h"
 
 /* Evolution types (in folder "datatypes/phylogenetics") */
-#include "RlDistanceMatrix.h"
 
 /* Character state types (in folder "datatypes/phylogenetics/character") */
-#include "RlAminoAcidState.h"
-#include "RlDnaState.h"
-#include "RlRnaState.h"
-#include "RlStandardState.h"
 
 /* Character data types (in folder "datatypes/phylogenetics/datamatrix") */
-#include "RlAbstractCharacterData.h"
-#include "RlAbstractHomologousDiscreteCharacterData.h"
-#include "RlContinuousCharacterData.h"
 
 /* Tree types (in folder "datatypes/phylogenetics/trees") */
 #include "RlClade.h"
-#include "RlRootedTripletDistribution.h"
-
 
 /* Taxon types (in folder "datatypes/phylogenetics") */
 #include "RlTaxon.h"
@@ -96,6 +93,8 @@
 #include "RlPowerPosteriorAnalysis.h"
 #include "RlSteppingStoneSampler.h"
 #include "RlValidationAnalysis.h"
+#include "RlTrace.h"
+#include "RlTraceTree.h"
 #include "RlAncestralStateTrace.h"
 
 /// Stopping Rules ///
@@ -110,13 +109,8 @@
 /// Types ///
 
 /* These types are needed as template types for the moves */
-#include "RlBranchLengthTree.h"
-#include "RlCharacterHistoryRateModifier.h"
 #include "RlMonitor.h"
 #include "RlMove.h"
-#include "RlRateGenerator.h"
-#include "RlCladogeneticProbabilityMatrix.h"
-#include "RlCladogeneticSpeciationRateMatrix.h"
 #include "RlTimeTree.h"
 
 #include "Func_VectorMonitors.h"
@@ -144,7 +138,8 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
 //        addFunction( new Func_workspaceVector<AbstractModelObject>() );
 
 //        addFunction( new Func_workspaceVector<Dist_bdp>() );
-        addFunction( new Func_workspaceVector<TypedDistribution<TimeTree> >() );
+        addFunction( new Func_workspaceVector<Trace>() );
+        addFunction( new Func_workspaceVector<TraceTree>() );
 		addFunction( new Func_workspaceVector<AncestralStateTrace>() );
 
 //        AddVectorizedWorkspaceType<Monitor,3>::addTypeToWorkspace( *this, new Monitor() );

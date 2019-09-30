@@ -1,26 +1,28 @@
-#include <stdio.h>
+#include <stdlib.h>
+#include <boost/program_options.hpp> // IWYU pragma: keep
 #include <string>
 #include <vector>
+#include <iostream>
 
-#include <boost/program_options.hpp>
 namespace po = boost::program_options;
 using po::variables_map;
 
+#include "MpiUtilities.h"
+#include "Parser.h"
 #include "RbVersion.h"
 #include "RbException.h"
 #include "RbSettings.h"
-#include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
 #include "RevClient.h"
 #include "RevLanguageMain.h"
 #include "RlCommandLineOutputStream.h"
-#include "RlUserInterfaceOutputStream.h"
 #include "RlUserInterface.h"
-#include "Parser.h"
+#include "StringUtilities.h"
 #include "Workspace.h"
 
 #ifdef RB_MPI
 #include <mpi.h>
+#include "RandomNumberFactory.h" // IWYU pragma: keep
+#include "RandomNumberGenerator.h" // IWYU pragma: keep
 #endif
 
 std::string usage()
@@ -134,24 +136,15 @@ int main(int argc, char* argv[]) {
         MPI_Comm_rank(MPI_COMM_WORLD, &process_id);
         MPI_Comm_size(MPI_COMM_WORLD, &num_processes);
 
-        unsigned int seed = 0;
-
-        // sync the random number generators
-        if ( process_id == 0 )
-        {
-            seed = RevBayesCore::GLOBAL_RNG->getSeed();
-
-        }
-
-        MPI_Bcast(&seed, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
-        RevBayesCore::GLOBAL_RNG->setSeed( seed );
+        RevBayesCore::MpiUtilities::synchronizeRNG( MPI_COMM_WORLD );
 
     }
     catch (char* str)
     {
         return -1;
     }
+#else
+    RevBayesCore::MpiUtilities::synchronizeRNG(  );
 #endif
 
     /* Parse argv to get the command line arguments */
