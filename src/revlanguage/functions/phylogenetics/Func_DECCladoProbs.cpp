@@ -69,6 +69,13 @@ RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func
     // supplied arguments
     RevBayesCore::TypedDagNode<RevBayesCore::Simplex>* ep = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     unsigned nc = (unsigned)static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getValue();
+    unsigned max_num_areas = RevBayesCore::DECCladogeneticStateFunction::MAX_NUM_AREAS;
+    if (nc > max_num_areas) {
+        std::stringstream ss;
+        ss << "fnDECCladoProbs only supports up to " << max_num_areas << " areas\n";
+        throw RbException(ss.str());
+    }
+    
     unsigned mrs = (unsigned)static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getValue();
     if (mrs <= 1) mrs = nc;
     std::string pt = static_cast<const RlString &> ( this->args[3].getVariable()->getRevObject() ).getValue();

@@ -50,6 +50,8 @@ template <class valueType> class TypedDagNode;
         const std::vector<std::string>&                         getEventTypes(void) const;
         void                                                    update(void);
         
+        const static unsigned MAX_NUM_AREAS = 20;
+        
     protected:
         
         void                                                    swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Implementation of swaping parameters
