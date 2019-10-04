@@ -6,15 +6,14 @@
 
 
 #include "CladogeneticProbabilityMatrixFunction.h"
-
-#include <stddef.h>
-
 #include "CladogeneticProbabilityMatrix.h"
 #include "RbException.h"
 #include "Cloneable.h"
 #include "RbVector.h"
 #include "RbVectorImpl.h"
 #include "TypedDagNode.h"
+
+#include <stddef.h>
 
 namespace RevBayesCore { class DagNode; }
 
@@ -23,13 +22,13 @@ using namespace RevBayesCore;
 
 
 //TypedFunction<MatrixReal>( new MatrixReal( mc + 1, (mc + 1) * (mc + 1), 0.0 ) ),
-CladogeneticProbabilityMatrixFunction::CladogeneticProbabilityMatrixFunction(const TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<long> > >* events, const TypedDagNode<RevBayesCore::RbVector<double> >* spec_rates, int n_states):
+CladogeneticProbabilityMatrixFunction::CladogeneticProbabilityMatrixFunction(const TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<long> > >* events, const TypedDagNode<RevBayesCore::RbVector<double> >* probs, int n_states):
 TypedFunction<CladogeneticProbabilityMatrix>( new CladogeneticProbabilityMatrix( n_states ) ),
 cladogenetic_events( events ),
 num_states( n_states ),
-speciation_rates( spec_rates )
+probabilities( probs )
 {
-    addParameter( speciation_rates );
+    addParameter( probabilities );
     
     // since the transition rate matrix will be very large (num_states by num_states^2) but
     // only sparsely filled, the we use an event map instead
@@ -67,7 +66,7 @@ void CladogeneticProbabilityMatrixFunction::update( void )
     value = new CladogeneticProbabilityMatrix( num_states );
     
     // get speciation rates and the clado events
-    const std::vector<double>& sr = speciation_rates->getValue();
+    const std::vector<double>& sr = probabilities->getValue();
     const RbVector<RbVector<long> >& events = cladogenetic_events->getValue();
     
     if (sr.size() != events.size())
@@ -75,9 +74,15 @@ void CladogeneticProbabilityMatrixFunction::update( void )
         throw RbException("You must enter the same number of cladogenetic events and speciation rates.");
     }
     
+    // get number of events
+    size_t num_events = events.size();
+    
+    // get sum of unnormalized probabilities per ancestral state
+    std::map<unsigned, double> prob_sum;
+    
     // for each clado event type build a map in the structure:
     // pair< [ancestor_state, daughter_1_state, daughter_2_state], speciation_rate >
-    size_t num_events = events.size();
+    
     for (size_t i = 0; i < num_events; i++)
     {
         if (events[i].size() != 3)
@@ -90,8 +95,25 @@ void CladogeneticProbabilityMatrixFunction::update( void )
         idx[1] = (unsigned)events[i][1];
         idx[2] = (unsigned)events[i][2];
         event_map[ idx ] = sr[i];
+        
+        if ( prob_sum.find( idx[0] ) == prob_sum.end() ) {
+            prob_sum[ idx[0] ] = 0.0;
+        }
+        prob_sum[ idx[0] ] += sr[i];
     }
     
+    
+    // now, divide each probability by each anc. state's normalizing sum
+    for (size_t i = 0; i < num_events; i++)
+    {
+        std::vector<unsigned> idx(3);
+        idx[0] = (unsigned)events[i][0];
+        idx[1] = (unsigned)events[i][1];
+        idx[2] = (unsigned)events[i][2];
+        event_map[ idx ] = event_map[ idx ] / prob_sum[ idx[0] ];
+    }
+    
+    // assign normalized event map to function's value
     value->setEventMap(event_map);
 }
 
@@ -99,9 +121,9 @@ void CladogeneticProbabilityMatrixFunction::update( void )
 void CladogeneticProbabilityMatrixFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
-    if (oldP == speciation_rates)
+    if (oldP == probabilities)
     {
-        speciation_rates = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        probabilities = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     
 }

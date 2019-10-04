@@ -94,6 +94,7 @@ namespace RevBayesCore {
 #include "ConstantNode.h"
 #include "StochasticNode.h"
 #include "DECCladogeneticStateFunction.h"
+#include "CladogeneticProbabilityMatrixFunction.h"
 #include "DiscreteCharacterState.h"
 #include "RateMatrix_JC.h"
 #include "RandomNumberFactory.h"

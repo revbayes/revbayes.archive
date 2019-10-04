@@ -24,11 +24,12 @@ namespace RevBayesCore {
     public:
         
         //CladogeneticProbabilityMatrixFunction( const TypedDagNode< RbVector< double > >* sr, unsigned mc );
-        CladogeneticProbabilityMatrixFunction( const TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<long> > >* events, const TypedDagNode<RevBayesCore::RbVector<double> >* spec_rates, int n_states );
+//        CladogeneticProbabilityMatrixFunction( int n_states );
+        CladogeneticProbabilityMatrixFunction( const TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<long> > >* events, const TypedDagNode<RevBayesCore::RbVector<double> >* probs, int n_states );
         virtual                                                                         ~CladogeneticProbabilityMatrixFunction(void);
         
         // public member functions
-        CladogeneticProbabilityMatrixFunction*                                       clone(void) const;
+        CladogeneticProbabilityMatrixFunction*                                          clone(void) const;
         std::map< std::vector<unsigned>, double >                                       getEventMap(double t=0.0);
         const std::map< std::vector<unsigned>, double >&                                getEventMap(double t=0.0) const;
         void                                                                            update(void);
@@ -43,10 +44,10 @@ namespace RevBayesCore {
         void                                                                            updateProbabilitys(void);
         
         // members
-        const TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<long> > >*     cladogenetic_events;
+        const TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<long> > >*    cladogenetic_events;
         std::map< std::vector<unsigned>, double >                                       event_map;
         unsigned                                                                        num_states;
-        const TypedDagNode< RbVector<double> >*                                         speciation_rates;
+        const TypedDagNode< RbVector<double> >*                                         probabilities;
         
     };
     
