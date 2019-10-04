@@ -408,6 +408,7 @@ void RevBayesCore::TreeHistoryCtmc<charType>::fillLikelihoodVector(const Topolog
 
     if ( node.isRoot() == true )
     {
+        
         lnL += computeRootLikelihood(node);
     }
 
@@ -511,12 +512,14 @@ template<class charType>
 const double RevBayesCore::TreeHistoryCtmc<charType>::getRootBranchLength(void) const
 {
     double root_branch_length = tau->getValue().getRoot().getBranchLength();
+    
+    // NOTE: we may remove this is if we want to require users to supply a root branch length
+    // if the root node is not assigned a branch length, assign a branch length
     if (root_branch_length == 0.0) {
-        return tau->getValue().getRoot().getAge() * rootBranchLengthMultiplier;
+        root_branch_length = tau->getValue().getRoot().getAge() * rootBranchLengthMultiplier;
     }
-    else {
-        return root_branch_length;
-    }
+    
+    return root_branch_length;
 }
 
 
