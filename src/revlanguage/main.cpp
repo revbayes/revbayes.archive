@@ -124,6 +124,8 @@ variables_map parse_cmd_line(int argc, char* argv[])
     return args;
 }
 
+#ifndef MAC_GUI // don't include main for the Mac GUI written in Swift
+
 int main(int argc, char* argv[]) {
 
       using namespace po;
@@ -295,3 +297,5 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
+
+#endif

@@ -117,7 +117,8 @@ void BranchHistory::addEvent(CharacterEvent* evt)
 
 bool BranchHistory::areEventTimesValid(const TopologyNode &node) const
 {
-    
+    // MJL: This causes a problem for branches subtending the root node
+    //      if the Newick string does not define a root node branch!
     double lower_boundary = node.getAge();
     double upper_boundary = lower_boundary + node.getBranchLength();
     double event_age;
