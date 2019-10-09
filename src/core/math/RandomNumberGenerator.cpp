@@ -20,15 +20,14 @@ RandomNumberGenerator::RandomNumberGenerator(void) :
     boost::mt19937 rng;
     rng.seed( seed );
     zeroone = boost::uniform_01<boost::mt19937>(rng);
-    last_u = zeroone();
 
 }
+
 
 /* Get the seed values */
 unsigned int RandomNumberGenerator::getSeed( void ) const
 {
-    // unsigned int seed = (unsigned int)((double)(RbConstants::Size_t::max * last_u));
-    unsigned int seed = (unsigned int)(2 * (double)(RbConstants::Integer::max * last_u));
+    unsigned int seed = (unsigned int) (double(RbConstants::Size_t::max) * last_u);
     return seed;
 }
 
