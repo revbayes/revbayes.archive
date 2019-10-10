@@ -204,6 +204,7 @@
 #include "Dist_decomposedInverseWishart.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exponential.h"
+#include "Dist_exponentialError.h"
 #include "Dist_exponentialOffset.h"
 #include "Dist_exponentialOffsetPositive.h"
 #include "Dist_gamma.h"
@@ -533,6 +534,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         // and the so-called "decomposed" Inverse Wishart
         AddDistribution< MatrixReal                 >( new Dist_decomposedInverseWishart() );
 
+        // Exponential error distribution for matrix distance from average distance matrix
+        AddDistribution< DistanceMatrix             >( new Dist_exponentialError());
+        
         /* Empirical sample distributions (in folder "distributions/mixture") */
         AddDistribution< ModelVector<Natural>       >( new Dist_EmpiricalSample<Natural>());
         AddDistribution< ModelVector<Real>          >( new Dist_EmpiricalSample<Real>());

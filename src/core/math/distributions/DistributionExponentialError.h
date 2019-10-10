@@ -13,7 +13,7 @@
 #include <vector>
 #include <iostream>
 
-#include "MatrixReal.h"
+#include "DistanceMatrix.h"
 
 namespace RevBayesCore {
     
@@ -24,9 +24,9 @@ namespace RevBayesCore {
         
         namespace ExponentialError {
             
-            double                      pdf(const MatrixReal& avgDistMat, double lambda, const MatrixReal& z);            /* !< Dirichlet(a[]) probability density */
-            double                      lnPdf(const MatrixReal& avgDistMat, double lambda, const MatrixReal& z);            /* !< Dirichlet(a[]) log_e probability density */
-            MatrixReal                  rv(const MatrixReal& avgDistMat, double lambda, RandomNumberGenerator& rng);     /* !< Dirichlet(a[]) random variable */
+            double                      pdf(const DistanceMatrix& avgDistMat, double lambda, const DistanceMatrix& z);          /*!< Dirichlet(a[]) probability density */
+            double                      lnPdf(const DistanceMatrix& avgDistMat, double lambda, const DistanceMatrix& z);        /*!< Dirichlet(a[]) log_e probability density */
+            DistanceMatrix              rv(const DistanceMatrix& avgDistMat, double lambda, RandomNumberGenerator& rng);        /*!< Dirichlet(a[]) random variable */
 
         }
     }
