@@ -18,6 +18,7 @@ namespace RevBayesCore {
         void                                                bootstrap(void);                                                            //!< Bootstrap the current value of the node (applies only to stochastic nodes)
         virtual ConstantNode<valueType>*                    clone(void) const;                                                          //!< Create a clone of this node.
         DagNode*                                            cloneDAG(DagNodeMap &nodesMap, std::map<std::string, const DagNode* > &names) const; //!< Clone the entire DAG which is connected to this node
+        void                                                getIntegratedParents(RbOrderedSet<DagNode *>& ip) const;
         double                                              getLnProbability(void);
         double                                              getLnProbabilityRatio(void);
         valueType&                                          getValue(void);
@@ -152,6 +153,14 @@ void RevBayesCore::ConstantNode<valueType>::getAffected(RbOrderedSet<DagNode *> 
     throw RbException("You should never call getAffected() of a constant node!!!");
     
 }
+
+
+template<class valueType>
+void RevBayesCore::ConstantNode<valueType>::getIntegratedParents(RbOrderedSet<DagNode *>& ip) const
+{
+    // do nothing
+}
+
 
 
 template<class valueType>

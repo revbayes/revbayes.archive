@@ -35,6 +35,7 @@ namespace RevLanguage {
         void                                    bootstrap(void) {}                                                     //!< Bootstrap (or not)
         UserFunctionNode<rlType>*               clone(void) const;                                                  //!< Type-safe clone
         RevBayesCore::DagNode*                  cloneDAG(RevBayesCore::DagNodeMap &nodesMap, std::map<std::string, const RevBayesCore::DagNode* > &names) const;   //!< Clone the entire DAG connected to this node
+        void                                    getIntegratedParents(RevBayesCore::RbOrderedSet<RevBayesCore::DagNode *>& ip) const;
         double                                  getLnProbability(void) { return 0.0; }                              //!< Get ln prob
         double                                  getLnProbabilityRatio(void) { return 0.0; }                         //!< Get ln prob ratio
         typename rlType::valueType&             getValue(void);                                                     //!< Get the value
@@ -275,6 +276,13 @@ void UserFunctionNode<rlType>::getAffected( RevBayesCore::RbOrderedSet<RevBayesC
 {
     this->getAffectedNodes( affected );
 }
+
+template<typename rlType>
+void UserFunctionNode<rlType>::getIntegratedParents(RevBayesCore::RbOrderedSet<RevBayesCore::DagNode *>& ip) const
+{
+    // not applicable
+}
+
 
 
 /**

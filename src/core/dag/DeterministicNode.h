@@ -21,6 +21,7 @@ namespace RevBayesCore {
         virtual DeterministicNode<valueType>*               clone(void) const;
         virtual TypedFunction<valueType>&                   getFunction(void);
         virtual const TypedFunction<valueType>&             getFunction(void) const;
+        void                                                getIntegratedParents(RbOrderedSet<DagNode *>& ip) const;
         double                                              getLnProbability(void);
         double                                              getLnProbabilityRatio(void);
         valueType&                                          getValue(void);
@@ -223,6 +224,20 @@ const RevBayesCore::TypedFunction<valueType>& RevBayesCore::DeterministicNode<va
 {
 
     return *function;
+}
+
+
+template<class valueType>
+void RevBayesCore::DeterministicNode<valueType>::getIntegratedParents(RbOrderedSet<DagNode *>& integrated_parents) const
+{
+    std::vector<const DagNode*> parents = this->getParents();                                                                     //!< Get the set of parents (empty set here)
+
+    // delegate up the DAG
+    for (size_t i=0; i<parents.size(); ++i)
+    {
+        const DagNode *the_parent = parents[i];
+        the_parent->getIntegratedParents( integrated_parents );
+    }
 }
 
 template<class valueType>

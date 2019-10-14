@@ -407,6 +407,13 @@ DagNode* DagNode::getFirstChild( void ) const
 }
 
 
+const std::vector<double>& DagNode::getMixtureProbabilities(void) const
+{
+    return std::vector<double>(1,1.0);
+}
+
+
+
 /**
  * Get a const reference to our local monitor set.
  */
@@ -444,6 +451,12 @@ size_t DagNode::getNumberOfChildren( void ) const
 {
 
     return children.size();
+}
+
+
+size_t DagNode::getNumberOfMixtureElements(void) const
+{
+    return 0;
 }
 
 
@@ -645,6 +658,12 @@ bool DagNode::isHidden( void ) const
 {
 
     return hidden;
+}
+
+
+bool DagNode::isIntegratedOut( void ) const
+{
+    return false;
 }
 
 
@@ -1101,6 +1120,13 @@ void DagNode::setHidden(bool tf)
 {
     hidden = tf;
 }
+
+
+void DagNode::setIntegrationIndex( size_t i )
+{
+    // nothing to do in the base class
+}
+
 
 
 void DagNode::setName(std::string const &n)
