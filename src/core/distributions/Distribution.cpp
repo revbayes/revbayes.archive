@@ -130,6 +130,19 @@ void Distribution::getAffected(RbOrderedSet<DagNode *> &affected, DagNode* affec
 }
 
 
+
+std::vector<double> Distribution::getMixtureProbabilities(void) const
+{
+    return std::vector<double>(1, 1.0);
+}
+
+
+size_t Distribution::getNumberOfMixtureElements(void) const
+{
+    return 0;
+}
+
+
 /**
  * Get a const reference to the set of parameters for this distribution.
  */

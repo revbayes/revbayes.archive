@@ -45,6 +45,8 @@ namespace RevBayesCore {
         virtual void                                            bootstrap(void);                                                              //!< Draw a new random value from the distribution
         virtual RevLanguage::RevPtr<RevLanguage::RevVariable>   executeProcedure(const std::string &n, const std::vector<DagNode*> args, bool &f);  //!< execute the procedure
         virtual void                                            getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                  //!< get affected nodes
+        virtual std::vector<double>                             getMixtureProbabilities(void) const;
+        virtual size_t                                          getNumberOfMixtureElements(void) const;                                                        //!< Get the number of elements for this value
         const std::vector<const DagNode*>&                      getParameters(void) const;                                                          //!< get the parameters of the function
         void                                                    keep(DagNode* affecter);
         virtual void                                            reInitialized( void );                                                              //!< The model was re-initialized

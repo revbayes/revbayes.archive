@@ -367,7 +367,7 @@ DagNode* DagNode::getFirstChild( void ) const
 }
 
 
-const std::vector<double>& DagNode::getMixtureProbabilities(void) const
+std::vector<double> DagNode::getMixtureProbabilities(void) const
 {
     return std::vector<double>(1,1.0);
 }

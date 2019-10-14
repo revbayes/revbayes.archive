@@ -33,6 +33,9 @@ namespace RevBayesCore {
         void                                                getIntegratedParents(RbOrderedSet<DagNode *>& ip) const;
         virtual double                                      getLnProbability(void);
         virtual double                                      getLnProbabilityRatio(void);
+        virtual std::vector<double>                         getLnMixtureLikelihoods(void) const;
+        virtual std::vector<double>                         getMixtureProbabilities(void) const;
+        virtual size_t                                      getNumberOfMixtureElements(void) const;                                                        //!< Get the number of elements for this value
         valueType&                                          getValue(void);
         const valueType&                                    getValue(void) const;
         bool                                                isClamped(void) const;                                                      //!< Is this DAG node clamped?
@@ -44,6 +47,7 @@ namespace RevBayesCore {
         virtual void                                        setClamped(bool tf);                                                        //!< Set directly the flag whether this node is clamped.
         void                                                setIgnoreRedraw(bool tf=true);
         void                                                setIntegratedOut(bool tf=true);
+        virtual void                                        setIntegrationIndex( size_t i );
         void                                                setMcmcMode(bool tf);                                                       //!< Set the modus of the DAG node to MCMC mode.
         virtual void                                        setValue(valueType *val, bool touch=true);                                  //!< Set the value of this node
         void                                                setValueFromFile(const std::string &dir);                                   //!< Set value from string.
@@ -272,7 +276,7 @@ double RevBayesCore::StochasticNode<valueType>::computeRecursiveIntegratedLnProb
                 max_ln_probs = ln_probs[i];
             }
         }
-        const std::vector<double>& mixture_probs = this_parent->getMixtureProbabilities();
+        std::vector<double> mixture_probs = this_parent->getMixtureProbabilities();
         double prob = 0.0;
         for (size_t i=0; i<num_mixture_elements; ++i)
         {
@@ -308,7 +312,8 @@ void RevBayesCore::StochasticNode<valueType>::getAffected( RbOrderedSet<DagNode*
 
 
 template<class valueType>
-RevBayesCore::TypedDistribution<valueType>& RevBayesCore::StochasticNode<valueType>::getDistribution( void ) {
+RevBayesCore::TypedDistribution<valueType>& RevBayesCore::StochasticNode<valueType>::getDistribution( void )
+{
     
     return *distribution;
 }
@@ -345,6 +350,47 @@ void RevBayesCore::StochasticNode<valueType>::getIntegratedParents(RbOrderedSet<
 
 
 template<class valueType>
+std::vector<double> RevBayesCore::StochasticNode<valueType>::getLnMixtureLikelihoods( void ) const //RbOrderedSet<DagNode *>& integrated_parents, size_t index
+{
+    std::vector<double> ln_probs;
+    
+    if ( isIntegratedOut() == false )
+    {
+        ln_probs.push_back( distribution->computeLnProbability() );
+    }
+    else
+    {
+        size_t num_mixture_elements = this->getNumberOfMixtureElements();
+        ln_probs = std::vector<double>(num_mixture_elements, 0.0);
+        double max_ln_probs = RbConstants::Double::neginf;
+        for (size_t i=0; i<num_mixture_elements; ++i)
+        {
+            const_cast< StochasticNode<valueType>* >(this)->setIntegrationIndex( i );
+            ln_probs[i] = distribution->computeLnProbability();
+            if ( ln_probs[i] > max_ln_probs )
+            {
+                max_ln_probs = ln_probs[i];
+            }
+        }
+        std::vector<double> mixture_probs = this->getMixtureProbabilities();
+        double prob = 0.0;
+        for (size_t i=0; i<num_mixture_elements; ++i)
+        {
+            prob += exp(ln_probs[i] - max_ln_probs) * mixture_probs[i];
+        }
+        double ln_prob = log( prob );
+        for (size_t i=0; i<num_mixture_elements; ++i)
+        {
+            ln_probs[i] += log(mixture_probs[i]) - ln_prob;
+        }
+    }
+    
+    return ln_probs;
+}
+
+
+
+template<class valueType>
 double RevBayesCore::StochasticNode<valueType>::getLnProbability( void )
 {
     
@@ -376,6 +422,20 @@ double RevBayesCore::StochasticNode<valueType>::getLnProbabilityRatio( void )
 {
     
     return getLnProbability() - stored_ln_prob;
+}
+
+
+template<class valueType>
+std::vector<double> RevBayesCore::StochasticNode<valueType>::getMixtureProbabilities(void) const
+{
+    return distribution->getMixtureProbabilities();
+}
+
+
+template<class valueType>
+size_t RevBayesCore::StochasticNode<valueType>::getNumberOfMixtureElements(void) const
+{
+    return distribution->getNumberOfMixtureElements();
 }
 
 
@@ -597,6 +657,16 @@ void RevBayesCore::StochasticNode<valueType>::setIntegratedOut( bool tf )
 {
     
     integrated_out = tf;
+
+}
+
+
+template <class valueType>
+void RevBayesCore::StochasticNode<valueType>::setIntegrationIndex( size_t i )
+{
+    
+    valueType *new_val = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( distribution->getParameterValues()[i] );
+    this->setValue( new_val );
 
 }
 

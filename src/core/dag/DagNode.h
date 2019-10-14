@@ -75,7 +75,7 @@ template <class valueType> class RbOrderedSet;
         virtual const Distribution&                                 getDistribution(void) const;
         DagNode*                                                    getFirstChild(void) const;                                                                  //!< Get the first child from a our set
 //        virtual size_t                                              getIntegrationSize(void) const;
-        virtual const std::vector<double>&                          getMixtureProbabilities(void) const;
+        virtual std::vector<double>                                 getMixtureProbabilities(void) const;
         const std::vector<Monitor*>&                                getMonitors(void) const;                                                                    //!< Get the set of monitors
         const std::vector<Move*>&                                   getMoves(void) const;                                                                       //!< Get the set of moves
         const std::string&                                          getName(void) const;                                                                        //!< Get the of the node
