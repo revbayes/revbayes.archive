@@ -8,14 +8,9 @@
 #include "ArgumentRules.h"
 #include "Dist_DuplicationLoss.h"
 #include "ModelVector.h"
-// <<<<<<< HEAD
-// #include "Natural.h"
-// #include "OptionRule.h"
-// #include "Probability.h"
-// #include "Real.h"
-// =======
-// >>>>>>> development
+#include "OptionRule.h"
 #include "RealPos.h"
+#include "RlString.h"
 #include "RlTaxon.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"

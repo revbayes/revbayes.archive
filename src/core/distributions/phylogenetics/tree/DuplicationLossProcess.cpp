@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "ConstantNode.h"
 #include "DuplicationLossProcess.h"
 #include "DistributionExponential.h"
 #include "RandomNumberFactory.h"
