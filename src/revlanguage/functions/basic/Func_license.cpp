@@ -1,13 +1,17 @@
-#include "Argument.h"
-#include "ArgumentRule.h"
+#include <stddef.h>
+#include <fstream>
+#include <vector>
+
 #include "Func_license.h"
-#include "RbException.h"
-#include "RlBoolean.h"
 #include "RlUtils.h"
 #include "TypeSpec.h"
 #include "RlUserInterface.h"
-
-#include <fstream>
+#include "ArgumentRules.h"
+#include "Procedure.h"
+#include "RbHelpReference.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
 
 using namespace RevLanguage;
 

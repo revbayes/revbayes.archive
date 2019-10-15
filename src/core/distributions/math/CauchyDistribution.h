@@ -2,7 +2,6 @@
 #define CauchyDistribution_H
 
 #include "ContinuousDistribution.h"
-#include "TypedDagNode.h"
 
 /**
      * @brief Cauchy distribution class.
@@ -16,6 +15,8 @@
      */
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class TypedDagNode;
     
     class CauchyDistribution : public ContinuousDistribution {
         

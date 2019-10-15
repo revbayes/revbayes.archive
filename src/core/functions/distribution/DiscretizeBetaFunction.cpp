@@ -2,6 +2,10 @@
 
 #include "DistributionBeta.h"
 #include "RbMathFunctions.h"
+#include "RbVectorImpl.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class DagNode; }
 
 /**
  * Wrapper for dealing with DiscretizeBetaFunction used the TypedDagNode classes of type doubles

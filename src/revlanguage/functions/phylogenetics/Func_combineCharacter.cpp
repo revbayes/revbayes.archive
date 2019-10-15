@@ -1,14 +1,17 @@
+#include <iosfwd>
+#include <vector>
+
 #include "Argument.h"
 #include "ArgumentRule.h"
-#include "Ellipsis.h"
 #include "Func_combineCharacter.h"
-#include "OptionRule.h"
-#include "RbException.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
-#include "RlString.h"
-#include "RlUtils.h"
 #include "TypeSpec.h"
-#include "Workspace.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
+#include "ArgumentRules.h"
+#include "Procedure.h"
+#include "RbHelpReference.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
 
 using namespace RevLanguage;
 

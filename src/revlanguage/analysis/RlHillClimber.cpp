@@ -1,15 +1,10 @@
-#include "ArgumentRule.h"
+#include <stddef.h>
+#include <ostream>
+#include <vector>
+
 #include "ArgumentRules.h"
-#include "ModelVector.h"
-#include "Model.h"
-#include "Natural.h"
 #include "HillClimber.h"
-#include "OptionRule.h"
 #include "RevObject.h"
-#include "RbException.h"
-#include "Real.h"
-#include "RealPos.h"
-#include "RevNullObject.h"
 #include "RlModel.h"
 #include "RlMonitor.h"
 #include "RlMove.h"
@@ -17,6 +12,17 @@
 #include "RlString.h"
 #include "TypeSpec.h"
 #include "WorkspaceVector.h"
+#include "MaximumLikelihoodAnalysis.h"
+#include "Monitor.h"
+#include "Move.h"
+#include "RbHelpReference.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlMaximumLikelihoodAnalysis.h"
+
+namespace RevBayesCore { class Model; }
 
 
 using namespace RevLanguage;

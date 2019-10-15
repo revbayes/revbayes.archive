@@ -7,13 +7,24 @@
 //
 
 #include "Dist_studentT.h"
+
+#include <stddef.h>
+#include <ostream>
+#include <string>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "StudentTDistribution.h"
-#include "ContinuousStochasticNode.h"
 #include "Natural.h"
-#include "Probability.h"
-#include "RealPos.h"
+#include "RbHelpReference.h"
+#include "Real.h"
+#include "RlDistribution.h"
+#include "RlTypedDistribution.h"
+#include "StringUtilities.h"
+#include "TypeSpec.h"
+#include "TypedDistribution.h"
+
+namespace RevBayesCore { template <class valueType> class TypedDagNode; }
 
 using namespace RevLanguage;
 

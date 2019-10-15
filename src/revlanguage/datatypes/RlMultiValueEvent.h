@@ -1,15 +1,30 @@
 #ifndef RlMultiValueEvent_H
 #define RlMultiValueEvent_H
 
-#include "ModelObject.h"
-#include "MultiValueEvent.h"
-
-#include <set>
 #include <string>
 #include <vector>
+#include <iosfwd>
+
+#include "ModelObject.h"
+#include "MultiValueEvent.h"
+#include "ConstantNode.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "IndirectReferenceFunction.h"
+#include "RevPtr.h"
+#include "RlConstantNode.h"
+#include "TypedDagNode.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
+
+namespace RevBayesCore { class RbHelpReference; }
 
 
 namespace RevLanguage {
+class Argument;
+class RevVariable;
+class TypeSpec;
     
     /**
      * @file

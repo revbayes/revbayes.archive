@@ -1,5 +1,13 @@
 #include "RateMatrix_Blosum62.h"
+
+#include <stddef.h>
+#include <vector>
+
 #include "RbVectorUtilities.h"
+#include "Cloneable.h"
+#include "MatrixReal.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
 
 
 using namespace RevBayesCore;

@@ -1,5 +1,11 @@
-#include <cmath>
+#include <stddef.h>
+#include <map>
+#include <utility>
+#include <vector>
+
 #include "SSE_ODE.h"
+#include "RateGenerator.h"
+#include "TimeInterval.h"
 
 using namespace RevBayesCore;
 
@@ -17,13 +23,13 @@ SSE_ODE::SSE_ODE( const std::vector<double> &m, const RateGenerator* q, double r
 }
 
 
-void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
+void SSE_ODE::operator()(const std::vector< double > &x, std::vector< double > &dxdt, const double t)
 {
     // ClaSSE equations A1 and A2 from Goldberg and Igic, 2012
     
     // catch negative extinction probabilities that can result from
     // rounding errors in the ODE stepper
-    state_type safe_x = x;
+    std::vector< double > safe_x = x;
     for (size_t i = 0; i < num_states * 2; ++i)
     {
         safe_x[i] = ( x[i] < 0.0 ? 0.0 : x[i] );

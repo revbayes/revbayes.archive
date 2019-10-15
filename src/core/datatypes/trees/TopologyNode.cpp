@@ -1,17 +1,26 @@
+#include <stdio.h>
+#include <algorithm>
+#include <cstddef>
+#include <iostream>
+#include <iterator>
+#include <map>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "Clade.h"
-#include "RbConstants.h"
 #include "RbException.h"
 #include "RbMathLogic.h"
-#include "RbOptions.h"
 #include "RbSettings.h"
-#include "RbUtil.h"
 #include "Taxon.h"
 #include "TopologyNode.h"
 #include "Tree.h"
 #include "TreeChangeEventMessage.h"
-
-#include <algorithm>
-#include <stdio.h>
+#include "RbBitSet.h"
+#include "TaxonMap.h"
+#include "TreeChangeEventHandler.h"
+#include "RbConstants.h" // IWYU pragma: keep
 
 using namespace RevBayesCore;
 

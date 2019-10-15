@@ -1,15 +1,18 @@
+#include <stdlib.h>
+#include <cmath>
+#include <cassert>
+#include <iomanip>
+#include <iostream>
+#include <utility>
+#include <vector>
+
 #include "DagNode.h"
 #include "SliceSamplingMove.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "RbMathLogic.h"
-
-#include <cmath>
-#include <cassert>
-#include <iomanip>
-#include <sstream>
-#include <iostream>
-#include <utility>
+#include "AbstractMove.h"
+#include "RbOrderedSet.h"
+#include "StochasticNode.h"
 
 using namespace RevBayesCore;
 

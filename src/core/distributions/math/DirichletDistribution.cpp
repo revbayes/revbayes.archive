@@ -1,6 +1,11 @@
 #include "DirichletDistribution.h"
+
 #include "DistributionDirichlet.h"
 #include "RandomNumberFactory.h"
+#include "RbVector.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 

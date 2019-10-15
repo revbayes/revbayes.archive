@@ -1,7 +1,10 @@
 #include "DiscreteCharacterState.h"
-#include "RbException.h"
+
 #include <string>
 #include <vector>
+
+#include "RbException.h"
+#include "Cloneable.h"
 
 using namespace RevBayesCore;
 

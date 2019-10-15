@@ -1,18 +1,27 @@
+#include <stddef.h>
+#include <fstream>
+#include <string>
+#include <vector>
+
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "Func_help.h"
-#include "RbException.h"
 #include "RlString.h"
 #include "RlUtils.h"
 #include "TypeSpec.h"
 #include "RlUserInterface.h"
-#include "Workspace.h"
 #include "RbHelpSystem.h"
-#include "RbHelpEntry.h"
 #include "RbHelpRenderer.h"
+#include "ArgumentRules.h"
+#include "Procedure.h"
+#include "RbHelpReference.h"
+#include "RbSettings.h"
+#include "RbUtil.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
 
-
-#include <fstream>
+namespace RevBayesCore { class RbHelpEntry; }
 
 using namespace RevLanguage;
 

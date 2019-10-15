@@ -1,12 +1,16 @@
 #ifndef DPPGibbsConcentrationMove_H
 #define DPPGibbsConcentrationMove_H
 
+#include <iosfwd>
+
 #include "AbstractGibbsMove.h"
-#include "StochasticNode.h"
-#include "DeterministicNode.h"
 
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class DeterministicNode;
+template <class valueType> class TypedDagNode;
+template <class variableType> class StochasticNode;
 
     /**
      * @brief The Move for updating the concentration parameter of the DPP

@@ -1,4 +1,4 @@
 #include "GitVersion.h"
-const char *build_git_sha = "1f5864";
-const char *build_date = "Tue 07 May 2019 03:44:29 PM CEST";
-const char *build_git_branch = "duploss";
+const char *build_git_sha = "b6b6c9";
+const char *build_date = "Wed Oct  2 20:17:04 CDT 2019";
+const char *build_git_branch = "development";

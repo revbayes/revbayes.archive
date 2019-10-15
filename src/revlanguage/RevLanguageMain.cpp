@@ -1,15 +1,17 @@
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <vector>
+
 #include "ModuleSystem.h"
 #include "RevLanguageMain.h"
 #include "Parser.h"
 #include "RbException.h"
-#include "RbFileManager.h"
 #include "RbSettings.h"
 #include "Workspace.h"
 #include "RlUserInterface.h"
 #include "RbVersion.h"
-#include <iostream>
-#include <string>
-#include <cstdlib>
+#include "StringUtilities.h"
 
 #ifdef RB_MPI
 #include <mpi.h>

@@ -1,10 +1,17 @@
 #include "RbHelpRenderer.h"
 
+#include <string>
+#include <vector>
+
 #include "RbException.h"
 #include "RbHelpDistribution.h"
-#include "RlUserInterface.h"
 #include "StringUtilities.h"
 #include "TerminalFormatter.h"
+#include "RbHelpArgument.h"
+#include "RbHelpEntry.h"
+#include "RbHelpFunction.h"
+#include "RbHelpReference.h"
+#include "RbHelpType.h"
 
 using namespace RevBayesCore;
 

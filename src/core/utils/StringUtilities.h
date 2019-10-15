@@ -14,9 +14,8 @@
 #ifndef RlStringUtilities_H
 #define RlStringUtilities_H
 
-#include <iostream>
-#include <sstream>
-#include <string>
+#include <stddef.h>
+#include <sstream> // IWYU pragma: keep
 #include <vector>
 
 namespace StringUtilities {
