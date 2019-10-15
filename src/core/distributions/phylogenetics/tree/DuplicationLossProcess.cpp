@@ -160,7 +160,8 @@ double DuplicationLossProcess::computeLnDuplicationLossProbability(size_t num_ge
       // branches existing earlier (i.e., before the duplication happens when
       // going forwards in time), but we require it to happen on a specific
       // branch.
-      ln_prob += log( num_genes_recent - i - 1 );
+      // XXX: Removed because it leads to wrong likelihoods.
+      // ln_prob += log( num_genes_recent - i - 1 );
 
       current_age = this_dupl_age;
       // FIXME: We need to tell D what dop-loss rates to use when we want to use haplotype-branch-specific rates
@@ -533,9 +534,9 @@ void DuplicationLossProcess::redrawValue( void )
       throw RbException(err);
     }
 
-  {
-    simulateTree();
-  }
+  // {
+  //   simulateTree();
+  // }
 
 }
 
@@ -708,7 +709,7 @@ void DuplicationLossProcess::recursivelySimulateTreeForward(double age_begin, co
     if (current_age <= age_end) {
       // This may not be necessary.
       current_age = age_end;
-      // Exit loop, not event happened before bottom of branch.
+      // Exit loop, no event before bottom of branch.
       break;
     }
     // Which gene is affected?
