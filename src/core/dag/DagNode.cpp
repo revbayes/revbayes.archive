@@ -306,13 +306,14 @@ void DagNode::findUniqueDescendantsWithFlag(RbOrderedSet<DagNode *>& descendants
  * Get all affected nodes this DAGNode.
  * This means we call getAffected() of all children. getAffected() is pure virtual.
  */
-void DagNode::getAffectedNodes(RbOrderedSet<DagNode *> &affected)
+void DagNode::getAffectedNodes(RbOrderedSet<DagNode *> &affected) const
 {
     visit_flags[AFFECTED_FLAG] = true;
     // get all my affected children
     for (auto child: children)
     {
-        if (child->visit_flags[AFFECTED_FLAG] == false) {
+        if (child->visit_flags[AFFECTED_FLAG] == false)
+        {
             child->getAffected(affected, this);
         }
     }

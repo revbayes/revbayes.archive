@@ -44,9 +44,9 @@ namespace RevBayesCore {
         
         // special handling of state changes
         void                                                getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                          //!< get affected nodes
-        void                                                keepSpecialization(DagNode* affecter);
-        void                                                restoreSpecialization(DagNode *restorer);
-        void                                                touchSpecialization(DagNode *toucher, bool touchAll);
+        void                                                keepSpecialization(const DagNode* affecter);
+        void                                                restoreSpecialization(const DagNode *restorer);
+        void                                                touchSpecialization(const DagNode *toucher, bool touchAll);
         
     protected:
         // Parameter management functions
@@ -166,7 +166,7 @@ const RevBayesCore::RbVector<mixtureType>& RevBayesCore::MixtureDistribution<mix
 }
 
 template <class mixtureType>
-void RevBayesCore::MixtureDistribution<mixtureType>::keepSpecialization( DagNode* affecter )
+void RevBayesCore::MixtureDistribution<mixtureType>::keepSpecialization( const DagNode* affecter )
 {
     // only do this when the toucher was our parameters
     if ( affecter == parameterValues && this->dag_node != NULL )
@@ -232,7 +232,7 @@ void RevBayesCore::MixtureDistribution<mixtureType>::swapParameterInternal( cons
 
 
 template <class mixtureType>
-void RevBayesCore::MixtureDistribution<mixtureType>::restoreSpecialization( DagNode *restorer )
+void RevBayesCore::MixtureDistribution<mixtureType>::restoreSpecialization( const DagNode *restorer )
 {
     
     // only do this when the toucher was our parameters
@@ -271,7 +271,7 @@ void RevBayesCore::MixtureDistribution<mixtureType>::setValue(mixtureType *v, bo
 
 
 template <class mixtureType>
-void RevBayesCore::MixtureDistribution<mixtureType>::touchSpecialization( DagNode *toucher, bool touchAll )
+void RevBayesCore::MixtureDistribution<mixtureType>::touchSpecialization( const DagNode *toucher, bool touchAll )
 {
     // only do this when the toucher was our parameters
     if ( toucher == parameterValues )

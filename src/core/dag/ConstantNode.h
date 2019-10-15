@@ -32,10 +32,10 @@ namespace RevBayesCore {
         void                                                setValueFromString(const std::string &v);                                   //!< Set value from string.
 
     protected:
-        void                                                getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);          //!< Mark and get affected nodes
-        void                                                keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
-        void                                                restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
-        void                                                touchMe(DagNode *toucher, bool touchAll);                                   //!< Tell affected nodes value is reset
+        void                                                getAffected(RbOrderedSet<DagNode *>& affected, const DagNode* affecter);    //!< Mark and get affected nodes
+        void                                                keepMe(const DagNode* affecter);                                            //!< Keep value of this and affected nodes
+        void                                                restoreMe(const DagNode *restorer);                                         //!< Restore value of this nodes
+        void                                                touchMe(const DagNode *toucher, bool touchAll);                             //!< Tell affected nodes value is reset
         
     private:
         // members
@@ -146,7 +146,7 @@ RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( DagNodeM
  * This call is started by the parent and since we don't have one this is a dummy implementation!
  */
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::getAffected(RbOrderedSet<DagNode *> & /*affected*/, DagNode* /*affecter*/)
+void RevBayesCore::ConstantNode<valueType>::getAffected(RbOrderedSet<DagNode *> & /*affected*/, const DagNode* /*affecter*/)
 {
     
     // do nothing
@@ -204,7 +204,7 @@ bool RevBayesCore::ConstantNode<valueType>::isConstant( void ) const
 
 
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::keepMe( DagNode* /*affecter*/ )
+void RevBayesCore::ConstantNode<valueType>::keepMe( const DagNode* /*affecter*/ )
 {
     // nothing to do
 }
@@ -236,7 +236,7 @@ void RevBayesCore::ConstantNode<valueType>::redraw( void )
 
 
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::restoreMe( DagNode * /*restorer*/ )
+void RevBayesCore::ConstantNode<valueType>::restoreMe( const DagNode * /*restorer*/ )
 {
     // nothing to do
 }
@@ -281,7 +281,7 @@ void RevBayesCore::ConstantNode<valueType>::setValueFromString(const std::string
 
 
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::touchMe( DagNode * /*toucher*/, bool /*touchAll*/ )
+void RevBayesCore::ConstantNode<valueType>::touchMe( const DagNode * /*toucher*/, bool /*touchAll*/ )
 {
     // nothing to do
 }

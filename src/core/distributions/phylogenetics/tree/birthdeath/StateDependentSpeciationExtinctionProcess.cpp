@@ -1605,7 +1605,7 @@ std::vector<double> StateDependentSpeciationExtinctionProcess::getRootFrequencie
 /**
  * Keep the current value and reset some internal flags. Nothing to do here.
  */
-void StateDependentSpeciationExtinctionProcess::keepSpecialization(DagNode *affecter)
+void StateDependentSpeciationExtinctionProcess::keepSpecialization(const DagNode *affecter)
 {
     
     if ( affecter == process_age )
@@ -1740,7 +1740,7 @@ void StateDependentSpeciationExtinctionProcess::redrawValue( void )
  * Restore the current value and reset some internal flags.
  * If the root age variable has been restored, then we need to change the root age of the tree too.
  */
-void StateDependentSpeciationExtinctionProcess::restoreSpecialization(DagNode *affecter)
+void StateDependentSpeciationExtinctionProcess::restoreSpecialization(const DagNode *affecter)
 {
     
     if ( affecter == process_age )
@@ -3011,7 +3011,7 @@ void StateDependentSpeciationExtinctionProcess::swapParameterInternal(const DagN
  * Touch the current value and reset some internal flags.
  * If the root age variable has been restored, then we need to change the root age of the tree too.
  */
-void StateDependentSpeciationExtinctionProcess::touchSpecialization(DagNode *affecter, bool touchAll)
+void StateDependentSpeciationExtinctionProcess::touchSpecialization(const DagNode *affecter, bool touchAll)
 {
     
     if ( affecter == process_age )

@@ -10,7 +10,7 @@ namespace RevBayesCore {
     class TypedDistribution;
     
     template <class valueType>
-    class StochasticNode : public DynamicNode<valueType> {
+    class StochasticNode : public DynamicNode<valueType>, public MemberObject< RbVector<double> > {
         
     public:
         
@@ -28,6 +28,7 @@ namespace RevBayesCore {
         // methods
         void                                                bootstrap(void);                                                            //!< Bootstrap the current value of the node (applies only to stochastic nodes)
         void                                                clamp(valueType *val);                                                      //!< Clamp an observation to this random variable
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const; //!< Map the member methods to internal function calls
         virtual TypedDistribution<valueType>&               getDistribution(void);
         virtual const TypedDistribution<valueType>&         getDistribution(void) const;
         void                                                getIntegratedParents(RbOrderedSet<DagNode *>& ip) const;
@@ -61,18 +62,18 @@ namespace RevBayesCore {
     protected:
         
         virtual double                                      computeRecursiveIntegratedLnProbability(RbOrderedSet<DagNode *>& ig, size_t idx);
-        virtual void                                        getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);          //!< Mark and get affected nodes
-        virtual void                                        keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
-        virtual void                                        restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
-        virtual void                                        setActivePIDSpecialized(size_t i, size_t n);                                          //!< Set the number of processes for this class.
-        virtual void                                        touchMe(DagNode *toucher, bool touchAll);                                   //!< Tell affected nodes value is reset
+        virtual void                                        getAffected(RbOrderedSet<DagNode *>& affected, const DagNode* affecter);    //!< Mark and get affected nodes
+        virtual void                                        keepMe(const DagNode* affecter);                                            //!< Keep value of this and affected nodes
+        virtual void                                        restoreMe(const DagNode *restorer);                                         //!< Restore value of this nodes
+        virtual void                                        setActivePIDSpecialized(size_t i, size_t n);                                //!< Set the number of processes for this class.
+        virtual void                                        touchMe(const DagNode *toucher, bool touchAll);                             //!< Tell affected nodes value is reset
         
         // protected members
         bool                                                clamped;
         bool                                                ignore_redraw;
-        bool                                                integrated_out;
+        mutable bool                                        integrated_out;
         double                                              lnProb;                                                                     //!< Current log probability
-        bool                                                needs_probability_recalculation;                                              //!< Do we need recalculation of the ln prob?
+        bool                                                needs_probability_recalculation;                                            //!< Do we need recalculation of the ln prob?
         double                                              stored_ln_prob;
         TypedDistribution<valueType>*                       distribution;
         
@@ -282,10 +283,26 @@ double RevBayesCore::StochasticNode<valueType>::computeRecursiveIntegratedLnProb
         {
             prob += exp(ln_probs[i] - max_ln_probs) * mixture_probs[i];
         }
-        ln_prob = log( prob );
+        ln_prob = log( prob ) + max_ln_probs;
     }
     
     return ln_prob;
+}
+
+
+template<class valueType>
+void RevBayesCore::StochasticNode<valueType>::executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const
+{
+
+    if ( n == "lnMixtureLikelihoods" )
+    {
+        rv = this->getLnMixtureLikelihoods();
+    }
+    else
+    {
+        throw RbException("A DAG node does not have a member method called '" + n + "'.");
+    }
+
 }
 
 
@@ -299,7 +316,7 @@ double RevBayesCore::StochasticNode<valueType>::computeRecursiveIntegratedLnProb
  * the implementation of getAffectedNodes(...).
  */
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::getAffected( RbOrderedSet<DagNode*>& affected, DagNode* affecter )
+void RevBayesCore::StochasticNode<valueType>::getAffected( RbOrderedSet<DagNode*>& affected, const DagNode* affecter )
 {
     
     // Insert this node as one of the affected
@@ -360,13 +377,21 @@ std::vector<double> RevBayesCore::StochasticNode<valueType>::getLnMixtureLikelih
     }
     else
     {
+        // temporarily disable integration
+        integrated_out = false;
+        
         size_t num_mixture_elements = this->getNumberOfMixtureElements();
         ln_probs = std::vector<double>(num_mixture_elements, 0.0);
         double max_ln_probs = RbConstants::Double::neginf;
+        RbOrderedSet<DagNode *> affected;
+        this->getAffectedNodes( affected );
         for (size_t i=0; i<num_mixture_elements; ++i)
         {
             const_cast< StochasticNode<valueType>* >(this)->setIntegrationIndex( i );
-            ln_probs[i] = distribution->computeLnProbability();
+            for ( size_t j=0; j<affected.size(); ++j )
+            {
+                ln_probs[i] += affected[j]->getLnProbability();
+            }
             if ( ln_probs[i] > max_ln_probs )
             {
                 max_ln_probs = ln_probs[i];
@@ -378,11 +403,14 @@ std::vector<double> RevBayesCore::StochasticNode<valueType>::getLnMixtureLikelih
         {
             prob += exp(ln_probs[i] - max_ln_probs) * mixture_probs[i];
         }
-        double ln_prob = log( prob );
+        double ln_prob = log( prob ) + max_ln_probs;
         for (size_t i=0; i<num_mixture_elements; ++i)
         {
             ln_probs[i] += log(mixture_probs[i]) - ln_prob;
         }
+        
+        // switch back integration flag
+        integrated_out = true;
     }
     
     return ln_probs;
@@ -495,7 +523,7 @@ bool RevBayesCore::StochasticNode<valueType>::isStochastic( void ) const
  * At this point, we also need to make sure we update the stored ln probability.
  */
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::keepMe( DagNode* affecter )
+void RevBayesCore::StochasticNode<valueType>::keepMe( const DagNode* affecter )
 {
     
     if ( this->touched == true )
@@ -588,7 +616,7 @@ void RevBayesCore::StochasticNode<valueType>::reInitializeMe( void )
 
 /** Restore the old value of the node and tell affected */
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::restoreMe(DagNode *restorer)
+void RevBayesCore::StochasticNode<valueType>::restoreMe( const DagNode *restorer )
 {
     
     if ( this->touched == true )
@@ -757,7 +785,7 @@ void RevBayesCore::StochasticNode<valueType>::swapParent( const RevBayesCore::Da
 
 /** touch this node for recalculation */
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::touchMe( DagNode *toucher, bool touchAll )
+void RevBayesCore::StochasticNode<valueType>::touchMe( const DagNode *toucher, bool touchAll )
 {
     
     if ( this->touched == false )

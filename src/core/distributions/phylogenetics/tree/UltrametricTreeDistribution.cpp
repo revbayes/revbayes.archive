@@ -651,7 +651,7 @@ void UltrametricTreeDistribution::getAffected(RbOrderedSet<DagNode *> &affected,
 /**
  * Keep the current value and reset some internal flags. Nothing to do here.
  */
-void UltrametricTreeDistribution::keepSpecialization(DagNode *affecter)
+void UltrametricTreeDistribution::keepSpecialization(const DagNode *affecter)
 {
     
     if ( affecter == root_age )
@@ -708,7 +708,7 @@ void UltrametricTreeDistribution::prepareTreeSamples(const std::vector<Tree> &tr
  * Restore the current value and reset some internal flags.
  * If the root age variable has been restored, then we need to change the root age of the tree too.
  */
-void UltrametricTreeDistribution::restoreSpecialization(DagNode *affecter)
+void UltrametricTreeDistribution::restoreSpecialization(const DagNode *affecter)
 {
     
     if ( affecter == root_age )
@@ -756,7 +756,7 @@ void UltrametricTreeDistribution::swapParameterInternal( const DagNode *oldP, co
  * Touch the current value and reset some internal flags.
  * If the root age variable has been restored, then we need to change the root age of the tree too.
  */
-void UltrametricTreeDistribution::touchSpecialization(DagNode *affecter, bool touchAll)
+void UltrametricTreeDistribution::touchSpecialization(const DagNode *affecter, bool touchAll)
 {
     
     if ( affecter == root_age )

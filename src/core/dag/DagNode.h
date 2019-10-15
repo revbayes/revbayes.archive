@@ -9,6 +9,7 @@
 
 #include "MemberObject.h"
 #include "Parallelizable.h"
+#include "RbVector.h"
 
 namespace RevBayesCore {
 
@@ -16,7 +17,8 @@ namespace RevBayesCore {
     class Monitor;
     class Move;
     class AbstractTrace;
-class DagNodeMap;
+    class DagNodeMap;
+
 template <class valueType> class RbOrderedSet;
 
     class DagNode : public Parallelizable, public MemberObject<double> {
@@ -68,13 +70,12 @@ template <class valueType> class RbOrderedSet;
         void                                                        findUniqueDescendantsVector(RbOrderedSet<DagNode *>& descendants, std::vector<DagNode *>& nodes);
         void                                                        findUniqueDescendantsWithFlag(RbOrderedSet<DagNode *>& descendants, const size_t flagType);
         void                                                        findUniqueDescendantsWithFlagVector(RbOrderedSet<DagNode *>& descendants, const size_t flagType, std::vector<DagNode *>& nodes);
-        void                                                        getAffectedNodes(RbOrderedSet<DagNode *>& affected);                                        //!< get affected nodes
+        void                                                        getAffectedNodes(RbOrderedSet<DagNode *>& affected) const;                                  //!< get affected nodes
         const std::vector<DagNode*>&                                getChildren(void) const;                                                                    //!< Get the set of children
         DagNodeTypes                                                getDagNodeType(void) const;
         virtual Distribution&                                       getDistribution(void);
         virtual const Distribution&                                 getDistribution(void) const;
         DagNode*                                                    getFirstChild(void) const;                                                                  //!< Get the first child from a our set
-//        virtual size_t                                              getIntegrationSize(void) const;
         virtual std::vector<double>                                 getMixtureProbabilities(void) const;
         const std::vector<Monitor*>&                                getMonitors(void) const;                                                                    //!< Get the set of monitors
         const std::vector<Move*>&                                   getMoves(void) const;                                                                       //!< Get the set of moves
@@ -127,10 +128,10 @@ template <class valueType> class RbOrderedSet;
 
         DagNode&                                                    operator=(const DagNode &d);                                                                //!< Overloaded assignment operator
 
-        virtual void                                                getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter) = 0;                      //!< get affected nodes
-        virtual void                                                keepMe(DagNode* affecter) = 0;                                                              //!< Keep value of myself
-        virtual void                                                restoreMe(DagNode *restorer) = 0;                                                           //!< Restore value of this nodes
-        virtual void                                                touchMe(DagNode *toucher, bool touchAll) = 0;                                                              //!< Touch myself (flag for recalculation)
+        virtual void                                                getAffected(RbOrderedSet<DagNode *>& affected, const DagNode* affecter) = 0;                //!< get affected nodes
+        virtual void                                                keepMe(const DagNode* affecter) = 0;                                                        //!< Keep value of myself
+        virtual void                                                restoreMe(const DagNode *restorer) = 0;                                                     //!< Restore value of this nodes
+        virtual void                                                touchMe(const DagNode *toucher, bool touchAll) = 0;                                         //!< Touch myself (flag for recalculation)
 
         // helper functions
         void                                                        getPrintableChildren(std::vector<DagNode*> &c) const;
@@ -153,7 +154,7 @@ template <class valueType> class RbOrderedSet;
     private:
 
         mutable size_t                                              ref_count;
-        std::vector<bool>                                           visit_flags; // in order: affected, find, keep, reinitialize, restore
+        mutable std::vector<bool>                                   visit_flags; // in order: affected, find, keep, reinitialize, restore
     };
 
 }
