@@ -93,7 +93,8 @@ namespace RevBayesCore {
 template<class valueType>
 RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, TypedDistribution<valueType> *d ) : DynamicNode<valueType>( n ),
     clamped( false ),
-    ignore_redraw(false),
+    ignore_redraw( false ),
+    integrated_out( false ),
     lnProb( RbConstants::Double::neginf ),
     needs_probability_recalculation( true ),
     distribution( d )
@@ -121,6 +122,7 @@ template<class valueType>
 RevBayesCore::StochasticNode<valueType>::StochasticNode( const StochasticNode<valueType> &n ) : DynamicNode<valueType>( n ),
     clamped( n.clamped ),
     ignore_redraw( n.ignore_redraw ),
+    integrated_out( n.integrated_out ),
     needs_probability_recalculation( true ),
     distribution( n.distribution->clone() )
 {
@@ -213,6 +215,7 @@ RevBayesCore::StochasticNode<valueType>& RevBayesCore::StochasticNode<valueType>
         
         clamped                             = n.clamped;
         ignore_redraw                       = n.ignore_redraw;
+        integrated_out                      = n.integrated_out;
         needs_probability_recalculation     = true;
     }
     
@@ -319,12 +322,19 @@ template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::getAffected( RbOrderedSet<DagNode*>& affected, const DagNode* affecter )
 {
     
-    // Insert this node as one of the affected
-    affected.insert( this );
+    if ( isIntegratedOut() == false )
+    {
+        // Insert this node as one of the affected
+        affected.insert( this );
     
-    // Call the distribution for potential specialized handling (e.g. internal flags)
-    distribution->getAffected( affected, affecter );
-    
+        // Call the distribution for potential specialized handling (e.g. internal flags)
+        distribution->getAffected( affected, affecter );
+    }
+    else
+    {
+        // Dispatch the touch message to downstream nodes
+        this->getAffectedNodes( affected );
+    }
 }
 
 
@@ -371,6 +381,11 @@ std::vector<double> RevBayesCore::StochasticNode<valueType>::getLnMixtureLikelih
 {
     std::vector<double> ln_probs;
     
+    bool tmp = isIntegratedOut();
+    if ( tmp == false )
+    {
+        std::cerr << "This should not happen!!!" << std::endl;
+    }
     if ( isIntegratedOut() == false )
     {
         ln_probs.push_back( distribution->computeLnProbability() );
@@ -392,6 +407,10 @@ std::vector<double> RevBayesCore::StochasticNode<valueType>::getLnMixtureLikelih
             {
                 ln_probs[i] += affected[j]->getLnProbability();
             }
+            if ( RbMath::isNan(ln_probs[i]) == true )
+            {
+                ln_probs[i] = RbConstants::Double::neginf;
+            }
             if ( ln_probs[i] > max_ln_probs )
             {
                 max_ln_probs = ln_probs[i];
@@ -403,6 +422,12 @@ std::vector<double> RevBayesCore::StochasticNode<valueType>::getLnMixtureLikelih
         {
             prob += exp(ln_probs[i] - max_ln_probs) * mixture_probs[i];
         }
+        
+//        if ( RbMath::isFinite( prob ) == false )
+//        {
+//            std::cerr << "Non-finite prob" << std::endl;
+//        }
+        
         double ln_prob = log( prob ) + max_ln_probs;
         for (size_t i=0; i<num_mixture_elements; ++i)
         {
@@ -425,7 +450,7 @@ double RevBayesCore::StochasticNode<valueType>::getLnProbability( void )
     if ( needs_probability_recalculation )
     {
         // compute and store log-probability
-        if ( this->prior_only == false || this->clamped == false )
+        if ( (this->prior_only == false || this->clamped == false) && integrated_out == false )
         {
             RbOrderedSet<DagNode *> integrated_parents;
             getIntegratedParents(integrated_parents);
@@ -555,6 +580,12 @@ void RevBayesCore::StochasticNode<valueType>::keepMe( const DagNode* affecter )
     // delegate call
     DynamicNode<valueType>::keepMe( affecter );
     
+    if ( isIntegratedOut() == true )
+    {
+        // Dispatch the touch message to downstream nodes
+        this->keepAffected();
+    }
+    
 }
 
 
@@ -637,6 +668,12 @@ void RevBayesCore::StochasticNode<valueType>::restoreMe( const DagNode *restorer
     
     // delegate call
     DynamicNode<valueType>::restoreMe( restorer );
+    
+    if ( isIntegratedOut() == true )
+    {
+        // Dispatch the touch message to downstream nodes
+        this->restoreAffected();
+    }
     
 }
 
@@ -800,6 +837,13 @@ void RevBayesCore::StochasticNode<valueType>::touchMe( const DagNode *toucher, b
     
     // delegate call
     DynamicNode<valueType>::touchMe( toucher, touchAll );
+    
+    if ( isIntegratedOut() == true )
+    {
+        // Dispatch the touch message to downstream nodes
+        this->touchAffected( touchAll );
+    }
+    
 }
 
 
