@@ -261,7 +261,7 @@ double RevBayesCore::StochasticNode<valueType>::computeRecursiveIntegratedLnProb
 {
     double ln_prob = 0;
     
-    if ( integrated_parents.size() >= index )
+    if ( integrated_parents.size() <= index )
     {
         ln_prob = distribution->computeLnProbability();
     }
@@ -358,19 +358,18 @@ template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::getIntegratedParents(RbOrderedSet<DagNode *>& integrated_parents) const
 {
     
-    if ( isIntegratedOut() == true )
-    {
-        // add myself to the list (after I've dealt with my parents)
-        std::vector<const DagNode*> parents = this->getParents();                                                                     //!< Get the set of parents (empty set here)
+    std::vector<const DagNode*> parents = this->getParents();                                                                     //!< Get the set of parents (empty set here)
 
-        // delegate up the DAG
-        for (size_t i=0; i<parents.size(); ++i)
+    // delegate up the DAG
+    for (size_t i=0; i<parents.size(); ++i)
+    {
+        const DagNode *the_parent = parents[i];
+        if ( the_parent->isIntegratedOut() == true )
         {
-            const DagNode *the_parent = parents[i];
             the_parent->getIntegratedParents( integrated_parents );
+            integrated_parents.insert( const_cast< DagNode* >(the_parent) );
         }
         
-        integrated_parents.insert( const_cast< StochasticNode<valueType>* >(this) );
     }
     
 }
@@ -447,7 +446,7 @@ template<class valueType>
 double RevBayesCore::StochasticNode<valueType>::getLnProbability( void )
 {
     
-    if ( needs_probability_recalculation )
+    if ( needs_probability_recalculation == true )
     {
         // compute and store log-probability
         if ( (this->prior_only == false || this->clamped == false) && integrated_out == false )
@@ -557,9 +556,12 @@ void RevBayesCore::StochasticNode<valueType>::keepMe( const DagNode* affecter )
         stored_ln_prob = 1.0E6;       // An almost impossible value for the density
         if ( needs_probability_recalculation )
         {
-            if ( this->prior_only == false || this->clamped == false )
+            if ( (this->prior_only == false || this->clamped == false) && integrated_out == false )
             {
-                lnProb = distribution->computeLnProbability();
+                RbOrderedSet<DagNode *> integrated_parents;
+                getIntegratedParents(integrated_parents);
+                lnProb = computeRecursiveIntegratedLnProbability(integrated_parents,0);
+//            lnProb = distribution->computeLnProbability();
             }
             else
             {
@@ -572,6 +574,12 @@ void RevBayesCore::StochasticNode<valueType>::keepMe( const DagNode* affecter )
         // clear the list of touched element indices
         this->touched_elements.clear();
         
+        if ( isIntegratedOut() == true )
+        {
+            // Dispatch the touch message to downstream nodes
+            this->keepAffected();
+        }
+        
     }
     
     needs_probability_recalculation   = false;
@@ -579,12 +587,6 @@ void RevBayesCore::StochasticNode<valueType>::keepMe( const DagNode* affecter )
     
     // delegate call
     DynamicNode<valueType>::keepMe( affecter );
-    
-    if ( isIntegratedOut() == true )
-    {
-        // Dispatch the touch message to downstream nodes
-        this->keepAffected();
-    }
     
 }
 
@@ -663,17 +665,17 @@ void RevBayesCore::StochasticNode<valueType>::restoreMe( const DagNode *restorer
         
         // clear the list of touched element indices
         this->touched_elements.clear();
+
+        if ( isIntegratedOut() == true )
+        {
+            // Dispatch the touch message to downstream nodes
+            this->restoreAffected();
+        }
         
     }
     
     // delegate call
     DynamicNode<valueType>::restoreMe( restorer );
-    
-    if ( isIntegratedOut() == true )
-    {
-        // Dispatch the touch message to downstream nodes
-        this->restoreAffected();
-    }
     
 }
 
