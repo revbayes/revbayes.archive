@@ -48,7 +48,7 @@ done
 #################
 # generate cmake configuration
 
-if [ "${mpi}" = "true" ] && [ "@{travis}" = "false" ]; then
+if [ "${mpi}" = "true" ] && [ "${travis}" = "false" ]; then
     HERE="$(pwd)/build-mpi"
     mkdir -p "${HERE}"
     echo $HERE
