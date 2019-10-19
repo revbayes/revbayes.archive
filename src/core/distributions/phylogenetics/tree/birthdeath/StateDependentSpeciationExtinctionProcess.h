@@ -88,9 +88,9 @@ namespace RevBayesCore {
 
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                                    getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                                  //!< get affected nodes
-        virtual void                                                    keepSpecialization(DagNode* affecter);
-        virtual void                                                    restoreSpecialization(DagNode *restorer);
-        virtual void                                                    touchSpecialization(DagNode *toucher, bool touchAll);
+        virtual void                                                    keepSpecialization(const DagNode* affecter);
+        virtual void                                                    restoreSpecialization(const DagNode *restorer);
+        virtual void                                                    touchSpecialization(const DagNode *toucher, bool touchAll);
         
         double                                                          lnProbTreeShape(void) const;
 
@@ -137,7 +137,7 @@ namespace RevBayesCore {
         const TypedDagNode<double>*                                     process_age;                                                                                           //!< Time since the origin.
         const TypedDagNode<RbVector<double> >*                          mu;
         const TypedDagNode<RbVector<double> >*                          lambda;
-        const TypedDagNode<RbVector<double> >*                          psi;
+        const TypedDagNode<RbVector<double> >*                          phi;
         const TypedDagNode<Simplex >*                                   pi;                                                                                                 //!< The root frequencies (probabilities of the root states).
         const TypedDagNode<RateGenerator>*                              Q;
         const TypedDagNode<double>*                                     rate;                                                                                               //!< Sampling probability of each species.

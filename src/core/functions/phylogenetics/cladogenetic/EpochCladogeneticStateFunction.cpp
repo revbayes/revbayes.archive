@@ -21,12 +21,10 @@ namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 
-EpochCladogeneticStateFunction::EpochCladogeneticStateFunction(const TypedDagNode< RbVector<double> > *et, const TypedDagNode< RbVector<CladogeneticProbabilityMatrix> > *cp, unsigned nc, unsigned ns) :
-TypedFunction<CladogeneticProbabilityMatrix>( new CladogeneticProbabilityMatrix_Epoch(0) ),
+EpochCladogeneticStateFunction::EpochCladogeneticStateFunction(const TypedDagNode< RbVector<double> > *et, const TypedDagNode< RbVector<CladogeneticProbabilityMatrix> > *cp, unsigned ns) :
+TypedFunction<CladogeneticProbabilityMatrix>( new CladogeneticProbabilityMatrix_Epoch(ns) ),
 epochTimes( et ),
 cladoProbs( cp ),
-numCharacters(nc),
-numStates(ns),
 numEpochs( (unsigned)et->getValue().size() )
 {
     // add the lambda parameter as a parent

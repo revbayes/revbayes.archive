@@ -366,7 +366,7 @@ double BirthDeathProcess::pSurvival(double start, double end) const
  * Restore the current value and reset some internal flags.
  * If the root age variable has been restored, then we need to change the root age of the tree too.
  */
-void BirthDeathProcess::restoreSpecialization(DagNode *affecter)
+void BirthDeathProcess::restoreSpecialization(const DagNode *affecter)
 {
     
     AbstractRootedTreeDistribution::restoreSpecialization(affecter);
@@ -413,7 +413,7 @@ void BirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode
  * Touch the current value and reset some internal flags.
  * If the root age variable has been restored, then we need to change the root age of the tree too.
  */
-void BirthDeathProcess::touchSpecialization(DagNode *affecter, bool touchAll)
+void BirthDeathProcess::touchSpecialization(const DagNode *affecter, bool touchAll)
 {
     
     AbstractRootedTreeDistribution::touchSpecialization(affecter, touchAll);

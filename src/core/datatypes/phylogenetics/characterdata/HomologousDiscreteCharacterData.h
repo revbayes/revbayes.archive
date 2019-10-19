@@ -484,7 +484,7 @@ RevBayesCore::AbstractHomologousDiscreteCharacterData* RevBayesCore::HomologousD
 /**
  * Add another character data object to this character data object.
  *
- * \param[in]    obsd    The CharacterData object that should be added.
+ * \param[in]    second    The CharacterData object that should be added.
  */
 template<class charType>
 RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::NaturalNumbersState>* RevBayesCore::HomologousDiscreteCharacterData<charType>::combineCharacters(const HomologousDiscreteCharacterData<charType> &second ) const
@@ -495,7 +495,7 @@ RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::NaturalNumbersState>
     HomologousDiscreteCharacterData<NaturalNumbersState>    *combined_data  = new HomologousDiscreteCharacterData<NaturalNumbersState>();
     
     std::string type = "union";
-    size_t sequence_length = getNumberOfCharacters();
+//    size_t sequence_length = getNumberOfCharacters();
     
     // check if both have the same number of taxa
 //    if ( taxa.size() != obsd.getNumberOfTaxa() )

@@ -112,7 +112,7 @@ void DagNode::addChild(DagNode *child) const
     // only if the child is not NULL and isn't in our vector yet
     if ( child != NULL )
     {
-        auto pos = std::find(children.begin(), children.end(), child);
+        std::vector<DagNode*>::const_iterator pos = std::find(children.begin(), children.end(), child);
         if ( pos == children.end() )
         {
             children.push_back( child );
@@ -135,7 +135,7 @@ void DagNode::addMonitor(Monitor *m)
     // only if the child is not NULL and isn't in our vector yet
     if ( m != NULL )
     {
-        auto pos = std::find(monitors.begin(), monitors.end(), m);
+        std::vector<Monitor *>::const_iterator pos = std::find(monitors.begin(), monitors.end(), m);
         if ( pos == monitors.end() )
         {
             monitors.push_back( m );
@@ -158,7 +158,7 @@ void DagNode::addMove(Move *m)
     // only if the child is not NULL and isn't in our vector yet
     if ( m != NULL )
     {
-        auto pos = std::find(moves.begin(), moves.end(), m);
+        std::vector<Move *>::const_iterator pos = std::find(moves.begin(), moves.end(), m);
         if ( pos == moves.end() )
         {
             moves.push_back( m );
@@ -186,33 +186,18 @@ void DagNode::clearVisitFlag( const size_t& flagType )
 
     // Clear the designated flagType from all descedants (including node calling this)
     // Also clear the flags we just flagged to keep descedant searching fast
-    for (auto d: descendants)
+    for (RbOrderedSet<DagNode*>::const_iterator it=descendants.begin(); it!=descendants.end(); ++it)
     {
-        d->visit_flags[FIND_FLAG] = false;
-        d->visit_flags[flagType] = false;
+        DagNode *the_descendant = *it;
+        the_descendant->visit_flags[FIND_FLAG] = false;
+        the_descendant->visit_flags[flagType] = false;
     }
 
 
     return;
 }
 
-void DagNode::clearVisitFlagVector( const size_t& flagType, std::vector<DagNode *>& nodes )
-{
 
-    RbOrderedSet<DagNode*> descendants;
-    findUniqueDescendantsWithFlagVector(descendants, flagType, nodes);
-
-    // Clear the designated flagType from all descedants (including node calling this)
-    // Also clear the flags we just flagged to keep descedant searching fast
-    for (auto d: descendants)
-    {
-        d->visit_flags[FIND_FLAG] = false;
-        d->visit_flags[flagType] = false;
-    }
-
-
-    return;
-}
 void DagNode::clearTouchedElementIndices( void )
 {
 
@@ -236,9 +221,9 @@ DagNode* DagNode::cloneDownstreamDag( std::map<const DagNode*, DagNode* >& newNo
     newNodes[ this ] = copy;
 
     /* Make sure the children clone themselves */
-    for ( auto i = this->children.begin(); i != this->children.end(); ++i )
+    for (std::vector<DagNode*>::const_iterator it=children.begin(); it!=children.end(); ++it)
     {
-        DagNode *child = (*i)->cloneDownstreamDag( newNodes );
+        DagNode *child = (*it)->cloneDownstreamDag( newNodes );
         child->swapParent(this, copy);
     }
 
@@ -283,8 +268,9 @@ void DagNode::findUniqueDescendants(RbOrderedSet<DagNode *>& descendants)
     descendants.insert(this);
 
     // recurse across node's children
-    for (auto child: children)
+    for (std::vector<DagNode*>::const_iterator it=children.begin(); it!=children.end(); ++it)
     {
+        DagNode *child = *it;
         // if child is not in descedant list, recurse from child's position
         // if ( descendants.find( *it ) == descendants.end() )
         if (child->visit_flags[FIND_FLAG] == false )
@@ -294,18 +280,6 @@ void DagNode::findUniqueDescendants(RbOrderedSet<DagNode *>& descendants)
     }
 }
 
-/*
- * finds all descendants of all nodes in vector without redundant node visitation
- */
-void DagNode::findUniqueDescendantsVector(RbOrderedSet<DagNode *>& descendants, std::vector<DagNode *>& nodes)
-{
-    // Delegate the actual finding to the non-vector version
-    // This way we avoid redundant finding of the same nodes, using the un-cleared flags
-    for (auto node: nodes)
-    {
-        node->findUniqueDescendants( descendants );
-    }
-}
 
 /*
  * finds all descendants without redundant node visitation
@@ -318,8 +292,9 @@ void DagNode::findUniqueDescendantsWithFlag(RbOrderedSet<DagNode *>& descendants
     descendants.insert(this);
 
     // recurse across node's children
-    for (auto child: children)
+    for (std::vector<DagNode*>::const_iterator it=children.begin(); it!=children.end(); ++it)
     {
+        DagNode *child = *it;
         // if child is not in descedant list, recurse from child's position
         // if ( descendants.find( *it ) == descendants.end() )
         if ( child->visit_flags[FIND_FLAG] == false && child->visit_flags[flagType] == true )
@@ -329,30 +304,20 @@ void DagNode::findUniqueDescendantsWithFlag(RbOrderedSet<DagNode *>& descendants
     }
 }
 
-/*
- * finds all descendants without redundant node visitation
- */
-void DagNode::findUniqueDescendantsWithFlagVector(RbOrderedSet<DagNode *>& descendants, const size_t flagType, std::vector<DagNode *>& nodes)
-{
-  // Delegate the actual finding to the non-vector version
-  // This way we avoid redundant finding of the same nodes, using the un-cleared flags
-    for (auto node: nodes)
-    {
-        node->findUniqueDescendantsWithFlag( descendants, flagType );
-    }
-}
 
 /**
  * Get all affected nodes this DAGNode.
  * This means we call getAffected() of all children. getAffected() is pure virtual.
  */
-void DagNode::getAffectedNodes(RbOrderedSet<DagNode *> &affected)
+void DagNode::getAffectedNodes(RbOrderedSet<DagNode *> &affected) const
 {
     visit_flags[AFFECTED_FLAG] = true;
     // get all my affected children
-    for (auto child: children)
+    for (std::vector<DagNode*>::const_iterator it=children.begin(); it!=children.end(); ++it)
     {
-        if (child->visit_flags[AFFECTED_FLAG] == false) {
+        DagNode *child = *it;
+        if (child->visit_flags[AFFECTED_FLAG] == false)
+        {
             child->getAffected(affected, this);
         }
     }
@@ -407,7 +372,7 @@ DagNode* DagNode::getFirstChild( void ) const
 }
 
 
-const std::vector<double>& DagNode::getMixtureProbabilities(void) const
+std::vector<double> DagNode::getMixtureProbabilities(void) const
 {
     return std::vector<double>(1,1.0);
 }
@@ -480,12 +445,13 @@ std::vector<const DagNode*> DagNode::getParents( void ) const
 void DagNode::getPrintableChildren(std::vector<DagNode *> &c) const
 {
 
-    for (auto child: children)
+    for (std::vector<DagNode*>::const_iterator it=children.begin(); it!=children.end(); ++it)
     {
+        DagNode *child = *it;
         if ( child->isHidden() == false )
         {
             // just insert this child (if we haven't already)
-            auto pos = std::find(c.begin(), c.end(), child);
+            std::vector<DagNode *>::const_iterator pos = std::find(c.begin(), c.end(), child);
             if ( pos == c.end() )
             {
                 c.push_back( child );
@@ -514,12 +480,13 @@ void DagNode::getPrintableParents(std::vector<const DagNode *> &p) const
 {
 
     std::vector<const DagNode*> parents = getParents();
-    for (auto parent: parents)
+    for (std::vector<const DagNode*>::const_iterator it=parents.begin(); it!=parents.end(); ++it)
     {
+        const DagNode *parent = *it;
         if ( parent->isHidden() == false )
         {
             // just insert this child (if we haven't already)
-            auto pos = std::find(p.begin(), p.end(), parent);
+            std::vector<const DagNode *>::const_iterator pos = std::find(p.begin(), p.end(), parent);
             if ( pos == p.end() )
             {
                 p.push_back( parent );
@@ -585,23 +552,6 @@ void DagNode::initiateGetAffectedNodes(RbOrderedSet<DagNode *> &affected)
     clearVisitFlag(flag_type);
 }
 
-/**
- * Begins a getAffectedNodes() recursion then clears visited flags
- */
-void DagNode::initiateGetAffectedNodesVector(RbOrderedSet<DagNode *> &affected, std::vector<DagNode *>& nodes)
-{
-
-    // begin recursion on each node in the vector
-    // the flags aren't cleared yet so we don't pass through nodes twice
-    for (auto node: nodes)
-    {
-        getAffectedNodes( affected );
-    }
-
-    // clear visit flags
-    const size_t& flag_type = AFFECTED_FLAG;
-    clearVisitFlagVector(flag_type, nodes);
-}
 
 /**
  * This function returns true if the DAG node is
@@ -623,8 +573,9 @@ bool DagNode::isAssignable( void ) const
         return true;
     }
 
-    for (auto parent : parents)
+    for (std::vector<const DagNode*>::const_iterator it=parents.begin(); it!=parents.end(); ++it)
     {
+        const DagNode *parent = *it;
         if ( parent->isAssignable() )
         {
             return true;
@@ -702,28 +653,6 @@ void DagNode::keep(void)
 
 }
 
-/**
- * Keep the values of the nodes.
- * This function delegates the call to keepMe() and calls keepAffected() too.
- * Unlike keep(), this function handles a set of nodes, leaving flags in place and avoiding redundancy
- */
-void DagNode::keepVector(std::vector<DagNode *>& nodes)
-{
-
-    for (auto node: nodes)
-    {
-        // keep myself first
-        node->keepMe(node);
-
-        // next, keep all my children
-        node->keepAffected();
-    }
-
-    // clear visit flags
-    const size_t &flag_type = KEEP_FLAG;
-    clearVisitFlagVector(flag_type, nodes);
-
-}
 
 /**
  * Tell affected variable nodes to keep the current value.
@@ -733,8 +662,9 @@ void DagNode::keepAffected()
     visit_flags[KEEP_FLAG] = true;
 
     // keep all my children
-    for (auto child: children)
+    for (std::vector<DagNode*>::const_iterator it=children.begin(); it!=children.end(); ++it)
     {
+        DagNode *child = *it;
         if (child->visit_flags[KEEP_FLAG] == false)
         {
             child->keepMe( this );
@@ -902,26 +832,6 @@ void DagNode::reInitialized( void )
 
 }
 
-/**
- * Restore this vector of DAGNodes.
- */
-void DagNode::reInitializeVector(std::vector<DagNode *>& nodes)
-{
-
-    for (auto node: nodes)
-    {
-        // keep myself first
-        node->reInitializeMe();
-
-        // next, keep all my children
-        node->reInitializeAffected();
-    }
-
-  // clear visit flags
-  const size_t &flag_type = REINITIALIZE_FLAG;
-  clearVisitFlagVector(flag_type, nodes);
-
-}
 
 /**
  * By default we do not need to do anything when re-initializiating.
@@ -932,8 +842,9 @@ void DagNode::reInitializeAffected( void )
     visit_flags[REINITIALIZE_FLAG] = true;
 
     // next, reInitialize all my children
-    for ( auto child: children )
+    for (std::vector<DagNode*>::const_iterator it=children.begin(); it!=children.end(); ++it)
     {
+        DagNode *child = *it;
         if (child->visit_flags[REINITIALIZE_FLAG] == false)
         {
             child->reInitializeMe();
@@ -961,7 +872,7 @@ void DagNode::removeChild(DagNode *child) const
 {
 
     // test if we even have this node as a child
-    auto it = std::find( children.begin(), children.end(), child );
+    std::vector<DagNode *>::const_iterator it = std::find( children.begin(), children.end(), child );
     if ( it != children.end() )
     {
         children.erase( it );
@@ -985,7 +896,7 @@ void DagNode::removeMonitor(Monitor *m)
 {
 
     // test if we even have this monitor
-    auto it = std::find( monitors.begin(), monitors.end(), m );
+    std::vector<Monitor*>::const_iterator it = std::find( monitors.begin(), monitors.end(), m );
     if ( it != monitors.end() )
     {
         monitors.erase( it );
@@ -1006,7 +917,7 @@ void DagNode::removeMove(Move *m)
 {
 
     // test if we even have this move
-    auto it = std::find( moves.begin(), moves.end(), m );
+    std::vector<Move*>::const_iterator it = std::find( moves.begin(), moves.end(), m );
     if ( it != moves.end() )
     {
         moves.erase( it );
@@ -1080,8 +991,9 @@ void DagNode::restoreAffected(void)
     visit_flags[RESTORE_FLAG] = true;
 
     // keep all my children
-    for (auto child: children)
+    for (std::vector<DagNode*>::const_iterator it=children.begin(); it!=children.end(); ++it)
     {
+        DagNode *child = *it;
         if (child->visit_flags[RESTORE_FLAG] == false)
         {
             child->restoreMe( this );
@@ -1089,26 +1001,6 @@ void DagNode::restoreAffected(void)
     }
 }
 
-/**
- * Restore this vector of DAGNodes.
- */
-void DagNode::restoreVector(std::vector<DagNode *>& nodes)
-{
-
-    for (auto node: nodes)
-    {
-        // keep myself first
-        node->restoreMe(node);
-
-        // next, keep all my children
-        node->restoreAffected();
-    }
-
-  // clear visit flags
-  const size_t &flag_type = RESTORE_FLAG;
-  clearVisitFlagVector(flag_type, nodes);
-
-}
 
 void DagNode::setElementVariable(bool tf)
 {
@@ -1140,8 +1032,9 @@ void DagNode::setName(std::string const &n)
 void DagNode::setParentNamePrefix(const std::string &p)
 {
     std::vector<const DagNode*> parents = getParents();
-    for (auto parent: parents)
+    for (std::vector<const DagNode*>::const_iterator it=parents.begin(); it!=parents.end(); ++it)
     {
+        const DagNode *parent = *it;
         if ( parent->getName().size() > 0 && parent->getName()[0] == '.' )
         {
             DagNode *parentNode = const_cast<DagNode *>( parent );
@@ -1204,8 +1097,9 @@ void DagNode::touch(bool touchAll)
 void DagNode::touchAffected(bool touchAll)
 {
     // touch all my children
-    for (auto child: children)
+    for (std::vector<DagNode*>::const_iterator it=children.begin(); it!=children.end(); ++it)
     {
+        DagNode *child = *it;
         child->touchMe( this, touchAll );
     }
 }
