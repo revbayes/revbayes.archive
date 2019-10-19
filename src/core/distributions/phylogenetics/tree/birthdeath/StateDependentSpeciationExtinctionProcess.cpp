@@ -1456,6 +1456,21 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> StateDependentSpeciationExtinction
 }
 
 
+void StateDependentSpeciationExtinctionProcess::executeMethod(const std::string &name, const std::vector<const DagNode *> &args, RbVector<long> &rv) const
+{
+   
+    if ( name == "numberEvents" )
+    {
+        rv = num_shift_events;
+    }
+    else
+    {
+        throw RbException("The state dependent birth-death process does not have a member method called '" + name + "'.");
+    }
+
+}
+
+
 void StateDependentSpeciationExtinctionProcess::executeMethod(const std::string &name, const std::vector<const DagNode *> &args, RbVector<double> &rv) const
 {
    
@@ -1473,7 +1488,7 @@ void StateDependentSpeciationExtinctionProcess::executeMethod(const std::string 
     }
     else
     {
-        throw RbException("The character dependent birth-death process does not have a member method called '" + name + "'.");
+        throw RbException("The state dependent birth-death process does not have a member method called '" + name + "'.");
     }
 
 }
