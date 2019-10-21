@@ -1,14 +1,17 @@
+#include <stddef.h>
 #include <iostream>
-#include <list>
-#include <sstream>
 #include <vector>
+#include <set>
 
 #include "Argument.h"
-#include "RbException.h"
 #include "RlFunction.h"
-#include "RbUtil.h"
 #include "SyntaxBinaryExpr.h"
 #include "Workspace.h"
+#include "Environment.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "SyntaxElement.h"
 
 using namespace RevLanguage;
 
@@ -132,7 +135,7 @@ RevPtr<RevVariable> SyntaxBinaryExpr::evaluateContent( Environment& env, bool dy
     // Free the memory of our copy
     delete the_function;
     
-    if ( dynamic == false )
+    if ( dynamic == false || isConstExpression() == true )
     {
         // Return the return value of the function after making it constant
         if ( the_return_value != NULL )

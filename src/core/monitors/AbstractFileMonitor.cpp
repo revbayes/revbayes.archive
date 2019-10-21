@@ -1,13 +1,15 @@
 #include "AbstractFileMonitor.h"
-#include "DagNode.h"
-#include "Mcmc.h"
-#include "Monitor.h"
+
+#include <string>
+
 #include "RbFileManager.h"
-#include "RbVersion.h"
+#include "Cloneable.h"
+
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 
-/* Constructor */
+
 AbstractFileMonitor::AbstractFileMonitor(DagNode *n, unsigned long g, const std::string &fname, bool ap, bool wv) : Monitor(g,n),
     out_stream(),
     filename( fname ),
@@ -15,9 +17,7 @@ AbstractFileMonitor::AbstractFileMonitor(DagNode *n, unsigned long g, const std:
     append(ap),
     flatten( true ),
     write_version( wv )
-{
-    
-}
+{}
 
 
 AbstractFileMonitor::AbstractFileMonitor(const std::vector<DagNode *> &n, unsigned long g, const std::string &fname, bool ap, bool wv) : Monitor(g,n),
@@ -27,20 +27,17 @@ AbstractFileMonitor::AbstractFileMonitor(const std::vector<DagNode *> &n, unsign
     append(ap),
     flatten( true ),
     write_version( wv )
-{
-    
-}
+{}
 
 
 AbstractFileMonitor::AbstractFileMonitor(const AbstractFileMonitor &f) : Monitor( f ),
     out_stream()
-{
-    
+{    
     filename            = f.filename;
     working_file_name   = f.working_file_name;
     append              = f.append;
     flatten             = f.flatten;
-    write_version        = f.write_version;
+    write_version       = f.write_version;
     
     if ( f.out_stream.is_open() == true )
     {
@@ -56,18 +53,12 @@ AbstractFileMonitor::~AbstractFileMonitor(void)
     if (out_stream.is_open())
     {
         closeStream();
-    }
-    
+    }   
 }
 
 
-
-/**
- * Set the file extension.
- */
 void AbstractFileMonitor::addFileExtension(const std::string &s, bool dir)
-{
-    
+{   
     // compute the working filename
     if ( dir == false )
     {
@@ -79,7 +70,6 @@ void AbstractFileMonitor::addFileExtension(const std::string &s, bool dir)
         RbFileManager fm = RbFileManager(filename);
         working_file_name = fm.getFilePath() + fm.getPathSeparator() + s + fm.getPathSeparator() + fm.getFileName();
     }
-
 }
 
 
@@ -95,7 +85,6 @@ bool AbstractFileMonitor::isFileMonitor( void ) const
 }
 
 
-/** open the file stream for printing */
 void AbstractFileMonitor::openStream( bool reopen )
 {
     
@@ -118,21 +107,20 @@ void AbstractFileMonitor::openStream( bool reopen )
 
 
 /**
- * Set flag about whether to append to an existing file.
+ * Set whether to append to an existing file.
  *
- * \param[in]   tf   Flag if to append.
+ * \param[in]   tf   new flag value
  */
 void AbstractFileMonitor::setAppend(bool tf)
-{
-    
-    append = tf;
-    
+{  
+    append = tf;    
 }
 
+
 /**
- * Set flag about whether to print the software version.
+ * Set whether to print the software version.
  *
- * \param[in]   tf   Flag if the version should be printed.
+ * \param[in]   tf   new flag value
  */
 void AbstractFileMonitor::setPrintVersion(bool tf)
 {

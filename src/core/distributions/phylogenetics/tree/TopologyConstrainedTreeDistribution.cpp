@@ -1,3 +1,12 @@
+#include <stddef.h>
+#include <algorithm>
+#include <iosfwd>
+#include <map>
+#include <string>
+#include <type_traits>
+#include <utility>
+#include <vector>
+
 #include "AbstractRootedTreeDistribution.h"
 #include "Clade.h"
 #include "TopologyConstrainedTreeDistribution.h"
@@ -8,10 +17,19 @@
 #include "StochasticNode.h"
 #include "Taxon.h"
 #include "TopologyNode.h"
-#include "TreeUtilities.h"
+#include "RbBitSet.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "StringUtilities.h"
+#include "TimeInterval.h"
+#include "Tree.h"
+#include "TreeChangeEventHandler.h"
+#include "TreeChangeEventMessage.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
 
-#include <algorithm>
-#include <cmath>
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { template <class valueType> class RbOrderedSet; }
 
 using namespace RevBayesCore;
 
@@ -175,12 +193,12 @@ double TopologyConstrainedTreeDistribution::computeLnProbability( void )
     recursivelyUpdateClades( value->getRoot() );
     
     // first check if the current tree matches the clade constraints
-    if ( !matchesConstraints() )
+    if ( matchesConstraints() == false )
     {
         return RbConstants::Double::neginf;
     }
     
-    if ( !matchesBackbone() )
+    if ( matchesBackbone() == false )
     {
         return RbConstants::Double::neginf;
     }
@@ -355,7 +373,7 @@ bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
     {
         
         std::vector<Clade> constraints;
-        if (monophyly_constraints[i].isOptionalMatch())
+        if ( monophyly_constraints[i].isOptionalMatch() == true )
         {
             constraints = monophyly_constraints[i].getOptionalConstraints();
         }
@@ -370,7 +388,7 @@ bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
             
             std::vector<RbBitSet>::iterator it = std::find(active_clades.begin(), active_clades.end(), constraints[j].getBitRepresentation() );
             
-            if (it != active_clades.end() && !constraints[j].isNegativeConstraint() )
+            if (it != active_clades.end() && constraints[j].isNegativeConstraint() == false )
             {
                 constraint_satisfied[j] = true;
             }
@@ -384,15 +402,17 @@ bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
         bool any_satisfied = false;
         for (size_t j = 0; j < constraint_satisfied.size(); j++)
         {
-            if (constraint_satisfied[j])
+            if ( constraint_satisfied[j] == true )
             {
                 any_satisfied = true;
                 break;
             }
         }
-        if (!any_satisfied)
-            return false;
         
+        if ( any_satisfied == false )
+        {
+            return false;
+        }
     }
     
     return true;
@@ -425,13 +445,12 @@ bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
 void TopologyConstrainedTreeDistribution::recursivelyFlagNodesDirty(const TopologyNode& n)
 {
     
-    
     dirty_nodes[ n.getIndex() ] = true;
     
-    if ( n.isRoot() )
-        return;
-    
-    recursivelyFlagNodesDirty(n.getParent());
+    if ( n.isRoot() == false )
+    {
+        recursivelyFlagNodesDirty(n.getParent());
+    }
     
 }
 
@@ -841,9 +860,10 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
         if ( clade_age <= max_node_age )
         {
             // Get the rng
-            RandomNumberGenerator* rng = GLOBAL_RNG;
+//            RandomNumberGenerator* rng = GLOBAL_RNG;
             
-            clade_age = rng->uniform01() * ( max_age - max_node_age ) + max_node_age;
+//            clade_age = rng->uniform01() * ( max_age - max_node_age ) + max_node_age;
+            clade_age = tree_base_distribution->simulateCladeAge(nodes_in_clade.size(), max_age, 0, max_node_age);
         }
         
         tree_base_distribution->simulateClade(nodes_in_clade, clade_age, 0.0);

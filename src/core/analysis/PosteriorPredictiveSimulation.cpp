@@ -1,11 +1,31 @@
+#include <cmath>
+#include <typeinfo>
+#include <algorithm>
+#include <cstddef>
+#include <iostream>
+#include <map>
+#include <string>
+#include <vector>
+
 #include "DagNode.h"
 #include "HomologousDiscreteCharacterData.h"
 #include "PosteriorPredictiveSimulation.h"
 #include "StateDependentSpeciationExtinctionProcess.h"
 #include "RbFileManager.h"
-
-#include <cmath>
-#include <typeinfo>
+#include "AbstractHomologousDiscreteCharacterData.h"
+#include "Cloneable.h"
+#include "DiscreteTaxonData.h"
+#include "Model.h"
+#include "NaturalNumbersState.h"
+#include "Parallelizable.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "StringUtilities.h"
+#include "Taxon.h"
+#include "Trace.h"
+#include "Tree.h"
+#include "TreeDiscreteCharacterData.h"
 
 using namespace RevBayesCore;
 
@@ -143,6 +163,8 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
                             size_t idx = ancestral_state_traces_lookup[tip_index_end_str];
                             tip_state_trace = &ancestral_state_traces[idx];
                         }
+                        else
+                            throw RbException("Can't find tip_state_trace!");
                         const std::vector<std::string>& tip_state_vector = tip_state_trace->getValues();
                         std::string state_str = tip_state_vector[index_sample];
   
@@ -166,7 +188,7 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
                     // we need to store the new simulated data
                     the_node->writeToFile(sim_directory_name);
                 }
-                catch (RbException e)
+                catch (RbException &e)
                 {
                     
                     std::cerr << "Problem in Posterior Predictive Simulation:" << std::endl;

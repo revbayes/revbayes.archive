@@ -1,3 +1,10 @@
+#include <math.h>
+#include <cstring>
+#include <iomanip>
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include "CholeskyDecomposition.h"
 #include "EigenSystem.h"
 #include "MatrixReal.h"
@@ -5,9 +12,7 @@
 #include "RbVector.h"
 #include "RbConstants.h"
 #include "TypedDagNode.h"
-
-#include <cstring>
-#include <iomanip>
+#include "RbVectorImpl.h"
 
 using namespace RevBayesCore;
 
@@ -489,17 +494,22 @@ bool MatrixReal::isDiagonal(void) const
 }
 
 
-bool MatrixReal::isPositive( void )  const
+bool MatrixReal::isPositiveDefinite( bool semi )  const
 {
 
     update();
+
+    if ( use_cholesky_decomp )
+    {
+        return semi ? cholesky_decomp->checkPositiveSemidefinite() : cholesky_decomp->checkPositiveDefinite();
+    }
 
     const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
 
     bool pos = true;
     for (size_t i=0; i<n_rows; i++)
     {
-        pos &= (eigenval[i] > 0);
+        pos &= semi ? (eigenval[i] >= 0) : (eigenval[i] > 0);
     }
 
     return pos;
@@ -623,7 +633,8 @@ void MatrixReal::update( void ) const
 }
 
 #include "RbMathMatrix.h"
-#include "RbException.h"
+
+namespace RevBayesCore { class DagNode; }
 
 MatrixReal operator+(const MatrixReal& A);
 MatrixReal operator-(const MatrixReal& A);

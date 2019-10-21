@@ -7,10 +7,17 @@
 //
 
 #include "Func_choose.h"
+
 #include "ChooseFunction.h"
 #include "Natural.h"
 #include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
+#include "Argument.h"
+#include "ArgumentRule.h"
+#include "ArgumentRules.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
+#include "TypeSpec.h"
 
 using namespace RevLanguage;
 

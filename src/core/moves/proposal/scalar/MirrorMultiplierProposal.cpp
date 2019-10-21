@@ -1,12 +1,14 @@
+#include <cmath>
+#include <iostream>
+
 #include "DistributionNormal.h"
 #include "MirrorMultiplierProposal.h"
 #include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
-#include "RbException.h"
-#include "TypedDagNode.h"
+#include "ContinuousStochasticNode.h"
+#include "Proposal.h"
+#include "StochasticNode.h"
 
-#include <cmath>
-#include <iostream>
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 
@@ -91,9 +93,6 @@ double MirrorMultiplierProposal::getProposalTuningParameter( void ) const
 double MirrorMultiplierProposal::doProposal( void )
 {
     ++nTried;
-
-    // Get random number generator
-    RandomNumberGenerator* rng     = GLOBAL_RNG;
 
     double &val = variable->getValue();
 

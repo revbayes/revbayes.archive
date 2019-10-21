@@ -25,52 +25,52 @@
 
 #include <sstream>
 #include <vector>
-#include <set>
 #include <cstdlib>
+#include <stdio.h>
 
 /* Files including helper classes */
-#include "AddContinuousDistribution.h"
-#include "AddDistribution.h"
-#include "AddWorkspaceVectorType.h"
-#include "AddVectorizedWorkspaceType.h"
 #include "RbException.h"
 #include "RlUserInterface.h"
 #include "Workspace.h"
 
 /// Miscellaneous types ///
 
+#include "ConstantNode.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "IndirectReferenceFunction.h"
+#include "ModelObject.h"
+//#include "NumUniqueInVector.h" //suggested by IWYU but breaks the build
+#include "RbVector.h"
+#include "RevPtr.h"
+#include "RlConstantNode.h"
+#include "RlDeterministicNode.h"
+#include "RlTypedDistribution.h"
+#include "RlTypedFunction.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
+
 /* Base types (in folder "datatypes") */
-#include "RevObject.h"
 
 /* Primitive types (in folder "datatypes/basic") */
 #include "Integer.h"
 #include "Natural.h"
 #include "Probability.h"
-#include "RlBoolean.h"
-#include "RlString.h"
 #include "Real.h"
 #include "RealPos.h"
 
 /* Container types (in folder "datatypes/container") */
 #include "ModelVector.h"
-#include "WorkspaceVector.h"
-
 
 /* Taxon types (in folder "datatypes/evolution") */
-#include "RlTaxon.h"
-
 
 /* Math types (in folder "datatypes/math") */
-#include "RlMatrixReal.h"
-#include "RlMatrixRealSymmetric.h"
-#include "RlRateGeneratorSequence.h"
-#include "RlRateMatrix.h"
 #include "RlSimplex.h"
 
-
 /* Argument rules (in folder "functions/argumentrules") */
-#include "ArgumentRule.h"
-
 
 /* Basic functions (in folder "functions/basic"). */
 
@@ -82,7 +82,9 @@
 #include "Func_BirthDeathSimulator.h"
 #include "Func_branchScoreDistance.h"
 #include "Func_checkNodeOrderConstraints.h"
+#include "Func_chronoToPhylo.h"
 #include "Func_computeWeightedNodeOrderConstraintsScore.h"
+#include "Func_combineCharacter.h"
 #include "Func_concatenate.h"
 #include "Func_concatenateContinuousCharacterData.h"
 #include "Func_CladeSpecificHierarchicalBranchRate.h"
@@ -99,8 +101,8 @@
 #include "Func_PhylogeneticIndependentContrastsMultiSample.h"
 #include "Func_pomoState4Converter.h"
 #include "Func_pomoRootFrequencies.h"
-#include "Func_readPomoCountFile.h"
 #include "Func_pruneTree.h"
+#include "Func_simStartingTree.h"
 #include "Func_simTree.h"
 #include "Func_simCompleteTree.h"
 #include "Func_stitchTree.h"
@@ -113,6 +115,7 @@
 
 
 /* Rate matrix functions (in folder "functions/phylogenetics/ratematrix") */
+#include "Func_BinaryMutationCoalescentRateMatrix.h"
 #include "Func_blosum62.h"
 #include "Func_chromosomes.h"
 #include "Func_chromosomesPloidy.h"
@@ -141,7 +144,7 @@
 #include "Func_mtMam.h"
 #include "Func_orderedRateMatrix.h"
 #include "Func_pomo.h"
-#include "Func_reversiblePomo.h"
+#include "Func_reversiblePoMo.h"
 #include "Func_rtRev.h"
 #include "Func_vt.h"
 #include "Func_t92.h"
@@ -179,36 +182,13 @@
 #include "Func_chromosomesCladoEventsBD.h"
 #include "Func_chromosomesPloidyCladoEventsBD.h"
 #include "Func_cladogeneticSpeciationRateMatrix.h"
+#include "Func_cladogeneticProbabilityMatrix.h"
 #include "Func_MixtureCladoProbs.h"
 #include "Func_SampledCladogenesisRootFrequencies.h"
 
 
 /* Input/output functions (in folder "functions/io") */
-#include "Func_ancestralStateTree.h"
-#include "Func_consensusTree.h"
-#include "Func_convertToPhylowood.h"
-#include "Func_formatDiscreteCharacterData.h"
-#include "Func_module.h"
-#include "Func_readAtlas.h"
-#include "Func_readCharacterDataDelimited.h"
-#include "Func_readContinuousCharacterData.h"
-#include "Func_readDiscreteCharacterData.h"
-#include "Func_readDistanceMatrix.h"
-#include "Func_readStochasticVariableTrace.h"
-#include "Func_readTrace.h"
-#include "Func_readTrees.h"
-#include "Func_readBranchLengthTrees.h"
-#include "Func_readTreeTrace.h"
-#include "Func_readAncestralStateTreeTrace.h"
-#include "Func_readAncestralStateTrace.h"
-#include "Func_source.h"
-#include "Func_summarizeCharacterMaps.h"
-#include "Func_TaxonReader.h"
-#include "Func_treeTrace.h"
-#include "Func_write.h"
-#include "Func_writeCharacterDataDelimited.h"
-#include "Func_writeFasta.h"
-#include "Func_writeNexus.h"
+#include "Func_readPoMoCountFile.h"
 
 
 /* Math functions (in folder "functions/math") */
@@ -237,8 +217,8 @@
 #include "Func_min.h"
 #include "Func_normalize.h"
 #include "Func_posteriorPredictiveProbability.h"
-#include "Func_power.h"
-#include "Func_powerVector.h"
+//#include "Func_power.h"
+//#include "Func_powerVector.h"
 #include "Func_probability.h"
 #include "Func_round.h"
 #include "Func_shortestDistance.h"
@@ -260,9 +240,11 @@
 /* Statistics functions (in folder "functions/statistics") */
 /* These are functions related to statistical distributions */
 #include "Func_assembleContinuousMRF.h"
+#include "Func_betaBrokenStick.h"
 #include "Func_discretizeBeta.h"
 #include "Func_discretizeBetaQuadrature.h"
 #include "Func_discretizeGamma.h"
+#include "Func_discretizeGammaFromBetaQuantiles.h"
 #include "Func_discretizeGammaQuadrature.h"
 #include "Func_discretizeLognormalQuadrature.h"
 #include "Func_discretizeDistribution.h"
@@ -276,8 +258,6 @@
 #include "Func_decomposedVarianceCovarianceMatrix.h"
 #include "Func_partialToCorrelationMatrix.h"
 
-#include "RlDiscreteCharacterState.h"
-
 
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
@@ -290,6 +270,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         ///////////////////////////////////////////
 
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
+        addFunction( new Func_BinaryMutationCoalescentRateMatrix()          );
         addFunction( new Func_blosum62()                                    );
         addFunction( new Func_chromosomes()                                 );
         addFunction( new Func_chromosomesPloidy()                           );
@@ -318,7 +299,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_mtRev()                                       );
         addFunction( new Func_orderedRateMatrix()                           );
         addFunction( new Func_pomo()                                        );
-        addFunction( new Func_reversiblePomo()                              );
+        addFunction( new Func_reversiblePoMo()                              );
         addFunction( new Func_rtRev()                                       );
         addFunction( new Func_t92()                                         );
         addFunction( new Func_TamuraNei()                                   );
@@ -348,6 +329,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_chromosomesPloidyCladoEventsBD() );
         addFunction( new Func_CladeSpecificHierarchicalBranchRate() );
         addFunction( new Func_cladogeneticSpeciationRateMatrix() );
+        addFunction( new Func_cladogeneticProbabilityMatrix() );
         addFunction( new Func_MixtureCladoProbs() );
         addFunction( new Func_SampledCladogenesisRootFrequencies() );
 
@@ -355,7 +337,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_BirthDeathSimulator()                             );
         addFunction( new Func_branchScoreDistance()                             );
         addFunction( new Func_checkNodeOrderConstraints()                       );
+        addFunction( new Func_chronoToPhylo()                                   );
         addFunction( new Func_computeWeightedNodeOrderConstraintsScore()        );
+        addFunction( new Func_combineCharacter()                                );
         addFunction( new Func_concatenate()                                     );
         addFunction( new Func_concatenateContinuousCharacterData()              );
         addFunction( new Func_concatenateFromVector()                           );
@@ -369,10 +353,11 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_phyloDiversity()                                  );
         addFunction( new Func_PhylogeneticIndependentContrasts()                );
         addFunction( new Func_PhylogeneticIndependentContrastsMultiSample()     );
-        addFunction( new Func_pomoState4Converter()                              );
+        addFunction( new Func_pomoState4Converter()                             );
         addFunction( new Func_pomoRootFrequencies()                             );
         addFunction( new Func_pruneTree()                                       );
-        addFunction( new Func_readPomoCountFile()                               );
+        addFunction( new Func_readPoMoCountFile()                               );
+        addFunction( new Func_simStartingTree()                                 );
         addFunction( new Func_simTree()                                         );
         addFunction( new Func_simCompleteTree()                                 );
         addFunction( new Func_stitchTree()                                      );
@@ -538,8 +523,11 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_discretizeBeta( )    );
         addFunction( new Func_discretizeBetaQuadrature( )    );
         addFunction( new Func_discretizeGamma( )   );
+        addFunction( new Func_discretizeGammaFromBetaQuantiles( )   );
         addFunction( new Func_discretizeGammaQuadrature( )   );
         addFunction( new Func_discretizeLognormalQuadrature( )   );
+
+        addFunction( new Func_betaBrokenStick( )   );
 
         addFunction( new Func_varianceCovarianceMatrix( )           );
         addFunction( new Func_decomposedVarianceCovarianceMatrix( ) );

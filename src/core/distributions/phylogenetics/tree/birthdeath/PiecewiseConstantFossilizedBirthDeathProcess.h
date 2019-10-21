@@ -58,7 +58,7 @@ namespace RevBayesCore {
 
     protected:
         void                                            updateStartEndTimes() const;
-        size_t                                          updateStartEndTimes(const TopologyNode & ) const;
+        int                                             updateStartEndTimes(const TopologyNode & ) const;
 
         double                                          pSurvival(double start, double end) const;             //!< Compute the probability of survival of the process (without incomplete taxon sampling).
 

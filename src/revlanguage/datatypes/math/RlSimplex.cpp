@@ -8,8 +8,22 @@
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "RlUtils.h"
 #include "WorkspaceVector.h"
+#include "ArgumentRule.h"
+#include "ArgumentRules.h"
+#include "MemberFunction.h"
+#include "MethodTable.h"
+#include "RbConstIterator.h"
+#include "RbConstIteratorImpl.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "RevVariable.h"
+#include "RlDeterministicNode.h"
+#include "RlTypedFunction.h"
+#include "TypeSpec.h"
+#include "WorkspaceToCoreWrapperObject.h"
+
+namespace RevLanguage { class Argument; }
 
 using namespace RevLanguage;
 

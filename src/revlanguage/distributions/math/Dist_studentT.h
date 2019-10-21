@@ -9,10 +9,19 @@
 #ifndef Dist_StudentT_H
 #define Dist_StudentT_H
 
+#include <iosfwd>
+#include <vector>
+
 #include "StudentTDistribution.h"
 #include "RlContinuousDistribution.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+
+namespace RevBayesCore { class RbHelpReference; }
 
 namespace RevLanguage {
+class TypeSpec;
     
     /**
      * The RevLanguage wrapper of the Student's T distribution.

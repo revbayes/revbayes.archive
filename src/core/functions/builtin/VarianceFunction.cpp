@@ -1,9 +1,17 @@
 #include "VarianceFunction.h"
 
+#include <vector>
+
+#include "RbVector.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class DagNode; }
+
 using namespace RevBayesCore;
 
 /**
- * Constructor. Here we simply set up the parameter dependencies.
+ * VarianceFunction of a RbVector Constructor.
+ * @param v the vector of values
  */
 VarianceFunction::VarianceFunction(const TypedDagNode< RbVector<double> > *v) : TypedFunction<double>( new double(0.0) ),
 vals( v )

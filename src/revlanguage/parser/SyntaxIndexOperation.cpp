@@ -1,10 +1,25 @@
+#include <stddef.h>
+#include <iosfwd>
+#include <string>
+#include <vector>
+
 #include "RlContainer.h"
-#include "Function.h"
 #include "Integer.h"
 #include "RevNullObject.h"
 #include "RlMemberMethod.h"
 #include "SyntaxIndexOperation.h"
 #include "Workspace.h"
+#include "Argument.h"
+#include "DagNode.h"
+#include "Environment.h"
+#include "MethodTable.h"
+#include "RbException.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
+#include "StringUtilities.h"
+#include "SyntaxElement.h"
 
 using namespace RevLanguage;
 
@@ -250,7 +265,7 @@ RevPtr<RevVariable> SyntaxIndexOperation::evaluateContent( Environment& env, boo
             
             delete f;
         }
-        catch (RbException e)
+        catch (RbException &e)
         {
             // We are trying to find a member function
         

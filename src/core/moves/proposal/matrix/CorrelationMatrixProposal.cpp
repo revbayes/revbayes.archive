@@ -1,11 +1,19 @@
 #include "CorrelationMatrixProposal.h"
-#include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
-#include "RbException.h"
-#include "TypedDagNode.h"
 
+#include <stdlib.h>
 #include <cmath>
 #include <iostream>
+
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
+#include "Cloneable.h"
+#include "MatrixReal.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "StochasticNode.h"
+
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { template <class valueType> class TypedDagNode; }
 
 using namespace RevBayesCore;
 
@@ -140,7 +148,7 @@ double CorrelationMatrixProposal::doProposal( void ) {
 
     // check that the resulting variance-covariance matrix is positive definite
 
-    std::cout << v.isPositive() << std::endl;
+    std::cout << v.isPositiveDefinite() << std::endl;
     std::cout << v << std::endl;
     exit(1);
 

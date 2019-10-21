@@ -1,17 +1,20 @@
+#include <stddef.h>
+#include <string>
+#include <sstream>
+#include <vector>
+
 #include "Argument.h"
-#include "RbConstants.h"
 #include "RbException.h"
-#include "RbUtil.h"
-#include "RbOptions.h"
 #include "RevNullObject.h"
 #include "RlFunction.h"
 #include "TypeSpec.h"
 #include "RevVariable.h"
 #include "Workspace.h"
-
-#include <cassert>
-#include <string>
-#include <sstream>
+#include "DagNode.h"
+#include "Environment.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "StringUtilities.h"
 
 using namespace RevLanguage;
 
@@ -419,7 +422,7 @@ void RevVariable::replaceRevObject( RevObject *newValue )
             rev_object->getDagNode()->setElementVariable( is_element_var );
         }
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         // do nothing
     }
@@ -454,7 +457,7 @@ void RevVariable::setElementVariableState(bool flag)
         }
         
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         // do nothing
     }
@@ -484,7 +487,7 @@ void RevVariable::setHiddenVariableState(bool flag)
         }
         
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         // do nothing
     }

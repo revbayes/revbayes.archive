@@ -1,16 +1,15 @@
 #ifndef AbstractTaxonData_H
 #define AbstractTaxonData_H
 
+#include <stddef.h>
+#include <set>
+#include <iosfwd>
+
 #include "Cloneable.h"
 #include "Taxon.h"
 
-#include <string>
-#include <set>
-
 namespace RevBayesCore {
     
-    class CharacterState;
-
     /**
      * Abstract class for all taxon objects.
      *
@@ -32,7 +31,7 @@ namespace RevBayesCore {
         virtual AbstractTaxonData*              clone(void) const = 0;
         
         // AbstractTaxonData functions
-        virtual AbstractTaxonData&              concatenate(const AbstractTaxonData &d) = 0;                        //!< Concatenate sequences
+        virtual void                            concatenate(const AbstractTaxonData &d) = 0;                        //!< Concatenate sequences
         virtual size_t                          getNumberOfCharacters(void) const = 0;                              //!< How many characters
         virtual double                          getPercentageMissing(void) const = 0;                               //!< Returns the percentage of missing data for this sequence
         const Taxon&                            getTaxon(void) const;                                               //!< Return the name of the character vector

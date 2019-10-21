@@ -1,14 +1,18 @@
-#include "Argument.h"
-#include "Environment.h"
-#include "RbException.h"
-#include "RlFunction.h"
-#include "RbUtil.h"
-#include "SyntaxUnaryExpr.h"
-#include "Workspace.h"
-
+#include <stddef.h>
 #include <iostream>
 #include <vector>
-#include <sstream>
+#include <set>
+#include <string>
+
+#include "Argument.h"
+#include "Environment.h"
+#include "RlFunction.h"
+#include "SyntaxUnaryExpr.h"
+#include "Workspace.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "SyntaxElement.h"
 
 using namespace RevLanguage;
 
@@ -114,7 +118,7 @@ RevPtr<RevVariable> SyntaxUnaryExpr::evaluateContent( Environment& env, bool dyn
     // free the memory of our copy
     delete func;
     
-    if ( dynamic == false )
+    if ( dynamic == false || isConstExpression() == true )
     {
         // Return value after making sure it is constant
         if ( funcReturnValue != NULL )

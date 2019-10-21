@@ -1,30 +1,21 @@
-//
-//  GeographicalDistanceFunction.hpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 12/23/16.
-//  Copyright © 2016 Michael Landis. All rights reserved.
-//
-
 #ifndef GeographicalDistanceFunction_hpp
 #define GeographicalDistanceFunction_hpp
 
-#include <stdio.h>
 #include "ContinuousFunction.h"
-#include "TypedDagNode.h"
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class TypedDagNode;
     
     
     /**
-     * \brief Hyperbolic Sine of a real number.
+     * @brief Geographical distance be of a real number.
      *
-     * Compute the hyperbolic Sine of a real number x. (sinh(x) = (exp(x) - exp(-x))/2).
+     * Calculates the geographical distance between a pair of latitude
+     * and longitudes.
      *
-     * \copyright (c) Copyright 2009-2015 (GPL version 3)
-     * \author The RevBayes Development Core Team (Wade Dismukes)
-     * \since Version 1.0, 2015-01-31
-     *
+     * @note does this use the formula from pg. 792  of Landis et al.
+     * 2013 paper?
      */
     class GeographicalDistanceFunction : public ContinuousFunction {
         

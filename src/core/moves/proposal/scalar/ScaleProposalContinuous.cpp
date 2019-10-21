@@ -1,11 +1,14 @@
 #include "ScaleProposalContinuous.h"
-#include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
-#include "RbException.h"
-#include "TypedDagNode.h"
 
 #include <cmath>
 #include <iostream>
+
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
+#include "Cloneable.h"
+#include "ContinuousStochasticNode.h"
+
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 
@@ -87,8 +90,8 @@ double ScaleProposalContinuous::doProposal( void )
     // copy value
     storedValue = val;
     
-    double min = variable->getMin();
-    double max = variable->getMax();
+//    double min = variable->getMin();
+//    double max = variable->getMax();
     
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();

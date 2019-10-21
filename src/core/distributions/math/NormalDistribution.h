@@ -1,11 +1,28 @@
 #ifndef NormalDistribution_H
 #define NormalDistribution_H
 
+#include <stddef.h>
+
 #include "ContinuousDistribution.h"
-#include "TypedDagNode.h"
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class TypedDagNode;
     
+    /**
+     *@brief Normal distribution class.
+     *
+     *The Normal distribution represents a family of distributions
+     * on the set of rational numbers. The Normal distribution has 2 parameters:
+     * @param m  the mean
+     * @param s the standard deviation
+     *
+     *The truncated Normal distribution has an additional 2 parameters:
+     * @param mi  the minimum value for the truncated Normal
+     * @param ma  the maximum value for the truncated Normal
+    */
+
+
     class NormalDistribution : public ContinuousDistribution {
         
     public:

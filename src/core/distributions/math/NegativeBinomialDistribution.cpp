@@ -1,9 +1,19 @@
 #include "NegativeBinomialDistribution.h"
+
 #include "DistributionNegativeBinomial.h"
 #include "RandomNumberFactory.h"
 #include "RbConstants.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
+
+/** NegatvieBinomialDistribution Constructor
+ * @param m the number of failures
+ * @param q the probability of success
+ *
+ */
 
 NegativeBinomialDistribution::NegativeBinomialDistribution(const TypedDagNode<long> *m, const TypedDagNode<double> *q) : TypedDistribution<long>( new long( 0 ) ),
     r( m ),

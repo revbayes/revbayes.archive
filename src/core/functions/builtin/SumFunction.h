@@ -1,21 +1,18 @@
 #ifndef SumFunction_H
 #define SumFunction_H
 
-#include "RbVector.h"
 #include "TypedFunction.h"
-#include "TypedDagNode.h"
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class RbVector;
+template <class valueType> class TypedDagNode;
     
     /**
-     * \brief Function for computation of the sum of some numbers.
+     * @brief Function for computation of the sum of a vector of  real numbers.
      *
-     * This class is the function that computes the sum of some numbers.
+     * This class is the function that computes the sum of a vector of numbers.
      * The numbers are passed in as a DAG node whose value type is a std::vector<double>.
-     *
-     * \copyright (c) Copyright 2009-2013 (GPL version 3)
-     * \author The RevBayes Development Core Team (Sebastian Hoehna)
-     * \since Version 1.0, 2014-07-27
      *
      */
     class SumFunction : public TypedFunction<double> {

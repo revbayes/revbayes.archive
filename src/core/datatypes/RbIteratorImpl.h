@@ -13,6 +13,12 @@ namespace RevBayesCore {
     public:
         
         typedef typename std::vector<valueType>::iterator iteratorType;
+
+        typedef typename iteratorType::iterator_category iterator_category;
+        typedef typename iteratorType::value_type value_type;
+        typedef typename iteratorType::difference_type difference_type;
+        typedef typename iteratorType::pointer pointer;
+        typedef typename iteratorType::reference reference;
         
         // constructor(s)
         RbIteratorImpl(void) {  }

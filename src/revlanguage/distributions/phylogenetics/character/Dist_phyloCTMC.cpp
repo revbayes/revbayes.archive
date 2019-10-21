@@ -1,26 +1,56 @@
 #include "Dist_phyloCTMC.h"
 
+#include <stddef.h>
+#include <ostream>
+
 #include "RlDistributionMemberFunction.h"
 #include "PhyloCTMCSiteHomogeneous.h"
 #include "PhyloCTMCSiteHomogeneousBinary.h"
-#include "PhyloCTMCSiteHomogeneousCladoComplete.h"
-#include "PhyloCTMCSiteHomogeneousConditionalRange.h"
 #include "PhyloCTMCSiteHomogeneousNucleotide.h"
 #include "OptionRule.h"
 #include "Probability.h"
 #include "RevNullObject.h"
-#include "RlAminoAcidState.h"
 #include "RlBoolean.h"
-#include "RlDnaState.h"
 #include "RlMatrixReal.h"
 #include "RlRateGenerator.h"
-#include "RlRnaState.h"
 #include "RlString.h"
 #include "RlTree.h"
 #include "StandardState.h"
 #include "RlSimplex.h"
 #include "PoMoState.h"
 #include "NaturalNumbersState.h"
+#include "AbstractPhyloCTMCSiteHomogeneous.h"
+#include "AminoAcidState.h"
+#include "ArgumentRule.h"
+#include "ArgumentRules.h"
+#include "CodonState.h"
+#include "ConstantNode.h"
+#include "DagNode.h"
+#include "DiscreteTaxonData.h"
+#include "DistributionMemberFunction.h"
+#include "DnaState.h"
+#include "HomologousDiscreteCharacterData.h"
+#include "IndirectReferenceFunction.h"
+#include "MatrixReal.h"
+#include "ModelObject.h"
+#include "ModelVector.h"
+#include "Natural.h"
+#include "PhyloCTMCSiteHomogeneousConditional.h"
+#include "RateGenerator.h"
+#include "RbBoolean.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "Real.h"
+#include "RealPos.h"
+#include "RlConstantNode.h"
+#include "RlDistribution.h"
+#include "RnaState.h"
+#include "Simplex.h"
+#include "StringUtilities.h"
+#include "Tree.h"
+#include "TypeSpec.h"
+#include "UserFunctionNode.h"
 
 using namespace RevLanguage;
 
@@ -56,8 +86,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     const std::string& code = static_cast<const RlString &>( coding->getRevObject() ).getValue();
     bool internal = static_cast<const RlBoolean &>( storeInternalNodes->getRevObject() ).getValue();
     bool gapmatch = static_cast<const RlBoolean &>( gapMatchClamped->getRevObject() ).getValue();
-    bool clado_complete = static_cast<const RlBoolean &>( complete->getRevObject() ).getValue();
-    bool morphospeciation = static_cast<const RlBoolean &>( morphospecies->getRevObject() ).getValue();
 
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* site_ratesNode = NULL;
     if ( site_rates != NULL && site_rates->getRevObject() != RevNullObject::getInstance() )
@@ -132,7 +160,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     if ( dt == "DNA" )
     {
         RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState> *dist =
-        new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState>(tau, !true, n, ambig, internal, gapmatch);
+        new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState>(tau, true, n, ambig, internal, gapmatch);
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -411,10 +439,10 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         
         d = dist;
     }
-    else if ( dt == "Pomo" )
+    else if ( dt == "PoMo" )
     {
 
-        // we get the number of states from the rate matrix (we don't know, because Pomo is flexible about its rates)
+        // we get the number of states from the rate matrix (we don't know, because PoMo is flexible about its rates)
         // set the rate matrix
         size_t nChars = 1;
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
@@ -428,7 +456,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             nChars = rm->getValue().getNumberOfStates();
         }
 
-        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PomoState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PomoState>(tau, nChars, !true, n, ambig, internal, gapmatch);
+        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PoMoState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PoMoState>(tau, nChars, !true, n, ambig, internal, gapmatch);
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -533,15 +561,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         }
 
         RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState> *dist;
-        if( clado_complete )
-        {
-            dist = new RevBayesCore::PhyloCTMCSiteHomogeneousCladoComplete<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, internal, gapmatch);
-        }
-        else if( morphospeciation )
-        {
-            dist = new RevBayesCore::PhyloCTMCSiteHomogeneousConditionalRange<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, RevBayesCore::AscertainmentBias::Coding(cd), internal, gapmatch);
-        }
-        else if(cd == RevBayesCore::AscertainmentBias::ALL)
+        if(cd == RevBayesCore::AscertainmentBias::ALL)
         {
             dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, internal, gapmatch);
         }
@@ -959,7 +979,7 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
         options.push_back( "RNA" );
         options.push_back( "AA" );
         options.push_back( "Codon" );
-        options.push_back( "Pomo" );
+        options.push_back( "PoMo" );
         options.push_back( "Protein" );
         options.push_back( "Standard" );
         options.push_back( "NaturalNumbers" );
@@ -974,10 +994,6 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
         dist_member_rules.push_back( new ArgumentRule( "storeInternalNodes", RlBoolean::getClassTypeSpec(), "Should we store internal node states in the character matrix?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
         dist_member_rules.push_back( new ArgumentRule( "gapMatchClamped", RlBoolean::getClassTypeSpec(), "Should we set the simulated character to be gap or missing if the corresponding character in the clamped matrix is gap or missing?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
-
-        dist_member_rules.push_back( new ArgumentRule( "complete", RlBoolean::getClassTypeSpec(), "Simulate complete cladogenic substitutions?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
-
-        dist_member_rules.push_back( new ArgumentRule( "morphospecies", RlBoolean::getClassTypeSpec(), "Use morphospeciation model?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
 
         rules_set = true;
     }
@@ -1135,14 +1151,6 @@ void Dist_phyloCTMC::setConstParameter(const std::string& name, const RevPtr<con
     else if ( name == "coding" )
     {
         coding = var;
-    }
-    else if ( name == "complete" )
-    {
-        complete = var;
-    }
-    else if ( name == "morphospecies" )
-    {
-        morphospecies = var;
     }
     else
     {

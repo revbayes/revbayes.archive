@@ -6,76 +6,110 @@ matrix:
   include:
     - os: linux
       dist: xenial
-      addons:
-        apt:
-          packages:
-          - g++-5
-          - pandoc
-    - os: linux
-      dist: xenial
-      env: CXX_COMPILER=g++-6
+      env:
+        - CXX_COMPILER=/usr/bin/g++-7
+        - C_COMPILER=/usr/bin/gcc-7
+        - USE_MPI="false"
       addons:
         apt:
           sources:
           - ubuntu-toolchain-r-test
-          packages:
-          - g++-6
-          - pandoc
-    - os: linux
-      dist: xenial
-      env: CXX_COMPILER=g++-7
-      addons:
-        apt:
-          sources:
-          - ubuntu-toolchain-r-test
+          - sourceline: 'ppa:mhier/libboost-latest'
           packages:
           - g++-7
           - pandoc
+          - boost1.67
     - os: linux
       dist: xenial
-      env: CXX_COMPILER=g++-8
+      env:
+        - CXX_COMPILER=/usr/bin/g++-8
+        - C_COMPILER=/usr/bin/gcc-8
+        - USE_MPI="false"
       addons:
         apt:
           sources:
           - ubuntu-toolchain-r-test
+          - sourceline: 'ppa:mhier/libboost-latest'
           packages:
           - g++-8
           - pandoc
+          - boost1.67
+    - os: linux
+      dist: xenial
+      env:
+        - CXX_COMPILER=/usr/bin/g++-9
+        - C_COMPILER=/usr/bin/gcc-9
+        - USE_MPI="false"
+      addons:
+        apt:
+          sources:
+          - ubuntu-toolchain-r-test
+          - sourceline: 'ppa:mhier/libboost-latest'
+          packages:
+          - g++-9
+          - pandoc
+          - boost1.67
+    - os: linux
+      dist: xenial
+      env:
+        - CXX_COMPILER=/usr/bin/g++-7
+        - C_COMPILER=/usr/bin/gcc-7
+        - USE_MPI="true"
+        - MPI_IMPL=openmpi
+      addons:
+        apt:
+          sources:
+          - ubuntu-toolchain-r-test
+          - sourceline: 'ppa:mhier/libboost-latest'
+          packages:
+          - g++-7
+          - pandoc
+          - boost1.67
+          - libopenmpi-dev
     - os: linux
       dist: xenial
       compiler: clang++
+      env:
+        - CXX_COMPILER=/usr/local/clang-7.0.0/bin/clang++
+        - C_COMPILER=/usr/local/clang-7.0.0/bin/clang
+        - USE_MPI="false"
       addons:
         apt:
           sources:
           - ubuntu-toolchain-r-test
+          - sourceline: 'ppa:mhier/libboost-latest'
           packages:
           - g++-8
           - pandoc
+          - boost1.67
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.4
       env: PYTHON=3.5.1
-# xcode9.4 times out a lot
-#    - os: osx
-#      osx_image: xcode9.4
-# xcode 10 also times out a lot
-#  - os: osx
-#      osx_image: xcode10.1
-      
+        - USE_MPI="false"
+    - os: osx
+      osx_image: xcode10.2
+      env: PYTHON=3.5.1
+        - USE_MPI="false"
+
 before_install:
   # We need to re-export CC and CXX here, because travis exports CXX=g++ or clang++ AFTER we set CXX.
-  - if [ -n "${C_COMPILER}" ]; then export CC="${C_COMPILER}"; fi
-  - if [ -n "${CXX_COMPILER}" ]; then export CXX="${CXX_COMPILER}"; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update && brew upgrade python; fi
+  - if [ -n "${C_COMPILER}" ]; then sudo update-alternatives --install /usr/bin/gcc  gcc "${C_COMPILER}"  90; fi
+  - if [ -n "${CXX_COMPILER}" ]; then sudo update-alternatives --install /usr/bin/g++  g++ "${CXX_COMPILER}"  90; fi
 
 script:
 # Build
   - cd projects/cmake
-  - ./build.sh
+  - mkdir build
+  - ./regenerate.sh -travis true -mpi ${USE_MPI} -exec_name rb
+  - cd build
+  - cmake .
+  - make -j4
+  - cd ..
 # Run tests
   - cd ../..
   - echo "\"Hello World\"" | projects/cmake/rb
   - cd tests
-  - ./run_integration_tests.sh
+  - ./run_integration_tests.sh -mpi ${USE_MPI} ${TRAVIS_BUILD_DIR}/projects/cmake/rb
 # Run testiphy
   - export PATH=${TRAVIS_BUILD_DIR}/projects/cmake:$PATH
   - cd

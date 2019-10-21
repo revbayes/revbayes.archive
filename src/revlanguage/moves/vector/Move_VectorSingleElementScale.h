@@ -2,55 +2,41 @@
 #define Move_VectorSingleElementScale_H
 
 #include "RlMove.h"
-#include "TypedDagNode.h"
-
-#include <ostream>
-#include <string>
 
 namespace RevLanguage {
-    
-    
+
+
     /**
-     * The RevLanguage wrapper of the scaling move.
-     *
-     * The RevLanguage wrapper of the scaling move simply
-     * manages the interactions through the Rev with our core.
-     * That is, the internal move object can be constructed and hooked up
-     * in a DAG-nove (variable) that it works on.
-     * See the VectorSingleElementScaleMove.h for more details.
-     *
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2014-01-28, version 1.0
-     *
+     * @copybrief RevBayesCore::VectorSingleElementScaleProposal
+     * @see Move_SingleElementScale for the same applied to a vector of Stochastic nodes
+     * @see RevBayesCore::VectorSingleElementScaleProposal for the internal object.
      */
     class Move_VectorSingleElementScale : public Move {
-        
+
     public:
-        
-        Move_VectorSingleElementScale(void);                                                                                                    //!< Default constructor
-        
+
+        Move_VectorSingleElementScale(void);
+
         // Basic utility functions
-        virtual Move_VectorSingleElementScale*      clone(void) const;                                                                          //!< Clone object
-        void                                        constructInternalObject(void);                                                              //!< We construct the a new internal SlidingMove.
-        static const std::string&                   getClassType(void);                                                                         //!< Get Rev type
-        static const TypeSpec&                      getClassTypeSpec(void);                                                                     //!< Get class type spec
-        std::string                                 getMoveName(void) const;                                                                    //!< Get the name used for the constructor function in Rev.
-        const MemberRules&                          getParameterRules(void) const;                                                              //!< Get member rules (const)
-        virtual const TypeSpec&                     getTypeSpec(void) const;                                                                    //!< Get language type of the object
-        virtual void                                printValue(std::ostream& o) const;                                                          //!< Print value (for user)
-        
+        virtual Move_VectorSingleElementScale*      clone(void) const;
+        void                                        constructInternalObject(void);  //!< Build a new internal MH move with a VectorSingleElementScaleProposal.
+        static const std::string&                   getClassType(void);
+        static const TypeSpec&                      getClassTypeSpec(void);
+        std::string                                 getMoveName(void) const;
+        const MemberRules&                          getParameterRules(void) const;
+        virtual const TypeSpec&                     getTypeSpec(void) const;
+        virtual void                                printValue(std::ostream& o) const;
+
     protected:
-        
-        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);           //!< Set member variable
-        
-        RevPtr<const RevVariable>                   x;                                                                                          //!< The variable on which the move works
-        RevPtr<const RevVariable>                   lambda;                                                                                     //!< The tuning parameter
-        RevPtr<const RevVariable>                   tune;                                                                                       //!< If autotuning should be used.
-        
+
+        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);
+
+        RevPtr<const RevVariable>                   x;  //!< The vector on which to operate.
+        RevPtr<const RevVariable>                   lambda;  //!< The scaling (and tuning) parameter
+        RevPtr<const RevVariable>                   tune;  //!< Whether autotuning should be used.
+
     };
-    
+
 }
 
 #endif

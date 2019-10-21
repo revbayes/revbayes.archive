@@ -1,11 +1,19 @@
 #include "Func_maximumTree.h"
+
 #include "ModelVector.h"
-#include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "RlTimeTree.h"
-#include "ModelVector.h"
 #include "MaximumTreeFunction.h"
 #include "TypedDagNode.h"
+#include "Argument.h"
+#include "ArgumentRule.h"
+#include "ArgumentRules.h"
+#include "ModelObject.h"
+#include "RbHelpReference.h"
+#include "RbVector.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
+#include "TypeSpec.h"
 
 using namespace RevLanguage;
 

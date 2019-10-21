@@ -1,4 +1,11 @@
-#include "Clade.h"
+#include <stddef.h>
+#include <algorithm>
+#include <cmath>
+#include <ostream>
+#include <set>
+#include <string>
+#include <vector>
+
 #include "AbstractRootedTreeDistribution.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -8,10 +15,14 @@
 #include "StochasticNode.h"
 #include "Taxon.h"
 #include "TopologyNode.h"
-#include "TreeUtilities.h"
+#include "RbSettings.h"
+#include "StringUtilities.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
 
-#include <algorithm>
-#include <cmath>
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { template <class valueType> class RbOrderedSet; }
 
 using namespace RevBayesCore;
 
@@ -174,7 +185,7 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
 
     // multiply the probability of a descendant of the initial species
     lnProbTimes += computeLnProbabilityDivergenceTimes();
-    
+        
     return lnProbTimes + lnProbTreeShape();
 }
 
@@ -569,6 +580,15 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
 }
 
 
+double AbstractRootedTreeDistribution::simulateCladeAge(size_t n, double origin, double present, double min) const
+{
+    
+    std::vector<double> times = simulateDivergenceTimes(n, origin, present, min);
+    
+    return times.back();
+}
+
+
 double AbstractRootedTreeDistribution::simulateNextAge(size_t n, double origin, double present, double min) const
 {
 
@@ -668,9 +688,26 @@ void AbstractRootedTreeDistribution::setValue(Tree *v, bool f )
         {
             //            double factor = process_age->getValue() / value->getRoot().getAge();
             //            TreeUtilities::rescaleTree( value, &value->getRoot(), factor);
-            if (process_age->getValue() != value->getRoot().getAge())
+            
+            size_t output_precision = RbSettings::userSettings().getOutputPrecision();
+            output_precision = output_precision <= 2 ? 0 : output_precision - 2;
+            double rounding_tolerance = 1/std::pow(10, output_precision);
+            
+            double age_diff = std::abs(process_age->getValue() - value->getRoot().getAge());
+            if (age_diff > rounding_tolerance)
             {
                 throw RbException("Tree height and root age values must match when root age is not a stochastic node.");
+            }
+            else
+            {
+                for (size_t i = 0; i < value->getRoot().getNumberOfChildren(); ++i)
+                {
+                    const TopologyNode& child = value->getRoot().getChild(i);
+                    if (process_age->getValue() <= child.getAge())
+                    {
+                        throw RbException("Tree height and root age values must match when root age is not a stochastic node.");
+                    }
+                }
             }
             value->getRoot().setAge( process_age->getValue() );
         }

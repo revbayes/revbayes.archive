@@ -7,13 +7,11 @@
 namespace RevBayesCore {
     
     /**
-     * \brief Binary multiplication.
+     * @brief Binary multiplication.
      *
-     * We compute the product of a * b.
+     * We compute the product of a * b. Wrapper to allow multiplication
+     * of two TypedDagNodes.
      *
-     * \copyright (c) Copyright 2009-2015 (GPL version 3)
-     * \author The RevBayes Development Core Team (Sebastian Hoehna)
-     * \since Version 1.0, 2012-08-13
      *
      */
     template <class firstValueType, class secondValueType, class return_type>

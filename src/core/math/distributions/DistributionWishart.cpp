@@ -8,16 +8,20 @@
 
 
 
+#include <stddef.h>
 #include <cmath>
+#include <vector>
+
 #include "DistributionMultivariateNormal.h"
 #include "DistributionWishart.h"
-#include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
-#include "RbException.h"
 #include "RbConstants.h"
-#include "RbMathFunctions.h"
-#include "RbStatisticsHelper.h"
 #include "DistributionNormal.h"
+#include "Cloneable.h"
+#include "MatrixReal.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+
+namespace RevBayesCore { class RandomNumberGenerator; }
 
 
 using namespace RevBayesCore;
@@ -57,7 +61,7 @@ double RbStatistics::Wishart::lnPdf(const MatrixReal &omega0, size_t df, const M
 //    omega0.update();
 //    z.update();
     
-    if (! z.isPositive() )
+    if (! z.isPositiveDefinite() )
     {
          return RbConstants::Double::neginf;
     }
@@ -161,7 +165,7 @@ double RbStatistics::Wishart::lnPdf(double kappa, size_t df, const MatrixReal &z
 //    z.update();
     int dim = int(z.getDim());
     
-    if ( !z.isPositive() )
+    if ( !z.isPositiveDefinite() )
     {
         return RbConstants::Double::neginf;
     }

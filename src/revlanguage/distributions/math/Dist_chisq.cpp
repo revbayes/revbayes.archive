@@ -1,11 +1,25 @@
+#include <stddef.h>
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ChisqDistribution.h"
-#include "ContinuousStochasticNode.h"
 #include "Dist_chisq.h"
 #include "Natural.h"
-#include "Probability.h"
 #include "RealPos.h"
+#include "RbHelpReference.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlDistribution.h"
+#include "RlPositiveContinuousDistribution.h"
+#include "RlTypedDistribution.h"
+#include "TypeSpec.h"
+#include "TypedDistribution.h"
+
+namespace RevBayesCore { template <class valueType> class TypedDagNode; }
 
 using namespace RevLanguage;
 

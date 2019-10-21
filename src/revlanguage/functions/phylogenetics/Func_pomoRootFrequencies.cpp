@@ -7,16 +7,22 @@
 //
 
 #include "Func_pomoRootFrequencies.h"
-#include "ModelVector.h"
+
 #include "Natural.h"
-#include "PomoRootFrequenciesFunction.h"
-#include "RlAbstractCharacterData.h"
-#include "RlDnaState.h"
+#include "PoMoRootFrequenciesFunction.h"
 #include "RlDeterministicNode.h"
-#include "RlRateMatrix.h"
 #include "RlSimplex.h"
-#include "RlTaxon.h"
 #include "TypedDagNode.h"
+#include "Argument.h"
+#include "ArgumentRule.h"
+#include "ArgumentRules.h"
+#include "Real.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
+#include "RlRateGenerator.h"
+#include "TypeSpec.h"
+
+namespace RevBayesCore { class RateGenerator; }
 
 using namespace RevLanguage;
 
@@ -52,7 +58,7 @@ RevBayesCore::TypedFunction< RevBayesCore::Simplex >* Func_pomoRootFrequencies::
 
     RevBayesCore::TypedDagNode< long >* n = static_cast<const Natural &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
 
-    RevBayesCore::PomoRootFrequenciesFunction* pomorf = new RevBayesCore::PomoRootFrequenciesFunction( rbf, rpp, q, n );
+    RevBayesCore::PoMoRootFrequenciesFunction* pomorf = new RevBayesCore::PoMoRootFrequenciesFunction( rbf, rpp, q, n );
     
     
     return pomorf;

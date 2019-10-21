@@ -1,15 +1,34 @@
-#include "Clade.h"
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <iostream>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
-#include "RbMathCombinatorialFunctions.h"
 #include "StochasticNode.h"
 #include "TopologyNode.h"
 #include "TreeUtilities.h"
 #include "UltrametricTreeDistribution.h"
+#include "RbBitSet.h"
+#include "RbBoolean.h"
+#include "RbException.h"
+#include "RbMathLogic.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "StringUtilities.h"
+#include "Trace.h"
+#include "TraceTree.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
 
-#include <algorithm>
-#include <cmath>
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { template <class valueType> class RbOrderedSet; }
 
 
 #ifdef RB_MPI
@@ -717,7 +736,7 @@ void UltrametricTreeDistribution::swapParameterInternal( const DagNode *oldP, co
     {
         rate_prior->swapParameter(oldP, newP);
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         
     }
@@ -726,7 +745,7 @@ void UltrametricTreeDistribution::swapParameterInternal( const DagNode *oldP, co
     {
         tree_prior->swapParameter(oldP, newP);
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         
     }

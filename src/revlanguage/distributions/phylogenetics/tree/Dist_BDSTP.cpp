@@ -1,19 +1,41 @@
+#include <stddef.h>
+#include <iosfwd>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "Clade.h"
 // #include "ConstantRateSerialSampledBirthDeathProcess.h"
 #include "Dist_BDSTP.h"
 #include "ModelVector.h"
-#include "Natural.h"
 #include "OptionRule.h"
 #include "EpisodicBirthDeathSamplingTreatmentProcess.h"
 #include "Probability.h"
-#include "Real.h"
 #include "RealPos.h"
-#include "RlClade.h"
 #include "RlString.h"
 #include "RlTaxon.h"
 #include "RlTimeTree.h"
+#include "AbstractBirthDeathProcess.h"
+#include "ConstantNode.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "IndirectReferenceFunction.h"
+#include "ModelObject.h"
+#include "RbVector.h"
+#include "RevNullObject.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlBirthDeathProcess.h"
+#include "RlConstantNode.h"
+#include "Taxon.h"
+#include "TypeSpec.h"
+#include "TypedDagNode.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
+
+namespace RevBayesCore { class Tree; }
 
 using namespace RevLanguage;
 
@@ -127,13 +149,13 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_BDSTP::createDistribution( void ) 
         RevBayesCore::DagNode* t   = r->getRevObject().getDagNode();
         // birth burst
         RevBayesCore::DagNode* b_e = NULL;
-        if (Lambda->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ))
+        if (Lambda->getRevObject().isType( ModelVector<Probability>::getClassTypeSpec() ))
         {
           b_e = Lambda->getRevObject().getDagNode();
         }
         // death burst (mass extinction)
         RevBayesCore::DagNode* d_e = NULL;
-        if (Lambda->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ))
+        if (Mu->getRevObject().isType( ModelVector<Probability>::getClassTypeSpec() ))
         {
           d_e = Mu->getRevObject().getDagNode();
         }
@@ -210,7 +232,7 @@ std::vector<std::string> Dist_BDSTP::getDistributionFunctionAliases( void ) cons
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
     a_names.push_back( "BDSTP" );
-    a_names.push_back( "FBDP" );
+    //a_names.push_back( "FBDP" );
     a_names.push_back( "SkylineBDP" );
     a_names.push_back( "SSBDP" );
     a_names.push_back( "SampledAncestorBDP" );
@@ -268,8 +290,8 @@ const MemberRules& Dist_BDSTP::getParameterRules(void) const
 
         std::vector<TypeSpec> other_event_paramTypes;
         other_event_paramTypes.push_back( ModelVector<Probability>::getClassTypeSpec() );
-        dist_member_rules.push_back( new ArgumentRule( "Lambda",  other_event_paramTypes, "The episodic death burst (mass extinction) survival probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        dist_member_rules.push_back( new ArgumentRule( "Mu",      other_event_paramTypes, "The episodic birth burst probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "Lambda",  other_event_paramTypes, "The episodic birth burst probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "Mu",      other_event_paramTypes, "The episodic death burst (mass extinction) survival probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         std::vector<TypeSpec> event_sampling_paramTypes;
         event_sampling_paramTypes.push_back( Probability::getClassTypeSpec() );
@@ -282,6 +304,7 @@ const MemberRules& Dist_BDSTP::getParameterRules(void) const
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "time" );
         optionsCondition.push_back( "survival" );
+        optionsCondition.push_back( "sampleAtLeastOneLineage" );
         dist_member_rules.push_back( new OptionRule( "condition", new RlString("time"), optionsCondition, "The condition of the process." ) );
         dist_member_rules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The taxa used for initialization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 

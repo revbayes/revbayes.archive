@@ -1,12 +1,11 @@
 #ifndef BirthDeathForwardSimulator_H
 #define BirthDeathForwardSimulator_H
 
-#include "Tree.h"
-
-#include <string>
+#include <stddef.h>
 #include <vector>
 
 namespace RevBayesCore {
+class Tree;
     
     /**
      * This class represents the writer object of character data objects into files in Fasta format.
@@ -21,6 +20,9 @@ namespace RevBayesCore {
     class BirthDeathForwardSimulator {
         
     public:
+        
+        enum SIM_CONDITION { TIME, SURVIVAL, ROOT };
+
         BirthDeathForwardSimulator();
         
         // setters
@@ -35,11 +37,23 @@ namespace RevBayesCore {
         void                                    setSpeciationRate( const std::vector<std::vector< double > > &l );
         void                                    setTimeline( const std::vector< double > &t );
 
-        Tree*                                   simulateTreeConditionTaxa( size_t n );
-        Tree*                                   simulateTreeConditionTime( double t );
+//        Tree*                                   simulateTreeConditionTaxa( size_t n ) const;
+        Tree*                                   simulateTreeConditionTime( double t, SIM_CONDITION cdt ) const;
 
     private:
         
+        bool                                    checkParameters(void) const;
+        size_t                                  getNumberOfCategories( void ) const;
+        double                                  getLambdaProbability( size_t i, size_t n ) const;
+        std::vector<double>                     getLambdaRate( size_t i, size_t n ) const;
+        double                                  getMuProbability( size_t i, size_t n ) const;
+        std::vector<double>                     getMuRate( size_t i, size_t n ) const;
+        double                                  getPhiProbability( size_t i, size_t n ) const;
+        std::vector<double>                     getPhiRate( size_t i, size_t n ) const;
+        double                                  getRProbability( size_t i, size_t n ) const;
+        std::vector<double>                     getRRate( size_t i, size_t n ) const;
+        std::vector<double>                     getRootCategoryProbabilities( size_t n ) const;
+
         std::vector<std::vector< double > >     lambda;
         std::vector<std::vector< double > >     Lambda;
         std::vector<std::vector< double > >     mu;

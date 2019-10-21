@@ -1,14 +1,33 @@
-#include "PomoRateMatrixFunction.h"
+#include <iosfwd>
+#include <string>
+#include <vector>
+
+#include "PoMoRateMatrixFunction.h"
 #include "Func_pomo.h"
 #include "ModelVector.h"
 #include "Natural.h"
-#include "RateMatrix_Pomo.h"
 #include "Real.h"
-#include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "RlRateMatrix.h"
-#include "RlSimplex.h"
 #include "TypedDagNode.h"
+#include "Argument.h"
+#include "ArgumentRule.h"
+#include "ArgumentRules.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "ModelObject.h"
+#include "RateGenerator.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
+#include "RlRateGenerator.h"
+#include "RlTypedFunction.h"
+#include "StringUtilities.h"
+#include "TypeSpec.h"
+#include "TypedFunction.h"
+#include "RealPos.h" // IWYU pragma: keep
+
+namespace RevBayesCore { template <class valueType> class RbVector; }
 
 using namespace RevLanguage;
 
@@ -41,7 +60,7 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_pomo::createFun
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* fit = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< long >* n = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     
-    RevBayesCore::PomoRateMatrixFunction* f = new RevBayesCore::PomoRateMatrixFunction( n, q, fit );
+    RevBayesCore::PoMoRateMatrixFunction* f = new RevBayesCore::PoMoRateMatrixFunction( n, q, fit );
     
     return f;
 }
@@ -93,7 +112,7 @@ const TypeSpec& Func_pomo::getClassTypeSpec(void)
 std::string Func_pomo::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "fnPomo";
+    std::string f_name = "fnPoMo";
     
     return f_name;
 }

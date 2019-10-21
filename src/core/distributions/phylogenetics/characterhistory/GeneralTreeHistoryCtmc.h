@@ -101,7 +101,7 @@ namespace RevBayesCore {
 #include "CharacterEventDiscrete.h"
 #include "PathRejectionSampleProposal.h"
 #include "RateMatrix_JC.h"
-#include "RbConstants.h"
+
 
 template<class charType>
 RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const TypedDagNode<Tree> *tau, size_t nChars, size_t nSites, bool useAmbigChar, bool internal) : TreeHistoryCtmc<charType>( tau, nChars, nSites, useAmbigChar, internal )
@@ -216,7 +216,10 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeRootLikelihood(con
     std::vector<double> rf = getRootFrequencies();
     for (size_t i = 0; i < counts.size(); i++)
     {
-        lnP += counts[i] * log( rf[i] );
+        // skip unused states
+        if (counts[i] != 0) {
+            lnP += counts[i] * log( rf[i] );
+        }
     }
 
     return lnP;
@@ -680,11 +683,11 @@ template<class charType>
 bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::samplePathHistory(const TopologyNode& node)
 {
     
-    if ( node.isRoot() == true )
-    {
-        return true;
-    }
-    
+//    if ( node.isRoot() == true )
+//    {
+//        return true;
+//    }
+//    
     PathRejectionSampleProposal<charType> p( this->getStochasticNode() );
     p.setRateGenerator( homogeneousRateGenerator );
     

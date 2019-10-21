@@ -1,13 +1,16 @@
 #include "BetaProbabilityProposal.h"
+
+#include <iostream>
+
 #include "DistributionBeta.h"
 #include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
 #include "RbException.h"
-#include "RbStatisticsHelper.h"
-#include "TypedDagNode.h"
+#include "Cloneable.h"
+#include "RbConstants.h"
+#include "StochasticNode.h"
 
-#include <cmath>
-#include <iostream>
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { class RandomNumberGenerator; }
 
 
 using namespace RevBayesCore;
@@ -112,7 +115,7 @@ double BetaProbabilityProposal::propose( double &value )
         
         ln_Hastins_ratio = backward - forward;
     }
-    catch (RbException e)
+	catch (RbException &e)
     {
         ln_Hastins_ratio = RbConstants::Double::neginf;
     }

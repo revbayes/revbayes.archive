@@ -1,25 +1,18 @@
 #ifndef EmpiricalQuantileFunction_H
 #define EmpiricalQuantileFunction_H
 
-#include "RbVector.h"
 #include "TypedFunction.h"
-#include "TypedDagNode.h"
-
-#include <vector>
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class RbVector;
+template <class valueType> class TypedDagNode;
     
     
     /**
      * @brief Arithmetic EmpiricalQuantile of a vector of real numbers.
      *
      * This function computes the EmpiricalQuantile of a vector of real numbers computing the kth quantile for the vector.
-     *
-     *
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since Version 1.0, 2014-07-04
      *
      */
     class EmpiricalQuantileFunction : public TypedFunction<double> {

@@ -1,6 +1,10 @@
+#include <sstream>
+#include <cstddef>
+#include <string>
+#include <vector>
+
 #include "ModelVector.h"
 #include "Natural.h"
-#include "RbUtil.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlBoolean.h"
 #include "RlClade.h"
@@ -12,8 +16,35 @@
 #include "TopologyNode.h"
 #include "TreeUtilities.h"
 #include "TypeSpec.h"
-
-#include <sstream>
+#include "Argument.h"
+#include "ArgumentRule.h"
+#include "ArgumentRules.h"
+#include "Clade.h"
+#include "ConstantNode.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "IndirectReferenceFunction.h"
+#include "MemberFunction.h"
+#include "MemberProcedure.h"
+#include "MethodTable.h"
+#include "ModelObject.h"
+#include "RbBoolean.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "Real.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlConstantNode.h"
+#include "RlDeterministicNode.h"
+#include "RlTypedFunction.h"
+#include "RlUtils.h"
+#include "Taxon.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
 
 using namespace RevLanguage;
 

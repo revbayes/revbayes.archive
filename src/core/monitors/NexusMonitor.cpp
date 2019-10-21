@@ -1,5 +1,15 @@
 #include "NexusMonitor.h"
 
+#include <stddef.h>
+#include <ostream>
+
+#include "DagNode.h"
+#include "StringUtilities.h"
+#include "Taxon.h"
+#include "TopologyNode.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+
 namespace RevBayesCore {
 
 NexusMonitor::NexusMonitor(TypedDagNode<Tree> *t, const std::vector<DagNode *> &n, bool np, unsigned long g,
@@ -10,7 +20,8 @@ NexusMonitor::NexusMonitor(TypedDagNode<Tree> *t, const std::vector<DagNode *> &
     tree( t ),
     nodeVariables( n )
 {
-    for (DagNode* n : nodeVariables) {
+    for (size_t i=0; i < nodeVariables.size(); ++i) {
+        DagNode* n = nodeVariables[i];
         this->nodes.push_back( n );
 
         // tell the node that we have a reference to it (avoids deletion)
@@ -21,6 +32,25 @@ NexusMonitor::NexusMonitor(TypedDagNode<Tree> *t, const std::vector<DagNode *> &
 NexusMonitor* NexusMonitor::clone() const {
     return new NexusMonitor(*this);
 }
+
+void NexusMonitor::swapNode(DagNode *oldN, DagNode *newN) {
+
+    TypedDagNode< RbVector<double> >* nodeVar = dynamic_cast< TypedDagNode< RbVector<double> > *>(oldN);
+    if ( oldN == tree ) {
+        tree = static_cast< TypedDagNode< Tree > *>( newN );
+    }
+    else if ( nodeVar != nullptr ) {
+        std::vector<DagNode*>::iterator it = find(nodeVariables.begin(), nodeVariables.end(), nodeVar);
+        if (it == nodeVariables.end()) {
+            throw RbException("Cannot replace DAG node with name\"" + oldN->getName() + "\" in this nexus monitor because the monitor doesn't hold this DAG node.");
+        }
+        *it = static_cast< TypedDagNode< RbVector<double> > *>(newN);
+    }
+
+    // delegate to base class
+    AbstractFileMonitor::swapNode(oldN, newN);
+}
+
 
 void NexusMonitor::printHeader() {
     if(!enabled) return;
@@ -33,7 +63,8 @@ void NexusMonitor::printHeader() {
         out_stream << "Begin taxa;" << std::endl;
         out_stream << "\tDimensions ntax=" << taxa.size() << ";" << std::endl;;
         out_stream << "\tTaxlabels" << std::endl;
-        for (Taxon label : taxa) {
+        for (size_t i=0; i < taxa.size(); ++i) {
+            Taxon label = taxa[i];
             out_stream << "\t\t" << label.getName() << std::endl;
         }
         out_stream << "\t\t;" << std::endl;
@@ -51,7 +82,8 @@ void NexusMonitor::monitor(unsigned long gen) {
     out_stream << "tree TREE_" << gen << " = " << (tree->getValue().isRooted() ? "[&R]" : "[&U]");
 
     tree->getValue().clearParameters();
-    for (DagNode* n : nodeVariables) {
+    for (size_t j=0; j < nodeVariables.size(); ++j) {
+        DagNode* n = nodeVariables[j];
 
         const std::string &name = n->getName();
         size_t numParams = n->getNumberOfElements();

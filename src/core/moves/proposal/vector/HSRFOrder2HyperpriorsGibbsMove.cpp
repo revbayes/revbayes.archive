@@ -1,22 +1,22 @@
-#include "DagNode.h"
-#include "DistributionHalfCauchy.h"
-#include "DistributionNormal.h"
+#include <stddef.h>
+#include <cmath>
+#include <cassert>
+#include <iostream>
+#include <vector>
+
 #include "HalfCauchyDistribution.h"
 #include "HSRFOrder2HyperpriorsGibbsMove.h"
 #include "NormalDistribution.h"
 #include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
 #include "RbConstants.h"
-#include "RbMathLogic.h"
 #include "RbStatisticsHelper.h"
 #include "TypedDagNode.h"
+#include "AbstractGibbsMove.h"
+#include "RbException.h"
+#include "StochasticNode.h"
+#include "TypedDistribution.h"
 
-#include <cmath>
-#include <cassert>
-#include <iomanip>
-#include <sstream>
-#include <iostream>
-#include <utility>
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 
@@ -206,9 +206,6 @@ bool HSRFOrder2HyperpriorsGibbsMove::heatsAreAllowable(double prHeat, double lHe
 void HSRFOrder2HyperpriorsGibbsMove::performGibbsMove( void )
 {
 //    std::cout << "Hello from HSRFOrder2HyperpriorsGibbsMove::performGibbsMove( void )" << std::endl;
-
-    // Get random number generator
-    RandomNumberGenerator* rng = GLOBAL_RNG;
 
     // get global scale
     double eta_squared = std::pow(global_scale->getValue(),2.0);

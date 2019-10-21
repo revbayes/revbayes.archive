@@ -1,11 +1,13 @@
 #include "MultiValueEventDistribution.h"
 
-#include "Assign.h"
-#include "Assignable.h"
-#include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
+#include <stddef.h>
+#include <string>
 
-#include <cmath>
+#include "DagNode.h"
+#include "RbConstants.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "TypedDagNode.h"
 
 using namespace RevBayesCore;
 
@@ -280,7 +282,7 @@ void MultiValueEventDistribution::swapParameterInternal( const DagNode *oldP, co
         // if the statement succeeded and didn't throw an error, then the distribution had this parameter
         found = true;
     }
-    catch ( RbException e )
+    catch (RbException &e)
     {
         // do nothing because we actually do not know who had the parameter
     }
@@ -294,7 +296,7 @@ void MultiValueEventDistribution::swapParameterInternal( const DagNode *oldP, co
             // if the statement succeeded and didn't throw an error, then the distribution had this parameter
             found = true;
         }
-        catch ( RbException e )
+        catch (RbException &e)
         {
             // do nothing because we actually do not know who had the parameter
         }

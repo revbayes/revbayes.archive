@@ -1,14 +1,27 @@
-#include "Clade.h"
+#include <stddef.h>
+#include <algorithm>
+#include <cmath>
+#include <iosfwd>
+#include <string>
+#include <vector>
+
 #include "HeterochronousCoalescent.h"
 #include "DistributionExponential.h"
 #include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
 #include "RbConstants.h"
-#include "RbMathCombinatorialFunctions.h"
 #include "TopologyNode.h"
+#include "AbstractCoalescent.h"
+#include "DagNode.h"
+#include "DemographicFunction.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "Taxon.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
 
-#include <algorithm>
-#include <cmath>
+namespace RevBayesCore { class Clade; }
+namespace RevBayesCore { class RandomNumberGenerator; }
 
 using namespace RevBayesCore;
 
@@ -367,7 +380,7 @@ void HeterochronousCoalescent::swapParameterInternal(const DagNode *oldP, const 
                 // if the statement succeeded and didn't throw an error, then the distribution had this parameter
                 found = true;
             }
-            catch ( RbException e )
+            catch (RbException &e)
             {
                 // do nothing because we actually do not know who had the parameter
             }

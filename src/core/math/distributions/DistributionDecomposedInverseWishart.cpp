@@ -7,15 +7,13 @@
 
 
 #include "DistributionDecomposedInverseWishart.h"
-#include "DistributionMultivariateNormal.h"
-#include "DistributionUniform.h"
-#include "RbException.h"
-#include "RbConstants.h"
-#include "RbMathFunctions.h"
-#include "RbStatisticsHelper.h"
-#include "DistributionNormal.h"
 
 #include <cmath>
+
+#include "RbConstants.h"
+#include "Cloneable.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
 
 using namespace RevBayesCore;
 
@@ -56,7 +54,7 @@ double RbStatistics::DecomposedInverseWishart::lnPdf(double nu, const MatrixReal
 
     size_t k = r.getDim();
     
-    if ( r.isPositive() == false )
+    if ( r.isPositiveDefinite() == false )
         {
         return RbConstants::Double::neginf;
         }
