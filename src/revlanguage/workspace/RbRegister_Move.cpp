@@ -72,6 +72,7 @@
 #include "Move_Mirror.h"
 #include "Move_MirrorMultiplier.h"
 #include "Move_HSRFHyperpriorsGibbs.h"
+#include "Move_HSRFIntervalSwap.h"
 #include "Move_HSRFUnevenGridHyperpriorsGibbs.h"
 #include "Move_SliceSampling.h"
 #include "Move_Scale.h"
@@ -279,6 +280,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Moves on vectors */
         addTypeWithConstructor( new Move_MultipleElementScale() );
         addTypeWithConstructor( new Move_HSRFHyperpriorsGibbs() );
+        addTypeWithConstructor( new Move_HSRFIntervalSwap() );
         addTypeWithConstructor( new Move_HSRFUnevenGridHyperpriorsGibbs() );
         addTypeWithConstructor( new Move_SingleElementSlide() );
         addTypeWithConstructor( new Move_SingleElementScale() );
@@ -294,6 +296,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_VectorSingleElementSlide() );
         addTypeWithConstructor( new Move_VectorFixedSingleElementSlide() );
         addTypeWithConstructor( new Move_EllipticalSliceSamplingSimple() );
+
         addTypeWithConstructor( new Move_SynchronizedVectorFixedSingleElementSlide() );
 
         /* Moves on matrices of real values */
