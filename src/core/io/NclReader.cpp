@@ -1972,16 +1972,6 @@ Tree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree& nTree, 
     
     tau->makeInternalNodesBifurcating(true);
 
-    // set the sampled ancestor flag
-    for (size_t i = 0; i < tau->getNumberOfNodes(); ++i)
-    {
-        TopologyNode& node = tau->getNode( i );
-        if ( node.isTip() && node.getBranchLength() == 0.0 )
-        {
-            node.setSampledAncestor(true);
-        }
-    }
-
     // only trees with 2-degree root nodes are rooted trees.
     tau->setRooted( root->getNumberOfChildren() == 2 );
 
