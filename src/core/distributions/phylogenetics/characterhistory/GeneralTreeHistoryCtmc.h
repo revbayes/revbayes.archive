@@ -683,11 +683,11 @@ template<class charType>
 bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::samplePathHistory(const TopologyNode& node)
 {
     
-    if ( node.isRoot() == true )
-    {
-        return true;
-    }
-    
+//    if ( node.isRoot() == true )
+//    {
+//        return true;
+//    }
+//    
     PathRejectionSampleProposal<charType> p( this->getStochasticNode() );
     p.setRateGenerator( homogeneousRateGenerator );
     

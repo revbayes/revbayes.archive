@@ -49,8 +49,12 @@ RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func
 {
     
     // supplied arguments
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::CladogeneticProbabilityMatrix> >* cp = static_cast<const ModelVector<CladogeneticProbabilityMatrix> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::CladogeneticProbabilityMatrix> >* cp;
+    cp = static_cast<const ModelVector<CladogeneticProbabilityMatrix> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* et = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    
+//    size_t num_chars = 0;
+    size_t num_states = cp->getValue()[0].getNumberOfStates();
     
     if (et->getValue().size() != cp->getValue().size())
     {
@@ -58,7 +62,7 @@ RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func
     }
     
     // create P matrix
-    RevBayesCore::EpochCladogeneticStateFunction* f = new RevBayesCore::EpochCladogeneticStateFunction( et, cp, 0, 0 );
+    RevBayesCore::EpochCladogeneticStateFunction* f = new RevBayesCore::EpochCladogeneticStateFunction( et, cp, (unsigned int)num_states );
     
     return f;
 }

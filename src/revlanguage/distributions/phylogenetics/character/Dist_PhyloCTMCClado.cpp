@@ -54,6 +54,7 @@
 #include "Simplex.h"
 #include "StochasticNode.h"
 #include "StringUtilities.h"
+#include "TaxaState.h"
 #include "Tree.h"
 #include "TypeSpec.h"
 #include "TypedDagNode.h"
@@ -230,6 +231,81 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         
         d = dist;
     }
+    else if ( dt == "Taxa" )
+    {
+
+//        RevBayesCore::g_MAX_NAT_NUM_STATES = nChars;
+
+        RevBayesCore::PhyloCTMCClado<RevBayesCore::TaxaState> *dist = new RevBayesCore::PhyloCTMCClado<RevBayesCore::TaxaState>(tau, nChars, true, n, ambig, internal, gapmatch);
+
+        // set the root frequencies (by default these are NULL so this is OK)
+        dist->setRootFrequencies( rf );
+
+        // set the probability for invariant site (by default this p_inv=0.0)
+        dist->setPInv( p_invNode );
+
+        if ( rate->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+        {
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
+
+            // sanity check
+            if ( (nNodes-1) != clockRates->getValue().size() )
+            {
+                throw RbException( "The number of clock rates does not match the number of branches" );
+            }
+
+            dist->setClockRate( clockRates );
+        }
+        else
+        {
+            RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
+            dist->setClockRate( clockRate );
+        }
+
+        // set the rate matrix
+        if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
+        {
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
+
+            // sanity check
+            if ( (nNodes-1) != rm->getValue().size() )
+            {
+                throw RbException( "The number of substitution matrices does not match the number of branches" );
+            }
+
+            dist->setRateMatrix( rm );
+        }
+        else
+        {
+            RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator &>( q->getRevObject() ).getDagNode();
+            dist->setRateMatrix( rm );
+        }
+
+        // set the clado probs
+        if ( cladoProbs->getRevObject().isType( ModelVector<CladogeneticProbabilityMatrix>::getClassTypeSpec() ) )
+        {
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::CladogeneticProbabilityMatrix> >* cp = static_cast<const ModelVector<CladogeneticProbabilityMatrix> &>( cladoProbs->getRevObject() ).getDagNode();
+
+            // sanity check
+            if ( (nNodes-1) != cp->getValue().size() )
+            {
+                throw RbException( "The number of cladogenesis probability matrices does not match the number of branches" );
+            }
+            dist->setCladogenesisMatrix( cp );
+        }
+        else
+        {
+            RevBayesCore::TypedDagNode<RevBayesCore::CladogeneticProbabilityMatrix>* cp = static_cast<const CladogeneticProbabilityMatrix &>( cladoProbs->getRevObject() ).getDagNode();
+            dist->setCladogenesisMatrix( cp );
+        }
+
+        if ( site_ratesNode != NULL && site_ratesNode->getValue().size() > 0 )
+        {
+            dist->setSiteRates( site_ratesNode );
+        }
+
+        d = dist;
+    }
     else if (dt == "Standard")
     {
 
@@ -396,6 +472,7 @@ const MemberRules& Dist_phyloCTMCClado::getParameterRules(void) const
         options.push_back( "Protein" );
         options.push_back( "Standard" );
         options.push_back( "NaturalNumbers" );
+        options.push_back( "Taxa" );
         dist_member_rules.push_back( new OptionRule( "type", new RlString("NaturalNumbers"), options, "" ) );
         
         dist_member_rules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );

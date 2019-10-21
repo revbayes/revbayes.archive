@@ -2,12 +2,13 @@
 
 #include "DECCladogeneticStateFunction.h"
 
-#include <math.h>
-#include <map>
-#include <vector>
 #include <algorithm>
 #include <cstddef>
+#include <math.h>
+#include <map>
+#include <sstream>
 #include <utility>
+#include <vector>
 
 #include "BiogeographicCladoEvent.h"
 #include "RandomNumberFactory.h"
@@ -56,7 +57,8 @@ DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< S
     addParameter( eventProbs );
     addParameter( connectivityGraph );
     addParameter( vicarianceGraph );
-    if (numCharacters <= 10)
+    
+    if (numCharacters <= MAX_NUM_AREAS)
     {
         buildBits();
         buildRanges(beforeRanges, connectivityGraph, false);
@@ -66,6 +68,10 @@ DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< S
         numRanges++; // add one for the null range
         
         buildEventMap();
+    } else {
+        std::stringstream ss;
+        ss << "DECCladogeneticStateFunction only supports up to " << MAX_NUM_AREAS << " areas\n";
+        throw RbException(ss.str());
     }
     
     update();
@@ -951,7 +957,7 @@ void DECCladogeneticStateFunction::update( void )
         probs[ eventStringToStateMap[eventTypes[i]] ] = ep[i];
     }
 
-    if (numCharacters > 10) return;
+    if (numCharacters > MAX_NUM_AREAS) return;
    
     if (eventProbsAsWeightedAverages)
     {
