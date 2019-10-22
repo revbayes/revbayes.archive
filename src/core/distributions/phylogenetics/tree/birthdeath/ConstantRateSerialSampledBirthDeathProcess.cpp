@@ -80,7 +80,7 @@ ConstantRateSerialSampledBirthDeathProcess* ConstantRateSerialSampledBirthDeathP
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
  */
-double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityDivergenceTimes( void ) const
+double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityDivergenceTimes( void )
 {
     // prepare the probability computation
     prepareProbComputation();
@@ -97,7 +97,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityDivergenc
  *
  * \return    The log-probability density.
  */
-double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( void ) const
+double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( void )
 {
 
     double lnProbTimes = 0.0;

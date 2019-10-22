@@ -76,7 +76,7 @@ BirthDeathBurstProcess* BirthDeathBurstProcess::clone( void ) const
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
  */
-double BirthDeathBurstProcess::computeLnProbabilityDivergenceTimes( void ) const
+double BirthDeathBurstProcess::computeLnProbabilityDivergenceTimes( void )
 {
     // prepare the probability computation
     prepareProbComputation();
@@ -93,7 +93,7 @@ double BirthDeathBurstProcess::computeLnProbabilityDivergenceTimes( void ) const
  *
  * \return    The log-probability density.
  */
-double BirthDeathBurstProcess::computeLnProbabilityTimes( void ) const
+double BirthDeathBurstProcess::computeLnProbabilityTimes( void )
 {
     
     double lnProbTimes = 0.0;

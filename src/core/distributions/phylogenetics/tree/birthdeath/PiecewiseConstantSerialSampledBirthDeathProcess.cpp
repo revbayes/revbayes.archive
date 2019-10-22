@@ -321,7 +321,7 @@ PiecewiseConstantSerialSampledBirthDeathProcess* PiecewiseConstantSerialSampledB
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
  */
-double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityDivergenceTimes( void ) const
+double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityDivergenceTimes( void )
 {
     // prepare the probability computation
     prepareProbComputation();
@@ -337,7 +337,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityDive
  * Compute the log probability of the current value under the current parameter values.
  * Tip-dating (Theorem 1, Stadler et al. 2013 PNAS)
  */
-double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTimes( void ) const
+double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTimes( void )
 {
     // variable declarations and initialization
     double lnProbTimes = 0.0;

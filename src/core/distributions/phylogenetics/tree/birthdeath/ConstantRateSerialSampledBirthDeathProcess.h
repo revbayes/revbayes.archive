@@ -28,12 +28,12 @@ template <class valueType> class TypedDagNode;
         ConstantRateSerialSampledBirthDeathProcess*         clone(void) const;
 
     protected:
-        double                                              computeLnProbabilityDivergenceTimes(void) const;                                //!< Compute the log-transformed probability of the current value.
+        double                                              computeLnProbabilityDivergenceTimes(void);                                      //!< Compute the log-transformed probability of the current value.
         // Parameter management functions
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                //!< Swap a parameter
 
         // helper functions
-        double                                              computeLnProbabilityTimes(void) const;                                          //!< Compute the log-transformed probability of the current value.
+        double                                              computeLnProbabilityTimes(void);                                                //!< Compute the log-transformed probability of the current value.
         double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
         double                                              lnProbTreeShape(void) const;
         double                                              simulateDivergenceTime(double origin, double present) const;                    //!< Simulate a speciation event.

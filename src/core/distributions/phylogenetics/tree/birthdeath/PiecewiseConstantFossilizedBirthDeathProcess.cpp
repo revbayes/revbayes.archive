@@ -142,7 +142,7 @@ PiecewiseConstantFossilizedBirthDeathProcess* PiecewiseConstantFossilizedBirthDe
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
  */
-double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityDivergenceTimes( void ) const
+double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityDivergenceTimes( void )
 {
     // variable declarations and initialization
     double lnProbTimes = computeLnProbabilityTimes();
@@ -155,7 +155,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityDiverge
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
  */
-double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( void ) const
+double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( void )
 {
     double lnProb = computeLnProbabilityRanges();
 

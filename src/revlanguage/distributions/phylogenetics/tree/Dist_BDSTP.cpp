@@ -171,8 +171,9 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_BDSTP::createDistribution( void ) 
         {
             ht = static_cast<const ModelVector<RealPos> &>( timeline->getRevObject() ).getDagNode();
         }
+    //@TODO: @ANDY: Add additional parameters to BDSTP
 
-        d = new RevBayesCore::EpisodicBirthDeathSamplingTreatmentProcess(sa, b_s, d_s, s_s, t, b_e, d_e, s_e, ht, cond, tree, uo, init);
+//        d = new RevBayesCore::EpisodicBirthDeathSamplingTreatmentProcess(sa, b_s, d_s, s_s, t, b_e, d_e, s_e, ht, cond, tree, uo, init);
     // }
     // else
     // {

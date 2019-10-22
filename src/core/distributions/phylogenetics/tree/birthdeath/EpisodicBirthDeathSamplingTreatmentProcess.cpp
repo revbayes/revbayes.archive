@@ -17,6 +17,7 @@
 #include "DagNode.h"
 #include "RbException.h"
 #include "RbVector.h"
+#include "StartingTreeSimulator.h"
 #include "TopologyNode.h"
 #include "Tree.h"
 #include "TypedDagNode.h"
@@ -39,19 +40,26 @@ using namespace RevBayesCore;
  * \param[in]    c              Clades conditioned to be present.
  */
 EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentProcess(const TypedDagNode<double> *ra,
-                                                                                           const DagNode *inspeciation,
-                                                                                           const DagNode *inextinction,
-                                                                                           const DagNode *inserialsampling,
-                                                                                           const DagNode *intreatment,
-                                                                                           const DagNode *ineventspeciation,
-                                                                                           const DagNode *ineventextinction,
-                                                                                           const DagNode *ineventsampling,
-                                                                                           const TypedDagNode< RbVector<double> > *ht,
+                                                                                           const DagNode *in_speciation,
+                                                                                           const DagNode *in_extinction,
+                                                                                           const DagNode *in_sampling,
+                                                                                           const DagNode *in_treatment,
+                                                                                           const DagNode *in_event_speciation,
+                                                                                           const DagNode *in_event_extinction,
+                                                                                           const DagNode *in_event_sampling,
+                                                                                           const DagNode *in_event_treatment,
+                                                                                           const TypedDagNode< RbVector<double> > *timeline,
+                                                                                           const TypedDagNode< RbVector<double> > *speciation_timeline,
+                                                                                           const TypedDagNode< RbVector<double> > *extinction_timeline,
+                                                                                           const TypedDagNode< RbVector<double> > *sampling_timeline,
+                                                                                           const TypedDagNode< RbVector<double> > *treatment_timeline,
+                                                                                           const TypedDagNode< RbVector<double> > *event_speciation_timeline,
+                                                                                           const TypedDagNode< RbVector<double> > *event_extinction_timeline,
+                                                                                           const TypedDagNode< RbVector<double> > *event_sampling_timeline,
                                                                                            const std::string &cdt,
                                                                                            const std::vector<Taxon> &tn,
-                                                                                           bool uo,
-                                                                                           TypedDagNode<Tree> *t) : AbstractBirthDeathProcess( ra, cdt, tn, uo ),
-    interval_times(ht),
+                                                                                           bool uo) : AbstractBirthDeathProcess( ra, cdt, tn, uo ),
+    interval_times(timeline),
     offset( 0.0 )
 {
     // initialize all the pointers to NULL
@@ -70,7 +78,7 @@ EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentP
     heterogeneous_Mu     = NULL;
     heterogeneous_Phi    = NULL;
 
-    std::vector<double> times = timeline;
+    std::vector<double> times = timeline->getValue();
     std::vector<double> times_sorted_ascending = times;
 
     sort(times_sorted_ascending.begin(), times_sorted_ascending.end() );
@@ -82,50 +90,46 @@ EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentP
 
     addParameter( interval_times );
 
-    heterogeneous_lambda = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inspeciation);
-    homogeneous_lambda = dynamic_cast<const TypedDagNode<double >*>(inspeciation);
+    heterogeneous_lambda = dynamic_cast<const TypedDagNode<RbVector<double> >*>(in_speciation);
+    homogeneous_lambda = dynamic_cast<const TypedDagNode<double >*>(in_speciation);
 
     addParameter( homogeneous_lambda );
     addParameter( heterogeneous_lambda );
 
-    heterogeneous_mu = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inextinction);
-    homogeneous_mu = dynamic_cast<const TypedDagNode<double >*>(inextinction);
+    heterogeneous_mu = dynamic_cast<const TypedDagNode<RbVector<double> >*>(in_extinction);
+    homogeneous_mu = dynamic_cast<const TypedDagNode<double >*>(in_extinction);
 
     addParameter( homogeneous_mu );
     addParameter( heterogeneous_mu );
 
-    heterogeneous_phi = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inserialsampling);
-    homogeneous_phi = dynamic_cast<const TypedDagNode<double >*>(inserialsampling);
+    heterogeneous_phi = dynamic_cast<const TypedDagNode<RbVector<double> >*>(in_sampling);
+    homogeneous_phi = dynamic_cast<const TypedDagNode<double >*>(in_sampling);
 
     addParameter( homogeneous_phi );
     addParameter( heterogeneous_phi );
 
-    heterogeneous_r = dynamic_cast<const TypedDagNode<RbVector<double> >*>(intreatment);
-    homogeneous_r = dynamic_cast<const TypedDagNode<double >*>(intreatment);
+    heterogeneous_r = dynamic_cast<const TypedDagNode<RbVector<double> >*>(in_treatment);
+    homogeneous_r = dynamic_cast<const TypedDagNode<double >*>(in_treatment);
 
     addParameter( homogeneous_r );
     addParameter( heterogeneous_r );
 
-    heterogeneous_Lambda = dynamic_cast<const TypedDagNode<RbVector<double> >*>(ineventspeciation);
-    // homogeneous_Lambda = dynamic_cast<const TypedDagNode<double >*>(ineventspeciation);
+    heterogeneous_Lambda = dynamic_cast<const TypedDagNode<RbVector<double> >*>(in_event_speciation);
 
-    // addParameter( homogeneous_Lambda );
     addParameter( heterogeneous_Lambda );
 
-    heterogeneous_Mu = dynamic_cast<const TypedDagNode<RbVector<double> >*>(ineventextinction);
-    // homogeneous_Mu = dynamic_cast<const TypedDagNode<double >*>(ineventextinction);
+    heterogeneous_Mu = dynamic_cast<const TypedDagNode<RbVector<double> >*>(in_event_extinction);
 
-    // addParameter( homogeneous_Mu );
     addParameter( heterogeneous_Mu );
 
-    heterogeneous_Phi = dynamic_cast<const TypedDagNode<RbVector<double> >*>(ineventsampling);
-    homogeneous_Phi = dynamic_cast<const TypedDagNode<double >*>(ineventsampling);
+    heterogeneous_Phi = dynamic_cast<const TypedDagNode<RbVector<double> >*>(in_event_sampling);
+    homogeneous_Phi = dynamic_cast<const TypedDagNode<double >*>(in_event_sampling);
 
     addParameter( homogeneous_Phi );
     addParameter( heterogeneous_Phi );
 
     //TODO: make sure the offset is added properly into the computation, need to offset *all* times, including interval times
-    //          thie means we also need to check that the first interval time is not less than the first tip (which we should probably to anyways)
+    //          this means we also need to check that the first interval time is not less than the first tip (which we should probably to anyways)
 
     //TODO: returning neginf and nan are not currently coherent
 
@@ -168,15 +172,14 @@ EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentP
     updateVectorParameters();
     prepareProbComputation();
 
-    if (t != NULL)
-    {
-      delete value;
-      value = t->getValue().clone();
-    }
-    else
-    {
-      simulateTree();
-    }
+    
+    RbVector<Clade> constr;
+    StartingTreeSimulator simulator;
+    RevBayesCore::Tree *my_tree = simulator.simulateTree( taxa, constr );
+
+    // store the new value
+    delete value;
+    value = my_tree;
 
     countAllNodes();
 
@@ -198,7 +201,7 @@ EpisodicBirthDeathSamplingTreatmentProcess* EpisodicBirthDeathSamplingTreatmentP
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
  */
-double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityDivergenceTimes( void ) const
+double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityDivergenceTimes( void )
 {
     // update parameter vectors
     updateVectorParameters();
@@ -224,7 +227,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityDivergenc
 /**
  * Compute the log probability of the current value under the current parameter values.
  */
-double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( void ) const
+double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( void )
 {
     // variable declarations and initialization
     double lnProbTimes = 0.0;
@@ -497,7 +500,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
  * Non-burst trackers (1,3,4) are vectors of times of the samples.
  * All burst trackers (2,5,6) are vectors of vectors of samples, each vector corresponding to an event
  */
-void EpisodicBirthDeathSamplingTreatmentProcess::countAllNodes(void) const
+void EpisodicBirthDeathSamplingTreatmentProcess::countAllNodes(void)
 {
   // get node/time variables
   size_t num_nodes = value->getNumberOfNodes();
@@ -796,7 +799,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnProbTreeShape(void) const
  * In the case of homogenous/single events, we make all but the first event rates 0.
  *
  */
-void EpisodicBirthDeathSamplingTreatmentProcess::updateVectorParameters( void ) const
+void EpisodicBirthDeathSamplingTreatmentProcess::updateVectorParameters( void )
 {
     // clean and get timeline
     timeline.clear();
@@ -911,7 +914,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::updateVectorParameters( void ) 
  * Here we calculate all A_i, B_i, C_i, D_i(s_i), and E_i(s_i) for i = 1,...,l
  *
  */
-void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void ) const
+void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void )
 {
     // TODO: B and C are producing nan values upon initialization, but not when computing tree probabilities, which are working fine
 
