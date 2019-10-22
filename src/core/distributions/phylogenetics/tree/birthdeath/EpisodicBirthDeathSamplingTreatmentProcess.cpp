@@ -464,6 +464,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
         lnProbTimes -= log( pSurvival(root_age,0.0) );
         if ( num_initial_lineages == 2 )
         {
+std::cout << "num_initial_lineages == 2" << std::endl;
           lnProbTimes -= log( pSampling(root_age) );
         }
     }
@@ -664,7 +665,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::E(size_t i, double t, bool co
     else
     {
       // E <- (b + d + s - A *(1+B-exp(-A*(next_t-current_t))*(1-B))/(1+B+exp(-A*(next_t-current_t))*(1-B)) ) / (2*b)
-      double E_i = lambda[i] + mu[i] + phi[i];
+      E_i = lambda[i] + mu[i] + phi[i];
       E_i -= A_i[i] * (1 + B_i[i] - exp(-A_i[i] * (t - s)) * (1 - B_i[i])) / (1 + B_i[i] + exp(-A_i[i] * (t - s)) * (1 - B_i[i]));
       E_i /= (2 * lambda[i]);
     }
@@ -893,11 +894,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::updateVectorParameters( void ) 
  */
 void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void ) const
 {
-    // // clean all the sets
-    // A_i.clear();
-    // B_i.clear();
-    // C_i.clear();
-    // E_previous.clear();
+    // TODO: B and C are producing nan values upon initialization, but not when computing tree probabilities, which are working fine
 
     // re-initialize all the sets
     A_i = std::vector<double>(timeline.size(),0.0);
@@ -974,7 +971,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void ) 
       E_survival_previous = std::vector<double>(timeline.size(),0.0);
 
       // Compute all starting at 1
-      A_survival_i[0] = sqrt( pow(lambda[0] - mu[0],2.0) + 4 * lambda[0]);
+      A_survival_i[0] = sqrt( pow(lambda[0] - mu[0],2.0));
 
       // At the present, only sampling is allowed, no birth/death bursts
       C_survival_i[0] = (1 - phi_event[0]);
@@ -992,23 +989,22 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void ) 
           E_survival_previous[i] = E(i-1, t, true);
 
           // now we can compute A_survival_i, B_survival_i and C_survival_i at the end of this interval.
-          A_survival_i[i] = sqrt( pow(lambda[i] - mu[i],2.0) + 4 * lambda[i]);
+          A_survival_i[i] = sqrt( pow(lambda[i] - mu[i],2.0));
 
           // Only one type of event is allowed
           if ( lambda_event[i] >= DBL_EPSILON )
           {
-            C_survival_i[i] =  (1 - lambda_event[i]) * E_previous[i] + lambda_event[i] * E_previous[i] * E_previous[i];
+            C_survival_i[i] =  (1 - lambda_event[i]) * E_survival_previous[i] + lambda_event[i] * E_survival_previous[i] * E_survival_previous[i];
           } else if ( lambda_event[i] >= DBL_EPSILON )
           {
-            C_survival_i[i] = (1 - mu_event[i]) * E_previous[i] + mu_event[i];
+            C_survival_i[i] = (1 - mu_event[i]) * E_survival_previous[i] + mu_event[i];
           } else
           {
-            C_survival_i[i] = E_previous[i];
+            C_survival_i[i] = E_survival_previous[i];
           }
 
           B_survival_i[i] = (1.0 - 2.0 * C_survival_i[i]) * lambda[i] + mu[i];
           B_survival_i[i] /= A_survival_i[i];
-
       }
 
     }
