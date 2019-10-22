@@ -464,7 +464,6 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
         lnProbTimes -= log( pSurvival(root_age,0.0) );
         if ( num_initial_lineages == 2 )
         {
-std::cout << "num_initial_lineages == 2" << std::endl;
           lnProbTimes -= log( pSampling(root_age) );
         }
     }
@@ -654,6 +653,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::E(size_t i, double t, bool co
 {
     double E_i;
     double s = timeline[i];
+
     // Are we computing E(t) for survival conditioning?
     if (computeSurvival == true)
     {
@@ -737,15 +737,34 @@ size_t EpisodicBirthDeathSamplingTreatmentProcess::findIndex(double t) const
 // calculate offset so we can set t_0 to time of most recent tip
 void EpisodicBirthDeathSamplingTreatmentProcess::getOffset(void) const
 {
-    offset = RbConstants::Double::max;
-    for (size_t i = 0; i < value->getNumberOfNodes(); i++)
+    // On first pass, there is no tree, so we can't loop over nodes
+    // Get taxon ages directly from taxa instead
+    if ( value->getNumberOfNodes() == 0 )
     {
-        const TopologyNode& n = value->getNode( i );
+      offset = RbConstants::Double::max;
+      for (size_t i = 0; i < taxa.size(); i++)
+      {
+          const Taxon& n = taxa[i];
 
-        if ( n.getAge() < offset )
-        {
-            offset = n.getAge();
-        }
+          if ( n.getAge() < offset )
+          {
+              offset = n.getAge();
+          }
+      }
+    }
+    // On later passes we have the tree, to avoid any issues with tree and taxon age mismatch, get ages from tree
+    else
+    {
+      offset = RbConstants::Double::max;
+      for (size_t i = 0; i < value->getNumberOfNodes(); i++)
+      {
+          const TopologyNode& n = value->getNode( i );
+
+          if ( n.getAge() < offset )
+          {
+              offset = n.getAge();
+          }
+      }
     }
 
 }
