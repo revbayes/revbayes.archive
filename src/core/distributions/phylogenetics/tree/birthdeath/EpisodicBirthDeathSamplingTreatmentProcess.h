@@ -61,7 +61,7 @@ namespace RevBayesCore {
         void                                            countAllNodes(void) const;                                 //!< Count bifurcating nodes, count all heterochronous nodes as either phi- or Phi-sampled and as either sampled ancestors or sampled extinct tips
         // double                                          D(size_t i, double t) const;
         double                                          lnD(size_t i, double t) const;                                     //!< Branch-segment probability at time t with index i, using pre-computed vectors
-        double                                          E(size_t i, double t) const;                                       //!< Extinction probability at time t with index i, using pre-computed vectors
+        double                                          E(size_t i, double t, bool computeSurvival = false) const;                                       //!< Extinction probability at time t with index i, using pre-computed vectors
         size_t                                          findIndex(double t) const;                                         //!< Find the index so that times[index-1] < t < times[index]
         void                                            getOffset(void) const;
         double                                          lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
@@ -69,7 +69,7 @@ namespace RevBayesCore {
         void                                            updateVectorParameters(void) const;
         void                                            prepareProbComputation(void) const;
         double                                          pSampling(double t) const;
-        double                                          pSurviveToPresent(double t) const;
+        double                                          pSurvival(double start, double end) const;
         double                                          simulateDivergenceTime(double origin, double present) const;    //!< Simulate a speciation event.
         int                                             survivors(double t) const;                                 //!< Number of species alive at time t.
         int                                             whichIntervalTime(double t) const;                                //!< If a time corresponds to an interval/event time, returns that interval, otherwise returns -1
@@ -116,6 +116,11 @@ namespace RevBayesCore {
         mutable std::vector<double>                     C_i;                                                   //!< Helper values
         mutable std::vector<double>                     E_previous;                                            //!< The probability that a lineage at time t has no sampled descendants.
         mutable std::vector<double>                     lnD_previous;                                          //!< The probability of an observed lineage
+
+        mutable std::vector<double>                     A_survival_i;                                                   //!< Helper values
+        mutable std::vector<double>                     B_survival_i;                                                   //!< Helper values
+        mutable std::vector<double>                     C_survival_i;                                                   //!< Helper values
+        mutable std::vector<double>                     E_survival_previous;                                      //!< The probability that a lineage at time t has no sampled EXTANT descendants.
     };
 }
 

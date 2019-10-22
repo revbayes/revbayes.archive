@@ -461,10 +461,10 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
         // conditioning on survival depends on if we are using the origin or root age
         // origin: we condition on a single lineage surviving to the present and being sampled
         // root: we condition on the above plus the other root child leaving a sampled descendant
-        lnProbTimes -= log( pSurviveToPresent(rootAge,0.0) );
+        lnProbTimes -= log( pSurvival(root_age,0.0) );
         if ( num_initial_lineages == 2 )
         {
-          lnProbTimes -= log( pSampling(rootAge,0.0) );
+          lnProbTimes -= log( pSampling(root_age) );
         }
     }
     else if ( condition == "sampling" )
@@ -473,7 +473,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
         // origin: the conditioning suggested by Stadler 2011 and used by Gavryuskina (2014), sampling at least one lineage
         // root age: sampling at least one descendent from each child of the root
         double root_age = (&value->getRoot())->getAge();
-        lnProbTimes -= num_initial_lineages * log( pSampling(rootAge,0.0) );
+        lnProbTimes -= num_initial_lineages * log( pSampling(root_age) );
     }
 
     if ( RbMath::isFinite(lnProbTimes) == false )
@@ -649,25 +649,28 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnD(size_t i, double t) const
 /**
  * Compute E_i(t)
  */
-double EpisodicBirthDeathSamplingTreatmentProcess::E(size_t i, double t) const
+double EpisodicBirthDeathSamplingTreatmentProcess::E(size_t i, double t, bool computeSurvival) const
 {
-  // E_{-1}(0) = 1
-  // if ( t < DBL_EPSILON )
-  // {
-  //   return 1.0;
-  // }
-  // else
-  // {
-
-    // E <- (b + d + s - A *(1+B-exp(-A*(next_t-current_t))*(1-B))/(1+B+exp(-A*(next_t-current_t))*(1-B)) ) / (2*b)
+    double E_i;
     double s = timeline[i];
-
-    double E_i = lambda[i] + mu[i] + phi[i];
-    E_i -= A_i[i] * (1 + B_i[i] - exp(-A_i[i] * (t - s)) * (1 - B_i[i])) / (1 + B_i[i] + exp(-A_i[i] * (t - s)) * (1 - B_i[i]));
-    E_i /= (2 * lambda[i]);
+    // Are we computing E(t) for survival conditioning?
+    if (computeSurvival == true)
+    {
+      // E <- (b + d - A *(1+B-exp(-A*(next_t-current_t))*(1-B))/(1+B+exp(-A*(next_t-current_t))*(1-B)) ) / (2*b)
+      E_i = lambda[i] + mu[i];
+      E_i -= A_survival_i[i] * (1 + B_survival_i[i] - exp(-A_survival_i[i] * (t - s)) * (1 - B_survival_i[i])) / (1 + B_survival_i[i] + exp(-A_survival_i[i] * (t - s)) * (1 - B_survival_i[i]));
+      E_i /= (2 * lambda[i]);
+    }
+    else
+    {
+      // E <- (b + d + s - A *(1+B-exp(-A*(next_t-current_t))*(1-B))/(1+B+exp(-A*(next_t-current_t))*(1-B)) ) / (2*b)
+      double E_i = lambda[i] + mu[i] + phi[i];
+      E_i -= A_i[i] * (1 + B_i[i] - exp(-A_i[i] * (t - s)) * (1 - B_i[i])) / (1 + B_i[i] + exp(-A_i[i] * (t - s)) * (1 - B_i[i]));
+      E_i /= (2 * lambda[i]);
+    }
 
     return E_i;
-  // }
+
 }
 
 /**
@@ -933,60 +936,98 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void ) 
         t = timeline[i];
 
         // first, we need to compute E and D at the end of the previous interval
-        E_previous[i] = E(i-1, t);
+        E_previous[i] = E(i-1, t, false);
         lnD_previous[i] = lnD(i-1, t);
 
         // now we can compute A_i, B_i and C_i at the end of this interval.
         A_i[i] = sqrt( pow(lambda[i] - mu[i] - phi[i],2.0) + 4 * lambda[i] * phi[i]);
 
-        // C_i[i] = (1.0 - lambda_event[i]) * (1 - mu_event[i]) * E_previous[i];
-        // C_i[i] += (1.0 - mu_event[i]) * lambda_event[i] * E_previous[i] * E_previous[i];
-        // C_i[i] += (1.0 - lambda_event[i]) * mu_event[i];
-        // C_i[i] *= (1.0 - phi_event[i]);
-
-        // At most one of these 3 terms will be nonzero
-        C_i = (1 - phi_event[i]) * E_previous[i];
-        C_i +=  (1 - lambda_event[i]) * E_previous[i] + lambda_event[i] * E_previous[i] * E_previous[i];
-        C_i += (1 - mu_event[i]) * E_previous[i] + mu_event[i];
+        // Only one type of event is allowed
+        if (phi_event[i] >= DBL_EPSILON)
+        {
+          C_i[i] = (1 - phi_event[i]) * E_previous[i];
+        } else if ( lambda_event[i] >= DBL_EPSILON )
+        {
+          C_i[i] =  (1 - lambda_event[i]) * E_previous[i] + lambda_event[i] * E_previous[i] * E_previous[i];
+        } else if ( lambda_event[i] >= DBL_EPSILON )
+        {
+          C_i[i] = (1 - mu_event[i]) * E_previous[i] + mu_event[i];
+        } else
+        {
+          C_i[i] = E_previous[i];
+        }
 
         B_i[i] = (1.0 - 2.0 * C_i[i]) * lambda[i] + mu[i] + phi[i];
         B_i[i] /= A_i[i];
 
     }
+
+    // if we want to condition on survival we need to track versions of A,B,C,E that set phi = 0 and Phi[-0] to 0
+    if ( condition == "survival" )
+    {
+      // timeline[0] == 0.0
+      double t = timeline[0];
+
+      A_survival_i = std::vector<double>(timeline.size(),0.0);
+      B_survival_i = std::vector<double>(timeline.size(),0.0);
+      C_survival_i = std::vector<double>(timeline.size(),0.0);
+      E_survival_previous = std::vector<double>(timeline.size(),0.0);
+
+      // Compute all starting at 1
+      A_survival_i[0] = sqrt( pow(lambda[0] - mu[0],2.0) + 4 * lambda[0]);
+
+      // At the present, only sampling is allowed, no birth/death bursts
+      C_survival_i[0] = (1 - phi_event[0]);
+
+      B_survival_i[0] = (1.0 - 2.0 * C_survival_i[0]) * lambda[0] + mu[0];
+      B_survival_i[0] /= A_survival_i[0];
+
+      E_survival_previous[0] = 1.0;
+
+      for (size_t i=1; i<timeline.size(); ++i)
+      {
+          t = timeline[i];
+
+          // first, we need to compute E and D at the end of the previous interval
+          E_survival_previous[i] = E(i-1, t, true);
+
+          // now we can compute A_survival_i, B_survival_i and C_survival_i at the end of this interval.
+          A_survival_i[i] = sqrt( pow(lambda[i] - mu[i],2.0) + 4 * lambda[i]);
+
+          // Only one type of event is allowed
+          if ( lambda_event[i] >= DBL_EPSILON )
+          {
+            C_survival_i[i] =  (1 - lambda_event[i]) * E_previous[i] + lambda_event[i] * E_previous[i] * E_previous[i];
+          } else if ( lambda_event[i] >= DBL_EPSILON )
+          {
+            C_survival_i[i] = (1 - mu_event[i]) * E_previous[i] + mu_event[i];
+          } else
+          {
+            C_survival_i[i] = E_previous[i];
+          }
+
+          B_survival_i[i] = (1.0 - 2.0 * C_survival_i[i]) * lambda[i] + mu[i];
+          B_survival_i[i] /= A_survival_i[i];
+
+      }
+
+    }
+
 }
 
-double EpisodicBirthDeathSamplingTreatmentProcess::pSampled(double t) const
+double EpisodicBirthDeathSamplingTreatmentProcess::pSampling(double start) const
 {
-  // return (1.0 - E(findIndex(start),start)) / (1.0 - E(findIndex(end),end));
-  return (1.0 - E(findIndex(t),t));
+  return (1.0 - E(findIndex(start),start,false));
 }
 
-double EpisodicBirthDeathSamplingTreatmentProcess::pSurviveToPresent(double t) const
+double EpisodicBirthDeathSamplingTreatmentProcess::pSurvival(double start, double end) const
 {
-  // We need to compute the sampling probability under a model where there is only sampling at the present
-  // So we set phi[1:n] = 0 and Phi[1:n] = 0
-
-  // Store old values
-  std::vector<double> real_sampling_rates = phi;
-  std::vector<double> real_sampling_events = phi_event;
-
-  // No sampling except at present
-  phi = std::vector<double>(phi.size(),0.0);
-  phi_event = std::vector<double>(phi_event.size(),0.0);
-  phi_event[0] = real_sampling_events[0];
-
-  // Recompute vectors
-  prepareProbComputation();
-
-  p_no_sample = E(findIndex(t),t);
-
-  // Put everything back where we found it
-  phi = real_sampling_rates;
-  phi_event = real_sampling_events;
-  prepareProbComputation();
-
-  return(1.0 - p_no_sample);
-
+  // This computation does not make sense unless there is sampling at the present, and will result in a divide by 0 error
+  if ( phi_event[0] < DBL_EPSILON )
+  {
+    return(RbConstants::Double::neginf);
+  }
+  return( (1.0 - E(findIndex(start),start,true))/(1.0 - E(findIndex(end),end,true)) );
 }
 
 /**
