@@ -62,14 +62,14 @@ namespace RevBayesCore {
         // double                                          D(size_t i, double t) const;
         double                                          lnD(size_t i, double t) const;                                     //!< Branch-segment probability at time t with index i, using pre-computed vectors
         double                                          E(size_t i, double t) const;                                       //!< Extinction probability at time t with index i, using pre-computed vectors
-        double                                          modifiedE(int i, double t, size_t condition_type) const;           //!< Extinction and extinction-like probabilities, recursively computed
         size_t                                          findIndex(double t) const;                                         //!< Find the index so that times[index-1] < t < times[index]
         void                                            getOffset(void) const;
         double                                          lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
         double                                          lnProbTreeShape(void) const;
         void                                            updateVectorParameters(void) const;
         void                                            prepareProbComputation(void) const;
-        double                                          pSurvival(double start, double end) const;
+        double                                          pSampling(double t) const;
+        double                                          pSurviveToPresent(double t) const;
         double                                          simulateDivergenceTime(double origin, double present) const;    //!< Simulate a speciation event.
         int                                             survivors(double t) const;                                 //!< Number of species alive at time t.
         int                                             whichIntervalTime(double t) const;                                //!< If a time corresponds to an interval/event time, returns that interval, otherwise returns -1
