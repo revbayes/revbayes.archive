@@ -73,6 +73,7 @@ namespace RevBayesCore {
         double                                          lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
         double                                          lnProbTreeShape(void) const;
         void                                            updateVectorParameters(void);
+        void                                            prepareTimeline(void);
         void                                            prepareProbComputation(void);
         double                                          pSampling(double t) const;
         double                                          pSurvival(double start, double end) const;
@@ -96,7 +97,7 @@ namespace RevBayesCore {
         const TypedDagNode<double >*                    homogeneous_R;                                         //!< The homogeneous conditional probability of death upon treatment.
         const TypedDagNode<RbVector<double> >*          heterogeneous_R;                                       //!< The heterogeneous conditional probability of death upon treatment.
         
-        const TypedDagNode<RbVector<double> >*          interval_times;                                        //!< The user-specified non-zero times of the instantaneous events and rate shifts.
+        const TypedDagNode<RbVector<double> >*          interval_times_global;                                 //!< The user-specified non-zero times of the instantaneous events and rate shifts.
         const TypedDagNode<RbVector<double> >*          interval_times_speciation;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
         const TypedDagNode<RbVector<double> >*          interval_times_extinction;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
         const TypedDagNode<RbVector<double> >*          interval_times_sampling;                               //!< The user-specified non-zero times of the instantaneous events and rate shifts.
@@ -104,7 +105,7 @@ namespace RevBayesCore {
         const TypedDagNode<RbVector<double> >*          interval_times_event_speciation;                       //!< The user-specified non-zero times of the instantaneous events and rate shifts.
         const TypedDagNode<RbVector<double> >*          interval_times_event_extinction;                       //!< The user-specified non-zero times of the instantaneous events and rate shifts.
         const TypedDagNode<RbVector<double> >*          interval_times_event_sampling;                         //!< The user-specified non-zero times of the instantaneous events and rate shifts.
-        mutable std::vector<double>                     timeline;                                              //!< The times of the instantaneous events and rate shifts.
+        mutable std::vector<double>                     global_timeline;                                       //!< The times of the instantaneous events and rate shifts.
 
         std::vector<double>                             serial_tip_ages;                                       //!< The ages of all sampled dead lineages sampled by rate-sampling
         std::vector<double>                             serial_sampled_ancestor_ages;                          //!< The ages of all sampled ancestors sampled by rate-sampling

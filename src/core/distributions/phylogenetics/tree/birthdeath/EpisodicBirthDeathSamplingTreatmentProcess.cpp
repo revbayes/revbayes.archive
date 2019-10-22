@@ -59,7 +59,7 @@ EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentP
                                                                                            const std::string &cdt,
                                                                                            const std::vector<Taxon> &tn,
                                                                                            bool uo) : AbstractBirthDeathProcess( ra, cdt, tn, uo ),
-    interval_times(timeline),
+    interval_times_global(timeline),
     offset( 0.0 )
 {
     // initialize all the pointers to NULL
@@ -88,7 +88,7 @@ EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentP
         throw(RbException("Rate change times must be provided in ascending order."));
     }
 
-    addParameter( interval_times );
+    addParameter( interval_times_global );
 
     heterogeneous_lambda = dynamic_cast<const TypedDagNode<RbVector<double> >*>(in_speciation);
     homogeneous_lambda = dynamic_cast<const TypedDagNode<double >*>(in_speciation);
@@ -132,42 +132,6 @@ EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentP
     //          this means we also need to check that the first interval time is not less than the first tip (which we should probably to anyways)
 
     //TODO: returning neginf and nan are not currently coherent
-
-    //check that lengths of vector arguments are sane
-    if ( heterogeneous_lambda != NULL && !(interval_times->getValue().size() == heterogeneous_lambda->getValue().size() - 1) )
-    {
-      throw(RbException("If provided as a vector, argument lambda must have one more element than timeline."));
-    }
-
-    if ( heterogeneous_mu != NULL && !(interval_times->getValue().size() == heterogeneous_mu->getValue().size() - 1) )
-    {
-      throw(RbException("If provided as a vector, argument mu must have one more element than timeline."));
-    }
-
-    if ( heterogeneous_phi != NULL && !(interval_times->getValue().size() == heterogeneous_phi->getValue().size() - 1) )
-    {
-      throw(RbException("If provided as a vector, argument phi must have one more element than timeline."));
-    }
-
-    if ( heterogeneous_r != NULL && !(interval_times->getValue().size() == heterogeneous_r->getValue().size() - 1) )
-    {
-      throw(RbException("If provided as a vector, argument r must have one more element than timeline."));
-    }
-
-    if ( heterogeneous_Lambda != NULL && !(interval_times->getValue().size() == heterogeneous_Lambda->getValue().size()) )
-    {
-      throw(RbException("If provided, argument Lambda must be of same length as timeline."));
-    }
-
-    if ( heterogeneous_Mu != NULL && !(interval_times->getValue().size() == heterogeneous_Mu->getValue().size()) )
-    {
-      throw(RbException("If provided, argument Mu must be of same length as timeline."));
-    }
-
-    if ( heterogeneous_Phi != NULL && !(interval_times->getValue().size() == heterogeneous_Phi->getValue().size() - 1) )
-    {
-      throw(RbException("If provided as a vector, argument Phi must have one more element than timeline."));
-    }
 
     updateVectorParameters();
     prepareProbComputation();
@@ -258,7 +222,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
 
 
     // add the event-sampling terms (ii)
-    for (size_t i = 0; i < timeline.size(); ++i)
+    for (size_t i = 0; i < global_timeline.size(); ++i)
     {
         // Only compute sampling probability when there is a sampling event
         if (phi_event[i] > DBL_EPSILON)
@@ -273,7 +237,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
             double ln_sampling_event_prob = 0.0;
             int R_i = int(event_sampled_ancestor_ages[i].size());
             int N_i = R_i + int(event_tip_ages[i].size());
-            int active_lineages_at_t = survivors(timeline[i]); //A(t_{\rho_i})
+            int active_lineages_at_t = survivors(global_timeline[i]); //A(t_{\rho_i})
 
             if (N_i == 0)
             {
@@ -310,11 +274,11 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
                 //ss << "The conditional probability of death on sampling rate in interval " << i << " is one, but the tree has sampled ancesors in this interval.";
                 //throw RbException(ss.str());
             }
-            if ( timeline[i] > DBL_EPSILON )
+            if ( global_timeline[i] > DBL_EPSILON )
             {
                 // only add these terms for sampling that is not at the present
                 ln_sampling_event_prob += R_i * log(1 - r[i]);
-                ln_sampling_event_prob += (N_i - R_i) * log(r[i] * (1 - r[i])*E(i,timeline[i]));
+                ln_sampling_event_prob += (N_i - R_i) * log(r[i] * (1 - r[i])*E(i,global_timeline[i]));
             }
             lnProbTimes += ln_sampling_event_prob;
         }
@@ -379,15 +343,15 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
     }
 
     // add the burst bifurcation age terms (v)
-    for (size_t i = 0; i < timeline.size(); ++i)
+    for (size_t i = 0; i < global_timeline.size(); ++i)
     {
         // Nothing to compute if the burst probability is 0
         if (lambda_event[i] > DBL_EPSILON)
         {
             lnProbTimes += event_bifurcation_times[i].size() * log(lambda_event[i]);
-            int active_lineages_at_t = survivors(timeline[i]); //A(t_{\rho_i})
+            int active_lineages_at_t = survivors(global_timeline[i]); //A(t_{\rho_i})
             int A_minus_K = active_lineages_at_t - int(event_bifurcation_times[i].size());
-            lnProbTimes += log(pow(2*lambda_event[i]*E(i,timeline[i]),A_minus_K)+pow(1.0 - lambda_event[i],A_minus_K));
+            lnProbTimes += log(pow(2*lambda_event[i]*E(i,global_timeline[i]),A_minus_K)+pow(1.0 - lambda_event[i],A_minus_K));
         }
     }
 
@@ -516,9 +480,9 @@ void EpisodicBirthDeathSamplingTreatmentProcess::countAllNodes(void)
   event_bifurcation_times.clear();
 
   // initialize vectors of vectors
-  event_sampled_ancestor_ages = std::vector<std::vector<double> >(timeline.size(),std::vector<double>(0,1.0));
-  event_tip_ages = std::vector<std::vector<double> >(timeline.size(),std::vector<double>(0,1.0));
-  event_bifurcation_times = std::vector<std::vector<double> >(timeline.size(),std::vector<double>(0,1.0));
+  event_sampled_ancestor_ages = std::vector<std::vector<double> >(global_timeline.size(),std::vector<double>(0,1.0));
+  event_tip_ages = std::vector<std::vector<double> >(global_timeline.size(),std::vector<double>(0,1.0));
+  event_bifurcation_times = std::vector<std::vector<double> >(global_timeline.size(),std::vector<double>(0,1.0));
 
   // Assign all node times (bifurcations, sampled ancestors, and tips) to their sets
   for (size_t i = 0; i < num_nodes; i++)
@@ -624,7 +588,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnD(size_t i, double t) const
     }
     else
     {
-        double s = timeline[i];
+        double s = global_timeline[i];
         double this_lnD_i = 0.0;
         if (i > 0)
         {
@@ -655,7 +619,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnD(size_t i, double t) const
 double EpisodicBirthDeathSamplingTreatmentProcess::E(size_t i, double t, bool computeSurvival) const
 {
     double E_i;
-    double s = timeline[i];
+    double s = global_timeline[i];
 
     // Are we computing E(t) for survival conditioning?
     if (computeSurvival == true)
@@ -686,21 +650,21 @@ double EpisodicBirthDeathSamplingTreatmentProcess::E(size_t i, double t, bool co
 size_t EpisodicBirthDeathSamplingTreatmentProcess::findIndex(double t) const
 {
     // Linear search for interval because std::lower_bound is not cooperating
-    if (timeline.size() == 2) // If timeline.size() were 1, we would have 0 break points and would be in constant-rate version
+    if (global_timeline.size() == 2) // If timeline.size() were 1, we would have 0 break points and would be in constant-rate version
     {
-      return(t < timeline[1] ? 0 : 1);
+        return(t < global_timeline[1] ? 0 : 1);
     }
     else
     {
-      for (size_t i=0; i < timeline.size()-1; ++i)
-      {
-          if (t >= timeline[i] && t < timeline[i+1])
-          {
-              return(i);
-          }
-      }
+        for (size_t i=0; i < global_timeline.size()-1; ++i)
+        {
+            if (t >= global_timeline[i] && t < global_timeline[i+1])
+            {
+                return i;
+            }
+        }
 
-      return(timeline.size() - 1);
+        return global_timeline.size() - 1;
     }
 
     // // Binary search for interval because std::lower_bound isn't cooperating
@@ -744,30 +708,30 @@ void EpisodicBirthDeathSamplingTreatmentProcess::getOffset(void) const
     // Get taxon ages directly from taxa instead
     if ( value->getNumberOfNodes() == 0 )
     {
-      offset = RbConstants::Double::max;
-      for (size_t i = 0; i < taxa.size(); i++)
-      {
-          const Taxon& n = taxa[i];
+        offset = RbConstants::Double::max;
+        for (size_t i = 0; i < taxa.size(); i++)
+        {
+            const Taxon& n = taxa[i];
 
-          if ( n.getAge() < offset )
-          {
-              offset = n.getAge();
-          }
-      }
+            if ( n.getAge() < offset )
+            {
+                offset = n.getAge();
+            }
+        }
     }
     // On later passes we have the tree, to avoid any issues with tree and taxon age mismatch, get ages from tree
     else
     {
-      offset = RbConstants::Double::max;
-      for (size_t i = 0; i < value->getNumberOfNodes(); i++)
-      {
-          const TopologyNode& n = value->getNode( i );
+        offset = RbConstants::Double::max;
+        for (size_t i = 0; i < value->getNumberOfNodes(); i++)
+        {
+            const TopologyNode& n = value->getNode( i );
 
-          if ( n.getAge() < offset )
-          {
-              offset = n.getAge();
-          }
-      }
+            if ( n.getAge() < offset )
+            {
+                offset = n.getAge();
+            }
+        }
     }
 
 }
@@ -802,12 +766,12 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnProbTreeShape(void) const
 void EpisodicBirthDeathSamplingTreatmentProcess::updateVectorParameters( void )
 {
     // clean and get timeline
-    timeline.clear();
-    timeline = interval_times->getValue();
+    global_timeline.clear();
+    global_timeline = interval_times_global->getValue();
 
     // Add t_0
     getOffset();
-    timeline.insert(timeline.begin(),offset);
+    global_timeline.insert(global_timeline.begin(),offset);
 
     // clean all the sets
     lambda.clear();
@@ -825,7 +789,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::updateVectorParameters( void )
     }
     else
     {
-      lambda = std::vector<double>(timeline.size(),homogeneous_lambda->getValue());
+      lambda = std::vector<double>(global_timeline.size(),homogeneous_lambda->getValue());
     }
 
     // Get vector of death rates
@@ -835,7 +799,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::updateVectorParameters( void )
     }
     else
     {
-      mu = std::vector<double>(timeline.size(),homogeneous_mu->getValue());
+      mu = std::vector<double>(global_timeline.size(),homogeneous_mu->getValue());
     }
 
     // Get vector of serial sampling rates
@@ -845,7 +809,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::updateVectorParameters( void )
     }
     else
     {
-      phi = std::vector<double>(timeline.size(),homogeneous_phi->getValue());
+      phi = std::vector<double>(global_timeline.size(),homogeneous_phi->getValue());
     }
 
     // Get vector of conditional death upon sampling probabilities
@@ -855,7 +819,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::updateVectorParameters( void )
     }
     else
     {
-      r = std::vector<double>(timeline.size(),homogeneous_r->getValue());
+      r = std::vector<double>(global_timeline.size(),homogeneous_r->getValue());
     }
 
     // Get vector of burst birth probabilities
@@ -869,7 +833,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::updateVectorParameters( void )
     else
     {
       // User specified nothing, there are no birth bursts
-      lambda_event = std::vector<double>(timeline.size(),0.0);
+      lambda_event = std::vector<double>(global_timeline.size(),0.0);
     }
 
     // Get vector of burst death (mass extinction) probabilities
@@ -883,7 +847,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::updateVectorParameters( void )
     else
     {
       // User specified nothing, there are no birth bursts
-      mu_event = std::vector<double>(timeline.size(),0.0);
+      mu_event = std::vector<double>(global_timeline.size(),0.0);
     }
 
     // Get vector of event sampling probabilities
@@ -894,7 +858,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::updateVectorParameters( void )
     }
     else
     {
-        phi_event = std::vector<double>(timeline.size(),0.0);
+        phi_event = std::vector<double>(global_timeline.size(),0.0);
         if ( homogeneous_Phi != NULL )
         {
             // User specified the sampling fraction at the present
@@ -919,17 +883,17 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void )
     // TODO: B and C are producing nan values upon initialization, but not when computing tree probabilities, which are working fine
 
     // re-initialize all the sets
-    A_i = std::vector<double>(timeline.size(),0.0);
-    B_i = std::vector<double>(timeline.size(),0.0);
-    C_i = std::vector<double>(timeline.size(),0.0);
+    A_i = std::vector<double>(global_timeline.size(),0.0);
+    B_i = std::vector<double>(global_timeline.size(),0.0);
+    C_i = std::vector<double>(global_timeline.size(),0.0);
 
     // E_previous[i] is E_{i-1}(s_i)
     // lnD_previous[i] is log(D_{i-1}(s_i))
-    E_previous      = std::vector<double>(timeline.size(),0.0);
-    lnD_previous    = std::vector<double>(timeline.size(),0.0);
+    E_previous      = std::vector<double>(global_timeline.size(),0.0);
+    lnD_previous    = std::vector<double>(global_timeline.size(),0.0);
 
     // timeline[0] == 0.0
-    double t = timeline[0];
+    double t = global_timeline[0];
 
     // Compute all starting at 1
     A_i[0] = sqrt( pow(lambda[0] - mu[0] - phi[0],2.0) + 4 * lambda[0] * phi[0]);
@@ -950,9 +914,9 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void )
     // TODO: This can't be right, if there is no event sampling this will blow up
     lnD_previous[0] = 0.0;
 
-    for (size_t i=1; i<timeline.size(); ++i)
+    for (size_t i=1; i<global_timeline.size(); ++i)
     {
-        t = timeline[i];
+        t = global_timeline[i];
 
         // first, we need to compute E and D at the end of the previous interval
         E_previous[i] = E(i-1, t, false);
@@ -985,12 +949,12 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void )
     if ( condition == "survival" )
     {
       // timeline[0] == 0.0
-      double t = timeline[0];
+      double t = global_timeline[0];
 
-      A_survival_i = std::vector<double>(timeline.size(),0.0);
-      B_survival_i = std::vector<double>(timeline.size(),0.0);
-      C_survival_i = std::vector<double>(timeline.size(),0.0);
-      E_survival_previous = std::vector<double>(timeline.size(),0.0);
+      A_survival_i = std::vector<double>(global_timeline.size(),0.0);
+      B_survival_i = std::vector<double>(global_timeline.size(),0.0);
+      C_survival_i = std::vector<double>(global_timeline.size(),0.0);
+      E_survival_previous = std::vector<double>(global_timeline.size(),0.0);
 
       // Compute all starting at 1
       A_survival_i[0] = sqrt( pow(lambda[0] - mu[0],2.0));
@@ -1003,9 +967,9 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void )
 
       E_survival_previous[0] = 1.0;
 
-      for (size_t i=1; i<timeline.size(); ++i)
+      for (size_t i=1; i<global_timeline.size(); ++i)
       {
-          t = timeline[i];
+          t = global_timeline[i];
 
           // first, we need to compute E and D at the end of the previous interval
           E_survival_previous[i] = E(i-1, t, true);
@@ -1031,6 +995,148 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void )
 
     }
 
+}
+
+
+void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
+{
+    // @TODO: @ANDY: Fill in the function to assemble the master timeline and all the parameter vectors!!!
+    
+    // clean all the sets
+    lambda.clear();
+    mu.clear();
+    phi.clear();
+    r.clear();
+    // @TODO: @ANDY: Check that we cleared all parameters!
+    
+    
+    // first, we are checking for the global timeline
+    if ( interval_times_global != NULL )
+    {
+        if ( interval_times_speciation != NULL ||
+             interval_times_extinction != NULL ||
+             interval_times_sampling != NULL ||
+             interval_times_treatment != NULL ||
+             interval_times_event_speciation != NULL ||
+             interval_times_event_sampling != NULL ||
+             interval_times_event_extinction != NULL )
+        {
+            throw RbException("Both heterogeneous and homogeneous rate change times provided");
+        }
+        
+
+        // @TODO: Make sure that times and parameters are stored backwards in time!
+        
+//        std::vector<double> times = interval_times_global->getValue();
+//        std::vector<double> times_sorted_ascending = times;
+//        std::vector<double> times_sorted_descending = times;
+//
+//        sort(times_sorted_ascending.begin(), times_sorted_ascending.end() );
+//        sort(times_sorted_descending.rbegin(), times_sorted_descending.rend() );
+//        if( times == times_sorted_ascending )
+//        {
+//            ascending = true;
+//        }
+//        else if ( times != times_sorted_ascending )
+//        {
+//            throw RbException("Rate change times must be provided in sorted order");
+//        }
+        
+        
+        // check that the number of provided parameters matches the global timeline
+        if ( heterogeneous_lambda->getValue().size() != interval_times_global->getValue().size() )
+        {
+            std::stringstream ss;
+            ss << "Number of speciation rates (" << heterogeneous_lambda->getValue().size() << ") does not match number of time intervals (" << interval_times_global->getValue().size() << ")";
+            throw RbException(ss.str());
+        }
+        
+        if ( heterogeneous_mu->getValue().size() != interval_times_global->getValue().size() )
+        {
+            std::stringstream ss;
+            ss << "Number of extinction rates (" << heterogeneous_mu->getValue().size() << ") does not match number of time intervals (" << interval_times_global->getValue().size() << ")";
+            throw RbException(ss.str());
+        }
+        
+        // @TODO: @ANDY: keep on checking for all other parameters!
+        
+        // ...
+        
+        global_timeline = interval_times_global->getValue();
+        
+        // we are done with setting up the timeline (i.e., using the provided global timeline) and checking all dimension of parameters
+    }
+    else
+    {
+
+        // check if speciation rates are provided in the correct form
+        if ( heterogeneous_lambda == NULL && homogeneous_lambda == NULL)
+        {
+            throw RbException("Speciation rate must be of type RealPos or RealPos[]");
+        }
+        else if ( heterogeneous_lambda != NULL )
+        {
+            if ( interval_times_speciation == NULL ) throw RbException("No time intervals provided for piecewise constant speciation rates");
+
+            if ( interval_times_speciation != NULL && heterogeneous_lambda->getValue().size() != interval_times_speciation->getValue().size() + 1 )
+            {
+                std::stringstream ss;
+                ss << "Number of speciation rates (" << heterogeneous_lambda->getValue().size() << ") does not match number of time intervals (" << interval_times_speciation->getValue().size() + 1 << ")";
+                throw RbException(ss.str());
+            }
+        }
+        
+        // @TODO: @ANDY: do this check for all parameters too!
+        
+        // ...
+        
+        
+        // now we start assembling the global timeline by finding the union of unique intervals for all parameters
+        global_timeline.clear();
+        std::set<double> event_times;
+
+        // @TODO: Do this within a function
+        if ( interval_times_speciation != NULL )
+        {
+            const std::vector<double>& birth_times = interval_times_speciation->getValue();
+            for (std::vector<double>::const_iterator it = birth_times.begin(); it != birth_times.end(); ++it)
+            {
+                event_times.insert( *it );
+            }
+        }
+
+        if ( interval_times_extinction != NULL )
+        {
+            const std::vector<double>& death_times = interval_times_extinction->getValue();
+            for (std::vector<double>::const_iterator it = death_times.begin(); it != death_times.end(); ++it)
+            {
+                event_times.insert( *it );
+            }
+        }
+        
+        // @TODO: @ANDY: keep on adding times from all other timelines
+        
+        // ...
+
+        // we are done with setting up the timeline (i.e., using the all the provided timeline) and checking all dimension of parameters
+
+    }
+
+    // @TODO: @ANDY: Check about the offset
+    global_timeline.push_back( offset );
+
+    // now we fill the parameter vectors for each interval
+    for (size_t i = 0; i < global_timeline.size(); i++)
+    {
+        // @TODO: @ANDY: Check that these functions exist and do what we want!
+//        lambda.push_back( getSpeciationRate(i) );
+//        mu.push_back( getExtinctionRate(i) );
+//        phi.push_back( getSerialSamplingRate(i) );
+//        rho.push_back( getTaxonSamplingProbability(i, timeline.size()) );
+        
+        // @TODO: @ANDY: Make sure this populates properly all parameter vectors (backwards in time, etc.)
+    }
+        
 }
 
 double EpisodicBirthDeathSamplingTreatmentProcess::pSampling(double start) const
@@ -1140,18 +1246,18 @@ int EpisodicBirthDeathSamplingTreatmentProcess::survivors(double t) const
  */
 int EpisodicBirthDeathSamplingTreatmentProcess::whichIntervalTime(double t) const
 {
-  // Find the i such that s_i <= t < s_{i+1}
-  size_t i = findIndex(t);
+    // Find the i such that s_i <= t < s_{i+1}
+    size_t i = findIndex(t);
 
-  // Check if s_i == t
-  if ( t > timeline[i] + DBL_EPSILON && t < timeline[i] - DBL_EPSILON )
-  {
-    return (int) i;
-  }
-  else
-  {
-    return -1;
-  }
+    // Check if s_i == t
+    if ( t > global_timeline[i] + DBL_EPSILON && t < global_timeline[i] - DBL_EPSILON )
+    {
+        return (int) i;
+    }
+    else
+    {
+        return -1;
+    }
 
 }
 
