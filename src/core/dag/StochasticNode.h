@@ -34,7 +34,7 @@ namespace RevBayesCore {
         void                                                getIntegratedParents(RbOrderedSet<DagNode *>& ip) const;
         virtual double                                      getLnProbability(void);
         virtual double                                      getLnProbabilityRatio(void);
-        virtual std::vector<double>                         getLnMixtureLikelihoods(void) const;
+        virtual std::vector<double>                         getMixtureLikelihoods(bool log=true) const;
         virtual std::vector<double>                         getMixtureProbabilities(void) const;
         virtual size_t                                      getNumberOfMixtureElements(void) const;                                                        //!< Get the number of elements for this value
         valueType&                                          getValue(void);
@@ -299,7 +299,11 @@ void RevBayesCore::StochasticNode<valueType>::executeMethod(const std::string &n
 
     if ( n == "lnMixtureLikelihoods" )
     {
-        rv = this->getLnMixtureLikelihoods();
+        rv = this->getMixtureLikelihoods( true );
+    }
+    else if ( n == "MixtureLikelihoods" )
+    {
+        rv = this->getMixtureLikelihoods( false );
     }
     else
     {
@@ -376,7 +380,7 @@ void RevBayesCore::StochasticNode<valueType>::getIntegratedParents(RbOrderedSet<
 
 
 template<class valueType>
-std::vector<double> RevBayesCore::StochasticNode<valueType>::getLnMixtureLikelihoods( void ) const //RbOrderedSet<DagNode *>& integrated_parents, size_t index
+std::vector<double> RevBayesCore::StochasticNode<valueType>::getMixtureLikelihoods( bool use_log ) const
 {
     std::vector<double> ln_probs;
     
@@ -396,6 +400,7 @@ std::vector<double> RevBayesCore::StochasticNode<valueType>::getLnMixtureLikelih
         
         size_t num_mixture_elements = this->getNumberOfMixtureElements();
         ln_probs = std::vector<double>(num_mixture_elements, 0.0);
+        std::vector<double> probs = std::vector<double>(num_mixture_elements, 0.0);
         double max_ln_probs = RbConstants::Double::neginf;
         RbOrderedSet<DagNode *> affected;
         this->getAffectedNodes( affected );
@@ -422,15 +427,16 @@ std::vector<double> RevBayesCore::StochasticNode<valueType>::getLnMixtureLikelih
             prob += exp(ln_probs[i] - max_ln_probs) * mixture_probs[i];
         }
         
-//        if ( RbMath::isFinite( prob ) == false )
-//        {
-//            std::cerr << "Non-finite prob" << std::endl;
-//        }
-        
         double ln_prob = log( prob ) + max_ln_probs;
         for (size_t i=0; i<num_mixture_elements; ++i)
         {
+            probs[i] = exp(ln_probs[i] - max_ln_probs) * mixture_probs[i] / prob;
             ln_probs[i] += log(mixture_probs[i]) - ln_prob;
+        }
+        
+        if ( use_log == false )
+        {
+            ln_probs = probs;
         }
         
         // switch back integration flag

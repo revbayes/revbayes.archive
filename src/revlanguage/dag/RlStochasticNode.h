@@ -66,6 +66,9 @@ RevLanguage::StochasticNode<valueType>::StochasticNode( const std::string& n, Re
     
     ArgumentRules* ln_mixture_prob_arg_rules = new ArgumentRules();
     this->methods.addFunction( new DagMemberFunction< ModelVector<Real> >( "lnMixtureLikelihoods", this, ln_mixture_prob_arg_rules) );
+    
+    ArgumentRules* mixture_prob_arg_rules = new ArgumentRules();
+    this->methods.addFunction( new DagMemberFunction< ModelVector<Real> >( "MixtureLikelihoods", this, mixture_prob_arg_rules) );
 
     ArgumentRules* setValueArgRules = new ArgumentRules();
     setValueArgRules->push_back( new ArgumentRule("x", rlDistribution->getVariableTypeSpec(), "The value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -197,22 +200,6 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::StochasticNode<valueT
         this->setIntegratedOut( tf );
         
         return NULL;
-    }
-    else if (name == "lnProbability")
-    {
-        
-        // we found the corresponding member method
-        found = true;
-        
-        return RevPtr<RevVariable>( new RevVariable( new Real( this->getLnProbability() ), "" ) );
-    }
-    else if (name == "lnMixtureLikelihoods")
-    {
-        
-        // we found the corresponding member method
-        found = true;
-        
-        return RevPtr<RevVariable>( new RevVariable( new ModelVector<Real>( this->getLnMixtureLikelihoods() ), "" ) );
     }
     else if (name == "probability")
     {
