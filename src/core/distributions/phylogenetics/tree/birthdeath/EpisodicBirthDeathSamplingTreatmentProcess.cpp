@@ -694,10 +694,8 @@ size_t EpisodicBirthDeathSamplingTreatmentProcess::findIndex(double t) const
  * return the index i so that x_{i-1} <= t < x_i
  * where x is one of the input vector timelines
  */
-size_t EpisodicBirthDeathSamplingTreatmentProcess::findIndex(double t, TypedDagNode<RbVector<double> >* x) const
+size_t EpisodicBirthDeathSamplingTreatmentProcess::findIndex(double t, std::vector<double> &timeline) const
 {
-
-    std::vector<double> timeline = x->getValue();
 
     // Linear search for interval because std::lower_bound is not cooperating
     if (timeline.size() == 1)
@@ -776,6 +774,26 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnProbTreeShape(void) const
     // return (num_taxa - num_sa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa - num_extinct);
     //Gavryushkina (2014) uses the following
     return (num_taxa - num_sa - 1) * RbConstants::LN2 - RbMath::lnFactorial(num_taxa);
+}
+
+/**
+ * Takes a par.size() < global_timeline.size() vector and makes it the correct size to work with our global timeline.
+ * The parameter has its own reference timeline, which we use to find the rate in the global intervals.
+ *
+ */
+void EpisodicBirthDeathSamplingTreatmentProcess::updateNonGlobalParameterVector(std::vector<double> &par, std::vector<double> &par_times)
+{
+    // Store the original values so we can overwrite the vector
+    std::vector<double> old_par = par;
+
+    // For each time in the global timeline, find the rate according to this variable's own timeline
+    for (size_t i=0; i<global_timeline.size(); ++i)
+    {
+      // Where is this global time interval in the variable's timeline?
+      size_t idx = findIndex(global_timeline[i],par_times);
+      par[i] = old_par[idx];
+    }
+
 }
 
 /**
@@ -1023,11 +1041,24 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
 {
     // @TODO: @ANDY: Fill in the function to assemble the master timeline and all the parameter vectors!!!
 
+    // clean and get timeline
+    global_timeline.clear();
+    global_timeline = interval_times_global->getValue();
+
+    // Add t_0
+    getOffset();
+    global_timeline.insert(global_timeline.begin(),offset);
+
     // clean all the sets
     lambda.clear();
     mu.clear();
     phi.clear();
     r.clear();
+    lambda_event.clear();
+    mu_event.clear();
+    phi_event.clear();
+    r_event.clear();
+
     // @TODO: @ANDY: Check that we cleared all parameters!
 
 
@@ -1047,7 +1078,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
 
 
         // @TODO: Make sure that times and parameters are stored backwards in time!
-
+        
 //        std::vector<double> times = interval_times_global->getValue();
 //        std::vector<double> times_sorted_ascending = times;
 //        std::vector<double> times_sorted_descending = times;

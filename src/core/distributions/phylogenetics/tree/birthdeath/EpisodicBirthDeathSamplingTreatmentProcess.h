@@ -70,11 +70,10 @@ namespace RevBayesCore {
         double                                          lnD(size_t i, double t) const;                                      //!< Branch-segment probability at time t with index i, using pre-computed vectors
         double                                          E(size_t i, double t, bool computeSurvival = false) const;                                       //!< Extinction probability at time t with index i, using pre-computed vectors
         size_t                                          findIndex(double t) const;                                          //!< Find the index so that times[index-1] < t < times[index]
-        size_t                                          findIndex(double t, TypedDagNode<RbVector<double> >* x) const;
+        size_t                                          findIndex(double t, std::vector<double> &timeline) const;
         void                                            getOffset(void) const;
         double                                          lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
         double                                          lnProbTreeShape(void) const;
-        void                                            updateVectorParameters(void);
         void                                            prepareTimeline(void);
         void                                            prepareProbComputation(void);
         double                                          pSampling(double t) const;
@@ -82,6 +81,8 @@ namespace RevBayesCore {
         double                                          simulateDivergenceTime(double origin, double present) const;    //!< Simulate a speciation event.
         void                                            sortVectorParameterAndTimes(std::vector<double> &times, std::vector<double> &par);     //<! Sorts times to run from 0->inf, and orders par to match
         int                                             survivors(double t) const;                                 //!< Number of species alive at time t.
+        void                                            updateVectorParameters(void);
+        void                                            updateNonGlobalParameterVector(std::vector<double> &par, std::vector<double> &par_times); //!< Updates vector par such that it matches the global timeline
         int                                             whichIntervalTime(double t) const;                                //!< If a time corresponds to an interval/event time, returns that interval, otherwise returns -1
 
         // members
