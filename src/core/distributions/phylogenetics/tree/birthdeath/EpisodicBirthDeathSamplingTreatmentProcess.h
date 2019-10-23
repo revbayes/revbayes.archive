@@ -64,11 +64,13 @@ namespace RevBayesCore {
         void                                            swapParameterInternal(const DagNode *oldP, const DagNode *newP);    //!< Swap a parameter
 
         // helper functions
+        void                                            checkVectorSizes(TypedDagNode<RbVector<double> >* v1, TypedDagNode<RbVector<double> >* v2, int v1_minus_v2, std::string &param_name, bool is_rate) const;
         double                                          computeLnProbabilityTimes(void);                                    //!< Compute the log-transformed probability of the current value.
         void                                            countAllNodes(void);                                                 //!< Count bifurcating nodes, count all heterochronous nodes as either phi- or Phi-sampled and as either sampled ancestors or sampled extinct tips
         double                                          lnD(size_t i, double t) const;                                      //!< Branch-segment probability at time t with index i, using pre-computed vectors
         double                                          E(size_t i, double t, bool computeSurvival = false) const;                                       //!< Extinction probability at time t with index i, using pre-computed vectors
         size_t                                          findIndex(double t) const;                                          //!< Find the index so that times[index-1] < t < times[index]
+        size_t                                          findIndex(double t, TypedDagNode<RbVector<double> >* x) const;
         void                                            getOffset(void) const;
         double                                          lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
         double                                          lnProbTreeShape(void) const;
@@ -78,6 +80,7 @@ namespace RevBayesCore {
         double                                          pSampling(double t) const;
         double                                          pSurvival(double start, double end) const;
         double                                          simulateDivergenceTime(double origin, double present) const;    //!< Simulate a speciation event.
+        void                                            sortVectorParameterAndTimes(std::vector<double> &times, std::vector<double> &par);     //<! Sorts times to run from 0->inf, and orders par to match
         int                                             survivors(double t) const;                                 //!< Number of species alive at time t.
         int                                             whichIntervalTime(double t) const;                                //!< If a time corresponds to an interval/event time, returns that interval, otherwise returns -1
 
@@ -96,7 +99,7 @@ namespace RevBayesCore {
         const TypedDagNode<RbVector<double> >*          heterogeneous_Phi;                                     //!< The probability of sampling individuals at set time intervals.
         const TypedDagNode<double >*                    homogeneous_R;                                         //!< The homogeneous conditional probability of death upon treatment.
         const TypedDagNode<RbVector<double> >*          heterogeneous_R;                                       //!< The heterogeneous conditional probability of death upon treatment.
-        
+
         const TypedDagNode<RbVector<double> >*          interval_times_global;                                 //!< The user-specified non-zero times of the instantaneous events and rate shifts.
         const TypedDagNode<RbVector<double> >*          interval_times_speciation;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
         const TypedDagNode<RbVector<double> >*          interval_times_extinction;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
@@ -105,6 +108,14 @@ namespace RevBayesCore {
         const TypedDagNode<RbVector<double> >*          interval_times_event_speciation;                       //!< The user-specified non-zero times of the instantaneous events and rate shifts.
         const TypedDagNode<RbVector<double> >*          interval_times_event_extinction;                       //!< The user-specified non-zero times of the instantaneous events and rate shifts.
         const TypedDagNode<RbVector<double> >*          interval_times_event_sampling;                         //!< The user-specified non-zero times of the instantaneous events and rate shifts.
+
+        mutable std::vector<double>                     lambda_times_speciation;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
+        mutable std::vector<double>                     mu_times_extinction;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
+        mutable std::vector<double>                     sampling_times_sampling;                               //!< The user-specified non-zero times of the instantaneous events and rate shifts.
+        mutable std::vector<double>                     treatement_times_treatment;                              //!< The user-specified non-zero times of the instantaneous events and rate shifts.
+        mutable std::vector<double>                     lambda_times_event_speciation;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
+        mutable std::vector<double>                     mu_times_event_extinction;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
+        mutable std::vector<double>                     sampling_times_event_sampling;                               //!< The user-specified non-zero times of the instantaneous events and rate shifts.
         mutable std::vector<double>                     global_timeline;                                       //!< The times of the instantaneous events and rate shifts.
 
         std::vector<double>                             serial_tip_ages;                                       //!< The ages of all sampled dead lineages sampled by rate-sampling
@@ -124,6 +135,7 @@ namespace RevBayesCore {
         std::vector<double>                             lambda_event;
         std::vector<double>                             mu_event;
         std::vector<double>                             phi_event;
+        std::vector<double>                             r_event;
 
         std::vector<double>                             A_i;                                                   //!< Helper values
         std::vector<double>                             B_i;                                                   //!< Helper values
