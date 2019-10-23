@@ -166,7 +166,7 @@ EpisodicBirthDeathSamplingTreatmentProcess* EpisodicBirthDeathSamplingTreatmentP
  * If the sizes are wrong, throws an exception.
  * Uses param_name and is_rate to make a sensible error message
  */
-void EpisodicBirthDeathSamplingTreatmentProcess::checkVectorSizes(TypedDagNode<RbVector<double> >* v1, TypedDagNode<RbVector<double> >* v2, int v1_minus_v2, std::string &param_name, bool is_rate) const
+void EpisodicBirthDeathSamplingTreatmentProcess::checkVectorSizes(const TypedDagNode<RbVector<double> >* v1, const TypedDagNode<RbVector<double> >* v2, int v1_minus_v2, std::string& param_name, bool is_rate) const
 {
   if ( v1->getValue().size() - v2->getValue().size() != v1_minus_v2 )
   {
@@ -1041,14 +1041,6 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
 {
     // @TODO: @ANDY: Fill in the function to assemble the master timeline and all the parameter vectors!!!
 
-    // clean and get timeline
-    global_timeline.clear();
-    global_timeline = interval_times_global->getValue();
-
-    // Add t_0
-    getOffset();
-    global_timeline.insert(global_timeline.begin(),offset);
-
     // clean all the sets
     lambda.clear();
     mu.clear();
@@ -1058,6 +1050,58 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
     mu_event.clear();
     phi_event.clear();
     r_event.clear();
+
+    lambda_times.clear();
+    mu_times.clear();
+    sampling_times.clear();
+    treatement_times.clear();
+    lambda_event_times.clear();
+    mu_event_times.clear();
+    sampling_event_times.clear();
+    global_timeline.clear();
+
+    // put in current values for vector parameters so we can re-order them as needed
+    if (heterogeneous_lambda != NULL)
+    {
+      lambda = heterogeneous_lambda->getValue();
+    }
+    if (heterogeneous_mu != NULL)
+    {
+      mu = heterogeneous_mu->getValue();
+    }
+    if (heterogeneous_phi != NULL)
+    {
+      phi = heterogeneous_phi->getValue();
+    }
+    if (heterogeneous_r != NULL)
+    {
+      r = heterogeneous_r->getValue();
+    }
+    if (heterogeneous_Lambda != NULL)
+    {
+      lambda_event = heterogeneous_Lambda->getValue();
+    }
+    if (heterogeneous_Mu != NULL)
+    {
+      mu_event = heterogeneous_Mu->getValue();
+    }
+    if (heterogeneous_Phi != NULL)
+    {
+      phi_event = heterogeneous_Phi->getValue();
+    }
+    if (heterogeneous_R != NULL)
+    {
+      r_event = heterogeneous_R->getValue();
+    }
+
+    lambda_times = interval_times_speciation->getValue();
+    mu_times = interval_times_extinction->getValue();
+    sampling_times = interval_times_sampling->getValue();
+    treatement_times = interval_times_treatment->getValue();
+    lambda_event_times = interval_times_event_speciation->getValue();
+    mu_event_times = interval_times_event_extinction->getValue();
+    sampling_event_times = interval_times_event_sampling->getValue();
+    global_timeline = interval_times_global->getValue();
 
     // @TODO: @ANDY: Check that we cleared all parameters!
 
@@ -1076,45 +1120,23 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
             throw RbException("Both heterogeneous and homogeneous rate change times provided");
         }
 
+        // @TODO: @ANDY: keep on checking for all other parameters!
+        // check that the number of provided parameters matches the global timeline
+        // Right now, the global timeline is only the interval times, i.e. breaks between pieces/episodes/windows
+        checkVectorSizes(heterogeneous_lambda,interval_times_global,1,spn,true);
+        checkVectorSizes(heterogeneous_mu,interval_times_global,1,exn,true);
+        checkVectorSizes(heterogeneous_phi,interval_times_global,1,smp,true);
+        checkVectorSizes(heterogeneous_r,interval_times_global,1,trt,false);
+        checkVectorSizes(heterogeneous_Lambda,interval_times_global,0,spn,false);
+        checkVectorSizes(heterogeneous_Mu,interval_times_global,0,exn,false);
+        checkVectorSizes(heterogeneous_Phi,interval_times_global,1,smp,false);
+        checkVectorSizes(heterogeneous_R,interval_times_global,0,etrt,false);
 
         // @TODO: Make sure that times and parameters are stored backwards in time!
-        
-//        std::vector<double> times = interval_times_global->getValue();
-//        std::vector<double> times_sorted_ascending = times;
-//        std::vector<double> times_sorted_descending = times;
-//
-//        sort(times_sorted_ascending.begin(), times_sorted_ascending.end() );
-//        sort(times_sorted_descending.rbegin(), times_sorted_descending.rend() );
-//        if( times == times_sorted_ascending )
-//        {
-//            ascending = true;
-//        }
-//        else if ( times != times_sorted_ascending )
-//        {
-//            throw RbException("Rate change times must be provided in sorted order");
-//        }
+        sortGlobalTimesAndVectorParameter();
 
-
-        // check that the number of provided parameters matches the global timeline
-        if ( heterogeneous_lambda->getValue().size() != interval_times_global->getValue().size() )
-        {
-            std::stringstream ss;
-            ss << "Number of speciation rates (" << heterogeneous_lambda->getValue().size() << ") does not match number of time intervals (" << interval_times_global->getValue().size() << ")";
-            throw RbException(ss.str());
-        }
-
-        if ( heterogeneous_mu->getValue().size() != interval_times_global->getValue().size() )
-        {
-            std::stringstream ss;
-            ss << "Number of extinction rates (" << heterogeneous_mu->getValue().size() << ") does not match number of time intervals (" << interval_times_global->getValue().size() << ")";
-            throw RbException(ss.str());
-        }
-
-        // @TODO: @ANDY: keep on checking for all other parameters!
 
         // ...
-
-        global_timeline = interval_times_global->getValue();
 
         // we are done with setting up the timeline (i.e., using the provided global timeline) and checking all dimension of parameters
     }
@@ -1129,13 +1151,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
         else if ( heterogeneous_lambda != NULL )
         {
             if ( interval_times_speciation == NULL ) throw RbException("No time intervals provided for piecewise constant speciation rates");
-
-            if ( interval_times_speciation != NULL && heterogeneous_lambda->getValue().size() != interval_times_speciation->getValue().size() + 1 )
-            {
-                std::stringstream ss;
-                ss << "Number of speciation rates (" << heterogeneous_lambda->getValue().size() << ") does not match number of time intervals (" << interval_times_speciation->getValue().size() + 1 << ")";
-                throw RbException(ss.str());
-            }
+            checkVectorSizes(heterogeneous_lambda,interval_times_speciation,1,spn,true);
         }
 
         // @TODO: @ANDY: do this check for all parameters too!
@@ -1144,7 +1160,6 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
 
 
         // now we start assembling the global timeline by finding the union of unique intervals for all parameters
-        global_timeline.clear();
         std::set<double> event_times;
 
         // @TODO: Do this within a function
@@ -1188,6 +1203,10 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
 
         // @TODO: @ANDY: Make sure this populates properly all parameter vectors (backwards in time, etc.)
     }
+
+    // Add s_0
+    getOffset();
+    global_timeline.insert(global_timeline.begin(),offset);
 
 }
 
@@ -1289,9 +1308,154 @@ int EpisodicBirthDeathSamplingTreatmentProcess::survivors(double t) const
 }
 
 /**
+ * Sorts global times to run from present to past (0->inf) and orders ALL vector parameters to match this.
+ * These can only be sorted after the local copies have values in them.
+ */
+void EpisodicBirthDeathSamplingTreatmentProcess::sortGlobalTimesAndVectorParameter()
+{
+  std::vector<double> times_sorted_ascending = global_timeline;
+  std::vector<double> times_sorted_descending = global_timeline;
+
+  sort(times_sorted_ascending.begin(), times_sorted_ascending.end() );
+  sort(times_sorted_descending.rbegin(), times_sorted_descending.rend() );
+
+  // We want times in ascending order, so if they already are we're done here
+  if ( global_timeline != times_sorted_ascending )
+  {
+      // If times are sorted in descending order, we just flip the parameter and time vectors
+      if ( global_timeline == times_sorted_ascending )
+      {
+        // Reverse timeline
+        std::reverse(global_timeline.begin(),global_timeline.end());
+
+        // Reverse all vector parameters
+        if (heterogeneous_lambda != NULL)
+        {
+          sort(lambda.rbegin(),lambda.rend());
+        }
+        if (heterogeneous_mu != NULL)
+        {
+          sort(mu.rbegin(),mu.rend());
+        }
+        if (heterogeneous_phi != NULL)
+        {
+          sort(phi.rbegin(),phi.rend());
+        }
+        if (heterogeneous_r != NULL)
+        {
+          sort(r.rbegin(),r.rend());
+        }
+        if (heterogeneous_Lambda != NULL)
+        {
+          sort(lambda_event.rbegin(),lambda_event.rend());
+        }
+        if (heterogeneous_Mu != NULL)
+        {
+          sort(mu_event.rbegin(),mu_event.rend());
+        }
+        if (heterogeneous_Phi != NULL)
+        {
+          sort(phi_event.rbegin(),phi_event.rend());
+        }
+        if (heterogeneous_R != NULL)
+        {
+          sort(r_event.rbegin(),r_event.rend());
+        }
+
+      }
+      else
+      {
+        // Find ordering of times vector
+        std::vector<size_t> ordering;
+        for (size_t i=0; i<global_timeline.size(); ++i)
+        {
+          for (size_t j=0; j<global_timeline.size(); ++j)
+          {
+            if ( times_sorted_ascending[i] == global_timeline[j] )
+            {
+              ordering.push_back(j);
+            }
+          }
+        }
+
+        // Replace times with sorted times
+        global_timeline = times_sorted_ascending;
+
+        // Sort all vector parameters
+        if (heterogeneous_lambda != NULL)
+        {
+          std::vector<double> old_lambda = lambda;
+          for (size_t i=0; i<global_timeline.size(); ++i)
+          {
+            lambda[i] = old_lambda[ordering[i]];
+          }
+        }
+        if (heterogeneous_mu != NULL)
+        {
+          std::vector<double> old_mu = mu;
+          for (size_t i=0; i<global_timeline.size(); ++i)
+          {
+            mu[i] = old_mu[ordering[i]];
+          }
+        }
+        if (heterogeneous_phi != NULL)
+        {
+          std::vector<double> old_phi = phi;
+          for (size_t i=0; i<global_timeline.size(); ++i)
+          {
+            phi[i] = old_phi[ordering[i]];
+          }
+        }
+        if (heterogeneous_r != NULL)
+        {
+          std::vector<double> old_r = r;
+          for (size_t i=0; i<global_timeline.size(); ++i)
+          {
+            r[i] = old_r[ordering[i]];
+          }
+        }
+        if (heterogeneous_Lambda != NULL)
+        {
+          std::vector<double> old_lambda_event = lambda_event;
+          for (size_t i=0; i<global_timeline.size(); ++i)
+          {
+            lambda_event[i] = old_lambda_event[ordering[i]];
+          }
+        }
+        if (heterogeneous_Mu != NULL)
+        {
+          std::vector<double> old_mu_event = mu_event;
+          for (size_t i=0; i<global_timeline.size(); ++i)
+          {
+            mu_event[i] = old_mu_event[ordering[i]];
+          }
+        }
+        if (heterogeneous_Phi != NULL)
+        {
+          std::vector<double> old_phi_event = phi_event;
+          for (size_t i=0; i<global_timeline.size(); ++i)
+          {
+            phi_event[i] = old_phi_event[ordering[i]];
+          }
+        }
+        if (heterogeneous_R != NULL)
+        {
+          std::vector<double> old_r_event = r_event;
+          for (size_t i=0; i<global_timeline.size(); ++i)
+          {
+            r_event[i] = old_r_event[ordering[i]];
+          }
+        }
+
+      }
+  }
+
+}
+
+/**
  * Sorts times to run from present to past (0->inf) and orders par to match this.
  */
-void EpisodicBirthDeathSamplingTreatmentProcess::sortVectorParameterAndTimes(std::vector<double> &times, std::vector<double> &par)
+void EpisodicBirthDeathSamplingTreatmentProcess::sortNonGlobalTimesAndVectorParameter(std::vector<double> &times, std::vector<double> &par)
 {
   std::vector<double> times_sorted_ascending = times;
   std::vector<double> times_sorted_descending = times;

@@ -64,7 +64,7 @@ namespace RevBayesCore {
         void                                            swapParameterInternal(const DagNode *oldP, const DagNode *newP);    //!< Swap a parameter
 
         // helper functions
-        void                                            checkVectorSizes(TypedDagNode<RbVector<double> >* v1, TypedDagNode<RbVector<double> >* v2, int v1_minus_v2, std::string &param_name, bool is_rate) const;
+        void                                            checkVectorSizes(const TypedDagNode<RbVector<double> >* v1, const TypedDagNode<RbVector<double> >* v2, int v1_minus_v2, std::string& param_name, bool is_rate) const;
         double                                          computeLnProbabilityTimes(void);                                    //!< Compute the log-transformed probability of the current value.
         void                                            countAllNodes(void);                                                 //!< Count bifurcating nodes, count all heterochronous nodes as either phi- or Phi-sampled and as either sampled ancestors or sampled extinct tips
         double                                          lnD(size_t i, double t) const;                                      //!< Branch-segment probability at time t with index i, using pre-computed vectors
@@ -79,7 +79,8 @@ namespace RevBayesCore {
         double                                          pSampling(double t) const;
         double                                          pSurvival(double start, double end) const;
         double                                          simulateDivergenceTime(double origin, double present) const;    //!< Simulate a speciation event.
-        void                                            sortVectorParameterAndTimes(std::vector<double> &times, std::vector<double> &par);     //<! Sorts times to run from 0->inf, and orders par to match
+        void                                            sortGlobalTimesAndVectorParameter(void);     //<! Sorts times to run from 0->inf, and orders ALL vector parameters to match
+        void                                            sortNonGlobalTimesAndVectorParameter(std::vector<double> &times, std::vector<double> &par);     //<! Sorts times to run from 0->inf, and orders par to match
         int                                             survivors(double t) const;                                 //!< Number of species alive at time t.
         void                                            updateVectorParameters(void);
         void                                            updateNonGlobalParameterVector(std::vector<double> &par, std::vector<double> &par_times); //!< Updates vector par such that it matches the global timeline
@@ -110,13 +111,14 @@ namespace RevBayesCore {
         const TypedDagNode<RbVector<double> >*          interval_times_event_extinction;                       //!< The user-specified non-zero times of the instantaneous events and rate shifts.
         const TypedDagNode<RbVector<double> >*          interval_times_event_sampling;                         //!< The user-specified non-zero times of the instantaneous events and rate shifts.
 
-        mutable std::vector<double>                     lambda_times_speciation;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
-        mutable std::vector<double>                     mu_times_extinction;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
-        mutable std::vector<double>                     sampling_times_sampling;                               //!< The user-specified non-zero times of the instantaneous events and rate shifts.
-        mutable std::vector<double>                     treatement_times_treatment;                              //!< The user-specified non-zero times of the instantaneous events and rate shifts.
-        mutable std::vector<double>                     lambda_times_event_speciation;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
-        mutable std::vector<double>                     mu_times_event_extinction;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
-        mutable std::vector<double>                     sampling_times_event_sampling;                               //!< The user-specified non-zero times of the instantaneous events and rate shifts.
+        mutable std::vector<double>                     lambda_times;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
+        mutable std::vector<double>                     mu_times;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
+        mutable std::vector<double>                     sampling_times;                               //!< The user-specified non-zero times of the instantaneous events and rate shifts.
+        mutable std::vector<double>                     treatement_times;                              //!< The user-specified non-zero times of the instantaneous events and rate shifts.
+        mutable std::vector<double>                     lambda_event_times;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
+        mutable std::vector<double>                     mu_event_times;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
+        mutable std::vector<double>                     sampling_event_times;                               //!< The user-specified non-zero times of the instantaneous events and rate shifts.
+        mutable std::vector<double>                     treatment_event_times;                               //!< The user-specified non-zero times of the instantaneous events and rate shifts.
         mutable std::vector<double>                     global_timeline;                                       //!< The times of the instantaneous events and rate shifts.
 
         std::vector<double>                             serial_tip_ages;                                       //!< The ages of all sampled dead lineages sampled by rate-sampling
@@ -149,6 +151,11 @@ namespace RevBayesCore {
         std::vector<double>                             C_survival_i;                                          //!< Helper values
         std::vector<double>                             E_survival_previous;                                   //!< The probability that a lineage at time t has no sampled EXTANT descendants.
 
+        std::string spn = "speciation";
+        std::string exn = "extinction";
+        std::string smp = "sampling";
+        std::string trt = "(serial) treatment";
+        std::string etrt = "(event) treatment";
     };
 }
 
