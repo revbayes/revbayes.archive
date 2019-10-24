@@ -808,7 +808,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::expandNonGlobalProbabilityParam
       bool global_time_is_variable_time = false;
       for (size_t j=0; i<par_times.size(); ++j)
       {
-        if ( par_times[j] == global_timeline[j] )
+        if ( fabs(par_times[j] - global_timeline[j]) < DBL_EPSILON )
         {
           // time is in variable's timeline
           par[i] = old_par[j];
@@ -1438,6 +1438,26 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
         }
     }
 
+    // Get vector of burst death (mass extinction) probabilities
+    if ( heterogeneous_R != NULL )
+    {
+      // Expand if needed, this will make the first event 0
+      if (r_event.size() != global_timeline.size() - 1)
+      {
+        expandNonGlobalProbabilityParameterVector(r_event,phi_event_times);
+      }
+      else
+      {
+        // treatment_event_0 must be 0 (there can be no burst at the present)
+        r_event.insert(r_event.begin(),0.0);
+      }
+    }
+    else
+    {
+      // User specified nothing, there are no birth bursts
+      mu_event = std::vector<double>(global_timeline.size(),0.0);
+    }
+
     // @TODO: @ANDY: Check about the offset
     // Add s_0
     getOffset();
@@ -1724,8 +1744,12 @@ void EpisodicBirthDeathSamplingTreatmentProcess::sortNonGlobalTimesAndVectorPara
           times[i] = times_par[i].first;
           par[i] = times_par[i].second;
         }
-
       }
+  }
+
+  if ( times[0] < DBL_EPSILON )
+  {
+    throw RbException("User-specified interval times cannot include time = 0");
   }
 
 }
