@@ -30,7 +30,6 @@ namespace RevLanguage {
         static const std::string&                   getClassType(void);                                         //!< Get Rev simTree
         static const TypeSpec&                      getClassTypeSpec(void);                                     //!< Get class simTree spec
         std::string                                 getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
-        std::string                                 getHelpDescription(void) const;                             //!< Get brief description of function.
         const TypeSpec&                             getTypeSpec(void) const;                                    //!< Get language simTree of the object
 
         // Func_source functions

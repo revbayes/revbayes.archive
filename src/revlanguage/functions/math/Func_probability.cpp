@@ -63,53 +63,6 @@ const ArgumentRules& Func_probability::getArgumentRules( void ) const
 }
 
 
-/**
- * Get the author(s) of this function so they can receive credit (and blame) for it.
- */
-std::vector<std::string> Func_probability::getHelpAuthor(void) const
-{
-    // create a vector of authors for this function
-    std::vector<std::string> authors;
-    authors.push_back( "Sebastian Hoehna" );
-    
-    return authors;
-}
-
-
-/**
- * Get the (brief) description for this function
- */
-std::string Func_probability::getHelpDescription(void) const
-{
-    std::string description = "";
-    description += "This Rev function converts between Rev types from Real to Probability.";
-    
-    return description;
-}
-
-
-/**
- * Get an executable and instructive example.
- * These example should help the users to show how this function works but
- * are also used to test if this function still works.
- */
-std::string Func_probability::getHelpExample(void) const
-{
-    // create an example as a single string variable.
-    std::string example = "";
-    
-    example += "# Create a RealPos\n";
-    example += "x <- 12/13\n";
-    example += "type(x)\n";
-    example += "\n";
-    example += "# Convert the RealPos to Probability\n";
-    example += "y := Probability(x)\n";
-    example += "type(y)\n";
-    
-    return example;
-}
-
-
 const std::string& Func_probability::getClassType(void)
 {
     
