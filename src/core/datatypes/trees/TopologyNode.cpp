@@ -1901,3 +1901,24 @@ void TopologyNode::setTree(Tree *t)
     
 }
 
+void TopologyNode::removeDegreeTwoNodes()
+{
+  if (this->getNumberOfChildren() == 1)
+    {
+      TopologyNode *ch = *getChildren().begin();
+      double bl_this = this->branch_length;
+      double bl_child = ch->getBranchLength();
+      ch->setBranchLength(bl_this + bl_child);
+      if (! this->isRoot()) {
+        TopologyNode &pa = this->getParent();
+        ch->setParent(&pa);
+        }
+      else {
+        ch->setNodeType(ch->isTip(), true, ch->isInternal());
+      }
+    }
+  std::vector<TopologyNode*> chs = this->children;
+  for (std::vector<TopologyNode*>::iterator it = chs.begin(); it != chs.end(); ++it) {
+    (*it)->removeDegreeTwoNodes();
+  }
+}

@@ -263,7 +263,7 @@ double DuplicationLossProcess::computeD(double dt, double p_e)
   return g_te;
 }
 
-// Tue Apr 16 13:54:41 CEST 2019 BUGFIX. The extinction probability for branches
+// Tue Apr 16 13:54:41 CEST 2019. The extinction probability for branches
 // without genes was not calculated. This is now done separately before the
 // actual likelihood calculcation.
 void DuplicationLossProcess::computeAllEs(const TopologyNode &hap_node) {
@@ -538,6 +538,7 @@ void DuplicationLossProcess::redrawValue( void )
 
           if (success == true)
             {
+              std::cout << *value << std::endl;
               return;
             }
           ++attempts;
@@ -718,11 +719,13 @@ void DuplicationLossProcess::recursivelySimulateTreeForward(double age_begin, co
 
   while (true) {
     size_t n_genes = genes.size();
+    if (n_genes == 0) {
+      // No genes are left.
+      return;
+    }
     double dt = RbStatistics::Exponential::rv( n_genes*ra, *rng);
     current_age -= dt;
     if (current_age <= age_end) {
-      // This may not be necessary.
-      current_age = age_end;
       // Exit loop, no event before bottom of branch.
       break;
     }
@@ -746,7 +749,12 @@ void DuplicationLossProcess::recursivelySimulateTreeForward(double age_begin, co
       genes.push_back(right);
     }
     else {
-      // An extinction. Gene has already been removed from vector.
+      // An extinction.
+      // Gene has already been removed from the genes vector.
+      // if (! gene->isRoot()) {
+      //   TopologyNode &pa = gene->getParent();
+      //   pa.removeChild(gene);
+      // }
     }
   }
 
@@ -887,20 +895,26 @@ void DuplicationLossProcess::simulateTree( void )
   // Create the tree object.
   // The time tree object (topology + times).
   Tree *psi = new Tree();
-  // Internally we treat unrooted topologies the same as rooted.
-  psi->setRooted(true);
+
   // Initialize the gene topology by setting the root and reindex the tree.
+  psi->setRooted(true);
+  // TODO: This is still buggy. But the idea is clear.
+  // TopologyNode *node_root = &value->getNode(0);
+  // while (true) {
+  //   TopologyNode *parent = &node_root->getParent();
+  //   if (parent == NULL)
+  //     break;
+  //   else
+  //     node_root = parent;
+  // }
   psi->setRoot(root, true);
 
-  // Set length of root branch.
-  double root_age = root->getAge();
-  double root_branch_length = org_time - root_age;
-  if (root_branch_length < 0) {
-    throw RbException("Root length smaller than zero.");
-  }
-  root->setBranchLength(root_branch_length);
+  // This is not needed since the full tree is retained (yet, see below).
+  // root->removeDegreeTwoNodes();
 
   // Remove extinct genes.
+  // Thu 24 Oct 2019 07:44:04 PM CEST
+  // THIS ALSO RESETS THE ROOT BRANCH LENGHT!
   std::vector<size_t> fossil_leaves_idxs;
   while ( (fossil_leaves_idxs = psi->Tree::getFossilLeavesIdxs()).size() > 0)
     {
@@ -909,6 +923,17 @@ void DuplicationLossProcess::simulateTree( void )
 
   // We probably need to re-index the tip nodes here.
   psi->reindex();
+
+  // This step is important. The root may have changed and the root branch
+  // length needs to be set after pruning extinct leaves!
+  root = &(psi->getRoot());
+  // Set length of root branch.
+  double root_age = root->getAge();
+  double root_branch_length = org_time - root_age;
+  if (root_branch_length < 0) {
+    throw RbException("Root length smaller than zero.");
+  }
+  root->setBranchLength(root_branch_length);
 
   // Set the names of the tips.
   psi->setDefaultTipNames("Tip_",false);
