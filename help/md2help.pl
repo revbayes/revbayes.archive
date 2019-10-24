@@ -105,7 +105,10 @@ foreach my $file (sort @ARGV) {
 			}
 		} else {
 			$entry{$key} =~ s/\s+$//g;
-			print "\thelp_strings[string(\"$name\")][string(\"$key\")] = string(R\"($entry{$key})\");\n";
+			if ( $entry{$key} ne "" )
+			{
+				print "\thelp_strings[string(\"$name\")][string(\"$key\")] = string(R\"($entry{$key})\");\n";
+			}
 		}
 	}
 }
