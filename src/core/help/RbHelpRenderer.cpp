@@ -239,7 +239,7 @@ std::string HelpRenderer::renderDescription(const RbHelpEntry &helpEntry, size_t
         result.append( TerminalFormatter::makeUnderlined("Description") );
         result.append( section_break );
     
-        result.append( StringUtilities::formatTabWrap(description, 1, w) );
+        result.append( StringUtilities::formatTabWrap(description, 1, w, false) );
         result.append( line_break );
         result.append( section_break );
     }
@@ -261,7 +261,7 @@ std::string HelpRenderer::renderDetails(const RbHelpEntry &helpEntry, size_t w) 
         result.append( TerminalFormatter::makeUnderlined("Details") );
         result.append( section_break );
         
-        result.append( StringUtilities::formatTabWrap(details, 1, w) );
+        result.append( StringUtilities::formatTabWrap(details, 1, w, false) );
         result.append( line_break );
         result.append( section_break );
     }

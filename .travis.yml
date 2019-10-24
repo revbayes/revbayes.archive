@@ -100,7 +100,7 @@ script:
 # Build
   - cd projects/cmake
   - mkdir build
-  - ./regenerate.sh -travis true -mpi ${USE_MPI} -exec_name rb
+  - ./regenerate.sh -travis true -mpi ${USE_MPI} -help true -exec_name rb
   - cd build
   - cmake .
   - make -j4

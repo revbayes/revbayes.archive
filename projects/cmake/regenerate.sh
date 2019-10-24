@@ -49,17 +49,16 @@ done
 # generate cmake configuration
 
 if [ "${mpi}" = "true" ] && [ "${travis}" = "false" ]; then
-    HERE="$(pwd)/build-mpi"
-    mkdir -p "${HERE}"
-    echo $HERE
+    BUILD_DIR="$(pwd)/build-mpi"
+    mkdir -p "${BUILD_DIR}"
+    echo $BUILD_DIR
 else
-    HERE="$(pwd)/build"
-    mkdir -p "${HERE}"
-    echo $HERE
+    BUILD_DIR="$(pwd)/build"
+    mkdir -p "${BUILD_DIR}"
+    echo $BUILD_DIR
 fi
 
-cd "$HERE"/../
-cd ../../src
+cd "$BUILD_DIR"/../../../src
 
 echo 'cmake_minimum_required(VERSION 2.6)
 project(RevBayes)
@@ -84,7 +83,7 @@ project(RevBayes)
 # So, we add the flag directly instead.
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-' > "$HERE/CMakeLists.txt"
+' > "$BUILD_DIR/CMakeLists.txt"
 
 
 if [ "${exec_name}" = "" ]; then
@@ -97,9 +96,9 @@ fi
 
 echo "Building ${exec_name}"
 
-echo "set (RB_EXEC_NAME \"${exec_name}\")" >> "$HERE/CMakeLists.txt"
-echo "set (LOCAL_BOOST_ROOT \"${boost_root}\")" >> "$HERE/CMakeLists.txt"
-echo "set (LOCAL_BOOST_LIBRARY \"${boost_lib}\")" >> "$HERE/CMakeLists.txt"
+echo "set (RB_EXEC_NAME \"${exec_name}\")" >> "$BUILD_DIR/CMakeLists.txt"
+echo "set (LOCAL_BOOST_ROOT \"${boost_root}\")" >> "$BUILD_DIR/CMakeLists.txt"
+echo "set (LOCAL_BOOST_LIBRARY \"${boost_lib}\")" >> "$BUILD_DIR/CMakeLists.txt"
 
 if [ "$debug" = "true" ]
 then
@@ -110,20 +109,20 @@ echo '
 # So, disable those warnings for now.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -Wall -msse -msse2 -msse3")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -Wall")
-'  >> "$HERE/CMakeLists.txt"
+'  >> "$BUILD_DIR/CMakeLists.txt"
 elif [ "$mac" = "true" ]
 then
 echo '
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.6")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
-'  >> "$HERE/CMakeLists.txt"
+'  >> "$BUILD_DIR/CMakeLists.txt"
 elif [ "$win" = "true" ]
 then
 echo '
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
-'  >> "$HERE/CMakeLists.txt"
+'  >> "$BUILD_DIR/CMakeLists.txt"
 else
 echo '
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "^arm*|aarch64")
@@ -133,7 +132,7 @@ else()
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3")
 endif()
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
-'  >> "$HERE/CMakeLists.txt"
+'  >> "$BUILD_DIR/CMakeLists.txt"
 fi
 
 if [ "$mpi" = "true" ]
@@ -146,14 +145,14 @@ find_package(MPI REQUIRED)
 include_directories(${MPI_INCLUDE_PATH})
 set(CMAKE_CXX_COMPILE_FLAGS "${CMAKE_CXX_COMPILE_FLAGS} ${MPI_COMPILE_FLAGS}")
 set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} ${MPI_LINK_FLAGS}")
-'  >> "$HERE/CMakeLists.txt"
+'  >> "$BUILD_DIR/CMakeLists.txt"
 fi
 
 if [ "$win" = "true" ]
 then
 echo '
 add_definitions(-DRB_WIN)
-'  >> "$HERE/CMakeLists.txt"
+'  >> "$BUILD_DIR/CMakeLists.txt"
 fi
 
 
@@ -162,14 +161,14 @@ then
 echo "JUPYTER!"
 echo '
 add_definitions(-DRB_XCODE)
-'  >> "$HERE/CMakeLists.txt"
+'  >> "$BUILD_DIR/CMakeLists.txt"
 fi
 
 if [ "$travis" = "true" ]
 then
     echo 'set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g0 -O2")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g0 -O2")
-' >> "$HERE/CMakeLists.txt"
+' >> "$BUILD_DIR/CMakeLists.txt"
 fi
 
 echo '
@@ -209,8 +208,8 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 
 # TODO Split these up based on sub-package dependency
-INCLUDE_DIRECTORIES(' >> "$HERE/CMakeLists.txt"
-find libs core revlanguage help -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
+INCLUDE_DIRECTORIES(' >> "$BUILD_DIR/CMakeLists.txt"
+find libs core revlanguage help -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$BUILD_DIR/CMakeLists.txt"
 echo ' ${Boost_INCLUDE_DIR} )
 
 
@@ -224,24 +223,29 @@ add_subdirectory(revlanguage)
 
 ############# executables #################
 # basic rev-bayes binary
-' >> $HERE/CMakeLists.txt
+' >> $BUILD_DIR/CMakeLists.txt
 
 if [ "$help" = "true" ]
 then
+
+#################
+# generate help database
+echo "Generating help database"
+perl help/md2help.pl help/md/* > core/help/RbHelpDatabase.cpp
+
 echo '
 add_subdirectory(help)
-' >> $HERE/CMakeLists.txt
+' >> $BUILD_DIR/CMakeLists.txt
+
+echo '
+add_executable(rb-help2yml ${PROJECT_SOURCE_DIR}/help/YAMLHelpGenerator.cpp)
+
+target_link_libraries(rb-help2yml rb-parser rb-core libs help_yaml ${Boost_LIBRARIES})
+set_target_properties(rb-help2yml PROPERTIES PREFIX "../")
+' >> $BUILD_DIR/CMakeLists.txt
 fi
 
-if [ "$help" = "true" ]
-then
-echo '
-add_executable(rb-help ${PROJECT_SOURCE_DIR}/help/YAMLHelpGenerator.cpp)
-
-target_link_libraries(rb-help rb-parser rb-core libs help_yaml ${Boost_LIBRARIES})
-set_target_properties(rb-help PROPERTIES PREFIX "../")
-' >> $HERE/CMakeLists.txt
-elif [ "$jupyter" = "true" ]
+if [ "$jupyter" = "true" ]
 then
 echo "more jupyter!"
 echo '
@@ -249,7 +253,7 @@ add_executable(rb-jupyter ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 
 target_link_libraries(rb-jupyter rb-parser rb-core libs ${Boost_LIBRARIES})
 set_target_properties(rb-jupyter PROPERTIES PREFIX "../")
-' >> $HERE/CMakeLists.txt
+' >> $BUILD_DIR/CMakeLists.txt
 elif [ "$cmd" = "true" ]
 then
 echo '
@@ -258,14 +262,14 @@ echo '
 FIND_PACKAGE(PkgConfig REQUIRED)
 PKG_CHECK_MODULES(GTK REQUIRED gtk+-2.0)
 #PKG_CHECK_MODULES(GTK REQUIRED gtk+-3.0)
-' >> $HERE/CMakeLists.txt
+' >> $BUILD_DIR/CMakeLists.txt
 
 # Setup CMake to use GTK+, tell the compiler where to look for headers
 # and to the linker where to look for libraries
 echo '
 INCLUDE_DIRECTORIES(${GTK_INCLUDE_DIRS})
 LINK_DIRECTORIES(${GTK_LIBRARY_DIRS})
-' >> $HERE/CMakeLists.txt
+' >> $BUILD_DIR/CMakeLists.txt
 
 echo '
 # Add other flags to the compiler
@@ -273,26 +277,26 @@ ADD_DEFINITIONS(${GTK_CFLAGS_OTHER})
 
 # Add an executable compiled from hello.c
 ADD_EXECUTABLE(RevStudio ${PROJECT_SOURCE_DIR}/cmd/main.cpp)
-' >> $HERE/CMakeLists.txt
+' >> $BUILD_DIR/CMakeLists.txt
 
 # Link the target to the GTK+ libraries
 echo '
 TARGET_LINK_LIBRARIES(RevStudio rb-cmd-lib rb-parser rb-core libs ${Boost_LIBRARIES} ${GTK_LIBRARIES})
-' >> $HERE/CMakeLists.txt
+' >> $BUILD_DIR/CMakeLists.txt
 
 echo '
 SET_TARGET_PROPERTIES(RevStudio PROPERTIES PREFIX "../")
 
 add_subdirectory(cmd)
-' >> $HERE/CMakeLists.txt
+' >> $BUILD_DIR/CMakeLists.txt
 
-if [ ! -d "$HERE/cmd" ]; then
-mkdir "$HERE/cmd"
+if [ ! -d "$BUILD_DIR/cmd" ]; then
+mkdir "$BUILD_DIR/cmd"
 fi
-echo 'SET(CMD_FILES' > "$HERE/cmd/CMakeLists.txt"
-find cmd | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/cmd/CMakeLists.txt"
+echo 'SET(CMD_FILES' > "$BUILD_DIR/cmd/CMakeLists.txt"
+find cmd | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$BUILD_DIR/cmd/CMakeLists.txt"
 echo ')
-ADD_LIBRARY(rb-cmd-lib ${CMD_FILES})'  >> "$HERE/cmd/CMakeLists.txt"
+ADD_LIBRARY(rb-cmd-lib ${CMD_FILES})'  >> "$BUILD_DIR/cmd/CMakeLists.txt"
 
 else
 echo '
@@ -301,41 +305,41 @@ add_executable(${RB_EXEC_NAME} ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 target_link_libraries(${RB_EXEC_NAME} rb-parser rb-core libs ${Boost_LIBRARIES})
 
 set_target_properties(${RB_EXEC_NAME} PROPERTIES PREFIX "../")
-' >> $HERE/CMakeLists.txt
+' >> $BUILD_DIR/CMakeLists.txt
 if [ "$mpi" = "true" ] ; then
     echo 'target_link_libraries(${RB_EXEC_NAME} ${MPI_LIBRARIES})
-' >> $HERE/CMakeLists.txt
+' >> $BUILD_DIR/CMakeLists.txt
 fi
 fi
 
-if [ ! -d "$HERE/libs" ]; then
-mkdir "$HERE/libs"
+if [ ! -d "$BUILD_DIR/libs" ]; then
+mkdir "$BUILD_DIR/libs"
 fi
-echo 'set(LIBS_FILES' > "$HERE/libs/CMakeLists.txt"
-find libs | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/libs/CMakeLists.txt"
+echo 'set(LIBS_FILES' > "$BUILD_DIR/libs/CMakeLists.txt"
+find libs | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$BUILD_DIR/libs/CMakeLists.txt"
 echo ')
-add_library(libs ${LIBS_FILES})'  >> "$HERE/libs/CMakeLists.txt"
+add_library(libs ${LIBS_FILES})'  >> "$BUILD_DIR/libs/CMakeLists.txt"
 
-if [ ! -d "$HERE/help" ]; then
-mkdir "$HERE/help"
+if [ ! -d "$BUILD_DIR/help" ]; then
+mkdir "$BUILD_DIR/help"
 fi
-echo 'set(HELP_FILES' > "$HERE/help/CMakeLists.txt"
-find help | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/help/CMakeLists.txt"
+echo 'set(HELP_FILES' > "$BUILD_DIR/help/CMakeLists.txt"
+find help | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$BUILD_DIR/help/CMakeLists.txt"
 echo ')
-add_library(help_yaml ${HELP_FILES})'  >> "$HERE/help/CMakeLists.txt"
+add_library(help_yaml ${HELP_FILES})'  >> "$BUILD_DIR/help/CMakeLists.txt"
 
-if [ ! -d "$HERE/core" ]; then
-mkdir "$HERE/core"
+if [ ! -d "$BUILD_DIR/core" ]; then
+mkdir "$BUILD_DIR/core"
 fi
-echo 'set(CORE_FILES' > "$HERE/core/CMakeLists.txt"
-find core | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/core/CMakeLists.txt"
+echo 'set(CORE_FILES' > "$BUILD_DIR/core/CMakeLists.txt"
+find core | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$BUILD_DIR/core/CMakeLists.txt"
 echo ')
-add_library(rb-core ${CORE_FILES})'  >> "$HERE/core/CMakeLists.txt"
+add_library(rb-core ${CORE_FILES})'  >> "$BUILD_DIR/core/CMakeLists.txt"
 
-if [ ! -d "$HERE/revlanguage" ]; then
-mkdir "$HERE/revlanguage"
+if [ ! -d "$BUILD_DIR/revlanguage" ]; then
+mkdir "$BUILD_DIR/revlanguage"
 fi
-echo 'set(PARSER_FILES' > "$HERE/revlanguage/CMakeLists.txt"
-find revlanguage | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/revlanguage/CMakeLists.txt"
+echo 'set(PARSER_FILES' > "$BUILD_DIR/revlanguage/CMakeLists.txt"
+find revlanguage | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$BUILD_DIR/revlanguage/CMakeLists.txt"
 echo ')
-add_library(rb-parser ${PARSER_FILES})'  >> "$HERE/revlanguage/CMakeLists.txt"
+add_library(rb-parser ${PARSER_FILES})'  >> "$BUILD_DIR/revlanguage/CMakeLists.txt"
