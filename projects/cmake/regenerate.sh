@@ -252,6 +252,10 @@ find help2yml | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$BUILD_DI
 echo ')
 add_library(rb-help ${HELP_FILES})'  >> "$BUILD_DIR/help2yml/CMakeLists.txt"
 
+if [ "$mpi" = "true" ] ; then
+    echo 'target_link_libraries(${RB_EXEC_NAME}-help2yml ${MPI_LIBRARIES})
+' >> $BUILD_DIR/CMakeLists.txt
+fi
 fi
 
 if [ "$jupyter" = "true" ]
