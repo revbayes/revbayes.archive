@@ -162,6 +162,22 @@ EpisodicBirthDeathSamplingTreatmentProcess* EpisodicBirthDeathSamplingTreatmentP
 }
 
 /**
+ * Adds parameter-specific timeline to the set
+ */
+void EpisodicBirthDeathSamplingTreatmentProcess::addTimesToGlobalTimeline(std::set<double> &event_times, const TypedDagNode<RbVector<double> > *par_times)
+{
+  if ( par_times != NULL )
+  {
+      const std::vector<double>& times = par_times->getValue();
+      for (std::vector<double>::const_iterator it = times.begin(); it != times.end(); ++it)
+      {
+          event_times.insert( *it );
+      }
+  }
+
+}
+
+/**
  * Checks that v1 is the correct size compared to reference vector v2, given the expected size difference.
  * If the sizes are wrong, throws an exception.
  * Uses param_name and is_rate to make a sensible error message
@@ -779,9 +795,43 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnProbTreeShape(void) const
 /**
  * Takes a par.size() < global_timeline.size() vector and makes it the correct size to work with our global timeline.
  * The parameter has its own reference timeline, which we use to find the rate in the global intervals.
- *
+ * This works only for parameters Lambda,Mu,Phi,R where missing values are 0.0
  */
-void EpisodicBirthDeathSamplingTreatmentProcess::updateNonGlobalParameterVector(std::vector<double> &par, std::vector<double> &par_times)
+void EpisodicBirthDeathSamplingTreatmentProcess::expandNonGlobalProbabilityParameterVector(std::vector<double> &par, std::vector<double> &par_times)
+{
+    // Store the original values so we can overwrite the vector
+    std::vector<double> old_par = par;
+
+    // For each time in the global timeline, find the rate according to this variable's own timeline
+    for (size_t i=0; i<global_timeline.size(); ++i)
+    {
+      bool global_time_is_variable_time = false;
+      for (size_t j=0; i<par_times.size(); ++j)
+      {
+        if ( par_times[j] == global_timeline[j] )
+        {
+          // time is in variable's timeline
+          par[i] = old_par[j];
+          global_time_is_variable_time = true;
+          break;
+        }
+      }
+
+      // Time is not in variable's own timeline, probability of event here is 0
+      if ( !global_time_is_variable_time )
+      {
+        par[i] = 0.0;
+      }
+    }
+
+}
+
+/**
+ * Takes a par.size() < global_timeline.size() vector and makes it the correct size to work with our global timeline.
+ * The parameter has its own reference timeline, which we use to find the rate in the global intervals.
+ * This works only for parameters (lambda,mu,phi,r), where the global timeline is simply a finer grid than the variable-specific timelines.
+ */
+void EpisodicBirthDeathSamplingTreatmentProcess::expandNonGlobalRateParameterVector(std::vector<double> &par, std::vector<double> &par_times)
 {
     // Store the original values so we can overwrite the vector
     std::vector<double> old_par = par;
@@ -1036,7 +1086,14 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void )
 
 }
 
-
+/*
+ * Here wepopulate all parameter vectors with their final values.
+ * This requires that we:
+ *    1) Clear out old values of all parameter vectors
+ *    2) Refill and sort vector-valued parameters (leaving scalar parameters alone) to go from present to past
+ *    3) Sort (assemble first if needed) the global timeline, attach the first time (the offset)
+ * Then we can fill in our final vector for each parameter, which will be a vector of the same size as the global timeline
+ */
 void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
 {
     // @TODO: @ANDY: Fill in the function to assemble the master timeline and all the parameter vectors!!!
@@ -1255,54 +1312,140 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
 
         // @TODO: @ANDY: do this check for all parameters too!
 
-        // ...
-
-
         // now we start assembling the global timeline by finding the union of unique intervals for all parameters
         std::set<double> event_times;
+        addTimesToGlobalTimeline(event_times,interval_times_speciation);
+        addTimesToGlobalTimeline(event_times,interval_times_extinction);
+        addTimesToGlobalTimeline(event_times,interval_times_sampling);
+        addTimesToGlobalTimeline(event_times,interval_times_treatment);
+        addTimesToGlobalTimeline(event_times,interval_times_event_speciation);
+        addTimesToGlobalTimeline(event_times,interval_times_event_extinction);
+        addTimesToGlobalTimeline(event_times,interval_times_event_sampling);
 
-        // @TODO: Do this within a function
-        if ( interval_times_speciation != NULL )
-        {
-            const std::vector<double>& birth_times = interval_times_speciation->getValue();
-            for (std::vector<double>::const_iterator it = birth_times.begin(); it != birth_times.end(); ++it)
-            {
-                event_times.insert( *it );
-            }
-        }
-
-        if ( interval_times_extinction != NULL )
-        {
-            const std::vector<double>& death_times = interval_times_extinction->getValue();
-            for (std::vector<double>::const_iterator it = death_times.begin(); it != death_times.end(); ++it)
-            {
-                event_times.insert( *it );
-            }
-        }
 
         // @TODO: @ANDY: keep on adding times from all other timelines
 
-        // ...
+        // Sort present to past
+        for (std::set<double>::reverse_iterator it = event_times.rbegin(); it != event_times.rend(); it++)
+        {
+            global_timeline.push_back(*it);
+        }
 
         // we are done with setting up the timeline (i.e., using the all the provided timeline) and checking all dimension of parameters
 
     }
 
-    // @TODO: @ANDY: Check about the offset
-    global_timeline.push_back( offset );
+    // @TODO: @ANDY: Make sure this populates properly all parameter vectors (backwards in time, etc.)
 
-    // now we fill the parameter vectors for each interval
-    for (size_t i = 0; i < global_timeline.size(); i++)
+    // For each parameter vector, we now make sure that its size matches the size of the global vector
+    // For a parameter, there are three cases
+    //     1) It is a vector and it matches the size of the global timeline, in which case it is already sorted and we can use it
+    //     2) It is a vector and it DOES NOT match the size of the global timeline, in which case we must expand it to match
+    //     1) It is a scalar, in which case we simply populate a vector of the correct size with the value
+
+    // Get vector of birth rates
+    // @TODO: @SEBASTIAN: would it be better here to check if interval_times_parameter == NULL instead of checking the size? They should be equivalent
+    if ( heterogeneous_lambda != NULL && lambda.size() != global_timeline.size() )
     {
-        // @TODO: @ANDY: Check that these functions exist and do what we want!
-//        lambda.push_back( getSpeciationRate(i) );
-//        mu.push_back( getExtinctionRate(i) );
-//        phi.push_back( getSerialSamplingRate(i) );
-//        rho.push_back( getTaxonSamplingProbability(i, timeline.size()) );
-
-        // @TODO: @ANDY: Make sure this populates properly all parameter vectors (backwards in time, etc.)
+      expandNonGlobalRateParameterVector(lambda,lambda_times);
+    }
+    else
+    {
+      lambda = std::vector<double>(global_timeline.size(),homogeneous_lambda->getValue());
     }
 
+    // Get vector of death rates
+    if ( heterogeneous_mu != NULL && mu.size() != global_timeline.size() )
+    {
+      expandNonGlobalRateParameterVector(mu,mu_times);
+    }
+    else
+    {
+      mu = std::vector<double>(global_timeline.size(),homogeneous_mu->getValue());
+    }
+
+    // Get vector of serial sampling rates
+    if ( heterogeneous_phi != NULL && phi.size() != global_timeline.size() )
+    {
+      expandNonGlobalRateParameterVector(phi,phi_times);
+    }
+    else
+    {
+      phi = std::vector<double>(global_timeline.size(),homogeneous_phi->getValue());
+    }
+
+    // Get vector of conditional death upon sampling probabilities
+    if ( heterogeneous_r != NULL && phi.size() != global_timeline.size() )
+    {
+      // r is not a rate parameter, but it behaves like them for this function, as it is defined in intervals
+      expandNonGlobalRateParameterVector(r,r_times);
+    }
+    else
+    {
+      r = std::vector<double>(global_timeline.size(),homogeneous_r->getValue());
+    }
+
+    // Get vector of burst birth probabilities
+    if ( heterogeneous_Lambda != NULL )
+    {
+      // Expand if needed, this will make the first event 0
+      if (lambda_event.size() != global_timeline.size() - 1)
+      {
+        expandNonGlobalProbabilityParameterVector(lambda_event,lambda_event_times);
+      }
+      else
+      {
+        // Add first event. lambda_event_0 must be 0 (there can be no burst at the present)
+        lambda_event.insert(lambda_event.begin(),0.0);
+      }
+    }
+    else
+    {
+      // User specified nothing, there are no birth bursts
+      lambda_event = std::vector<double>(global_timeline.size(),0.0);
+    }
+
+    // Get vector of burst death (mass extinction) probabilities
+    if ( heterogeneous_Mu != NULL )
+    {
+      // Expand if needed, this will make the first event 0
+      if (mu_event.size() != global_timeline.size() - 1)
+      {
+        expandNonGlobalProbabilityParameterVector(mu_event,mu_event_times);
+      }
+      else
+      {
+        // mu_event_0 must be 0 (there can be no burst at the present)
+        mu_event.insert(mu_event.begin(),0.0);
+      }
+    }
+    else
+    {
+      // User specified nothing, there are no birth bursts
+      mu_event = std::vector<double>(global_timeline.size(),0.0);
+    }
+
+    // Get vector of event sampling probabilities
+    if ( heterogeneous_Phi != NULL )
+    {
+      // Expand if needed
+      if (phi_event.size() != global_timeline.size() - 1)
+      {
+        expandNonGlobalProbabilityParameterVector(phi_event,phi_event_times);
+      }
+      phi_event = heterogeneous_Phi->getValue();
+    }
+    else
+    {
+        phi_event = std::vector<double>(global_timeline.size(),0.0);
+        if ( homogeneous_Phi != NULL )
+        {
+            // User specified the sampling fraction at the present
+            phi_event[0] = homogeneous_Phi->getValue();
+        }
+    }
+
+    // @TODO: @ANDY: Check about the offset
     // Add s_0
     getOffset();
     global_timeline.insert(global_timeline.begin(),offset);

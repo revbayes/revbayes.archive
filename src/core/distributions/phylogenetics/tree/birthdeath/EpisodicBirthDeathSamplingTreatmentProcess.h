@@ -64,6 +64,7 @@ namespace RevBayesCore {
         void                                            swapParameterInternal(const DagNode *oldP, const DagNode *newP);    //!< Swap a parameter
 
         // helper functions
+        void                                            addTimesToGlobalTimeline(std::set<double> &event_times, const TypedDagNode<RbVector<double> > *par_times);        //!< Adds timeline for parameter to set that we will use for global timeline
         void                                            checkVectorSizes(const TypedDagNode<RbVector<double> >* v1, const TypedDagNode<RbVector<double> >* v2, int v1_minus_v2, std::string& param_name, bool is_rate) const;
         double                                          computeLnProbabilityTimes(void);                                    //!< Compute the log-transformed probability of the current value.
         void                                            countAllNodes(void);                                                 //!< Count bifurcating nodes, count all heterochronous nodes as either phi- or Phi-sampled and as either sampled ancestors or sampled extinct tips
@@ -83,7 +84,8 @@ namespace RevBayesCore {
         void                                            sortNonGlobalTimesAndVectorParameter(std::vector<double> &times, std::vector<double> &par);     //<! Sorts times to run from 0->inf, and orders par to match
         int                                             survivors(double t) const;                                 //!< Number of species alive at time t.
         void                                            updateVectorParameters(void);
-        void                                            updateNonGlobalParameterVector(std::vector<double> &par, std::vector<double> &par_times); //!< Updates vector par such that it matches the global timeline
+        void                                            expandNonGlobalProbabilityParameterVector(std::vector<double> &par, std::vector<double> &par_times); //!< Updates vector par such that it matches the global timeline
+        void                                            expandNonGlobalRateParameterVector(std::vector<double> &par, std::vector<double> &par_times); //!< Updates vector par such that it matches the global timeline
         int                                             whichIntervalTime(double t) const;                                //!< If a time corresponds to an interval/event time, returns that interval, otherwise returns -1
 
         // members
