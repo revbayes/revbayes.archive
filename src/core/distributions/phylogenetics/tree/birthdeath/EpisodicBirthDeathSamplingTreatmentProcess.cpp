@@ -1254,11 +1254,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
 
         // check if correct number of burst probabilities were provided
         // if provided as a vector, sort to the correct timescale
-        if ( heterogeneous_Lambda == NULL && homogeneous_Lambda == NULL)
-        {
-            throw RbException("Burst probabilities must be of type Probability or Probability[]");
-        }
-        else if ( heterogeneous_Lambda != NULL )
+        if ( heterogeneous_Lambda != NULL )
         {
             if ( interval_times_event_speciation == NULL ) throw RbException("No time intervals provided for speciation bursts");
             checkVectorSizes(heterogeneous_Lambda,interval_times_event_speciation,0,spn,false);
@@ -1267,11 +1263,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
 
         // check if correct number of mass extinction probabilities were provided
         // if provided as a vector, sort to the correct timescale
-        if ( heterogeneous_Mu == NULL && homogeneous_Mu == NULL)
-        {
-          throw RbException("Mass extinction probabilities must be of type Probability or Probability[]");
-        }
-        else if ( heterogeneous_Mu != NULL )
+        if ( heterogeneous_Mu != NULL )
         {
             if ( interval_times_event_extinction == NULL ) throw RbException("No time intervals provided for piecewise constant extinction rates");
             checkVectorSizes(heterogeneous_Mu,interval_times_event_extinction,0,exn,false);
@@ -1296,7 +1288,8 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
         // we default to R = r if both heterogeneous_R and homogeneous_R are NULL
         if ( homogeneous_Phi != NULL )
         {
-            if ( !(heterogeneous_R == NULL && homogeneous_R == NULL) )
+            // If there's one sampling event, there cannot be any event treatment probabilities
+            if ( !(heterogeneous_R == NULL || heterogeneous_R->getValue().size() == 0) )
             {
                 throw RbException("Number of event treatment probabilities does not match number of sampling events");
             }
@@ -1816,14 +1809,6 @@ void EpisodicBirthDeathSamplingTreatmentProcess::swapParameterInternal(const Dag
     {
         heterogeneous_Phi = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
-    // else if (oldP == homogeneous_Lambda)
-    // {
-    //     homogeneous_Lambda = static_cast<const TypedDagNode<double>* >( newP );
-    // }
-    // else if (oldP == homogeneous_Mu)
-    // {
-    //     homogeneous_Mu = static_cast<const TypedDagNode<double>* >( newP );
-    // }
     else if (oldP == homogeneous_Phi)
     {
         homogeneous_Phi = static_cast<const TypedDagNode<double>* >( newP );

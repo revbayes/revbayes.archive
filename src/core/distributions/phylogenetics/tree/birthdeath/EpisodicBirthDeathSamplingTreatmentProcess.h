@@ -97,13 +97,10 @@ namespace RevBayesCore {
         const TypedDagNode<RbVector<double> >*          heterogeneous_r;                                       //!< The heterogeneous conditional probability of death upon treatment.
         const TypedDagNode<double >*                    homogeneous_phi;                                       //!< The homogeneous sampling rates.
         const TypedDagNode<RbVector<double> >*          heterogeneous_phi;                                     //!< The heterogeneous sampling rates.
-        const TypedDagNode<double >*                    homogeneous_Lambda;                                    //!< The single birth burst probabilty.
         const TypedDagNode<RbVector<double> >*          heterogeneous_Lambda;                                  //!< The heterogeneous birth burst rates.
-        const TypedDagNode<double >*                    homogeneous_Mu;                                        //!< The single mass extinction probability
         const TypedDagNode<RbVector<double> >*          heterogeneous_Mu;                                      //!< The heterogeneous death burst (mass extinction) probabilities.
         const TypedDagNode<double >*                    homogeneous_Phi;                                       //!< The probability of sampling a tip at the present.
         const TypedDagNode<RbVector<double> >*          heterogeneous_Phi;                                     //!< The probability of sampling individuals at set time intervals.
-        const TypedDagNode<double >*                    homogeneous_R;                                         //!< The single conditional probability of death upon treatment.
         const TypedDagNode<RbVector<double> >*          heterogeneous_R;                                       //!< The heterogeneous conditional probability of death upon treatment.
 
         const TypedDagNode<RbVector<double> >*          interval_times_global;                                 //!< The user-specified non-zero times of the instantaneous events and rate shifts.
