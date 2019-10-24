@@ -240,7 +240,7 @@ add_subdirectory(help2yml)
 echo '
 add_executable(rb-help2yml ${PROJECT_SOURCE_DIR}/help2yml/main.cpp)
 
-target_link_libraries(rb-help2yml rb-parser rb-core libs help2yml ${Boost_LIBRARIES})
+target_link_libraries(rb-help2yml rb-parser rb-core rb-parser libs help2yml ${Boost_LIBRARIES})
 set_target_properties(rb-help2yml PROPERTIES PREFIX "../")
 ' >> $BUILD_DIR/CMakeLists.txt
 fi
