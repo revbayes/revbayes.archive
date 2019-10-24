@@ -1053,11 +1053,11 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
 
     lambda_times.clear();
     mu_times.clear();
-    sampling_times.clear();
-    treatement_times.clear();
+    phi_times.clear();
+    r_times.clear();
     lambda_event_times.clear();
     mu_event_times.clear();
-    sampling_event_times.clear();
+    phi_event_times.clear();
     global_timeline.clear();
 
     // put in current values for vector parameters so we can re-order them as needed
@@ -1096,11 +1096,11 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
 
     lambda_times = interval_times_speciation->getValue();
     mu_times = interval_times_extinction->getValue();
-    sampling_times = interval_times_sampling->getValue();
-    treatement_times = interval_times_treatment->getValue();
+    phi_times = interval_times_sampling->getValue();
+    r_times = interval_times_treatment->getValue();
     lambda_event_times = interval_times_event_speciation->getValue();
     mu_event_times = interval_times_event_extinction->getValue();
-    sampling_event_times = interval_times_event_sampling->getValue();
+    phi_event_times = interval_times_event_sampling->getValue();
     global_timeline = interval_times_global->getValue();
 
     // @TODO: @ANDY: Check that we cleared all parameters!
@@ -1143,7 +1143,8 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
     else
     {
 
-        // check if speciation rates are provided in the correct form
+        // check if correct number of speciation rates were provided
+        // if provided as a vector, sort to the correct timescale
         if ( heterogeneous_lambda == NULL && homogeneous_lambda == NULL)
         {
             throw RbException("Speciation rate must be of type RealPos or RealPos[]");
@@ -1152,6 +1153,104 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
         {
             if ( interval_times_speciation == NULL ) throw RbException("No time intervals provided for piecewise constant speciation rates");
             checkVectorSizes(heterogeneous_lambda,interval_times_speciation,1,spn,true);
+            sortNonGlobalTimesAndVectorParameter(lambda_times,lambda);
+        }
+
+        // check if correct number of extinction rates were provided
+        // if provided as a vector, sort to the correct timescale
+        if ( heterogeneous_mu == NULL && homogeneous_mu == NULL)
+        {
+            throw RbException("Extinction rate must be of type RealPos or RealPos[]");
+        }
+        else if ( heterogeneous_mu != NULL )
+        {
+            if ( interval_times_extinction == NULL ) throw RbException("No time intervals provided for piecewise constant extinction rates");
+            checkVectorSizes(heterogeneous_mu,interval_times_extinction,1,exn,true);
+            sortNonGlobalTimesAndVectorParameter(mu_times,mu);
+        }
+
+        // check if correct number of sampling rates were provided
+        // if provided as a vector, sort to the correct timescale
+        if ( heterogeneous_phi == NULL && homogeneous_phi == NULL)
+        {
+            throw RbException("Sampling rate must be of type RealPos or RealPos[]");
+        }
+        else if ( heterogeneous_phi != NULL )
+        {
+            if ( interval_times_sampling == NULL ) throw RbException("No time intervals provided for piecewise constant sampling rates");
+            checkVectorSizes(heterogeneous_phi,interval_times_sampling,1,smp,true);
+            sortNonGlobalTimesAndVectorParameter(phi_times,phi);
+        }
+
+        // check if correct number of serial treatment probabilities were provided
+        // if provided as a vector, sort to the correct timescale
+        if ( heterogeneous_r == NULL && homogeneous_r == NULL)
+        {
+            throw RbException("Treatment probability for serial sampling rate must be of type Probability or Probability[]");
+        }
+        else if ( heterogeneous_r != NULL )
+        {
+            if ( interval_times_treatment == NULL ) throw RbException("No time intervals provided for piecewise constant sampling rates");
+            checkVectorSizes(heterogeneous_r,interval_times_treatment,1,trt,false);
+            sortNonGlobalTimesAndVectorParameter(r_times,r);
+        }
+
+        // check if correct number of burst probabilities were provided
+        // if provided as a vector, sort to the correct timescale
+        if ( heterogeneous_Lambda == NULL && homogeneous_Lambda == NULL)
+        {
+            throw RbException("Burst probabilities must be of type Probability or Probability[]");
+        }
+        else if ( heterogeneous_Lambda != NULL )
+        {
+            if ( interval_times_event_speciation == NULL ) throw RbException("No time intervals provided for speciation bursts");
+            checkVectorSizes(heterogeneous_Lambda,interval_times_event_speciation,0,spn,false);
+            sortNonGlobalTimesAndVectorParameter(lambda_event_times,lambda_event);
+        }
+
+        // check if correct number of mass extinction probabilities were provided
+        // if provided as a vector, sort to the correct timescale
+        if ( heterogeneous_Mu == NULL && homogeneous_Mu == NULL)
+        {
+          throw RbException("Mass extinction probabilities must be of type Probability or Probability[]");
+        }
+        else if ( heterogeneous_Mu != NULL )
+        {
+            if ( interval_times_event_extinction == NULL ) throw RbException("No time intervals provided for piecewise constant extinction rates");
+            checkVectorSizes(heterogeneous_Mu,interval_times_event_extinction,0,exn,false);
+            sortNonGlobalTimesAndVectorParameter(mu_event_times,mu_event);
+        }
+
+        // check if correct number of sampling probabilities were provided
+        // if provided as a vector, sort to the correct timescale
+        if ( heterogeneous_Phi == NULL && homogeneous_Phi == NULL)
+        {
+          throw RbException("Event-sampling probabilities must be of type Probability or Probability[]");
+        }
+        else if ( heterogeneous_Phi != NULL )
+        {
+            if ( interval_times_event_sampling == NULL ) throw RbException("No time intervals provided for piecewise constant sampling rates");
+            checkVectorSizes(heterogeneous_Phi,interval_times_event_sampling,1,smp,false);
+            sortNonGlobalTimesAndVectorParameter(phi_event_times,phi_event);
+        }
+
+        // check if correct number of treatment probabilities at event-sampling times were provided
+        // there must be one fewer value of R than of Phi
+        // we default to R = r if both heterogeneous_R and homogeneous_R are NULL
+        if ( homogeneous_Phi != NULL )
+        {
+            if ( !(heterogeneous_R == NULL && homogeneous_R == NULL) )
+            {
+                throw RbException("Number of event treatment probabilities does not match number of sampling events");
+            }
+        }
+        else if ( heterogeneous_Phi != NULL )
+        {
+            if ( interval_times_event_sampling == NULL ) throw RbException("No time intervals provided for piecewise constant sampling rates");
+            checkVectorSizes(heterogeneous_R,interval_times_event_sampling,0,etrt,false);
+            // This should be sorted to match phi_event_times, which is already sorted, so we copy the original value to sort against
+            std::vector<double> tmp_phi_event_times = heterogeneous_Phi->getValue();
+            sortNonGlobalTimesAndVectorParameter(tmp_phi_event_times,r_event);
         }
 
         // @TODO: @ANDY: do this check for all parameters too!

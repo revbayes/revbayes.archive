@@ -89,17 +89,19 @@ namespace RevBayesCore {
         // members
         const TypedDagNode<double >*                    homogeneous_lambda;                                    //!< The homogeneous birth rates.
         const TypedDagNode<RbVector<double> >*          heterogeneous_lambda;                                  //!< The heterogeneous birth rates.
-        const TypedDagNode<RbVector<double> >*          heterogeneous_Lambda;                                  //!< The heterogeneous birth burst rates.
         const TypedDagNode<double >*                    homogeneous_mu;                                        //!< The homogeneous death rates.
         const TypedDagNode<RbVector<double> >*          heterogeneous_mu;                                      //!< The heterogeneous death rates.
         const TypedDagNode<double >*                    homogeneous_r;                                         //!< The homogeneous conditional probability of death upon treatment.
         const TypedDagNode<RbVector<double> >*          heterogeneous_r;                                       //!< The heterogeneous conditional probability of death upon treatment.
-        const TypedDagNode<RbVector<double> >*          heterogeneous_Mu;                                      //!< The heterogeneous death burst (mass extinction) probabilities.
         const TypedDagNode<double >*                    homogeneous_phi;                                       //!< The homogeneous sampling rates.
         const TypedDagNode<RbVector<double> >*          heterogeneous_phi;                                     //!< The heterogeneous sampling rates.
+        const TypedDagNode<double >*                    homogeneous_Lambda;                                    //!< The single birth burst probabilty.
+        const TypedDagNode<RbVector<double> >*          heterogeneous_Lambda;                                  //!< The heterogeneous birth burst rates.
+        const TypedDagNode<double >*                    homogeneous_Mu;                                        //!< The single mass extinction probability
+        const TypedDagNode<RbVector<double> >*          heterogeneous_Mu;                                      //!< The heterogeneous death burst (mass extinction) probabilities.
         const TypedDagNode<double >*                    homogeneous_Phi;                                       //!< The probability of sampling a tip at the present.
         const TypedDagNode<RbVector<double> >*          heterogeneous_Phi;                                     //!< The probability of sampling individuals at set time intervals.
-        const TypedDagNode<double >*                    homogeneous_R;                                         //!< The homogeneous conditional probability of death upon treatment.
+        const TypedDagNode<double >*                    homogeneous_R;                                         //!< The single conditional probability of death upon treatment.
         const TypedDagNode<RbVector<double> >*          heterogeneous_R;                                       //!< The heterogeneous conditional probability of death upon treatment.
 
         const TypedDagNode<RbVector<double> >*          interval_times_global;                                 //!< The user-specified non-zero times of the instantaneous events and rate shifts.
@@ -113,12 +115,11 @@ namespace RevBayesCore {
 
         mutable std::vector<double>                     lambda_times;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
         mutable std::vector<double>                     mu_times;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
-        mutable std::vector<double>                     sampling_times;                               //!< The user-specified non-zero times of the instantaneous events and rate shifts.
-        mutable std::vector<double>                     treatement_times;                              //!< The user-specified non-zero times of the instantaneous events and rate shifts.
+        mutable std::vector<double>                     phi_times;                               //!< The user-specified non-zero times of the instantaneous events and rate shifts.
+        mutable std::vector<double>                     r_times;                              //!< The user-specified non-zero times of the instantaneous events and rate shifts.
         mutable std::vector<double>                     lambda_event_times;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
         mutable std::vector<double>                     mu_event_times;                             //!< The user-specified non-zero times of the instantaneous events and rate shifts.
-        mutable std::vector<double>                     sampling_event_times;                               //!< The user-specified non-zero times of the instantaneous events and rate shifts.
-        mutable std::vector<double>                     treatment_event_times;                               //!< The user-specified non-zero times of the instantaneous events and rate shifts.
+        mutable std::vector<double>                     phi_event_times;                               //!< The user-specified non-zero times of the instantaneous events and rate shifts.
         mutable std::vector<double>                     global_timeline;                                       //!< The times of the instantaneous events and rate shifts.
 
         std::vector<double>                             serial_tip_ages;                                       //!< The ages of all sampled dead lineages sampled by rate-sampling
