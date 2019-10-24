@@ -30,7 +30,7 @@ Command line options are:
 -mac            <true|false>    : set to true if you are building for a OS X - compatible with 10.6 and higher. Defaults to false.
 -win            <true|false>    : set to true if you are building on a Windows system. Defaults to false.
 -mpi            <true|false>    : set to true if you want to build the MPI version. Defaults to false.
--help           <true|false>    : Build the help generator. Defaults to false.
+-help           <true|false>    : Update the help database and build the YAML help generator. Defaults to false.
 '
 # secret test option
 # -jupyter        <true|false>    : set to true if you want ot buikd the jupyter version. Defaults to false.
@@ -209,7 +209,7 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 # TODO Split these up based on sub-package dependency
 INCLUDE_DIRECTORIES(' >> "$BUILD_DIR/CMakeLists.txt"
-find libs core revlanguage help -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$BUILD_DIR/CMakeLists.txt"
+find libs core revlanguage help2yml -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$BUILD_DIR/CMakeLists.txt"
 echo ' ${Boost_INCLUDE_DIR} )
 
 
@@ -231,16 +231,16 @@ then
 #################
 # generate help database
 echo "Generating help database"
-perl help/md2help.pl help/md/* > core/help/RbHelpDatabase.cpp
+perl ../help/md2help.pl ../help/md/* > core/help/RbHelpDatabase.cpp
 
 echo '
-add_subdirectory(help)
+add_subdirectory(help2yml)
 ' >> $BUILD_DIR/CMakeLists.txt
 
 echo '
-add_executable(rb-help2yml ${PROJECT_SOURCE_DIR}/help/YAMLHelpGenerator.cpp)
+add_executable(rb-help2yml ${PROJECT_SOURCE_DIR}/help2yml/main.cpp)
 
-target_link_libraries(rb-help2yml rb-parser rb-core libs help_yaml ${Boost_LIBRARIES})
+target_link_libraries(rb-help2yml rb-parser rb-core libs help2yml ${Boost_LIBRARIES})
 set_target_properties(rb-help2yml PROPERTIES PREFIX "../")
 ' >> $BUILD_DIR/CMakeLists.txt
 fi
@@ -320,13 +320,13 @@ find libs | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$BUILD_DIR/li
 echo ')
 add_library(libs ${LIBS_FILES})'  >> "$BUILD_DIR/libs/CMakeLists.txt"
 
-if [ ! -d "$BUILD_DIR/help" ]; then
-mkdir "$BUILD_DIR/help"
+if [ ! -d "$BUILD_DIR/help2yml" ]; then
+mkdir "$BUILD_DIR/help2yml"
 fi
-echo 'set(HELP_FILES' > "$BUILD_DIR/help/CMakeLists.txt"
-find help | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$BUILD_DIR/help/CMakeLists.txt"
+echo 'set(HELP_FILES' > "$BUILD_DIR/help2yml/CMakeLists.txt"
+find help2yml | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$BUILD_DIR/help2yml/CMakeLists.txt"
 echo ')
-add_library(help_yaml ${HELP_FILES})'  >> "$BUILD_DIR/help/CMakeLists.txt"
+add_library(help2yml ${HELP_FILES})'  >> "$BUILD_DIR/help2yml/CMakeLists.txt"
 
 if [ ! -d "$BUILD_DIR/core" ]; then
 mkdir "$BUILD_DIR/core"

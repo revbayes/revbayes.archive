@@ -58,7 +58,7 @@ sub parse_entry {
 print "/**\n";
 print " * This file was generated automatically.\n";
 print " * It is not intended to be human readable.\n";
-print " * See src/help/README.md for details.\n";
+print " * See help/README.md for details.\n";
 print " */\n\n";
 print "#include \"RbHelpDatabase.h\"\n\n";
 print "using namespace std;\n\n";

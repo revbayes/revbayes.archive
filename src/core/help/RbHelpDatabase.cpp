@@ -1,7 +1,7 @@
 /**
  * This file was generated automatically.
  * It is not intended to be human readable.
- * See src/help/README.md for details.
+ * See help/README.md for details.
  */
 
 #include "RbHelpDatabase.h"
