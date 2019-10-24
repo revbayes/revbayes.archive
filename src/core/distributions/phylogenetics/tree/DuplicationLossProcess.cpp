@@ -538,7 +538,7 @@ void DuplicationLossProcess::redrawValue( void )
 
           if (success == true)
             {
-              std::cout << *value << std::endl;
+              // std::cout << *value << std::endl;
               return;
             }
           ++attempts;
