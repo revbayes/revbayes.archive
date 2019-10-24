@@ -209,7 +209,7 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 # TODO Split these up based on sub-package dependency
 INCLUDE_DIRECTORIES(' >> "$BUILD_DIR/CMakeLists.txt"
-find libs core revlanguage help2yml -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$BUILD_DIR/CMakeLists.txt"
+find libs core revlanguage -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$BUILD_DIR/CMakeLists.txt"
 echo ' ${Boost_INCLUDE_DIR} )
 
 
@@ -238,11 +238,20 @@ add_subdirectory(help2yml)
 ' >> $BUILD_DIR/CMakeLists.txt
 
 echo '
-add_executable(rb-help2yml ${PROJECT_SOURCE_DIR}/help2yml/main.cpp)
+add_executable(${RB_EXEC_NAME}-help2yml ${PROJECT_SOURCE_DIR}/help2yml/main.cpp)
 
-target_link_libraries(rb-help2yml rb-parser rb-core rb-parser libs help2yml ${Boost_LIBRARIES})
-set_target_properties(rb-help2yml PROPERTIES PREFIX "../")
+target_link_libraries(${RB_EXEC_NAME}-help2yml rb-help rb-parser rb-core rb-libs rb-parser ${Boost_LIBRARIES})
+set_target_properties(${RB_EXEC_NAME}-help2yml PROPERTIES PREFIX "../")
 ' >> $BUILD_DIR/CMakeLists.txt
+
+if [ ! -d "$BUILD_DIR/help2yml" ]; then
+mkdir "$BUILD_DIR/help2yml"
+fi
+echo 'set(HELP_FILES' > "$BUILD_DIR/help2yml/CMakeLists.txt"
+find help2yml | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$BUILD_DIR/help2yml/CMakeLists.txt"
+echo ')
+add_library(rb-help ${HELP_FILES})'  >> "$BUILD_DIR/help2yml/CMakeLists.txt"
+
 fi
 
 if [ "$jupyter" = "true" ]
@@ -251,7 +260,7 @@ echo "more jupyter!"
 echo '
 add_executable(rb-jupyter ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 
-target_link_libraries(rb-jupyter rb-parser rb-core libs ${Boost_LIBRARIES})
+target_link_libraries(rb-jupyter rb-parser rb-core rb-libs ${Boost_LIBRARIES})
 set_target_properties(rb-jupyter PROPERTIES PREFIX "../")
 ' >> $BUILD_DIR/CMakeLists.txt
 elif [ "$cmd" = "true" ]
@@ -281,7 +290,7 @@ ADD_EXECUTABLE(RevStudio ${PROJECT_SOURCE_DIR}/cmd/main.cpp)
 
 # Link the target to the GTK+ libraries
 echo '
-TARGET_LINK_LIBRARIES(RevStudio rb-cmd-lib rb-parser rb-core libs ${Boost_LIBRARIES} ${GTK_LIBRARIES})
+TARGET_LINK_LIBRARIES(RevStudio rb-cmd-lib rb-parser rb-core rb-libs ${Boost_LIBRARIES} ${GTK_LIBRARIES})
 ' >> $BUILD_DIR/CMakeLists.txt
 
 echo '
@@ -302,7 +311,7 @@ else
 echo '
 add_executable(${RB_EXEC_NAME} ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
 
-target_link_libraries(${RB_EXEC_NAME} rb-parser rb-core libs ${Boost_LIBRARIES})
+target_link_libraries(${RB_EXEC_NAME} rb-parser rb-core rb-libs ${Boost_LIBRARIES})
 
 set_target_properties(${RB_EXEC_NAME} PROPERTIES PREFIX "../")
 ' >> $BUILD_DIR/CMakeLists.txt
@@ -318,15 +327,7 @@ fi
 echo 'set(LIBS_FILES' > "$BUILD_DIR/libs/CMakeLists.txt"
 find libs | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$BUILD_DIR/libs/CMakeLists.txt"
 echo ')
-add_library(libs ${LIBS_FILES})'  >> "$BUILD_DIR/libs/CMakeLists.txt"
-
-if [ ! -d "$BUILD_DIR/help2yml" ]; then
-mkdir "$BUILD_DIR/help2yml"
-fi
-echo 'set(HELP_FILES' > "$BUILD_DIR/help2yml/CMakeLists.txt"
-find help2yml | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$BUILD_DIR/help2yml/CMakeLists.txt"
-echo ')
-add_library(help2yml ${HELP_FILES})'  >> "$BUILD_DIR/help2yml/CMakeLists.txt"
+add_library(rb-libs ${LIBS_FILES})'  >> "$BUILD_DIR/libs/CMakeLists.txt"
 
 if [ ! -d "$BUILD_DIR/core" ]; then
 mkdir "$BUILD_DIR/core"
