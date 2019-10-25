@@ -50,7 +50,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                               Lambda;                                                                                 //!< The speciation rate(s)
         RevPtr<const RevVariable>                               Mu;                                                                                     //!< The extinction rate(s)
         RevPtr<const RevVariable>                               Phi;                                                                                    //!< The serial sampling rate(s)
-        RevPtr<const RevVariable>                               R;                                                                                    //!< The serial sampling rate(s)
+        RevPtr<const RevVariable>                               r_event;                                                                                    //!< The serial sampling rate(s)
         RevPtr<const RevVariable>                               timeline;                                                                               //!< The interval change times
         RevPtr<const RevVariable>                               lambda_timeline;                                                                        //!< The speciation rate change times
         RevPtr<const RevVariable>                               mu_timeline;                                                                            //!< The extinction rate change times

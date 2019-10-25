@@ -79,7 +79,7 @@ EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentP
     heterogeneous_Phi    = NULL;
     //@TODO @SEBASTIAN: some time we might want to allow "homogeneous" aka scalar Mu/Lambda
 
-    std::vector<double> times = timeline->getValue();
+    std::vector<double> times = interval_times_global->getValue();
     std::vector<double> times_sorted_ascending = times;
 
     sort(times_sorted_ascending.begin(), times_sorted_ascending.end() );
@@ -137,7 +137,7 @@ EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentP
     updateVectorParameters();
     prepareProbComputation();
 
-
+    // We employ a coalescent simulator to guarantee that the starting tree matches all time constraints
     RbVector<Clade> constr;
     StartingTreeSimulator simulator;
     RevBayesCore::Tree *my_tree = simulator.simulateTree( taxa, constr );

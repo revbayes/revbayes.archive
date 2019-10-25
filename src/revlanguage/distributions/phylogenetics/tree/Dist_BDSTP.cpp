@@ -74,7 +74,6 @@ Dist_BDSTP* Dist_BDSTP::clone( void ) const
  */
 RevBayesCore::AbstractBirthDeathProcess* Dist_BDSTP::createDistribution( void ) const
 {
-
     // get the parameters
 
     // the start age
@@ -101,6 +100,7 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_BDSTP::createDistribution( void ) 
     RevBayesCore::DagNode* s_s = phi->getRevObject().getDagNode();
     // treatment probability
     RevBayesCore::DagNode* t_s = r->getRevObject().getDagNode();
+
     // birth burst
     RevBayesCore::DagNode* b_e = NULL;
     if (Lambda->getRevObject().isType( ModelVector<Probability>::getClassTypeSpec() ))
@@ -113,19 +113,17 @@ RevBayesCore::AbstractBirthDeathProcess* Dist_BDSTP::createDistribution( void ) 
     {
       d_e = Mu->getRevObject().getDagNode();
     }
-
     // event sampling
     RevBayesCore::DagNode* s_e = NULL;
     if ( Phi->getRevObject() != RevNullObject::getInstance() )
     {
         s_e = Phi->getRevObject().getDagNode();
     }
-
     // event treatment
     RevBayesCore::DagNode* t_e = NULL;
-    if ( R->getRevObject() != RevNullObject::getInstance() )
+    if ( r_event->getRevObject() != RevNullObject::getInstance() )
     {
-        t_e = R->getRevObject().getDagNode();
+        t_e = r_event->getRevObject().getDagNode();
     }
 
     // global rate change times
@@ -308,10 +306,13 @@ const MemberRules& Dist_BDSTP::getParameterRules(void) const
         dist_member_rules.push_back( new ArgumentRule( "R",       other_event_paramTypes, "The treatment probabilities for the sampling events (excluding sampling at present).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         dist_member_rules.push_back( new ArgumentRule( "timeline",    ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the piecewise constant process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
-        dist_member_rules.push_back( new ArgumentRule( "lambda_timeline",    ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
-        dist_member_rules.push_back( new ArgumentRule( "mu_timeline",        ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
-        dist_member_rules.push_back( new ArgumentRule( "phi_timeline",       ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the sampling rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
-        dist_member_rules.push_back( new ArgumentRule( "r_timeline",         ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the (serial) treatment probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
+        dist_member_rules.push_back( new ArgumentRule( "lambdaTimeline",    ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
+        dist_member_rules.push_back( new ArgumentRule( "muTimeline",        ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
+        dist_member_rules.push_back( new ArgumentRule( "phiTimeline",       ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the sampling rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
+        dist_member_rules.push_back( new ArgumentRule( "rTimeline",         ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the (serial) treatment probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
+        dist_member_rules.push_back( new ArgumentRule( "LambdaTimeline",    ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
+        dist_member_rules.push_back( new ArgumentRule( "MuTimeline",        ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
+        dist_member_rules.push_back( new ArgumentRule( "PhiTimeline",       ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the sampling rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
 
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "time" );
@@ -383,7 +384,7 @@ void Dist_BDSTP::setConstParameter(const std::string& name, const RevPtr<const R
     }
     else if ( name == "R" )
     {
-        Phi = var;
+        r_event = var;
     }
     else if ( name == "rootAge" || name == "originAge" )
     {
@@ -394,31 +395,31 @@ void Dist_BDSTP::setConstParameter(const std::string& name, const RevPtr<const R
     {
         timeline = var;
     }
-    else if ( name == "lambda_timeline" )
+    else if ( name == "lambdaTimeline" )
     {
         lambda_timeline = var;
     }
-    else if ( name == "mu_timeline" )
+    else if ( name == "muTimeline" )
     {
         mu_timeline = var;
     }
-    else if ( name == "phi_timeline" )
+    else if ( name == "phiTimeline" )
     {
         phi_timeline = var;
     }
-    else if ( name == "r_timeline" )
+    else if ( name == "rTimeline" )
     {
         r_timeline = var;
     }
-    else if ( name == "Lambda_timeline" )
+    else if ( name == "LambdaTimeline" )
     {
         Lambda_timeline = var;
     }
-    else if ( name == "Mu_timeline" )
+    else if ( name == "MuTimeline" )
     {
         Mu_timeline = var;
     }
-    else if ( name == "Phi_timeline" )
+    else if ( name == "PhiTimeline" )
     {
         Phi_timeline = var;
     }
