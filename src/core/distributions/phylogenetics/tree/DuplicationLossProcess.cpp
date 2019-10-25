@@ -358,10 +358,6 @@ double DuplicationLossProcess::recursivelyComputeLnProbability( const RevBayesCo
             {
               this_age = this_gene_node->getParent().getAge();
             }
-          else
-            {
-              continue;
-            }
 
           if ( fabs( this_age - individual_age) < EPS_COAL )
             {
@@ -586,15 +582,43 @@ void DuplicationLossProcess::resetTipAllocations( void )
   genes_per_branch_ancient = std::vector< std::set< const TopologyNode* > >(ind_tree.getNumberOfNodes(), std::set< const TopologyNode* >() );
   for (size_t i=0; i<num_taxa; ++i)
     {
-      const TopologyNode &n = value->getNode( i );
-      const std::string &individual_name = n.getSpeciesName();
+      const TopologyNode &gn = value->getNode( i );
+      // Get the associated haplotype name (called species name for historical
+      // reasons) and haplotype node.
+      const std::string &individual_name = gn.getSpeciesName();
       TopologyNode *individual_node = individual_names_2_individual_nodes[individual_name];
       if ( individual_node == NULL )
         {
           throw RbException("There was an unexpected problem when inializing the tips of the gene tree in the duplication loss process. Could not find a node in the haplotype tree with name '" + individual_name + "'.");
         }
       size_t index = individual_node->getIndex();
-      genes_per_branch_recent[ index ].insert( &n );
+      genes_per_branch_recent[ index ].insert( &gn );
+      // // As it turns out, this is NOT NECESSARY, because it is done on a per
+      // // branch basis when calculating the likelihood recursively.
+      // // --
+      // // Now we have to move up the branch attached to the gene and add the gene
+      // // to all passed individual nodes.
+      // double gn_age = gn.getAge();
+      // double gn_brlen = gn.getBranchLength();
+      // TopologyNode &cur_in_node = *individual_node;
+      // double in_age = cur_in_node.getAge();
+      // if (gn_age >= in_age)
+      //   gn_brlen += (gn_age - in_age);
+      // else
+      //   throw RbException("resetTipAllocations: Gene younger than individual.");
+      // while (gn_brlen > 0) {
+      //   size_t index = cur_in_node.getIndex();
+      //   genes_per_branch_recent[ index ].insert( &gn );
+      //   double in_brlen = cur_in_node.getBranchLength();
+      //   gn_brlen -= in_brlen;
+      //   // Go to parent individual.
+      //   if (! cur_in_node.isRoot())
+      //     cur_in_node = cur_in_node.getParent();
+      //   // This individual is the root. We have to check that the gene branch
+      //   // length is not exceeding the stem length of the individual tree.
+      //   else if (gn_brlen > 0)
+      //     throw RbException("resetTipAllocations: Gene branch length exceeds stem branch length.");
+      // }
     }
 }
 
