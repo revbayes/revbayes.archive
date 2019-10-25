@@ -60,6 +60,13 @@ EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentP
                                                                                            const std::vector<Taxon> &tn,
                                                                                            bool uo) : AbstractBirthDeathProcess( ra, cdt, tn, uo ),
     interval_times_global(timeline),
+    interval_times_speciation(speciation_timeline),
+    interval_times_extinction(extinction_timeline),
+    interval_times_sampling(sampling_timeline),
+    interval_times_treatment(treatment_timeline),
+    interval_times_event_speciation(event_sampling_timeline),
+    interval_times_event_extinction(event_extinction_timeline),
+    interval_times_event_sampling(event_sampling_timeline),
     offset( 0.0 )
 {
     // initialize all the pointers to NULL
@@ -77,7 +84,13 @@ EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentP
     heterogeneous_Lambda = NULL;
     heterogeneous_Mu     = NULL;
     heterogeneous_Phi    = NULL;
+
     //@TODO @SEBASTIAN: some time we might want to allow "homogeneous" aka scalar Mu/Lambda
+
+    if ( interval_times_global != NULL )
+    {
+      using_global_timeline = true;
+    }
 
     std::vector<double> times = interval_times_global->getValue();
     std::vector<double> times_sorted_ascending = times;
@@ -134,7 +147,8 @@ EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentP
 
     //TODO: returning neginf and nan are not currently coherent
 
-    updateVectorParameters();
+    // updateVectorParameters();
+    prepareTimeline();
     prepareProbComputation();
 
     // We employ a coalescent simulator to guarantee that the starting tree matches all time constraints
@@ -179,18 +193,22 @@ void EpisodicBirthDeathSamplingTreatmentProcess::addTimesToGlobalTimeline(std::s
 }
 
 /**
- * Checks that v1 is the correct size compared to reference vector v2, given the expected size difference.
+ * Checks that v1 is the correct size compared to reference vector ref, given the expected size difference.
+ * If the first vector parameter is not a vector (is null), does nothing.
  * If the sizes are wrong, throws an exception.
  * Uses param_name and is_rate to make a sensible error message
  */
-void EpisodicBirthDeathSamplingTreatmentProcess::checkVectorSizes(const TypedDagNode<RbVector<double> >* v1, const TypedDagNode<RbVector<double> >* v2, int v1_minus_v2, std::string& param_name, bool is_rate) const
+void EpisodicBirthDeathSamplingTreatmentProcess::checkVectorSizes(const TypedDagNode<RbVector<double> >* v, const TypedDagNode<RbVector<double> >* ref, int v1_minus_ref, std::string& param_name, bool is_rate) const
 {
-  if ( v1->getValue().size() - v2->getValue().size() != v1_minus_v2 )
+  if ( v != NULL )
   {
-    std::string vec_type = is_rate ? "rates" : "probabilities";
-    std::stringstream ss;
-    ss << "Number of " << param_name << " " << vec_type << " (" << v1->getValue().size() << ") does not match number of time intervals (" << v2->getValue().size() << ")";
-    throw RbException(ss.str());
+    if ( v->getValue().size() - ref->getValue().size() != v1_minus_ref )
+    {
+      std::string vec_type = is_rate ? "rates" : "probabilities";
+      std::stringstream ss;
+      ss << "Number of " << param_name << " " << vec_type << " (" << v->getValue().size() << ") does not match number of time intervals (" << ref->getValue().size() << ")";
+      throw RbException(ss.str());
+    }
   }
 }
 
@@ -1118,6 +1136,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
     phi_event_times.clear();
     global_timeline.clear();
 
+std::cout << "sets cleared" << std::endl;
     // put in current values for vector parameters so we can re-order them as needed
     if (heterogeneous_lambda != NULL)
     {
@@ -1151,21 +1170,62 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
     {
       r_event = heterogeneous_R->getValue();
     }
+    if (heterogeneous_R != NULL)
+    {
+      r_event = heterogeneous_R->getValue();
+    }
+std::cout << "vector param values added" << std::endl;
 
-    lambda_times = interval_times_speciation->getValue();
-    mu_times = interval_times_extinction->getValue();
-    phi_times = interval_times_sampling->getValue();
-    r_times = interval_times_treatment->getValue();
-    lambda_event_times = interval_times_event_speciation->getValue();
-    mu_event_times = interval_times_event_extinction->getValue();
-    phi_event_times = interval_times_event_sampling->getValue();
-    global_timeline = interval_times_global->getValue();
+    // put in current values for vector parameters so we can re-order them as needed
+    if (interval_times_global != NULL)
+    {
+      global_timeline = interval_times_global->getValue();
+    }
+    if (interval_times_speciation != NULL)
+    {
+      lambda_times = interval_times_speciation->getValue();
+    }
+    if (interval_times_extinction != NULL)
+    {
+      mu_times = interval_times_extinction->getValue();
+    }
+    if (interval_times_sampling != NULL)
+    {
+      phi_times = interval_times_sampling->getValue();
+    }
+    if (interval_times_treatment != NULL)
+    {
+      r_times = interval_times_treatment->getValue();
+    }
+    if (interval_times_event_speciation != NULL)
+    {
+      lambda_event_times = interval_times_event_speciation->getValue();
+    }
+    if (interval_times_event_extinction != NULL)
+    {
+      mu_event_times = interval_times_event_extinction->getValue();
+    }
+    if (interval_times_event_sampling != NULL)
+    {
+      phi_event_times = interval_times_event_sampling->getValue();
+    }
+
+    // lambda_times = interval_times_speciation->getValue();
+    // mu_times = interval_times_extinction->getValue();
+    // phi_times = interval_times_sampling->getValue();
+    // r_times = interval_times_treatment->getValue();
+    // lambda_event_times = interval_times_event_speciation->getValue();
+    // mu_event_times = interval_times_event_extinction->getValue();
+    // phi_event_times = interval_times_event_sampling->getValue();
+    // global_timeline = interval_times_global->getValue();
+
+std::cout << "vector timeline values added" << std::endl;
 
     // @TODO: @ANDY: Check that we cleared all parameters!
 
 
     // first, we are checking for the global timeline
-    if ( interval_times_global != NULL )
+    if ( using_global_timeline )
     {
         if ( interval_times_speciation != NULL ||
              interval_times_extinction != NULL ||
@@ -1189,16 +1249,29 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
         checkVectorSizes(heterogeneous_Mu,interval_times_global,0,exn,false);
         checkVectorSizes(heterogeneous_Phi,interval_times_global,1,smp,false);
         checkVectorSizes(heterogeneous_R,interval_times_global,0,etrt,false);
+std::cout << "all vectors pass size inspection" << std::endl;
 
         // @TODO: Make sure that times and parameters are stored backwards in time!
         sortGlobalTimesAndVectorParameter();
+std::cout << "all vectors sorted" << std::endl;
 
 
         // ...
 
         // we are done with setting up the timeline (i.e., using the provided global timeline) and checking all dimension of parameters
     }
-    else
+    // We only need to assemble a global timeline if
+    else if ( interval_times_speciation != NULL ||
+                 interval_times_extinction != NULL ||
+                 interval_times_sampling != NULL ||
+                 interval_times_treatment != NULL ||
+                 interval_times_event_speciation != NULL ||
+                 interval_times_event_sampling != NULL ||
+                 interval_times_event_extinction != NULL )
+            {
+                throw RbException("Both heterogeneous and homogeneous rate change times provided");
+            }
+
     {
 
         // check if correct number of speciation rates were provided
@@ -1328,6 +1401,17 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
         // we are done with setting up the timeline (i.e., using the all the provided timeline) and checking all dimension of parameters
 
     }
+    // else
+    // {
+    //   // Constant-rate process, taking the time to do all that checking is a waste, all we need is the one-vector for the timeline
+    //
+    // }
+
+    // @TODO: @ANDY: Check about the offset
+    // Add s_0
+    getOffset();
+    global_timeline.insert(global_timeline.begin(),offset);
+
 
     // @TODO: @ANDY: Make sure this populates properly all parameter vectors (backwards in time, etc.)
 
@@ -1458,12 +1542,6 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
       // User specified nothing, there are no birth bursts
       mu_event = std::vector<double>(global_timeline.size(),0.0);
     }
-
-    // @TODO: @ANDY: Check about the offset
-    // Add s_0
-    getOffset();
-    global_timeline.insert(global_timeline.begin(),offset);
-
 }
 
 double EpisodicBirthDeathSamplingTreatmentProcess::pSampling(double start) const

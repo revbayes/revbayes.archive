@@ -305,14 +305,14 @@ const MemberRules& Dist_BDSTP::getParameterRules(void) const
 
         dist_member_rules.push_back( new ArgumentRule( "R",       other_event_paramTypes, "The treatment probabilities for the sampling events (excluding sampling at present).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
-        dist_member_rules.push_back( new ArgumentRule( "timeline",    ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the piecewise constant process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
-        dist_member_rules.push_back( new ArgumentRule( "lambdaTimeline",    ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
-        dist_member_rules.push_back( new ArgumentRule( "muTimeline",        ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
-        dist_member_rules.push_back( new ArgumentRule( "phiTimeline",       ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the sampling rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
-        dist_member_rules.push_back( new ArgumentRule( "rTimeline",         ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the (serial) treatment probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
-        dist_member_rules.push_back( new ArgumentRule( "LambdaTimeline",    ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
-        dist_member_rules.push_back( new ArgumentRule( "MuTimeline",        ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
-        dist_member_rules.push_back( new ArgumentRule( "PhiTimeline",       ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the sampling rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
+        dist_member_rules.push_back( new ArgumentRule( "timeline",    ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the piecewise constant process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "lambdaTimeline",    ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "muTimeline",        ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "phiTimeline",       ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the sampling rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "rTimeline",         ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the (serial) treatment probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "LambdaTimeline",    ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "MuTimeline",        ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "PhiTimeline",       ModelVector<RealPos>::getClassTypeSpec(), "The rate interval change times of the sampling rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "time" );
