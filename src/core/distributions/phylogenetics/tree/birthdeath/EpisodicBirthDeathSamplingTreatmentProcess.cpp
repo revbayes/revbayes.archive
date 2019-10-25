@@ -77,6 +77,7 @@ EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentP
     heterogeneous_Lambda = NULL;
     heterogeneous_Mu     = NULL;
     heterogeneous_Phi    = NULL;
+    //@TODO @SEBASTIAN: some time we might want to allow "homogeneous" aka scalar Mu/Lambda
 
     std::vector<double> times = timeline->getValue();
     std::vector<double> times_sorted_ascending = times;
