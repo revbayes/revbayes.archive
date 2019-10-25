@@ -7,6 +7,7 @@
 #include "RbHelpMonitor.h"
 #include "RbHelpMove.h"
 #include "RbHelpSystem.h"
+#include "StringUtilities.h"
 #include "YAMLHelpRenderer.h"
 #include "Workspace.h"
 

@@ -249,7 +249,7 @@ void Mcmcmc::finishMonitors( size_t n_reps, MonteCarloAnalysisOptions::TraceComb
 const Model& Mcmcmc::getModel( void ) const
 {
     
-    return chains[0]->getModel();
+    return base_chain->getModel();
 }
 
 
