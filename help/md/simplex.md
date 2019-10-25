@@ -1,5 +1,5 @@
 ## name
-simplex
+Simplex
 ## title
 ## description
 ## details
