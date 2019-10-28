@@ -851,6 +851,11 @@ bool EpisodicBirthDeathSamplingTreatmentProcess::isConstantRate(void) const
 
   // std::cout << "has_no_interval_times == " << has_no_interval_times << "; all_parameters_are_scalars == " << all_parameters_are_scalars << std::endl;
 
+  if (has_no_interval_times && !all_parameters_are_scalars)
+  {
+    throw RbException("No timeline(s) was (were) provided but there are non-scalar parameters.");
+  }
+
   return has_no_interval_times && all_parameters_are_scalars;
 }
 
