@@ -84,6 +84,7 @@ EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentP
     heterogeneous_Lambda = NULL;
     heterogeneous_Mu     = NULL;
     heterogeneous_Phi    = NULL;
+    heterogeneous_R      = NULL;
 
     //@TODO @SEBASTIAN: some time we might want to allow "homogeneous" aka scalar Mu/Lambda
 
@@ -141,6 +142,10 @@ EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentP
 
     addParameter( homogeneous_Phi );
     addParameter( heterogeneous_Phi );
+
+    heterogeneous_R = dynamic_cast<const TypedDagNode<RbVector<double> >*>(in_event_treatment);
+
+    addParameter( heterogeneous_R );
 
     //TODO: make sure the offset is added properly into the computation, need to offset *all* times, including interval times
     //          this means we also need to check that the first interval time is not less than the first tip (which we should probably to anyways)
@@ -701,6 +706,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::E(size_t i, double t, bool co
  */
 size_t EpisodicBirthDeathSamplingTreatmentProcess::findIndex(double t) const
 {
+    // @TODO @efficiency: this would be much faster if we can get std::lower_bound to work consistently
     // Linear search for interval because std::lower_bound is not cooperating
     if (global_timeline.size() == 1)
     {
@@ -818,6 +824,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::lnProbTreeShape(void) const
  */
 void EpisodicBirthDeathSamplingTreatmentProcess::expandNonGlobalProbabilityParameterVector(std::vector<double> &par, std::vector<double> &par_times)
 {
+    // @TODO @efficiency: this works but it would be faster to auto-advance indices rather than have an internal loop
     // Store the original values so we can overwrite the vector
     std::vector<double> old_par = par;
 
@@ -1116,7 +1123,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void )
 void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
 {
     // @TODO: @ANDY: Fill in the function to assemble the master timeline and all the parameter vectors!!!
-
+std::cout << "hello from prepareTimeline()" << std::endl;
     // clean all the sets
     lambda.clear();
     mu.clear();
@@ -1135,6 +1142,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
     mu_event_times.clear();
     phi_event_times.clear();
     global_timeline.clear();
+std::cout << "cleared all" << std::endl;
 
     // put in current values for vector parameters so we can re-order them as needed
     if (heterogeneous_lambda != NULL)
@@ -1167,13 +1175,13 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
     }
     if (heterogeneous_R != NULL)
     {
+      std::cout << "getting heterogeneous_R" << std::endl;
+      std::cout << "heterogeneous_R = " << heterogeneous_R->getValue() << std::endl;
       r_event = heterogeneous_R->getValue();
     }
-    if (heterogeneous_R != NULL)
-    {
-      r_event = heterogeneous_R->getValue();
-    }
+std::cout << "got all non-timeline parameters" << std::endl;
 
+    //@TODO we need to check that we have either a scalar or a vector for ALL of lambda/mu/phi/r/Phi (Lambda and Mu are allowed to be NULL), this should probably be done here
     // put in current values for vector parameters so we can re-order them as needed
     if (interval_times_global != NULL)
     {
@@ -1207,6 +1215,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
     {
       phi_event_times = interval_times_event_sampling->getValue();
     }
+std::cout << "got all timeline parameters" << std::endl;
 
     // lambda_times = interval_times_speciation->getValue();
     // mu_times = interval_times_extinction->getValue();
@@ -1395,6 +1404,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
     //
     // }
 
+std::cout << "timeline done, about to fix parameter vectors" << std::endl;
     // @TODO: @ANDY: Check about the offset
     // Add s_0
     getOffset();
@@ -1405,10 +1415,10 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
     // @TODO: @ANDY: Make sure this populates properly all parameter vectors (backwards in time, etc.)
 
     // For each parameter vector, we now make sure that its size matches the size of the global vector
-    // For a parameter, there are three cases
+    // For a RATE parameter, there are three cases
     //     1) It is a vector and it matches the size of the global timeline, in which case it is already sorted and we can use it
     //     2) It is a vector and it DOES NOT match the size of the global timeline, in which case we must expand it to match
-    //     1) It is a scalar, in which case we simply populate a vector of the correct size with the value
+    //     3) It is a scalar, in which case we simply populate a vector of the correct size with the value
 
     // Get vector of birth rates
     // @TODO: @SEBASTIAN: would it be better here to check if interval_times_parameter == NULL instead of checking the size? They should be equivalent
@@ -1464,6 +1474,11 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
       r = std::vector<double>(global_timeline.size(),homogeneous_r->getValue());
     }
 
+    // For each parameter vector, we now make sure that its size matches the size of the global vector
+    // For Lambda/Mu, there are two cases
+    //     1) It is a vector and is is of length global_timeline.size() - 1, in which case we add an event with probability 0.0 at the present, and it is ready to use
+    //     2) It is a vector and it DOES NOT match the size of the global timeline, in which case we must expand it to match, which automatically adds an event of P=0.0 at the present
+
     // Get vector of burst birth probabilities
     if ( heterogeneous_Lambda != NULL )
     {
@@ -1505,14 +1520,17 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
     }
 
     // Get vector of event sampling probabilities
+    // For Phi, there are three cases
+    //     1) It is a vector and it matches the size of the global timeline, in which case it is already sorted and we can use it
+    //     2) It is a vector and it DOES NOT match the size of the global timeline, in which case we must expand it to match
+    //     3) It is a scalar, in which case it is Phi[0] and we simply make Phi[>0] all 0.0
     if ( heterogeneous_Phi != NULL )
     {
       // Expand if needed
-      if (phi_event.size() != global_timeline.size() - 1)
+      if (phi_event.size() != global_timeline.size())
       {
         expandNonGlobalProbabilityParameterVector(phi_event,phi_event_times);
       }
-      phi_event = heterogeneous_Phi->getValue();
     }
     else
     {
@@ -1525,6 +1543,10 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
     }
 
     // Get vector of burst death (mass extinction) probabilities
+    // For R, the cases are as follows
+    //     1) It is a vector and it is of length phi_event.size() - 1, in which case we simply add R[0] = 0.0 and we can move on
+    //     2) It is a vector and it DOES NOT match the size of the global timeline, in which case we must expand it to match
+    //     3) It is NULL, in which case we use r in its place
     if ( heterogeneous_R != NULL )
     {
       // Expand if needed, this will make the first event 0
@@ -1541,7 +1563,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
     else
     {
       // User specified nothing, there are no birth bursts
-      r_event = std::vector<double>(global_timeline.size(),0.0);
+      r_event = r;
     }
 }
 
