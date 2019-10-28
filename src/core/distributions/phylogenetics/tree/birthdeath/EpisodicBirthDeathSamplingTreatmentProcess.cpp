@@ -229,7 +229,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityDivergenc
 {
     // @TODO @ANDY Need to use big-R for event sampling times
     // update parameter vectors
-    updateVectorParameters();
+    prepareTimeline();
 
     // Assign nodes to sets
     countAllNodes();
@@ -876,122 +876,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::expandNonGlobalRateParameterVec
 
 }
 
-/**
- * Here we ensure that we have a length-l vector of rates and events for all parameters and the timeline.
- * In the case of homogeneous/constant-rate parameters, we fill the vector with this rate.
- * In the case of homogenous/single events, we make all but the first event rates 0.
- *
- */
-void EpisodicBirthDeathSamplingTreatmentProcess::updateVectorParameters( void )
-{
-    // clean and get timeline
-    global_timeline.clear();
-    global_timeline = interval_times_global->getValue();
 
-    // Add t_0
-    getOffset();
-    global_timeline.insert(global_timeline.begin(),offset);
-
-    // clean all the sets
-    lambda.clear();
-    mu.clear();
-    phi.clear();
-    r.clear();
-    lambda_event.clear();
-    mu_event.clear();
-    phi_event.clear();
-
-    // Get vector of birth rates
-    if ( heterogeneous_lambda != NULL )
-    {
-      lambda = heterogeneous_lambda->getValue();
-    }
-    else
-    {
-      lambda = std::vector<double>(global_timeline.size(),homogeneous_lambda->getValue());
-    }
-
-    // Get vector of death rates
-    if ( heterogeneous_mu != NULL )
-    {
-      mu = heterogeneous_mu->getValue();
-    }
-    else
-    {
-      mu = std::vector<double>(global_timeline.size(),homogeneous_mu->getValue());
-    }
-
-    // Get vector of serial sampling rates
-    if ( heterogeneous_phi != NULL )
-    {
-      phi = heterogeneous_phi->getValue();
-    }
-    else
-    {
-      phi = std::vector<double>(global_timeline.size(),homogeneous_phi->getValue());
-    }
-
-    // Get vector of conditional death upon sampling probabilities
-    if ( heterogeneous_r != NULL )
-    {
-      r = heterogeneous_r->getValue();
-    }
-    else
-    {
-      r = std::vector<double>(global_timeline.size(),homogeneous_r->getValue());
-    }
-
-    // Get vector of burst birth probabilities
-    if ( heterogeneous_Lambda != NULL )
-    {
-      // User has specified lambda_event_1,...,lambda_event_{l-1}
-      lambda_event = heterogeneous_Lambda->getValue();
-      // lambda_event_0 must be 0 (there can be no burst at the present)
-      lambda_event.insert(lambda_event.begin(),0.0);
-    }
-    else
-    {
-      // User specified nothing, there are no birth bursts
-      lambda_event = std::vector<double>(global_timeline.size(),0.0);
-    }
-
-    // Get vector of burst death (mass extinction) probabilities
-    if ( heterogeneous_Mu != NULL )
-    {
-      // User has specified mu_event_1,...,mu_event_{l-1}
-      mu_event = heterogeneous_Mu->getValue();
-      // mu_event_0 must be 0 (there can be no burst at the present)
-      mu_event.insert(mu_event.begin(),0.0);
-    }
-    else
-    {
-      // User specified nothing, there are no birth bursts
-      mu_event = std::vector<double>(global_timeline.size(),0.0);
-    }
-
-    // Get vector of event sampling probabilities
-    if ( heterogeneous_Phi != NULL )
-    {
-      // User has specified phi_event_0,...,phi_event_{l-1}
-      phi_event = heterogeneous_Phi->getValue();
-    }
-    else
-    {
-        phi_event = std::vector<double>(global_timeline.size(),0.0);
-        if ( homogeneous_Phi != NULL )
-        {
-            // User specified the sampling fraction at the present
-            phi_event[0] = homogeneous_Phi->getValue();
-        }
-        else
-        {
-            // set the final sampling to one (for sampling at the present)
-            phi_event[0] = 1.0;
-      }
-
-    }
-
-}
 
 /*
  * Here we calculate all A_i, B_i, C_i, D_i(s_i), and E_i(s_i) for i = 1,...,l

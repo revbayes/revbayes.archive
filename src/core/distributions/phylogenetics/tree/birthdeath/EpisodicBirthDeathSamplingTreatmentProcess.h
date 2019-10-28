@@ -67,7 +67,7 @@ namespace RevBayesCore {
         void                                            addTimesToGlobalTimeline(std::set<double> &event_times, const TypedDagNode<RbVector<double> > *par_times);        //!< Adds timeline for parameter to set that we will use for global timeline
         void                                            checkVectorSizes(const TypedDagNode<RbVector<double> >* v1, const TypedDagNode<RbVector<double> >* v2, int v1_minus_v2, std::string& param_name, bool is_rate) const;
         double                                          computeLnProbabilityTimes(void);                                    //!< Compute the log-transformed probability of the current value.
-        void                                            countAllNodes(void);                                                 //!< Count bifurcating nodes, count all heterochronous nodes as either phi- or Phi-sampled and as either sampled ancestors or sampled extinct tips
+        void                                            countAllNodes(void);                                                //!< Count bifurcating nodes, count all heterochronous nodes as either phi- or Phi-sampled and as either sampled ancestors or sampled extinct tips
         double                                          lnD(size_t i, double t) const;                                      //!< Branch-segment probability at time t with index i, using pre-computed vectors
         double                                          E(size_t i, double t, bool computeSurvival = false) const;                                       //!< Extinction probability at time t with index i, using pre-computed vectors
         size_t                                          findIndex(double t) const;                                          //!< Find the index so that times[index-1] < t < times[index]
@@ -80,10 +80,9 @@ namespace RevBayesCore {
         double                                          pSampling(double t) const;
         double                                          pSurvival(double start, double end) const;
         double                                          simulateDivergenceTime(double origin, double present) const;    //!< Simulate a speciation event.
-        void                                            sortGlobalTimesAndVectorParameter(void);     //<! Sorts times to run from 0->inf, and orders ALL vector parameters to match
-        void                                            sortNonGlobalTimesAndVectorParameter(std::vector<double> &times, std::vector<double> &par);     //<! Sorts times to run from 0->inf, and orders par to match
-        int                                             survivors(double t) const;                                 //!< Number of species alive at time t.
-        void                                            updateVectorParameters(void);
+        void                                            sortGlobalTimesAndVectorParameter(void);                        //!< Sorts times to run from 0->inf, and orders ALL vector parameters to match
+        void                                            sortNonGlobalTimesAndVectorParameter(std::vector<double> &times, std::vector<double> &par);     //!< Sorts times to run from 0->inf, and orders par to match
+        int                                             survivors(double t) const;                                      //!< Number of species alive at time t.
         void                                            expandNonGlobalProbabilityParameterVector(std::vector<double> &par, std::vector<double> &par_times); //!< Updates vector par such that it matches the global timeline
         void                                            expandNonGlobalRateParameterVector(std::vector<double> &par, std::vector<double> &par_times); //!< Updates vector par such that it matches the global timeline
         int                                             whichIntervalTime(double t) const;                                //!< If a time corresponds to an interval/event time, returns that interval, otherwise returns -1
