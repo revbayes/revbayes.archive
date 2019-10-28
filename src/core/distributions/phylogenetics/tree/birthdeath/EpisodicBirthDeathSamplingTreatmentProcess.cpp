@@ -211,6 +211,9 @@ void EpisodicBirthDeathSamplingTreatmentProcess::checkVectorSizes(const TypedDag
 {
   if ( v != NULL )
   {
+    // std::cout << "checking vector sizes" << std::endl;
+    // std::cout << "v->getValue().size() = " << v->getValue().size() << std::endl;
+    // std::cout << "ref->getValue().size() = " << ref->getValue().size() << std::endl;
     if ( v->getValue().size() - ref->getValue().size() != v1_minus_ref )
     {
       std::string vec_type = is_rate ? "rates" : "probabilities";
@@ -266,7 +269,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
     {
       for (size_t i=0; i<global_timeline.size(); ++i)
       {
-        if ( (phi_event[i] > DBL_EPSILON && (mu_event[i] > DBL_EPSILON || lambda_event[i] > DBL_EPSILON)) || (mu_event[i] > DBL_EPSILON && lambda_event[i] > DBL_EPSILON)) )
+        if ( (phi_event[i] > DBL_EPSILON && (mu_event[i] > DBL_EPSILON || lambda_event[i] > DBL_EPSILON)) || (mu_event[i] > DBL_EPSILON && lambda_event[i] > DBL_EPSILON) )
         {
           return RbConstants::Double::neginf;
         }
@@ -813,6 +816,44 @@ void EpisodicBirthDeathSamplingTreatmentProcess::getOffset(void) const
 
 }
 
+bool EpisodicBirthDeathSamplingTreatmentProcess::isConstantRate(void) const
+{
+  bool has_no_interval_times = false;
+  // For there to be no intervals, every timeline must either be NULL or have size 0
+  if ( (interval_times_global == NULL           || interval_times_global->getValue().size() == 0 ) &&
+       (interval_times_speciation == NULL       || interval_times_speciation->getValue().size() == 0 ) &&
+       (interval_times_extinction == NULL       || interval_times_extinction->getValue().size() == 0 ) &&
+       (interval_times_sampling == NULL         || interval_times_sampling->getValue().size() == 0 ) &&
+       (interval_times_treatment == NULL        || interval_times_treatment->getValue().size() == 0 ) &&
+       (interval_times_event_speciation == NULL || interval_times_event_speciation->getValue().size() == 0 ) &&
+       (interval_times_event_extinction == NULL || interval_times_event_extinction->getValue().size() == 0 ) &&
+       (interval_times_event_sampling == NULL   || interval_times_event_sampling->getValue().size() == 0 ) )
+  {
+    has_no_interval_times = true;
+  }
+
+  bool all_parameters_are_scalars = false;
+  // For all parameters to be scalars,
+  // 1) rate parameters must either be homogenous or they must have size <= 1 (1 for scalar, 0 if it's null)
+  // 2) Lambda/Mu must be of size 0 or NULL
+  // 3) Phi must be of size 1 or a scalar
+  if ( (heterogeneous_lambda == NULL || lambda.size() <= 1) &&
+       (heterogeneous_mu == NULL     || mu.size() <= 1) &&
+       (heterogeneous_phi == NULL    || phi.size() <= 1) &&
+       (heterogeneous_r == NULL      || r.size() <= 1) &&
+       (heterogeneous_Lambda == NULL || lambda_event.size() == 0) &&
+       (heterogeneous_Mu     == NULL || mu_event.size() == 0) &&
+       (heterogeneous_Phi == NULL    || phi_event.size() <= 1) &&
+       (heterogeneous_R      == NULL || r_event.size() == 0) )
+       {
+         all_parameters_are_scalars = true;
+       }
+
+  // std::cout << "has_no_interval_times == " << has_no_interval_times << "; all_parameters_are_scalars == " << all_parameters_are_scalars << std::endl;
+
+  return has_no_interval_times && all_parameters_are_scalars;
+}
+
 // double EpisodicBirthDeathSamplingTreatmentProcess::lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const
 // {
 //   throw(RbException("Cannot compute lnProbNumTaxa."));
@@ -1115,21 +1156,16 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
 
     // @TODO: @ANDY: Check that we cleared all parameters!
 
-    // @TODO: @Sebastian: what happens if someone reversible-jumps into a constant rate model???
-    if ( interval_times_global == NULL &&
-         interval_times_speciation == NULL &&
-         interval_times_extinction == NULL &&
-         interval_times_sampling == NULL &&
-         interval_times_treatment == NULL &&
-         interval_times_event_speciation == NULL &&
-         interval_times_event_sampling == NULL &&
-         interval_times_event_extinction == NULL )
+    // If it's a constant-rate process, make sure we only have scalars
+    bool using_constant_rate_process = isConstantRate();
+    if ( using_constant_rate_process )
     {
-      using_constant_rate_process = true;
+      global_timeline = std::vector<double>(0,0.0);
     }
-    // first, we are checking for the global timeline
+    // If we have a real
     else if ( using_global_timeline )
     {
+        // std::cout << "using global timeline" << std::endl;
         if ( interval_times_speciation != NULL ||
              interval_times_extinction != NULL ||
              interval_times_sampling != NULL ||
