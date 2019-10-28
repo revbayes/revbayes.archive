@@ -14,6 +14,7 @@
 #include "ArgumentRule.h"
 #include "Natural.h"
 #include "NaturalNumbersState.h"
+#include "StandardState.h"
 #include "RlMonitor.h"
 #include "RbException.h"
 #include "RevObject.h"
@@ -98,20 +99,54 @@ void Mntr_StochasticCharacterMapping::constructInternalObject( void )
     }
 
 
-    RevBayesCore::StochasticCharacterMappingMonitor<RevBayesCore::NaturalNumbersState> *m;
-    if ( static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).isModelObject() )
-    {
-        m = new RevBayesCore::StochasticCharacterMappingMonitor<RevBayesCore::NaturalNumbersState>( ctmc_sn, (unsigned long)print_gen, file_name, is, sd, sep, idx - 1 );
+    std::string model_type = "";
+    std::string data_type = "";
+    if ( static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).isModelObject() ) {
+        model_type = "ctmc";
+        data_type = ctmc_sn->getValue().getDataType();
     }
-    else
-    {
-        m = new RevBayesCore::StochasticCharacterMappingMonitor<RevBayesCore::NaturalNumbersState>( cdbdp_sn, (unsigned long)print_gen, file_name, is, sd, sep );
+    else {
+        model_type = "cdbdp";
+        data_type = "NaturalNumbers";
     }
-    m->setAppend( app );
-    m->setPrintVersion( wv );
-
-    delete value;
-    value = m;
+    
+    
+    if ( model_type == "ctmc" )
+    {
+        std::string data_type = ctmc_sn->getValue().getDataType();
+        if (data_type == "Standard") {
+            RevBayesCore::StochasticCharacterMappingMonitor<RevBayesCore::StandardState>* m;
+            m = new RevBayesCore::StochasticCharacterMappingMonitor<RevBayesCore::StandardState>( ctmc_sn, (unsigned long)print_gen, file_name, is, sd, sep, idx - 1 );
+            m->setAppend( app );
+            m->setPrintVersion( wv );
+            
+            delete value;
+            value = m;
+            
+        } else if (data_type == "NaturalNumbers") {
+            RevBayesCore::StochasticCharacterMappingMonitor<RevBayesCore::NaturalNumbersState>* m;
+            m = new RevBayesCore::StochasticCharacterMappingMonitor<RevBayesCore::NaturalNumbersState>( ctmc_sn, (unsigned long)print_gen, file_name, is, sd, sep, idx - 1 );
+            m->setAppend( app );
+            m->setPrintVersion( wv );
+            
+            delete value;
+            value = m;
+        }
+        
+    }
+    else if ( model_type == "cdbdp" )
+    {
+        if (data_type == "NaturalNumbers") {
+            RevBayesCore::StochasticCharacterMappingMonitor<RevBayesCore::NaturalNumbersState>* m;
+            m = new RevBayesCore::StochasticCharacterMappingMonitor<RevBayesCore::NaturalNumbersState>( cdbdp_sn, (unsigned long)print_gen, file_name, is, sd, sep );
+            m->setAppend( app );
+            m->setPrintVersion( wv );
+            
+            delete value;
+            value = m;
+        }
+    }
+    
 
 }
 

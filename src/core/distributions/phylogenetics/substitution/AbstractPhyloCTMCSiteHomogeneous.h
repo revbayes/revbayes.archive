@@ -1266,8 +1266,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawStochasticCha
 
     while (!success && n_draws != max_draws) {
         // first draw joint ancestral states
-        std::vector<std::vector<charType> > start_states(this->num_nodes, std::vector<charType>(this->num_sites));
-        std::vector<std::vector<charType> > end_states(this->num_nodes, std::vector<charType>(this->num_sites));
+        std::vector<std::vector<charType> > start_states(this->num_nodes, std::vector<charType>(this->num_sites, template_state));
+        std::vector<std::vector<charType> > end_states(this->num_nodes, std::vector<charType>(this->num_sites, template_state));
         this->drawJointConditionalAncestralStates( start_states, end_states );
 
         // save the character history for the root
