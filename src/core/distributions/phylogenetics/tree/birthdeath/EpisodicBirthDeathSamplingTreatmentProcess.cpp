@@ -1136,7 +1136,6 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
     phi_event_times.clear();
     global_timeline.clear();
 
-std::cout << "sets cleared" << std::endl;
     // put in current values for vector parameters so we can re-order them as needed
     if (heterogeneous_lambda != NULL)
     {
@@ -1174,7 +1173,6 @@ std::cout << "sets cleared" << std::endl;
     {
       r_event = heterogeneous_R->getValue();
     }
-std::cout << "vector param values added" << std::endl;
 
     // put in current values for vector parameters so we can re-order them as needed
     if (interval_times_global != NULL)
@@ -1219,8 +1217,6 @@ std::cout << "vector param values added" << std::endl;
     // phi_event_times = interval_times_event_sampling->getValue();
     // global_timeline = interval_times_global->getValue();
 
-std::cout << "vector timeline values added" << std::endl;
-
     // @TODO: @ANDY: Check that we cleared all parameters!
 
 
@@ -1249,12 +1245,9 @@ std::cout << "vector timeline values added" << std::endl;
         checkVectorSizes(heterogeneous_Mu,interval_times_global,0,exn,false);
         checkVectorSizes(heterogeneous_Phi,interval_times_global,1,smp,false);
         checkVectorSizes(heterogeneous_R,interval_times_global,0,etrt,false);
-std::cout << "all vectors pass size inspection" << std::endl;
 
         // @TODO: Make sure that times and parameters are stored backwards in time!
         sortGlobalTimesAndVectorParameter();
-std::cout << "all vectors sorted" << std::endl;
-
 
         // ...
 
@@ -1268,12 +1261,7 @@ std::cout << "all vectors sorted" << std::endl;
                  interval_times_event_speciation != NULL ||
                  interval_times_event_sampling != NULL ||
                  interval_times_event_extinction != NULL )
-            {
-                throw RbException("Both heterogeneous and homogeneous rate change times provided");
-            }
-
     {
-
         // check if correct number of speciation rates were provided
         // if provided as a vector, sort to the correct timescale
         if ( heterogeneous_lambda == NULL && homogeneous_lambda == NULL)
@@ -1412,6 +1400,7 @@ std::cout << "all vectors sorted" << std::endl;
     getOffset();
     global_timeline.insert(global_timeline.begin(),offset);
 
+    // @TODO: fix segfault that is somewhere between here and the end of the function
 
     // @TODO: @ANDY: Make sure this populates properly all parameter vectors (backwards in time, etc.)
 
@@ -1423,9 +1412,12 @@ std::cout << "all vectors sorted" << std::endl;
 
     // Get vector of birth rates
     // @TODO: @SEBASTIAN: would it be better here to check if interval_times_parameter == NULL instead of checking the size? They should be equivalent
-    if ( heterogeneous_lambda != NULL && lambda.size() != global_timeline.size() )
+    if ( heterogeneous_lambda != NULL )
     {
-      expandNonGlobalRateParameterVector(lambda,lambda_times);
+      if ( lambda.size() != global_timeline.size() )
+      {
+        expandNonGlobalRateParameterVector(lambda,lambda_times);
+      } // else it matches in size and is already sorted and is thus ready to be used
     }
     else
     {
@@ -1433,30 +1425,39 @@ std::cout << "all vectors sorted" << std::endl;
     }
 
     // Get vector of death rates
-    if ( heterogeneous_mu != NULL && mu.size() != global_timeline.size() )
+    if ( heterogeneous_mu != NULL )
     {
-      expandNonGlobalRateParameterVector(mu,mu_times);
+      if ( mu.size() != global_timeline.size() )
+      {
+        expandNonGlobalRateParameterVector(mu,mu_times);
+      } // else it matches in size and is already sorted and is thus ready to be used
     }
     else
     {
       mu = std::vector<double>(global_timeline.size(),homogeneous_mu->getValue());
     }
 
-    // Get vector of serial sampling rates
-    if ( heterogeneous_phi != NULL && phi.size() != global_timeline.size() )
+    // Get vector of sampling rates
+    if ( heterogeneous_lambda != NULL )
     {
-      expandNonGlobalRateParameterVector(phi,phi_times);
+      if ( phi.size() != global_timeline.size() )
+      {
+        expandNonGlobalRateParameterVector(phi,phi_times);
+      } // else it matches in size and is already sorted and is thus ready to be used
     }
     else
     {
       phi = std::vector<double>(global_timeline.size(),homogeneous_phi->getValue());
     }
 
-    // Get vector of conditional death upon sampling probabilities
-    if ( heterogeneous_r != NULL && phi.size() != global_timeline.size() )
+    // Get vector of treatment probabilities
+    if ( heterogeneous_r != NULL )
     {
-      // r is not a rate parameter, but it behaves like them for this function, as it is defined in intervals
-      expandNonGlobalRateParameterVector(r,r_times);
+      if ( r.size() != global_timeline.size() )
+      {
+        // r is not a rate parameter, but it behaves like them for this function, as it is defined in intervals
+        expandNonGlobalRateParameterVector(r,r_times);
+      } // else it matches in size and is already sorted and is thus ready to be used
     }
     else
     {
