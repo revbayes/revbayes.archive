@@ -260,6 +260,19 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
     size_t num_initial_lineages = 0;
     TopologyNode* root = &value->getRoot();
 
+    // Make sure there is only one kind of event
+    // Only check if we have any events of any kind, this means we can avoid checking in purely serial models
+    if ( heterogeneous_Lambda != NULL || heterogeneous_Mu != NULL || heterogeneous_Phi != NULL)
+    {
+      for (size_t i=0; i<global_timeline.size(); ++i)
+      {
+        if ( (phi_event[i] > DBL_EPSILON && (mu_event[i] > DBL_EPSILON || lambda_event[i] > DBL_EPSILON)) || (mu_event[i] > DBL_EPSILON && lambda_event[i] > DBL_EPSILON)) )
+        {
+          return RbConstants::Double::neginf;
+        }
+      }
+    }
+
     if ( use_origin == true )
     {
         // If we are conditioning on survival from the origin,
