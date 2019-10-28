@@ -88,19 +88,34 @@ EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentP
 
     //@TODO @SEBASTIAN: some time we might want to allow "homogeneous" aka scalar Mu/Lambda
 
+    // We use a global timeline if
+    //    1) the user provides one
+    //    2) the user provides NO timeline arguments, meaning this is a constant-rate model
     if ( interval_times_global != NULL )
     {
       using_global_timeline = true;
+
+      std::vector<double> times = interval_times_global->getValue();
+      std::vector<double> times_sorted_ascending = times;
+
+      sort(times_sorted_ascending.begin(), times_sorted_ascending.end() );
+
+      if ( times != times_sorted_ascending )
+      {
+          throw(RbException("Rate change times must be provided in ascending order."));
+      }
+
     }
-
-    std::vector<double> times = interval_times_global->getValue();
-    std::vector<double> times_sorted_ascending = times;
-
-    sort(times_sorted_ascending.begin(), times_sorted_ascending.end() );
-
-    if ( times != times_sorted_ascending )
+    else if ( interval_times_speciation == NULL &&
+              interval_times_extinction == NULL &&
+              interval_times_sampling == NULL &&
+              interval_times_treatment == NULL &&
+              interval_times_event_speciation == NULL &&
+              interval_times_event_sampling == NULL &&
+              interval_times_event_extinction == NULL )
     {
-        throw(RbException("Rate change times must be provided in ascending order."));
+      using_global_timeline = true;
+      using_constant_rate_process = true;
     }
 
     addParameter( interval_times_global );
@@ -1123,7 +1138,6 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareProbComputation( void )
 void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
 {
     // @TODO: @ANDY: Fill in the function to assemble the master timeline and all the parameter vectors!!!
-std::cout << "hello from prepareTimeline()" << std::endl;
     // clean all the sets
     lambda.clear();
     mu.clear();
@@ -1142,7 +1156,6 @@ std::cout << "hello from prepareTimeline()" << std::endl;
     mu_event_times.clear();
     phi_event_times.clear();
     global_timeline.clear();
-std::cout << "cleared all" << std::endl;
 
     // put in current values for vector parameters so we can re-order them as needed
     if (heterogeneous_lambda != NULL)
@@ -1175,17 +1188,19 @@ std::cout << "cleared all" << std::endl;
     }
     if (heterogeneous_R != NULL)
     {
-      std::cout << "getting heterogeneous_R" << std::endl;
-      std::cout << "heterogeneous_R = " << heterogeneous_R->getValue() << std::endl;
       r_event = heterogeneous_R->getValue();
     }
-std::cout << "got all non-timeline parameters" << std::endl;
 
     //@TODO we need to check that we have either a scalar or a vector for ALL of lambda/mu/phi/r/Phi (Lambda and Mu are allowed to be NULL), this should probably be done here
     // put in current values for vector parameters so we can re-order them as needed
     if (interval_times_global != NULL)
     {
       global_timeline = interval_times_global->getValue();
+    }
+    else if ( using_constant_rate_process )
+    {
+      // This will be a 1-vector with global_timeline[0] = offset
+      global_timeline = std::vector<double>(0,0.0);
     }
     if (interval_times_speciation != NULL)
     {
@@ -1215,7 +1230,6 @@ std::cout << "got all non-timeline parameters" << std::endl;
     {
       phi_event_times = interval_times_event_sampling->getValue();
     }
-std::cout << "got all timeline parameters" << std::endl;
 
     // lambda_times = interval_times_speciation->getValue();
     // mu_times = interval_times_extinction->getValue();
@@ -1404,7 +1418,6 @@ std::cout << "got all timeline parameters" << std::endl;
     //
     // }
 
-std::cout << "timeline done, about to fix parameter vectors" << std::endl;
     // @TODO: @ANDY: Check about the offset
     // Add s_0
     getOffset();

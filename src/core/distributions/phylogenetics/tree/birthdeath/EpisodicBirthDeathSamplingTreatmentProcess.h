@@ -90,6 +90,7 @@ namespace RevBayesCore {
 
         // members
         bool                                            using_global_timeline;
+        bool                                            using_constant_rate_process;
 
         const TypedDagNode<double >*                    homogeneous_lambda;                                    //!< The homogeneous birth rates.
         const TypedDagNode<RbVector<double> >*          heterogeneous_lambda;                                  //!< The heterogeneous birth rates.
