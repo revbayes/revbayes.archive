@@ -498,7 +498,7 @@ void Mcmcmc::nextCycle(bool advanceCycle)
             }
             else if (swap_mode == "multiple")
             {
-                for (size_t i = 0; i < num_chains; ++i)
+                for (size_t i = 0; i < num_chains - 1; ++i)
                 {
                     swapChains("neighbor");
                 }
@@ -518,9 +518,9 @@ void Mcmcmc::nextCycle(bool advanceCycle)
             }
             else if (swap_mode == "multiple")
             {
-                for (size_t i = 0; i < num_chains; ++i)
+                for (size_t i = 0; i < num_chains - 1; ++i)
                 {
-                    for (size_t j = 0; j < num_chains; ++j)
+                    for (size_t j = i + 1; j < num_chains; ++j)
                     {
                         swapChains("random");
                     }
@@ -1445,17 +1445,30 @@ void Mcmcmc::swapNeighborChains(void)
     // swap?
     bool accept = false;
     
-    j = int(GLOBAL_RNG->uniform01() * (num_chains-1));
-    k = j + 1;
-    
+    // find the chain index of the neighbor of chain j (no temperature exists between the temperature of chain j and chain k)
     std::vector<double> tmp_chain_heats = chain_heats;
+    // sort the vector in descending order
     sort(tmp_chain_heats.begin(), tmp_chain_heats.end(), std::greater<double>());
     
-    size_t heat_rankj = std::find(tmp_chain_heats.begin(), tmp_chain_heats.end(), chain_heats[j]) - tmp_chain_heats.begin();
-    size_t heat_rankk = std::find(tmp_chain_heats.begin(), tmp_chain_heats.end(), chain_heats[k]) - tmp_chain_heats.begin();
+    size_t heat_rankj = size_t(GLOBAL_RNG->uniform01() * (num_chains - 1));
+    size_t heat_rankk = heat_rankj;
+    if (num_chains > 1)
+    {
+        heat_rankk = heat_rankj + 1;
+    }
+    
+    if ( GLOBAL_RNG->uniform01() >= 0.5)
+    {
+        size_t heat_ranktmp = heat_rankj;
+        heat_rankj = heat_rankk;
+        heat_rankk = heat_ranktmp;
+    }
     
     ++num_attempted_swaps[heat_rankj][heat_rankk];
     
+    j = int(std::find(chain_heats.begin(), chain_heats.end(), tmp_chain_heats[heat_rankj]) - chain_heats.begin());
+    k = int(std::find(chain_heats.begin(), chain_heats.end(), tmp_chain_heats[heat_rankk]) - chain_heats.begin());
+
     // compute exchange ratio
     double bj = chain_heats[j];
     double bk = chain_heats[k];
@@ -1642,7 +1655,7 @@ void Mcmcmc::swapRandomChains(void)
     // on accept, swap beta values and active chains
     if (accept == true )
     {
-        ++num_attempted_swaps[heat_rankj][heat_rankk];
+        ++num_accepted_swaps[heat_rankj][heat_rankk];
         
         // swap active chain
         if (active_chain_index == j)
