@@ -1100,15 +1100,6 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
       phi_event_times = interval_times_event_sampling->getValue();
     }
 
-    // lambda_times = interval_times_speciation->getValue();
-    // mu_times = interval_times_extinction->getValue();
-    // phi_times = interval_times_sampling->getValue();
-    // r_times = interval_times_treatment->getValue();
-    // lambda_event_times = interval_times_event_speciation->getValue();
-    // mu_event_times = interval_times_event_extinction->getValue();
-    // phi_event_times = interval_times_event_sampling->getValue();
-    // global_timeline = interval_times_global->getValue();
-
     // @TODO: @ANDY: Check that we cleared all parameters!
 
     // @TODO: @Sebastian: what happens if someone reversible-jumps into a constant rate model???
@@ -1151,8 +1142,6 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
 
         // @TODO: Make sure that times and parameters are stored backwards in time!
         sortGlobalTimesAndVectorParameter();
-
-        // ...
 
         // we are done with setting up the timeline (i.e., using the provided global timeline) and checking all dimension of parameters
     }
@@ -1261,14 +1250,15 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
         }
         else if ( heterogeneous_Phi != NULL )
         {
-            if ( interval_times_event_sampling == NULL ) throw RbException("No time intervals provided for piecewise constant sampling rates");
+            if ( interval_times_event_sampling == NULL ) throw RbException("No time intervals provided for event sampling probabilities");
             checkVectorSizes(heterogeneous_R,interval_times_event_sampling,0,etrt,false);
             // This should be sorted to match phi_event_times, which is already sorted, so we copy the original value to sort against
             std::vector<double> tmp_phi_event_times = heterogeneous_Phi->getValue();
-            sortNonGlobalTimesAndVectorParameter(tmp_phi_event_times,r_event);
+            if ( heterogeneous_R != NULL )
+            {
+                sortNonGlobalTimesAndVectorParameter(tmp_phi_event_times,r_event);
+            }
         }
-
-        // @TODO: @ANDY: do this check for all parameters too!
 
         // now we start assembling the global timeline by finding the union of unique intervals for all parameters
         std::set<double> event_times;
@@ -1280,14 +1270,6 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
         addTimesToGlobalTimeline(event_times,interval_times_event_extinction);
         addTimesToGlobalTimeline(event_times,interval_times_event_sampling);
 
-
-        // @TODO: @ANDY: keep on adding times from all other timelines
-
-        // Sort present to past
-        for (std::set<double>::reverse_iterator it = event_times.rbegin(); it != event_times.rend(); it++)
-        {
-            global_timeline.push_back(*it);
-        }
 
         // we are done with setting up the timeline (i.e., using the all the provided timeline) and checking all dimension of parameters
 
@@ -1302,8 +1284,6 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
     // Add s_0
     getOffset();
     global_timeline.insert(global_timeline.begin(),offset);
-
-    // @TODO: fix segfault that is somewhere between here and the end of the function
 
     // @TODO: @ANDY: Make sure this populates properly all parameter vectors (backwards in time, etc.)
 
@@ -1455,6 +1435,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
     }
     else
     {
+        // @TODO: @ANDY: Needs revision
       // User specified nothing, there are no birth bursts
       r_event = r;
     }
@@ -1563,7 +1544,7 @@ int EpisodicBirthDeathSamplingTreatmentProcess::survivors(double t) const
  */
 void EpisodicBirthDeathSamplingTreatmentProcess::sortGlobalTimesAndVectorParameter()
 {
-  std::vector<double> times_sorted_ascending = global_timeline;
+  std::vector<double> times_sorted_ascending  = global_timeline;
   std::vector<double> times_sorted_descending = global_timeline;
 
   sort(times_sorted_ascending.begin(), times_sorted_ascending.end() );
@@ -1573,11 +1554,12 @@ void EpisodicBirthDeathSamplingTreatmentProcess::sortGlobalTimesAndVectorParamet
   if ( global_timeline != times_sorted_ascending )
   {
       // If times are sorted in descending order, we just flip the parameter and time vectors
-      if ( global_timeline == times_sorted_ascending )
+      if ( global_timeline == times_sorted_descending )
       {
         // Reverse timeline
         std::reverse(global_timeline.begin(),global_timeline.end());
 
+          // @TODO: @ANDY: These checks for NULL might be superfluous because the std vectors are initialized to empty vectors by default in c++
         // Reverse all vector parameters
         if (heterogeneous_lambda != NULL)
         {
@@ -1623,7 +1605,8 @@ void EpisodicBirthDeathSamplingTreatmentProcess::sortGlobalTimesAndVectorParamet
           {
             if ( times_sorted_ascending[i] == global_timeline[j] )
             {
-              ordering.push_back(j);
+                ordering.push_back(j);
+                break;
             }
           }
         }
