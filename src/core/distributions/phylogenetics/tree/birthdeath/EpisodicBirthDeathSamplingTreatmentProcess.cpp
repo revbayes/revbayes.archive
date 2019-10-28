@@ -106,17 +106,6 @@ EpisodicBirthDeathSamplingTreatmentProcess::EpisodicBirthDeathSamplingTreatmentP
       }
 
     }
-    else if ( interval_times_speciation == NULL &&
-              interval_times_extinction == NULL &&
-              interval_times_sampling == NULL &&
-              interval_times_treatment == NULL &&
-              interval_times_event_speciation == NULL &&
-              interval_times_event_sampling == NULL &&
-              interval_times_event_extinction == NULL )
-    {
-      using_global_timeline = true;
-      using_constant_rate_process = true;
-    }
 
     addParameter( interval_times_global );
 
@@ -1197,11 +1186,6 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
     {
       global_timeline = interval_times_global->getValue();
     }
-    else if ( using_constant_rate_process )
-    {
-      // This will be a 1-vector with global_timeline[0] = offset
-      global_timeline = std::vector<double>(0,0.0);
-    }
     if (interval_times_speciation != NULL)
     {
       lambda_times = interval_times_speciation->getValue();
@@ -1242,9 +1226,20 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
 
     // @TODO: @ANDY: Check that we cleared all parameters!
 
-
+    // @TODO: @Sebastian: what happens if someone reversible-jumps into a constant rate model???
+    if ( interval_times_global == NULL &&
+         interval_times_speciation == NULL &&
+         interval_times_extinction == NULL &&
+         interval_times_sampling == NULL &&
+         interval_times_treatment == NULL &&
+         interval_times_event_speciation == NULL &&
+         interval_times_event_sampling == NULL &&
+         interval_times_event_extinction == NULL )
+    {
+      using_constant_rate_process = true;
+    }
     // first, we are checking for the global timeline
-    if ( using_global_timeline )
+    else if ( using_global_timeline )
     {
         if ( interval_times_speciation != NULL ||
              interval_times_extinction != NULL ||
