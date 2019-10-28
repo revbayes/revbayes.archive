@@ -1131,10 +1131,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawJointConditio
 {
 
 	// if we already have ancestral states, don't make new ones
-	if ( has_ancestral_states == true )
-    {
-		return;
-    }
+    
+    // MJL 181028: Disabling this flag to allow multiple monitors to work for same dnPhyloCTMC (e.g. ancestral states + stochastic mapping)
+//	if ( has_ancestral_states == true )
+//    {
+//		return;
+//    }
     
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
