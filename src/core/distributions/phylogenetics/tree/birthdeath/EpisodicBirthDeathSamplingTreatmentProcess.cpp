@@ -1541,7 +1541,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
     else
     {
       // User specified nothing, there are no birth bursts
-      mu_event = std::vector<double>(global_timeline.size(),0.0);
+      r_event = std::vector<double>(global_timeline.size(),0.0);
     }
 }
 
