@@ -327,7 +327,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
             }
 
             // Calculate probability of the sampled ancestors
-            if ( r[i] >= (1.0 - DBL_EPSILON) && R_i > 0 )
+            if ( r_event[i] > (1.0 - DBL_EPSILON) && R_i > 0 )
             {
                 // Cannot have sampled ancestors if r(t) == 1
                 return RbConstants::Double::neginf;
@@ -339,7 +339,7 @@ double EpisodicBirthDeathSamplingTreatmentProcess::computeLnProbabilityTimes( vo
             {
                 // only add these terms for sampling that is not at the present
                 ln_sampling_event_prob += R_i * log(1 - r[i]);
-                ln_sampling_event_prob += (N_i - R_i) * log(r[i] * (1 - r[i])*E(i,global_timeline[i]));
+                ln_sampling_event_prob += (N_i - R_i) * log(r_event[i] * (1 - r_event[i])*E(i,global_timeline[i]));
             }
             lnProbTimes += ln_sampling_event_prob;
         }
