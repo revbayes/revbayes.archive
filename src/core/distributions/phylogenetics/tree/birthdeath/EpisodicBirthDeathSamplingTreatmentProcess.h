@@ -73,6 +73,7 @@ namespace RevBayesCore {
         size_t                                          findIndex(double t) const;                                          //!< Find the index so that times[index-1] < t < times[index]
         size_t                                          findIndex(double t, std::vector<double> &timeline) const;
         void                                            getOffset(void) const;
+        bool                                            isConstantRate(void) const;                                         //!< Checks if we have a constant-rate process
         double                                          lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
         double                                          lnProbTreeShape(void) const;
         void                                            prepareTimeline(void);
@@ -89,7 +90,6 @@ namespace RevBayesCore {
 
         // members
         bool                                            using_global_timeline;
-        bool                                            using_constant_rate_process;
 
         const TypedDagNode<double >*                    homogeneous_lambda;                                    //!< The homogeneous birth rates.
         const TypedDagNode<RbVector<double> >*          heterogeneous_lambda;                                  //!< The heterogeneous birth rates.
