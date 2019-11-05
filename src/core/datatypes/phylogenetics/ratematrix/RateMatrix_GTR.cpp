@@ -269,7 +269,8 @@ void RateMatrix_GTR::tiProbsComplexEigens(double t, TransitionProbabilityMatrix&
 void RateMatrix_GTR::updateEigenSystem(void)
 {
     
-    theEigenSystem->update();
+//    theEigenSystem->update();
+    theEigenSystem->updateUsingEigen();
     calculateCijk();
     
 }
