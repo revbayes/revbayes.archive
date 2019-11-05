@@ -1158,7 +1158,6 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
     {
       phi_event_times = interval_times_event_sampling->getValue();
     }
-
     // @TODO: @ANDY: Check that we cleared all parameters!
 
     // If it's a constant-rate process, make sure we only have scalars
@@ -1375,7 +1374,7 @@ void EpisodicBirthDeathSamplingTreatmentProcess::prepareTimeline( void )
     }
 
     // Get vector of sampling rates
-    if ( heterogeneous_lambda != NULL )
+    if ( heterogeneous_phi != NULL )
     {
       if ( phi.size() != global_timeline.size() )
       {
