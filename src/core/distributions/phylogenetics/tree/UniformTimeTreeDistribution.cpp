@@ -138,7 +138,7 @@ double UniformTimeTreeDistribution::computeLnProbability( void )
     double age = root_age->getValue();
     
     // we need to check that the root age matches
-    if ( fabs(age - value->getRoot().getAge() ) > 1E7 )
+    if ( fabs(age - value->getRoot().getAge() ) > 1E-7 )
     {
         return RbConstants::Double::neginf;
     }
