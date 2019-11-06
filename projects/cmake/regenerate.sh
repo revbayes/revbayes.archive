@@ -207,11 +207,16 @@ MESSAGE("  Boost_LIBRARIES: ${Boost_LIBRARIES}")
 MESSAGE("  Boost_LIBRARY_DIRS: ${Boost_LIBRARY_DIRS}")
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
+find_package (Eigen3 REQUIRED)
+MESSAGE("Eigen3 information:")
+MESSAGE("  EIGEN3_INCLUDE_DIR: ${EIGEN3_INCLUDE_DIR}")
+include_directories(${EIGEN3_INCLUDE_DIR})
 
 # TODO Split these up based on sub-package dependency
 INCLUDE_DIRECTORIES(' >> "$HERE/CMakeLists.txt"
 find libs core revlanguage help -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
-echo ' ${Boost_INCLUDE_DIR} )
+echo ' ${Boost_INCLUDE_DIR}
+ ${EIGEN3_INCLUDE_DIR})
 
 
 ####
