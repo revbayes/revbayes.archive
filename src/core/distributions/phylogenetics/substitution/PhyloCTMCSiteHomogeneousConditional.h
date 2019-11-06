@@ -33,11 +33,11 @@ namespace RevBayesCore {
 
     protected:
 
-        virtual void                                        computeRootLikelihood(size_t root, size_t l, size_t r);
-        virtual void                                        computeRootLikelihood(size_t root, size_t l, size_t r, size_t m);
-        virtual void                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
-        virtual void                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m);
-        virtual void                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx);
+        virtual void                                        computeRootLikelihood(size_t root, size_t l, size_t r, double* likelihoods, size_t num_patterns);
+        virtual void                                        computeRootLikelihood(size_t root, size_t l, size_t r, size_t m, double* likelihoods, size_t num_patterns);
+        virtual void                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r, double* likelihoods, size_t num_patterns);
+        virtual void                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m, double* likelihoods, size_t num_patterns);
+        virtual void                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx, double* likelihoods, size_t num_patterns, std::vector<std::vector<bool> > *gap, std::vector<std::vector<unsigned long> > *char_mat, std::vector<std::vector<RbBitSet> > *amb);
 
         virtual void                                        computeRootCorrection(size_t root, size_t l, size_t r);
         virtual void                                        computeRootCorrection(size_t root, size_t l, size_t r, size_t m);
@@ -404,10 +404,10 @@ bool RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::isSitePatternC
 
 
 template<class charType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootLikelihood( size_t root, size_t left, size_t right)
+void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootLikelihood( size_t root, size_t left, size_t right, double* likelihoods, size_t num_patterns)
 {
 
-    PhyloCTMCSiteHomogeneous<charType>::computeRootLikelihood(root, left, right);
+    PhyloCTMCSiteHomogeneous<charType>::computeRootLikelihood(root, left, right, likelihoods, num_patterns);
 
     if (coding != AscertainmentBias::ALL)
     {
@@ -417,10 +417,10 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootLik
 
 
 template<class charType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle)
+void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle, double* likelihoods, size_t num_patterns)
 {
 
-    PhyloCTMCSiteHomogeneous<charType>::computeRootLikelihood(root, left, right, middle);
+    PhyloCTMCSiteHomogeneous<charType>::computeRootLikelihood(root, left, right, middle, likelihoods, num_patterns);
 
     if (coding != AscertainmentBias::ALL)
     {
@@ -430,10 +430,10 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootLik
 
 
 template<class charType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t node_index, size_t left, size_t right)
+void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t node_index, size_t left, size_t right, double* likelihoods, size_t num_patterns)
 {
 
-    PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikelihood(node, node_index, left, right);
+    PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikelihood(node, node_index, left, right, likelihoods, num_patterns);
 
     if (coding != AscertainmentBias::ALL)
     {
@@ -443,10 +443,10 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeInterna
 
 
 template<class charType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t node_index, size_t left, size_t right, size_t middle)
+void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t node_index, size_t left, size_t right, size_t middle, double* likelihoods, size_t num_patterns)
 {
 
-    PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikelihood(node, node_index, left, right, middle);
+    PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikelihood(node, node_index, left, right, middle, likelihoods, num_patterns);
 
     if (coding != AscertainmentBias::ALL)
     {
@@ -458,10 +458,10 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeInterna
 
 
 template<class charType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeTipLikelihood(const TopologyNode &node, size_t node_index)
+void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeTipLikelihood(const TopologyNode &node, size_t node_index, double* likelihoods, size_t num_patterns, std::vector<std::vector<bool> > *gap, std::vector<std::vector<unsigned long> > *char_mat, std::vector<std::vector<RbBitSet> > *amb)
 {
 
-    PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(node, node_index);
+    PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(node, node_index, likelihoods, num_patterns, gap, char_mat, amb);
 
     if (coding != AscertainmentBias::ALL)
     {

@@ -76,7 +76,7 @@ namespace RevBayesCore {
 
         // public member functions
         // pure virtual
-        virtual AbstractPhyloCTMCSiteHomogeneous*                           clone(void) const = 0;                                                                      //!< Create an independent clone
+        virtual AbstractPhyloCTMCSiteHomogeneous*                           clone(void) const = 0;                                                                              //!< Create an independent clone
 
         // non-virtual
         void                                                                bootstrap(void);
@@ -137,11 +137,11 @@ namespace RevBayesCore {
         virtual void                                                        touchSpecialization(const DagNode *toucher, bool touchAll);
 
         // pure virtual methods
-        virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r) = 0;
-        virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m) = 0;
-        virtual void                                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx) = 0;
-        virtual void                                                        computeRootLikelihood( size_t root, size_t left, size_t right) = 0;
-        virtual void                                                        computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle) = 0;
+        virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r, double* likelihoods, size_t num_patterns) = 0;
+        virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m, double* likelihoods, size_t num_patterns) = 0;
+        virtual void                                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx, double* likelihoods, size_t num_patterns, std::vector<std::vector<bool> > *gap, std::vector<std::vector<unsigned long> > *char_mat, std::vector<std::vector<RbBitSet> > *amb) = 0;
+        virtual void                                                        computeRootLikelihood( size_t root, size_t left, size_t right, double* likelihoods, size_t num_patterns) = 0;
+        virtual void                                                        computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle, double* likelihoods, size_t num_patterns) = 0;
 
         // virtual methods that you may want to overwrite
         virtual void                                                        compress(void);
@@ -242,7 +242,7 @@ namespace RevBayesCore {
     private:
 
         // private methods
-        void                                                                fillLikelihoodVector(const TopologyNode &n, size_t nIdx);
+        void                                                                fillLikelihoodVector(const TopologyNode &n, size_t nIdx, double* likelihoods, size_t num_patterns, std::vector<std::vector<bool> > *gap, std::vector<std::vector<unsigned long> > *char_mat, std::vector<std::vector<RbBitSet> > *amb);
         void                                                                recursiveMarginalLikelihoodComputation(size_t nIdx);
         virtual void                                                        scale(size_t i);
         virtual void                                                        scale(size_t i, size_t l, size_t r);
@@ -849,12 +849,12 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeLnProbab
         {
             const TopologyNode &left = root.getChild(0);
             size_t left_index = left.getIndex();
-            fillLikelihoodVector( left, left_index );
+            fillLikelihoodVector( left, left_index, this->partialLikelihoods, this->pattern_block_size, &(this->gap_matrix), &(this->char_matrix), &(this->ambiguous_char_matrix) );
             const TopologyNode &right = root.getChild(1);
             size_t right_index = right.getIndex();
-            fillLikelihoodVector( right, right_index );
+            fillLikelihoodVector( right, right_index, this->partialLikelihoods, this->pattern_block_size, &(this->gap_matrix), &(this->char_matrix), &(this->ambiguous_char_matrix) );
 
-            computeRootLikelihood( root_index, left_index, right_index );
+            computeRootLikelihood( root_index, left_index, right_index, this->partialLikelihoods, this->pattern_block_size );
             scale(root_index, left_index, right_index);
 
         }
@@ -862,15 +862,15 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeLnProbab
         {
             const TopologyNode &left = root.getChild(0);
             size_t left_index = left.getIndex();
-            fillLikelihoodVector( left, left_index );
+            fillLikelihoodVector( left, left_index, this->partialLikelihoods, this->pattern_block_size, &(this->gap_matrix), &(this->char_matrix), &(this->ambiguous_char_matrix) );
             const TopologyNode &right = root.getChild(1);
             size_t right_index = right.getIndex();
-            fillLikelihoodVector( right, right_index );
+            fillLikelihoodVector( right, right_index, this->partialLikelihoods, this->pattern_block_size, &(this->gap_matrix), &(this->char_matrix), &(this->ambiguous_char_matrix) );
             const TopologyNode &middle = root.getChild(2);
             size_t middleIndex = middle.getIndex();
-            fillLikelihoodVector( middle, middleIndex );
+            fillLikelihoodVector( middle, middleIndex, this->partialLikelihoods, this->pattern_block_size, &(this->gap_matrix), &(this->char_matrix), &(this->ambiguous_char_matrix) );
 
-            computeRootLikelihood( root_index, left_index, right_index, middleIndex );
+            computeRootLikelihood( root_index, left_index, right_index, middleIndex, this->partialLikelihoods, this->pattern_block_size );
             scale(root_index, left_index, right_index, middleIndex);
 
         }
@@ -1994,7 +1994,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::tipDrawJointCondi
 }
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::fillLikelihoodVector(const TopologyNode &node, size_t node_index)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::fillLikelihoodVector(const TopologyNode &node, size_t node_index, double* likelihoods, size_t num_patterns, std::vector<std::vector<bool> > *gap, std::vector<std::vector<unsigned long> > *char_mat, std::vector<std::vector<RbBitSet> > *amb)
 {
 
     // check for recomputation
@@ -2007,7 +2007,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::fillLikelihoodVec
         {
             // this is a tip node
             // compute the likelihood for the tip and we are done
-            computeTipLikelihood(node, node_index);
+            computeTipLikelihood(node, node_index, likelihoods, num_patterns, gap, char_mat, amb);
 
             // rescale likelihood vector
             scale(node_index);
@@ -2017,13 +2017,13 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::fillLikelihoodVec
             // this is an internal node
             const TopologyNode     &left        = node.getChild(0);
             size_t                  left_index  = left.getIndex();
-            fillLikelihoodVector( left, left_index );
+            fillLikelihoodVector( left, left_index, likelihoods, num_patterns, gap, char_mat, amb );
             const TopologyNode     &right       = node.getChild(1);
             size_t                  right_index = right.getIndex();
-            fillLikelihoodVector( right, right_index );
+            fillLikelihoodVector( right, right_index, likelihoods, num_patterns, gap, char_mat, amb );
 
             // now compute the likelihoods of this internal node
-            computeInternalNodeLikelihood(node,node_index,left_index,right_index);
+            computeInternalNodeLikelihood(node,node_index,left_index,right_index, likelihoods, num_patterns);
 
             // rescale likelihood vector
             scale(node_index,left_index,right_index);
