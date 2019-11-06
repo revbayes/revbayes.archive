@@ -154,6 +154,7 @@ double NearestNeighborInterchangeProposal::doProposal( void )
     else
     {
         my_new_age = gparent_age * rng->uniform01();
+        lnHastingsratio += log( gparent_age / parent_age);
 
         // rescale the subtrees
         double scaling_factor = my_new_age / my_age;
@@ -161,7 +162,7 @@ double NearestNeighborInterchangeProposal::doProposal( void )
         
         // compute the Hastings ratio
         size_t nNodes = node->getNumberOfNodesInSubtree(false);
-        lnHastingsratio = (nNodes > 1 ? log( scaling_factor ) * (nNodes-1) : 0.0 );
+        lnHastingsratio += (nNodes > 1 ? log( scaling_factor ) * (nNodes-1) : 0.0 );
 
     }
 
@@ -174,6 +175,7 @@ double NearestNeighborInterchangeProposal::doProposal( void )
     else
     {
         uncles_new_age = parent_age * rng->uniform01();
+        lnHastingsratio += log( parent_age / gparent_age);
         
         double scaling_factor = uncles_new_age / uncles_age;
         TreeUtilities::rescaleSubtree(&tau, uncle, scaling_factor );

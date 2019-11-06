@@ -1274,7 +1274,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::simulate( const TopologyNode &node,
                 u -= it->second;
                 if (u < 0.0)
                 {
-                    std::cout << states[0] << " -> " << states[1] << " | " << states[2] << "\n";
+//                    std::cout << states[0] << " -> " << states[1] << " | " << states[2] << "\n";
                     cl += states[1];
                     cr += states[2];
                     left->addCharacter( cl );
