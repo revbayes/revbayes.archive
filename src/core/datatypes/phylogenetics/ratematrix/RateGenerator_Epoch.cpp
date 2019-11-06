@@ -415,11 +415,11 @@ void RateGenerator_Epoch::sampleNumberOfTransitionsPerInterval(std::vector<size_
         size_t b = breakpoint_states[i+1];
         
         
-        std::cout << a << " -> " << b << "\n";
-        std::cout << breakpoint_times[i] << " " << breakpoint_times[i+1] << "\n";
-        std::cout << dt << "\n";
-        std::cout << r << "\n";
-        std::cout << epoch_idx << "\n";
+//        std::cout << a << " -> " << b << "\n";
+//        std::cout << breakpoint_times[i] << " " << breakpoint_times[i+1] << "\n";
+//        std::cout << dt << "\n";
+//        std::cout << r << "\n";
+//        std::cout << epoch_idx << "\n";
         
         // sample cmf
         double u = GLOBAL_RNG->uniform01();
@@ -439,7 +439,7 @@ void RateGenerator_Epoch::sampleNumberOfTransitionsPerInterval(std::vector<size_
             } else {
                 uniform_nth_power[i].push_back( uniform_nth_power[i][n-1] * uniform_first_power[i] );
             }
-            std::cout << uniform_nth_power[i][n] << "\n";
+//            std::cout << uniform_nth_power[i][n] << "\n";
             
             // prob of a->b after n events in segment i
             double p_b_given_a = uniform_nth_power[i][n][a][b];

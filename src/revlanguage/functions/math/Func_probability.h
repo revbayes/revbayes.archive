@@ -31,7 +31,7 @@ class TypeSpec;
      * @since 2015-01-31, version 1.0
      *
      */
-    class Func_probability :  public TypedFunction<Probability> {
+    class Func_probability : public TypedFunction<Probability> {
         
     public:
         Func_probability( void );
