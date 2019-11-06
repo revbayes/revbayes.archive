@@ -30,6 +30,12 @@ class RbSettings {
         const std::string&          getWorkingDirectory(void) const;                    //!< Retrieve the current working directory
         void                        listOptions(void) const;                            //!< Retrieve a list of all user options and their current values
 
+#       if defined( RB_BEAGLE )
+        bool                        getUseBeagle(void) const;                           //!< Retrieve the flag whether we should use the BEAGLE library in CTMC models
+        bool                        getBeagleAuto(void) const;                           //!< Retrieve the flag whether we should automatically select the BEAGLE resource
+        size_t                      getBeagleResource(void) const;                      //!< Retrieve the BEAGLE resource to be used
+#       endif /* RB_BEAGLE */
+
         // setters
         void                        setCollapseSampledAncestors(bool);                  //!< Set whether to should display sampled ancestors as 2-degree nodes when printing
         void                        setLineWidth(size_t w);                             //!< Set the line width that will be used for the screen width when printing
@@ -42,6 +48,12 @@ class RbSettings {
         void                        setUseScaling(bool s);                              //!< Set the flag whether we should scale the likelihood in CTMC models
         void                        setWorkingDirectory(const std::string &wd);         //!< Set the current working directory
     
+#       if defined( RB_BEAGLE )
+        void                        setUseBeagle(bool s);                               //!< Set the flag whether we should use the BEAGLE library in CTMC models
+        void                        setBeagleAuto(bool s);                              //!< Set the flag whether we should automatically select the BEAGLE resource
+        void                        setBeagleResource(size_t w);                        //!< Set the BEAGLE resource to be used
+#       endif /* RB_BEAGLE */
+
     private:
                                     RbSettings(void);                                   //!< Default constructor
                                     RbSettings(const RbSettings&) {}                    //!< Prevent copy
@@ -61,6 +73,12 @@ class RbSettings {
         double                      tolerance;                                          //!< Tolerance for comparison of doubles
         bool                        useScaling;
         std::string                 workingDirectory;
+
+#       if defined( RB_BEAGLE )
+        bool                        useBeagle;
+        bool                        beagleAuto;
+        size_t                      beagleResource;        
+#       endif /* RB_BEAGLE */
     
 };
 

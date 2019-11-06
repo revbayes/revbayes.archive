@@ -89,7 +89,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeRootLike
     // get the root frequencies
     std::vector<std::vector<double> > ff;
     this->getRootFrequencies(ff);
-    
+
     // get the pointers to the partial likelihoods of the left and right subtree
           double* p        = this->partialLikelihoods + this->activeLikelihood[root]  *this->activeLikelihoodOffset + root   * this->nodeOffset;
     const double* p_left   = this->partialLikelihoods + this->activeLikelihood[left]  *this->activeLikelihoodOffset + left   * this->nodeOffset;
@@ -152,6 +152,67 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeRootLike
     const double*   p_mixture_left     = p_left;
     const double*   p_mixture_right    = p_right;
     const double*   p_mixture_middle   = p_middle;
+
+#   if defined( RB_BEAGLE )
+   if ( RbSettings::userSettings().getUseBeagle() == true && this->num_site_mixtures == 1 )
+   {
+        BeagleOperation b_operation;
+
+        b_operation.destinationPartials    = (int) root;
+        b_operation.destinationScaleWrite  = BEAGLE_OP_NONE;
+        b_operation.destinationScaleRead   = BEAGLE_OP_NONE;
+        b_operation.child1Partials         = (int) left;
+        b_operation.child1TransitionMatrix = (int) left;
+        b_operation.child2Partials         = (int) right;
+        b_operation.child2TransitionMatrix = (int) right;
+
+        beagleUpdatePartials(this->beagle_instance, &b_operation, 1, BEAGLE_OP_NONE);
+
+        const std::vector<double> &b_f = ff[0];
+        const double* b_inStateFrequencies     = &b_f[0];
+              int     b_stateFrequenciesIndex  = 0;
+
+        beagleSetStateFrequencies(this->beagle_instance,
+                                  b_stateFrequenciesIndex,
+                                  b_inStateFrequencies);
+
+        int     b_parentBufferIndices     = (int) root;
+        int     b_childBufferIndices      = (int) middle;
+        int     b_probabilityIndices      = (int) middle;
+        int*    b_firstDerivativeIndices  = NULL;
+        int*    b_secondDerivativeIndices = NULL;
+        int     b_categoryWeightsIndices  = 0;
+        int     b_stateFrequenciesIndices = b_stateFrequenciesIndex;
+        int     b_cumulativeScaleIndices  = BEAGLE_OP_NONE;
+        int     b_count                   = 1;
+        double  b_outSumLogLikelihood;
+        double* b_outSumFirstDerivative   = NULL;
+        double* b_outSumSecondDerivative  = NULL;
+ 
+        beagleCalculateEdgeLogLikelihoods(this->beagle_instance,
+                                          &b_parentBufferIndices,
+                                          &b_childBufferIndices,
+                                          &b_probabilityIndices,
+                                          b_firstDerivativeIndices,
+                                          b_secondDerivativeIndices,
+                                          &b_categoryWeightsIndices,
+                                          &b_stateFrequenciesIndices,
+                                          &b_cumulativeScaleIndices,
+                                          b_count,
+                                          &b_outSumLogLikelihood,
+                                          b_outSumFirstDerivative,
+                                          b_outSumSecondDerivative);
+ 
+#       if defined ( RB_BEAGLE_DEBUG )
+        std::stringstream ss;
+        ss << "BEAGLE   likelihood = " << b_outSumLogLikelihood << std::endl;
+        RBOUT( ss.str() );
+#       endif /* RB_BEAGLE_DEBUG */       
+
+        // return;
+   }
+#   endif /* RB_BEAGLE */
+
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
     {
@@ -191,6 +252,28 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeInternal
     // compute the transition probability matrix
     this->updateTransitionProbabilities( node_index );
     
+#   if defined( RB_BEAGLE )
+    if ( RbSettings::userSettings().getUseBeagle() == true && this->num_site_mixtures == 1 )
+    {
+        BeagleOperation b_operation;
+
+        b_operation.destinationPartials    = (int) node_index;
+        b_operation.destinationScaleWrite  = BEAGLE_OP_NONE;
+        b_operation.destinationScaleRead   = BEAGLE_OP_NONE;
+        b_operation.child1Partials         = (int) left;
+        b_operation.child1TransitionMatrix = (int) left;
+        b_operation.child2Partials         = (int) right;
+        b_operation.child2TransitionMatrix = (int) right;
+
+        beagleUpdatePartials(this->beagle_instance, &b_operation, 1, BEAGLE_OP_NONE);
+
+        const double* b_tp_begin = this->transition_prob_matrices[0].theMatrix;
+        beagleSetTransitionMatrix(this->beagle_instance, (int) node_index, b_tp_begin, (double) 1.0);
+
+        // return;
+    }    
+#   endif /* RB_BEAGLE */
+
 #   if defined ( SSE_ENABLED )
     
     double* p_left   = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
@@ -561,8 +644,17 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeTipLikel
     const std::vector<RbBitSet> &amb_char_node = this->ambiguous_char_matrix[data_tip_index];
     
     // compute the transition probabilities
-    this->updateTransitionProbabilities( node_index );
-    
+    this->updateTransitionProbabilities( node_index, node.getBranchLength() );
+
+#   if defined( RB_BEAGLE )
+    if ( RbSettings::userSettings().getUseBeagle() == true && this->num_site_mixtures == 1 )
+    {
+        const double* b_tp_begin = this->transition_prob_matrices[0].theMatrix;
+        beagleSetTransitionMatrix(this->beagle_instance, node_index, b_tp_begin, (double) 1.0);
+        // return;
+    }    
+#   endif /* RB_BEAGLE */
+
     double*   p_mixture      = p_node;
     
     // iterate over all mixture categories

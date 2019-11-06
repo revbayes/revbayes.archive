@@ -78,6 +78,15 @@ if get_option('jupyter')
   add_project_arguments(['-DRB_XCODE'], language : 'cpp')
 endif
 
+if get_option('beagle') == 'disable'
+  beagle = dependency('', required: false)
+else
+  beagle = dependency('hmsbeagle-1', required: get_option('beagle') == 'enable')
+  if beagle.found()
+    add_project_arguments(['-DRB_BEAGLE'], language: 'cpp')
+  endif
+endif
+
 ####
 subdir('src')
 
@@ -85,12 +94,12 @@ subdir('src')
 core = static_library('rb-core',
                       core_sources,
                       include_directories: [src_inc],
-                      dependencies: [mpi])
+                      dependencies: [mpi, beagle])
 
 revlanguage = static_library('rb-revlanguage',
                              revlanguage_sources,
                              include_directories: [src_inc],
-                             dependencies: [mpi])
+                             dependencies: [mpi, beagle])
 
 libs = static_library('rb-lib',
                       libs_sources,

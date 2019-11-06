@@ -104,10 +104,6 @@ echo "set (LOCAL_BOOST_LIBRARY \"${boost_lib}\")" >> "$HERE/CMakeLists.txt"
 if [ "$debug" = "true" ]
 then
 echo '
-# -Woverloaded-virtual has some false-positives with GCC
-# We should ultimiately remove -Wno-reorder -Wno-unused-variable -Wno-unused-but-set-variable
-# But there are so many of them we cant see the really bad warnings.
-# So, disable those warnings for now.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -Wall -msse -msse2 -msse3")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -Wall")
 '  >> "$HERE/CMakeLists.txt"
@@ -121,6 +117,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 elif [ "$win" = "true" ]
 then
 echo '
+<<<<<<< HEAD
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 '  >> "$HERE/CMakeLists.txt"
@@ -132,6 +129,14 @@ if (CMAKE_SYSTEM_PROCESSOR MATCHES "^arm*|aarch64")
 else()
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3")
 endif()
+=======
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3 -static -std=gnu++98")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -static")
+'  >> "$HERE/CMakeLists.txt"
+else
+echo '
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3")
+>>>>>>> 41daa423ca5198257cd1d01c765fcd98b0cd4937
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 '  >> "$HERE/CMakeLists.txt"
 fi

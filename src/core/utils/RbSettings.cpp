@@ -58,6 +58,26 @@ bool RbSettings::getCollapseSampledAncestors( void ) const
     return collapseSampledAncestors;
 }
 
+# if defined( RB_BEAGLE )
+bool RbSettings::getUseBeagle( void ) const
+{
+    // return the internal value
+    return useBeagle;
+}
+
+bool RbSettings::getBeagleAuto( void ) const
+{
+    // return the internal value
+    return beagleAuto;
+}
+
+size_t RbSettings::getBeagleResource( void ) const
+{
+    // return the internal value
+    return beagleResource;
+}
+# endif /* RB_BEAGLE */
+
 std::string RbSettings::getOption(const std::string &key) const
 {
     if ( key == "moduledir" )
@@ -92,6 +112,20 @@ std::string RbSettings::getOption(const std::string &key) const
     {
         return collapseSampledAncestors ? "true" : "false";
     }
+#   if defined( RB_BEAGLE )
+    else if ( key == "useBeagle" )
+    {
+        return useBeagle ? "true" : "false";
+    }
+    else if ( key == "beagleAuto" )
+    {
+        return beagleAuto ? "true" : "false";
+    }
+    else if ( key == "beagleResource" )
+    {
+        return StringUtilities::to_string(beagleResource);
+    }
+#   endif /* RB_BEAGLE */
     else
     {
         std::cout << "Unknown user setting with key '" << key << "'." << std::endl;
@@ -134,13 +168,19 @@ const std::string& RbSettings::getWorkingDirectory( void ) const
 void RbSettings::initializeUserSettings(void)
 {
     moduleDir = "modules";      // the default module directory
-    useScaling = true;         // the default useScaling
+    useScaling = true;          // the default useScaling
     scalingDensity = 1;         // the default scaling density
     lineWidth = 160;            // the default line width
     tolerance = 10E-10;         // set default value for tolerance comparing doubles
     outputPrecision = 7;
     printNodeIndex = true;      // print node indices of tree nodes as comments
     collapseSampledAncestors = true;
+
+#   if defined( RB_BEAGLE )
+    useBeagle = false;          // don't use BEAGLE by default
+    beagleAuto = true;          // automatically select BEAGLE resource by default
+    beagleResource = 0;         // the default BEAGLE resource
+#   endif /* RB_BEAGLE */
     
     std::string user_dir = RevBayesCore::RbFileManager::expandUserDir("~");
     
@@ -215,6 +255,12 @@ void RbSettings::listOptions() const
     std::cout << "useScaling = " << (useScaling ? "true" : "false") << std::endl;
     std::cout << "scalingDensity = " << scalingDensity << std::endl;
     std::cout << "collapseSampledAncestors = " << (collapseSampledAncestors ? "true" : "false") << std::endl;
+
+#   if defined( RB_BEAGLE )
+    std::cout << "useBeagle = " << (useBeagle ? "true" : "false") << std::endl;
+    std::cout << "beagleAuto = " << (beagleAuto ? "true" : "false") << std::endl;
+    std::cout << "beagleResource = " << beagleResource << std::endl;
+#   endif /* RB_BEAGLE */
 }
 
 
@@ -272,6 +318,34 @@ void RbSettings::setCollapseSampledAncestors(bool w)
     writeUserSettings();
 }
 
+# if defined( RB_BEAGLE )
+void RbSettings::setUseBeagle(bool w)
+{
+    // replace the internal value with this new value
+    useBeagle = w;
+
+    // save the current settings for the future.
+    writeUserSettings();
+}
+
+void RbSettings::setBeagleAuto(bool w)
+{
+    // replace the internal value with this new value
+    beagleAuto = w;
+
+    // save the current settings for the future.
+    writeUserSettings();
+}
+
+void RbSettings::setBeagleResource(size_t w)
+{
+    // replace the internal value with this new value
+    beagleResource = w;
+    
+    // save the current settings for the future.
+    writeUserSettings();
+}
+# endif /* RB_BEAGLE */
 
 void RbSettings::setOption(const std::string &key, const std::string &v, bool write)
 {
@@ -319,6 +393,24 @@ void RbSettings::setOption(const std::string &key, const std::string &v, bool wr
     {
         collapseSampledAncestors = value == "true";
     }
+#   if defined( RB_BEAGLE )
+    else if ( key == "useBeagle" )
+    {
+        useBeagle = value == "true";
+    }
+    else if ( key == "beagleAuto" )
+    {
+        beagleAuto = value == "true";
+    }
+    else if ( key == "beagleResource" )
+    {
+        size_t w = atoi(value.c_str());
+        if (w < 0)
+            throw(RbException("beagleResource must be a positive integer"));
+        
+        beagleResource = atoi(value.c_str());
+    }
+#   endif /* RB_BEAGLE */
     else
     {
         std::cout << "Unknown user setting with key '" << key << "'." << std::endl;
@@ -394,6 +486,13 @@ void RbSettings::writeUserSettings( void )
     writeStream << "useScaling=" << (useScaling ? "true" : "false") << std::endl;
     writeStream << "scalingDensity=" << scalingDensity << std::endl;
     writeStream << "collapseSampledAncestors=" << (collapseSampledAncestors ? "true" : "false") << std::endl;
+
+#   if defined( RB_BEAGLE )
+    writeStream << "useBeagle=" << (useBeagle ? "true" : "false") << std::endl;
+    writeStream << "beagleAuto=" << (beagleAuto ? "true" : "false") << std::endl;
+    writeStream << "beagleResource=" << beagleResource << std::endl;
+#   endif /* RB_BEAGLE */
+
     fm.closeFile( writeStream );
 
 }

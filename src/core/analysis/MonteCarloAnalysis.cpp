@@ -27,7 +27,6 @@
 #include "StoppingRule.h"
 #include "Trace.h"
 
-
 using namespace RevBayesCore;
 
 
@@ -646,7 +645,6 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
     std::stringstream ss;
     if ( process_active == true && runs[0] != NULL && verbose == true )
     {
-        
         if ( runs[0]->getCurrentGeneration() == 0 )
         {
             ss << "\n";
@@ -660,7 +658,7 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         ss << runs[0]->getStrategyDescription();
         RBOUT( ss.str() );
     }
-    
+
     // Start monitor(s)
     for (size_t i=0; i<replicates; ++i)
     {

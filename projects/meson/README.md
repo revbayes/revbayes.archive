@@ -80,7 +80,29 @@ meson build-mpi -Dmpi=true -Dprefix=$HOME/Applications/revbayes-mpi
 ninja -C build-mpi install
 ```
 
-### Option: Jupyter Kernel
+## Option: Beagle library (*experimental*)
+
+*Beagle support is currently experimental* (it is not done yet).
+A recent version of beagle is required, so you may need to build and
+install Beagle from source.
+
+You must tell `pkg-config` where to find the beagle library
+unless it is installed in a system location.  For example,
+if beagle is installed in `path/to/beagle-lib`, then try
+```
+export PKG_CONFIG_LIB=/usr/lib/pkgconfig:/usr/share/pkgconfig:path/to/beagle-lib/lib/pkgconfig
+pkg-config --list-all | grep beagle
+```
+
+To build with meson, set the `beagle` option to `enable`:
+```
+meson build-beagle -Dbeagle=enable -Dprefix=$HOME/Applications/revbayes-mpi
+ninja -C build-beagle install
+```
+If you set `-Dbeagle=auto` beagle will be used only if it is found.
+
+
+## Option: Jupyter Kernel
 
 To build the jupyter kernel, set the `jupyter` option:
 ```
