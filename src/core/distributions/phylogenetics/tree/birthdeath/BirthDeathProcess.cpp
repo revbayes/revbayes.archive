@@ -37,10 +37,11 @@ using namespace RevBayesCore;
  * \param[in]    tn        Taxon names used during initialization.
  * \param[in]    c         Clade constraints.
  */
-BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *ra, const TypedDagNode<double> *rh,
+BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *ra, const TypedDagNode<double> *rh, const TypedDagNode<double> *mp,
                                      const std::string& ss, const std::vector<Clade> &ic, const std::string &cdt,
                                      const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
     rho( rh ),
+    sampling_mixture_proportion( mp ),
     sampling_strategy( ss ),
     incomplete_clades( ic )
 {
