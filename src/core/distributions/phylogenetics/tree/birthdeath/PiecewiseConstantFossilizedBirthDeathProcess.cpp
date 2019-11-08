@@ -701,7 +701,7 @@ std::vector<double> PiecewiseConstantFossilizedBirthDeathProcess::simulateDiverg
  */
 double PiecewiseConstantFossilizedBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
 {
-    // incorrect placeholder for constant FBDP
+    // incorrect placeholder
 
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
