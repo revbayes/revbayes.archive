@@ -16,13 +16,12 @@
 #ifndef OrderedRateMatrixFunction_H
 #define OrderedRateMatrixFunction_H
 
-#include "RateMatrix_Ordered.h"
-#include "TypedDagNode.h"
 #include "TypedFunction.h"
-
-#include <vector>
+#include "RateGenerator.h"
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class TypedDagNode;
     
     class OrderedRateMatrixFunction : public TypedFunction<RateGenerator> {
         

@@ -1,12 +1,13 @@
 #ifndef ContinuousTaxonData_H
 #define ContinuousTaxonData_H
 
-#include "AbstractTaxonData.h"
-#include "RbOptions.h"
-
-
-#include <string>
+#include <stddef.h>
 #include <vector>
+#include <iosfwd>
+#include <set>
+
+#include "AbstractTaxonData.h"
+#include "Taxon.h"
 
 namespace RevBayesCore {
     

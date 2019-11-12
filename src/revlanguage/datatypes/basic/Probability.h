@@ -16,12 +16,15 @@
 #ifndef Probability_H
 #define Probability_H
 
+#include <ostream>
+
 #include "RealPos.h"
 
-#include <ostream>
-#include <string>
+namespace RevBayesCore { template <class valueType> class TypedDagNode; }
 
 namespace RevLanguage {
+class RevObject;
+class TypeSpec;
 
     class Probability : public RealPos {
     

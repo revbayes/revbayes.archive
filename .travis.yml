@@ -9,6 +9,7 @@ matrix:
       env:
         - CXX_COMPILER=/usr/bin/g++-7
         - C_COMPILER=/usr/bin/gcc-7
+        - USE_MPI="false"
       addons:
         apt:
           sources:
@@ -23,6 +24,7 @@ matrix:
       env:
         - CXX_COMPILER=/usr/bin/g++-8
         - C_COMPILER=/usr/bin/gcc-8
+        - USE_MPI="false"
       addons:
         apt:
           sources:
@@ -37,6 +39,7 @@ matrix:
       env:
         - CXX_COMPILER=/usr/bin/g++-9
         - C_COMPILER=/usr/bin/gcc-9
+        - USE_MPI="false"
       addons:
         apt:
           sources:
@@ -51,7 +54,8 @@ matrix:
       env:
         - CXX_COMPILER=/usr/bin/g++-7
         - C_COMPILER=/usr/bin/gcc-7
-        - MAYBE_MPI="-mpi true"
+        - USE_MPI="true"
+        - MPI_IMPL=openmpi
       addons:
         apt:
           sources:
@@ -68,6 +72,7 @@ matrix:
       env:
         - CXX_COMPILER=/usr/local/clang-7.0.0/bin/clang++
         - C_COMPILER=/usr/local/clang-7.0.0/bin/clang
+        - USE_MPI="false"
       addons:
         apt:
           sources:
@@ -80,9 +85,11 @@ matrix:
     - os: osx
       osx_image: xcode9.4
       env: PYTHON=3.5.1
+        - USE_MPI="false"
     - os: osx
       osx_image: xcode10.2
       env: PYTHON=3.5.1
+        - USE_MPI="false"
 
 before_install:
   # We need to re-export CC and CXX here, because travis exports CXX=g++ or clang++ AFTER we set CXX.
@@ -93,16 +100,16 @@ script:
 # Build
   - cd projects/cmake
   - mkdir build
-  - ./regenerate.sh -boost false -travis true ${MAYBE_MPI}
+  - ./regenerate.sh -travis true -mpi ${USE_MPI} -exec_name rb
   - cd build
-  - cmake . -DINTERNAL_BOOST=OFF
+  - cmake .
   - make -j4
   - cd ..
 # Run tests
   - cd ../..
   - echo "\"Hello World\"" | projects/cmake/rb
   - cd tests
-  - ./run_integration_tests.sh ${TRAVIS_BUILD_DIR}/projects/cmake/rb
+  - ./run_integration_tests.sh -mpi ${USE_MPI} ${TRAVIS_BUILD_DIR}/projects/cmake/rb
 # Run testiphy
   - export PATH=${TRAVIS_BUILD_DIR}/projects/cmake:$PATH
   - cd

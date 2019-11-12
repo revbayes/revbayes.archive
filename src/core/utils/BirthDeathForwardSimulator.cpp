@@ -1,11 +1,17 @@
 #include "BirthDeathForwardSimulator.h"
 
+#include <math.h>
+#include <iterator>
+#include <set>
+#include <string>
+
 #include "DistributionExponential.h"
 #include "RandomNumberGenerator.h"
 #include "RandomNumberFactory.h"
-
-
 #include "TopologyNode.h"
+#include "RbException.h"
+#include "StringUtilities.h"
+#include "Tree.h"
 
 using namespace RevBayesCore;
 

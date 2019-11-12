@@ -1,5 +1,13 @@
 #include "PowerVectorFunction.h"
+
+#include <stddef.h>
 #include <cmath>
+#include <vector>
+
+#include "Cloner.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 /**

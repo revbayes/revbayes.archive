@@ -1,3 +1,10 @@
+#include <math.h>
+#include <cstring>
+#include <iomanip>
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include "CholeskyDecomposition.h"
 #include "EigenSystem.h"
 #include "MatrixReal.h"
@@ -5,9 +12,7 @@
 #include "RbVector.h"
 #include "RbConstants.h"
 #include "TypedDagNode.h"
-
-#include <cstring>
-#include <iomanip>
+#include "RbVectorImpl.h"
 
 using namespace RevBayesCore;
 
@@ -628,6 +633,8 @@ void MatrixReal::update( void ) const
 }
 
 #include "RbMathMatrix.h"
+
+namespace RevBayesCore { class DagNode; }
 
 MatrixReal operator+(const MatrixReal& A);
 MatrixReal operator-(const MatrixReal& A);

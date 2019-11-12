@@ -2,9 +2,10 @@
 #define RoundFunction_H
 
 #include "TypedFunction.h"
-#include "TypedDagNode.h"
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class TypedDagNode;
     
     /**
      * @brief Round a real number to the next integer.

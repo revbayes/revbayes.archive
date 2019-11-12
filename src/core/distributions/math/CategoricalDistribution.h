@@ -1,11 +1,12 @@
 #ifndef CategoricalDistribution_H
 #define CategoricalDistribution_H
 
-#include "Simplex.h"
-#include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
 namespace RevBayesCore {
+class DagNode;
+class Simplex;
+template <class valueType> class TypedDagNode;
     
     /**
      * \brief Categorical distribution

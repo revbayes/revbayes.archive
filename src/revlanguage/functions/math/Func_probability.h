@@ -1,12 +1,22 @@
 #ifndef Func_probability_H
 #define Func_probability_H
 
+#include <string>
+#include <iosfwd>
+#include <vector>
+
 #include "Probability.h"
 #include "RlTypedFunction.h"
-
-#include <string>
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "RevPtr.h"
+#include "RlDeterministicNode.h"
+#include "TypedDagNode.h"
+#include "TypedFunction.h"
 
 namespace RevLanguage {
+class ArgumentRules;
+class TypeSpec;
     
     /**
      * The RevLanguage conversion function between a Real and a Probability.
@@ -21,7 +31,7 @@ namespace RevLanguage {
      * @since 2015-01-31, version 1.0
      *
      */
-    class Func_probability :  public TypedFunction<Probability> {
+    class Func_probability : public TypedFunction<Probability> {
         
     public:
         Func_probability( void );

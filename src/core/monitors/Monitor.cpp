@@ -1,6 +1,19 @@
+#include <stddef.h>
+#include <algorithm>
+#include <map>
+#include <ostream>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "DagNode.h"
 #include "Monitor.h"
 #include "RbException.h"
+#include "MonteCarloAnalysisOptions.h"
+#include "StringUtilities.h"
+
+namespace RevBayesCore { class Mcmc; }
+namespace RevBayesCore { class Model; }
 
 using namespace RevBayesCore;
 
@@ -189,7 +202,9 @@ void Monitor::closeStream( void )
  * @param ct combining mode (sequential or mixed)
  */
 void Monitor::combineReplicates( size_t n_reps, MonteCarloAnalysisOptions::TraceCombinationTypes ct )
-{}
+{
+    
+}
 
 
 /**

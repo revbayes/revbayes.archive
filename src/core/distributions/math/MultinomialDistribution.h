@@ -1,13 +1,13 @@
 #ifndef MultinomialDistribution_H
 #define MultinomialDistribution_H
 
-#include "Simplex.h"
-#include "TypedDagNode.h"
 #include "TypedDistribution.h"
-
-#include <vector>
+#include "RbVector.h"
 
 namespace RevBayesCore {
+class DagNode;
+class Simplex;
+template <class valueType> class TypedDagNode;
     
     /**
      * @brief Multinomial distribution class.

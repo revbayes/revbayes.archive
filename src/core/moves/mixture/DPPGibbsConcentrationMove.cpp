@@ -1,8 +1,18 @@
 #include "DPPGibbsConcentrationMove.h"
+
+#include <math.h>
+#include <vector>
+
 #include "DistributionDirichlet.h"
 #include "DistributionGamma.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "DeterministicNode.h"
+#include "RbVector.h"
+#include "StochasticNode.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class DagNode; }
 
 
 RevBayesCore::DPPGibbsConcentrationMove::DPPGibbsConcentrationMove(StochasticNode<double> *n, DeterministicNode<long>* v, TypedDagNode< double >* gS, TypedDagNode< double >* gR, int ne, double w) : AbstractGibbsMove( w ),

@@ -1,9 +1,25 @@
 #include "JointAncestralStateTrace.h"
 
-#include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
-
+#include <assert.h>
 #include <numeric>
+#include <algorithm>
+#include <cstddef>
+#include <cstdlib>
+#include <iterator>
+#include <map>
+#include <sstream>
+#include <string>
+
+#include "ProgressBar.h"
+#include "RbBitSet.h"
+#include "RbException.h"
+#include "RbFileManager.h"
+#include "RlUserInterface.h"
+#include "StringUtilities.h"
+#include "TopologyNode.h"
+#include "Tree.h"
+#include "boost/algorithm/string/trim.hpp"
 
 using namespace RevBayesCore;
 
@@ -454,7 +470,7 @@ void JointAncestralStateTrace::recursivelyCollectAncestralStateSamples(size_t no
  * When summarizing conditional ancestral states the posterior probabilities of each state are conditioned on the parent node being
  * in the MAP state.
  */
-Tree* JointAncestralStateTrace::ancestralStateTree(const Tree &input_summary_tree, std::string summary_stat, int site, bool conditional, bool joint, bool verbose )
+Tree* JointAncestralStateTrace::ancestralStateTree(const Tree &input_summary_tree, std::string summary_stat, size_t num_states, int site, bool conditional, bool joint, bool verbose )
 {
     
     if ( summary_stat != "MAP" && (conditional == true || joint == true) )
@@ -507,90 +523,51 @@ Tree* JointAncestralStateTrace::ancestralStateTree(const Tree &input_summary_tre
     if (summary_stat == "MAP")
     {
         // find the 3 most probable ancestral states for each node and add them to the tree as parameters
-        std::vector<std::string*> anc_state_1;
-        std::vector<std::string*> anc_state_2;
-        std::vector<std::string*> anc_state_3;
-        std::vector<double> anc_state_1_pp;
-        std::vector<double> anc_state_2_pp;
-        std::vector<double> anc_state_3_pp;
+        std::vector< std::vector<std::string> > anc_state = std::vector< std::vector<std::string> >(num_states, std::vector<std::string>());
+        std::vector< std::vector<double> > anc_state_pp = std::vector< std::vector<double> >(num_states, std::vector<double>());
         std::vector<double> anc_state_other_pp;
         
         std::vector<double> posteriors;
         
-        for (int i = 0; i < summary_nodes.size(); i++)
+        for (int node_index = 0; node_index < summary_nodes.size(); ++node_index)
         {
             
 
-            double state1_pp = 0.0;
-            double state2_pp = 0.0;
-            double state3_pp = 0.0;
+            double state_pp = 0.0;
             double other_pp = 0.0;
             double total_node_pp = 0.0;
             
-            std::string state1 = "";
-            std::string state2 = "";
-            std::string state3 = "";
+            std::string state = "";
+            
+            std::multimap<double,std::string, std::greater<double> > state_map;
             
             // loop through all states for this node
-            for (int j = 0; j < pp_end[i].size(); j++)
+            for (int j = 0; j < pp_end[node_index].size(); j++)
             {
-                total_node_pp += pp_end[i][j];
-                if (pp_end[i][j] > state1_pp)
-                {
-                    state3_pp = state2_pp;
-                    state2_pp = state1_pp;
-                    state1_pp = pp_end[i][j];
-                    state3 = state2;
-                    state2 = state1;
-                    state1 = states[i][j];
-                }
-                else if (pp_end[i][j] > state2_pp)
-                {
-                    state3_pp = state2_pp;
-                    state2_pp = pp_end[i][j];
-                    state3 = state2;
-                    state2 = states[i][j];
-                }
-                else if (pp_end[i][j] > state3_pp)
-                {
-                    state3_pp = pp_end[i][j];
-                    state3 = states[i][j];
-                }
+                total_node_pp += pp_end[node_index][j];
+                state_map.insert( std::pair<double, std::string>(pp_end[node_index][j], states[node_index][j]) );
             }
             
             posteriors.push_back(total_node_pp);
-            
-            if (state1_pp > 0.0001)
+            other_pp = total_node_pp;
+//            size_t current_state_count = 0;
+            std::multimap<double,std::string>::iterator it=state_map.begin();
+            for (size_t j=0; j<num_states; ++j)
             {
-                anc_state_1.push_back(new std::string(state1));
-                anc_state_1_pp.push_back(state1_pp);
-            }
-            else
-            {
-                anc_state_1.push_back(new std::string("NA"));
-                anc_state_1_pp.push_back(0.0);
-            }
-            
-            if (state2_pp > 0.0001)
-            {
-                anc_state_2.push_back(new std::string(state2));
-                anc_state_2_pp.push_back(state2_pp);
-            }
-            else
-            {
-                anc_state_2.push_back(new std::string("NA"));
-                anc_state_2_pp.push_back(0.0);
-            }
-            
-            if (state3_pp > 0.0001)
-            {
-                anc_state_3.push_back(new std::string(state3));
-                anc_state_3_pp.push_back(state3_pp);
-            }
-            else
-            {
-                anc_state_3.push_back(new std::string("NA"));
-                anc_state_3_pp.push_back(0.0);
+                
+                if ( it != state_map.end() )
+                {
+                    state_pp = it->first;
+                    other_pp -= state_pp;
+                    anc_state[j].push_back( it->second );
+                    anc_state_pp[j].push_back(state_pp);
+                    ++it;
+                }
+                else
+                {
+                    anc_state[j].push_back( "NA" );
+                    anc_state_pp[j].push_back(0.0);
+                }
             }
             
             if (other_pp > 0.0001)
@@ -606,12 +583,11 @@ Tree* JointAncestralStateTrace::ancestralStateTree(const Tree &input_summary_tre
         
         final_summary_tree->clearNodeParameters();
         final_summary_tree->addNodeParameter("posterior", posteriors, false);
-        final_summary_tree->addNodeParameter("anc_state_1", anc_state_1, false);
-        final_summary_tree->addNodeParameter("anc_state_2", anc_state_2, false);
-        final_summary_tree->addNodeParameter("anc_state_3", anc_state_3, false);
-        final_summary_tree->addNodeParameter("anc_state_1_pp", anc_state_1_pp, false);
-        final_summary_tree->addNodeParameter("anc_state_2_pp", anc_state_2_pp, false);
-        final_summary_tree->addNodeParameter("anc_state_3_pp", anc_state_3_pp, false);
+        for (size_t i=0; i<num_states; ++i)
+        {
+            final_summary_tree->addNodeParameter("anc_state_"+StringUtilities::to_string(i+1), anc_state[i], false);
+            final_summary_tree->addNodeParameter("anc_state_"+StringUtilities::to_string(i+1)+"_pp", anc_state_pp[i], false);
+        }
         final_summary_tree->addNodeParameter("anc_state_other_pp", anc_state_other_pp, false);
         
     }
@@ -729,18 +705,18 @@ Tree* JointAncestralStateTrace::cladoAncestralStateTree(const Tree &input_summar
     {
         // find the 3 most probable ancestral states for each node and add them to the tree as annotations
         
-        std::vector<std::string*> end_state_1( summary_nodes.size(), new std::string("NA") );
-        std::vector<std::string*> end_state_2( summary_nodes.size(), new std::string("NA") );
-        std::vector<std::string*> end_state_3( summary_nodes.size(), new std::string("NA") );
+        std::vector<std::string> end_state_1( summary_nodes.size(), std::string("NA") );
+        std::vector<std::string> end_state_2( summary_nodes.size(), std::string("NA") );
+        std::vector<std::string> end_state_3( summary_nodes.size(), std::string("NA") );
         
         std::vector<double> end_state_1_pp( summary_nodes.size(), 0.0 );
         std::vector<double> end_state_2_pp( summary_nodes.size(), 0.0 );
         std::vector<double> end_state_3_pp( summary_nodes.size(), 0.0 );
         std::vector<double> end_state_other_pp( summary_nodes.size(), 0.0 );
         
-        std::vector<std::string*> start_state_1( summary_nodes.size(), new std::string("NA") );
-        std::vector<std::string*> start_state_2( summary_nodes.size(), new std::string("NA") );
-        std::vector<std::string*> start_state_3( summary_nodes.size(), new std::string("NA") );
+        std::vector<std::string> start_state_1( summary_nodes.size(), std::string("NA") );
+        std::vector<std::string> start_state_2( summary_nodes.size(), std::string("NA") );
+        std::vector<std::string> start_state_3( summary_nodes.size(), std::string("NA") );
         
         std::vector<double> start_state_1_pp( summary_nodes.size(), 0.0 );
         std::vector<double> start_state_2_pp( summary_nodes.size(), 0.0 );
@@ -767,9 +743,9 @@ Tree* JointAncestralStateTrace::cladoAncestralStateTree(const Tree &input_summar
             std::vector<std::string> best_end_states_node;
             computeMarginalCladogeneticStateProbs(pp_end[i], end_states[i], best_end_pp_node, best_end_states_node);
             
-            end_state_1[ i ] = new std::string(best_end_states_node[0]);
-            end_state_2[ i ] = new std::string(best_end_states_node[1]);
-            end_state_3[ i ] = new std::string(best_end_states_node[2]);
+            end_state_1[ i ] = best_end_states_node[0];
+            end_state_2[ i ] = best_end_states_node[1];
+            end_state_3[ i ] = best_end_states_node[2];
             end_state_1_pp[ i ] = best_end_pp_node[0];
             end_state_2_pp[ i ] = best_end_pp_node[1];
             end_state_3_pp[ i ] = best_end_pp_node[2];
@@ -780,9 +756,9 @@ Tree* JointAncestralStateTrace::cladoAncestralStateTree(const Tree &input_summar
             std::vector<std::string> best_start_states;
             computeMarginalCladogeneticStateProbs(pp_start[i], start_states[i], best_start_pp, best_start_states);
             
-            start_state_1[ i ] = new std::string(best_start_states[0]);
-            start_state_2[ i ] = new std::string(best_start_states[1]);
-            start_state_3[ i ] = new std::string(best_start_states[2]);
+            start_state_1[ i ] = best_start_states[0];
+            start_state_2[ i ] = best_start_states[1];
+            start_state_3[ i ] = best_start_states[2];
             start_state_1_pp[ i ] = best_start_pp[0];
             start_state_2_pp[ i ] = best_start_pp[1];
             start_state_3_pp[ i ] = best_start_pp[2];
@@ -959,7 +935,7 @@ void JointAncestralStateTrace::computeMarginalCladogeneticStateProbs(std::vector
  * Helper function for characterMapTree() that traverses the tree from root to tips collecting stochastic character map samples.
  *
  */
-void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node_index, size_t map_parent_state, bool root, bool conditional, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::string*> &map_character_history, std::vector<std::string*> &map_character_history_posteriors, std::vector<std::string*> &map_character_history_shift_prob, ProgressBar &progress, size_t &num_finished_nodes, int NUM_TIME_SLICES, bool verbose)
+void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node_index, size_t map_parent_state, bool root, bool conditional, Tree &final_summary_tree, const std::vector<TopologyNode*> &summary_nodes, std::vector<std::string> &map_character_history, std::vector<std::string> &map_character_history_posteriors, std::vector<std::string> &map_character_history_shift_prob, ProgressBar &progress, size_t &num_finished_nodes, int NUM_TIME_SLICES, bool verbose)
 {
     
     double dt = final_summary_tree.getRoot().getMaxDepth() / double(NUM_TIME_SLICES);
@@ -1248,9 +1224,9 @@ void JointAncestralStateTrace::recursivelyCollectCharacterMapSamples(size_t node
     branch_map_history = "{" + branch_map_history;
     branch_map_history_posteriors = "{" + branch_map_history_posteriors;
     branch_map_history_shift_prob = "{" + branch_map_history_shift_prob;
-    map_character_history[node_index] = new std::string(branch_map_history);
-    map_character_history_posteriors[node_index] = new std::string(branch_map_history_posteriors);
-    map_character_history_shift_prob[node_index] = new std::string(branch_map_history_shift_prob);
+    map_character_history[node_index] = branch_map_history;
+    map_character_history_posteriors[node_index] = branch_map_history_posteriors;
+    map_character_history_shift_prob[node_index] = branch_map_history_shift_prob;
     
     // update nodes finished for the progress bar
     num_finished_nodes += 1;
@@ -1284,9 +1260,9 @@ Tree* JointAncestralStateTrace::characterMapTree(const Tree &input_summary_tree,
     Tree* final_summary_tree = new Tree( input_summary_tree );
     const std::vector<TopologyNode*> &summary_nodes = final_summary_tree->getNodes();
     
-    std::vector<std::string*> map_character_history( summary_nodes.size(), new std::string() );
-    std::vector<std::string*> map_character_history_posteriors( summary_nodes.size(), new std::string() );
-    std::vector<std::string*> map_character_history_shift_prob( summary_nodes.size(), new std::string() );
+    std::vector<std::string> map_character_history( summary_nodes.size(), "" );
+    std::vector<std::string> map_character_history_posteriors( summary_nodes.size(), "" );
+    std::vector<std::string> map_character_history_shift_prob( summary_nodes.size(), "" );
     
     bool process_active = true;
     ProgressBar progress = ProgressBar( summary_nodes.size() * num_sampled_states, 0 );

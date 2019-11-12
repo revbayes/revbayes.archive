@@ -1,13 +1,22 @@
+#include <stdlib.h>
+#include <iosfwd>
+#include <string>
+#include <vector>
+
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "Func_system.h"
-#include "RbException.h"
 #include "RbSettings.h"
 #include "RlString.h"
 #include "RlUtils.h"
 #include "TypeSpec.h"
-
-#include <stdlib.h>
+#include "ArgumentRules.h"
+#include "Procedure.h"
+#include "RbFileManager.h"
+#include "RbHelpReference.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
 
 using namespace RevLanguage;
 

@@ -25,52 +25,52 @@
 
 #include <sstream>
 #include <vector>
-#include <set>
 #include <cstdlib>
+#include <stdio.h>
 
 /* Files including helper classes */
-#include "AddContinuousDistribution.h"
-#include "AddDistribution.h"
-#include "AddWorkspaceVectorType.h"
-#include "AddVectorizedWorkspaceType.h"
 #include "RbException.h"
 #include "RlUserInterface.h"
 #include "Workspace.h"
 
 /// Miscellaneous types ///
 
+#include "ConstantNode.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "IndirectReferenceFunction.h"
+#include "ModelObject.h"
+//#include "NumUniqueInVector.h" //suggested by IWYU but breaks the build
+#include "RbVector.h"
+#include "RevPtr.h"
+#include "RlConstantNode.h"
+#include "RlDeterministicNode.h"
+#include "RlTypedDistribution.h"
+#include "RlTypedFunction.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
+
 /* Base types (in folder "datatypes") */
-#include "RevObject.h"
 
 /* Primitive types (in folder "datatypes/basic") */
 #include "Integer.h"
 #include "Natural.h"
 #include "Probability.h"
-#include "RlBoolean.h"
-#include "RlString.h"
 #include "Real.h"
 #include "RealPos.h"
 
 /* Container types (in folder "datatypes/container") */
 #include "ModelVector.h"
-#include "WorkspaceVector.h"
-
 
 /* Taxon types (in folder "datatypes/evolution") */
-#include "RlTaxon.h"
-
 
 /* Math types (in folder "datatypes/math") */
-#include "RlMatrixReal.h"
-#include "RlMatrixRealSymmetric.h"
-#include "RlRateGeneratorSequence.h"
-#include "RlRateMatrix.h"
 #include "RlSimplex.h"
 
-
 /* Argument rules (in folder "functions/argumentrules") */
-#include "ArgumentRule.h"
-
 
 /* Basic functions (in folder "functions/basic"). */
 
@@ -182,24 +182,13 @@
 #include "Func_chromosomesCladoEventsBD.h"
 #include "Func_chromosomesPloidyCladoEventsBD.h"
 #include "Func_cladogeneticSpeciationRateMatrix.h"
+#include "Func_cladogeneticProbabilityMatrix.h"
 #include "Func_MixtureCladoProbs.h"
 #include "Func_SampledCladogenesisRootFrequencies.h"
 
 
 /* Input/output functions (in folder "functions/io") */
-#include "Func_ancestralStateTree.h"
-#include "Func_consensusTree.h"
-#include "Func_convertToPhylowood.h"
-#include "Func_module.h"
 #include "Func_readPoMoCountFile.h"
-#include "Func_source.h"
-#include "Func_summarizeCharacterMaps.h"
-#include "Func_TaxonReader.h"
-#include "Func_treeTrace.h"
-#include "Func_write.h"
-#include "Func_writeCharacterDataDelimited.h"
-#include "Func_writeFasta.h"
-#include "Func_writeNexus.h"
 
 
 /* Math functions (in folder "functions/math") */
@@ -228,8 +217,8 @@
 #include "Func_min.h"
 #include "Func_normalize.h"
 #include "Func_posteriorPredictiveProbability.h"
-#include "Func_power.h"
-#include "Func_powerVector.h"
+//#include "Func_power.h"
+//#include "Func_powerVector.h"
 #include "Func_probability.h"
 #include "Func_round.h"
 #include "Func_shortestDistance.h"
@@ -269,7 +258,8 @@
 #include "Func_decomposedVarianceCovarianceMatrix.h"
 #include "Func_partialToCorrelationMatrix.h"
 
-#include "RlDiscreteCharacterState.h"
+/* Type conversions */
+#include "Proc_StringToInt.h"
 
 
 /** Initialize global workspace */
@@ -342,6 +332,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_chromosomesPloidyCladoEventsBD() );
         addFunction( new Func_CladeSpecificHierarchicalBranchRate() );
         addFunction( new Func_cladogeneticSpeciationRateMatrix() );
+        addFunction( new Func_cladogeneticProbabilityMatrix() );
         addFunction( new Func_MixtureCladoProbs() );
         addFunction( new Func_SampledCladogenesisRootFrequencies() );
 
@@ -546,6 +537,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_partialToCorrelationMatrix( )         );
 
 
+        // Type conversion
+        addFunction( new Proc_StringToInt( )                         );
+        
     }
     catch(RbException& rbException)
     {

@@ -1,17 +1,43 @@
+#include <math.h>
+#include <stddef.h>
+#include <iosfwd>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Dist_empiricalTree.h"
-#include "ModelVector.h"
 #include "Natural.h"
-#include "OptionRule.h"
-#include "Probability.h"
-#include "Real.h"
-#include "RealPos.h"
 #include "RlDistributionMemberFunction.h"
-#include "RlString.h"
 #include "RlTrace.h"
 #include "RlTraceTree.h"
 #include "StochasticNode.h"
+#include "DagMemberFunction.h"
+#include "DeterministicNode.h"
+#include "DistributionMemberFunction.h"
+#include "DynamicNode.h"
+#include "EmpiricalDistribution.h"
+#include "MethodTable.h"
+#include "RevNullObject.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlDagMemberFunction.h"
+#include "RlDeterministicNode.h"
+#include "RlDistribution.h"
+#include "RlStochasticNode.h"
+#include "RlTree.h"
+#include "RlTypedDistribution.h"
+#include "RlTypedFunction.h"
+#include "TraceNumeric.h"
+#include "TraceTree.h"
+#include "Tree.h"
+#include "TypeSpec.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
+#include "TypedFunction.h"
+
+namespace RevBayesCore { template <class valueType> class Trace; }
 
 using namespace RevLanguage;
 

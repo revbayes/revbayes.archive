@@ -24,13 +24,10 @@
  */
 
 #include <sstream>
-#include <vector>
-#include <set>
+#include <stdio.h>
 #include <cstdlib>
 
 /* Files including helper classes */
-#include "AddWorkspaceVectorType.h"
-#include "AddVectorizedWorkspaceType.h"
 #include "RbException.h"
 #include "RlUserInterface.h"
 #include "Workspace.h"
@@ -39,7 +36,6 @@
 /// Monitors ///
 
 /* Monitor types (in folder "monitors) */
-#include "RlMonitor.h"
 #include "Mntr_AncestralState.h"
 #include "Mntr_File.h"
 #include "Mntr_HomeologPhase.h"
@@ -49,6 +45,7 @@
 #include "Mntr_Model.h"
 #include "Mntr_Probability.h"
 #include "Mntr_Screen.h"
+#include "Mntr_SiteMixtureAllocation.h"
 #include "Mntr_StochasticCharacterMapping.h"
 #include "Mntr_StochasticBranchRate.h"
 #include "Mntr_StochasticBranchStateTimes.h"
@@ -73,10 +70,11 @@ void RevLanguage::Workspace::initializeMonitorGlobalWorkspace(void)
         addTypeWithConstructor( new Mntr_StochasticCharacterMapping()           );
         addTypeWithConstructor( new Mntr_ExtendedNewickFile()                   );
         addTypeWithConstructor( new Mntr_File()                                 );
-        addTypeWithConstructor( new Mntr_NexusFile() );
+        addTypeWithConstructor( new Mntr_NexusFile()                            );
         addTypeWithConstructor( new Mntr_Model()                                );
         addTypeWithConstructor( new Mntr_Probability()                          );
         addTypeWithConstructor( new Mntr_Screen()                               );
+        addTypeWithConstructor( new Mntr_SiteMixtureAllocation()                );
         addTypeWithConstructor( new Mntr_StochasticBranchRate()                 );
         addTypeWithConstructor( new Mntr_StochasticVariable()                   );
         addTypeWithConstructor( new Mntr_StochasticBranchStateTimes()           );

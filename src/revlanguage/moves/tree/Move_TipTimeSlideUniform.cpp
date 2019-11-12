@@ -1,9 +1,13 @@
+#include <stddef.h>
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "MetropolisHastingsMove.h"
 #include "Move_TipTimeSlideUniform.h"
 #include "TipTimeSlideUniformProposal.h"
-#include "RbException.h"
 #include "RealPos.h"
 #include "RevObject.h"
 #include "RlString.h"
@@ -11,6 +15,15 @@
 #include "RlTaxon.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
+#include "Move.h"
+#include "RevNullObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlMove.h"
+#include "StochasticNode.h"
+#include "Taxon.h"
+#include "TopologyNode.h"
+#include "Tree.h"
 
 
 using namespace RevLanguage;

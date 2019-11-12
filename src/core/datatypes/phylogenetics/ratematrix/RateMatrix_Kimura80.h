@@ -7,6 +7,7 @@
 namespace RevBayesCore {
     
     class TransitionProbabilityMatrix;
+class Assignable;
     
     
     
