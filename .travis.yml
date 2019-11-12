@@ -120,3 +120,7 @@ script:
 # notifications
 notifications:
   slack: revbayes:bQO6VTun0Orhx2NiKktVPDsS
+
+branches:
+  except:
+  - /.*/
