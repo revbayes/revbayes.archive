@@ -2,7 +2,7 @@
 Probability
 ## title
 ## description
-This Rev function converts between Rev types from Real to Probability.
+A Probability is a real value between 0.0 and 1.0
 ## details
 ## authors
 Sebastian Hoehna
