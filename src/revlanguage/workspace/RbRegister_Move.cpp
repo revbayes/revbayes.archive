@@ -106,15 +106,11 @@
 #include "Move_ElementSwapSimplex.h"
 
 /* Moves on vectors */
-#include "Move_ElementScale.h"
-#include "Move_ElementSlide.h"
 #include "Move_GMRFHyperpriorGibbs.h"
 #include "Move_GMRFUnevenGridHyperpriorGibbs.h"
 #include "Move_MultipleElementScale.h"
 #include "Move_ShrinkExpand.h"
 #include "Move_ShrinkExpandScale.h"
-#include "Move_SingleElementScale.h"
-#include "Move_SingleElementSlide.h"
 #include "Move_EllipticalSliceSamplingSimple.h"
 #include "Move_SynchronizedVectorFixedSingleElementSlide.h"
 #include "Move_VectorBinarySwitch.h"
@@ -282,16 +278,12 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_HSRFHyperpriorsGibbs() );
         addTypeWithConstructor( new Move_HSRFIntervalSwap() );
         addTypeWithConstructor( new Move_HSRFUnevenGridHyperpriorsGibbs() );
-        addTypeWithConstructor( new Move_SingleElementSlide() );
-        addTypeWithConstructor( new Move_SingleElementScale() );
         addTypeWithConstructor( new Move_ShrinkExpand() );
         addTypeWithConstructor( new Move_ShrinkExpandScale() );
         addTypeWithConstructor( new Move_VectorBinarySwitch() );
         addTypeWithConstructor( new Move_VectorScale() );
         addTypeWithConstructor( new Move_VectorSlide() );
         addTypeWithConstructor( new Move_VectorSlideRecenter() );
-        addTypeWithConstructor( new Move_ElementScale() );
-        addTypeWithConstructor( new Move_ElementSlide() );
         addTypeWithConstructor( new Move_VectorSingleElementScale() );
         addTypeWithConstructor( new Move_VectorSingleElementSlide() );
         addTypeWithConstructor( new Move_VectorFixedSingleElementSlide() );
