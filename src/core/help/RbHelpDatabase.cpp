@@ -53,7 +53,7 @@ myHillClimberObject.operatorSummary())");
 	help_strings[string("MatrixRealSymmetric")][string("name")] = string(R"(MatrixRealSymmetric)");
 	help_strings[string("Natural")][string("name")] = string(R"(Natural)");
 	help_arrays[string("Probability")][string("authors")].push_back(string(R"(Sebastian Hoehna)"));
-	help_strings[string("Probability")][string("description")] = string(R"(This Rev function converts between Rev types from Real to Probability.)");
+	help_strings[string("Probability")][string("description")] = string(R"(A Probability is a real value between 0.0 and 1.0)");
 	help_strings[string("Probability")][string("example")] = string(R"(# Create a RealPos
 x <- 12/13
 type(x)
@@ -66,6 +66,7 @@ type(y))");
 	help_strings[string("Real")][string("name")] = string(R"(Real)");
 	help_strings[string("RealPos")][string("name")] = string(R"(RealPos)");
 	help_strings[string("RevObject")][string("name")] = string(R"(RevObject)");
+	help_strings[string("Simplex")][string("name")] = string(R"(Simplex)");
 	help_strings[string("String")][string("name")] = string(R"(String)");
 	help_strings[string("TimeTree")][string("description")] = string(R"(The Tree datatype stores information to describe the shared ancestryof a taxon set. Information includes taxon labels, topology, nodecount, and branch lengths. Tree objects also possess several usefulmethods to traverse and manipulate the Tree's value.)");
 	help_strings[string("TimeTree")][string("name")] = string(R"(TimeTree)");
@@ -2060,7 +2061,6 @@ getwd())");
 	help_strings[string("simCompleteTree")][string("name")] = string(R"(simCompleteTree)");
 	help_strings[string("simStartingTree")][string("name")] = string(R"(simStartingTree)");
 	help_strings[string("simTree")][string("name")] = string(R"(simTree)");
-	help_strings[string("simplex")][string("name")] = string(R"(Simplex)");
 	help_strings[string("sinh")][string("name")] = string(R"(sinh)");
 	help_strings[string("sort")][string("name")] = string(R"(sort)");
 	help_strings[string("source")][string("name")] = string(R"(source)");
