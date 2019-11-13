@@ -255,6 +255,9 @@
 #include "Func_decomposedVarianceCovarianceMatrix.h"
 #include "Func_partialToCorrelationMatrix.h"
 
+/* Type conversions */
+#include "Proc_StringToInt.h"
+
 
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
@@ -522,6 +525,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_partialToCorrelationMatrix( )         );
 
 
+        // Type conversion
+        addFunction( new Proc_StringToInt( )                         );
+        
     }
     catch(RbException& rbException)
     {
