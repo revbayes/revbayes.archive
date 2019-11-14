@@ -6,6 +6,7 @@ matrix:
   include:
     - os: linux
       dist: xenial
+      cache: ccache
       env:
         - CXX_COMPILER=/usr/bin/g++-7
         - C_COMPILER=/usr/bin/gcc-7
@@ -21,6 +22,7 @@ matrix:
           - boost1.67
     - os: linux
       dist: xenial
+      cache: ccache
       env:
         - CXX_COMPILER=/usr/bin/g++-8
         - C_COMPILER=/usr/bin/gcc-8
@@ -36,6 +38,7 @@ matrix:
           - boost1.67
     - os: linux
       dist: xenial
+      cache: ccache
       env:
         - CXX_COMPILER=/usr/bin/g++-9
         - C_COMPILER=/usr/bin/gcc-9
@@ -51,6 +54,7 @@ matrix:
           - boost1.67
     - os: linux
       dist: xenial
+      cache: ccache
       env:
         - CXX_COMPILER=/usr/bin/g++-7
         - C_COMPILER=/usr/bin/gcc-7
@@ -69,6 +73,7 @@ matrix:
     - os: linux
       dist: xenial
       compiler: clang++
+      cache: ccache
       env:
         - CXX_COMPILER=/usr/local/clang-7.0.0/bin/clang++
         - C_COMPILER=/usr/local/clang-7.0.0/bin/clang

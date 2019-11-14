@@ -68,21 +68,19 @@ project(RevBayes)
 # -Wno-sign-compare
 # -D_GLIBCXX_DEBUG
 
-# Default compiler flags
-#if (WIN32)
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -static -msse -msse2 -msse3 -Wall -Wno-sign-compare")
-#    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg -static")
-#else ()
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -msse -msse2 -msse3 -stdlib=libstdc++ -Wall -Wno-sign-compare")
-#    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg")
-#endif ()
-
 # This is the RIGHT way, but requires cmake version >=3:
 #   set(CMAKE_CXX_STANDARD 11)
 # RHEL 7 compute clusters may have cmake 2.8.12
 #
 # So, we add the flag directly instead.
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "2.8.0")
+  find_program(CCACHE_PROGRAM ccache)
+  if(CCACHE_PROGRAM)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+  endif()
+endif()
 
 ' > "$HERE/CMakeLists.txt"
 
