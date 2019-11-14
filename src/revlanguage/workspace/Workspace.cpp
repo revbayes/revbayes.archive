@@ -141,12 +141,13 @@ bool Workspace::addType( RevObject *templ )
         function_table.addFunction( new ConstructorFunction(templ) );
 
         // only add the type to the table if the entry doesn't already exist
+        // add a clone of the  template for so as not to interfere with the constructor's copy
         if ( typeTable.find( name ) == typeTable.end() )
         {
             typeTable.insert(std::pair<std::string, RevObject*>( name, templ->clone() ) );
         }
     }
-    // otherwise, check if the type exists already
+    // or, if the type exists already, throw an error
     else if (typeTable.find( name ) != typeTable.end() )
     {
         // free memory
@@ -154,6 +155,7 @@ bool Workspace::addType( RevObject *templ )
 
         throw RbException("There is already a type named '" + name + "' in the workspace");
     }
+    // otherwise, add the template to the type table
     else
     {
         typeTable.insert(std::pair<std::string, RevObject*>( name, templ ) );
