@@ -160,6 +160,22 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
 }
 
 
+size_t BirthDeathProcess::getNumberOfTaxaAtPresent( void ) const
+{
+    
+    size_t num_taxa_present = value->getNumberOfTips();
+    
+    // now iterate over the vector of missing species per clade
+    for (size_t i=0; i<incomplete_clades.size(); ++i)
+    {
+        int m = incomplete_clades[i].getNumberMissingTaxa();
+        num_taxa_present += m;
+    }
+    
+    return num_taxa_present;
+}
+
+
 double BirthDeathProcess::lnP1(double end, double r) const
 {
     
