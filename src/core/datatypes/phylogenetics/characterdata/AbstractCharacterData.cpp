@@ -150,7 +150,7 @@ AbstractCharacterData& AbstractCharacterData::operator=( const AbstractCharacter
 /**
  * Add a sequence (TaxonData) to the character data object.
  *
- * \param[in]    obsd    The TaxonData object that should be added.
+ * \param[in]    n    The TaxonData object that should be added.
  */
 void AbstractCharacterData::addMissingTaxon(const std::string &n) {
     
@@ -171,7 +171,7 @@ void AbstractCharacterData::addMissingTaxon(const std::string &n) {
 /**
  * Add a sequence (TaxonData) to the character data object.
  *
- * \param[in]    obsd    The TaxonData object that should be added.
+ * \param[in]    obs    The TaxonData object that should be added.
  */
 void AbstractCharacterData::addTaxonData(const AbstractTaxonData &obs)
 {
@@ -264,7 +264,7 @@ void AbstractCharacterData::deleteTaxon(size_t i) {
  * Delete a taxon.
  * Remove taxon object and free up its memory.
  *
- * \param[in]    i    The index of the taxon that will be excluded.
+ * \param[in]    s    The index of the taxon that will be excluded.
  */
 void AbstractCharacterData::deleteTaxon(const std::string& s) {
     
@@ -324,6 +324,57 @@ size_t AbstractCharacterData::getIndexOfTaxon(const std::string &n) const
     }
 
     throw RbException("Cannot find taxon '" + n + "' in the CharacterData matrix.");
+}
+
+
+/**
+* Get a string with the JSON representation of the character data.
+*
+* \return     A JSON-formatted string
+*/
+const std::string AbstractCharacterData::getJsonRepresentation(void) const {
+
+    //std::set<size_t>                            deletedTaxa;                                                                //!< Set of deleted taxa
+    //std::string                                 fileName;                                                                   //!< The path/filename from where this matrix originated
+    //std::string                                 filePath;                                                                   //!< The path/filename from where this matrix originated
+    //std::map<std::string, std::string >         homeologMap;
+    //std::vector<Taxon>                          taxa;                                                                       //!< names of the sequences
+    //std::map<std::string, AbstractTaxonData* >  taxonMap;
+
+    std::string jsonStr = "{\"CharacterDataMatrix\": {\n";
+    
+    jsonStr += std::string("   \"filePath\": \"") + filePath + std::string("\",") + '\n';
+    jsonStr += std::string("   \"fileName\": \"") + fileName + std::string("\",") + '\n';
+    jsonStr += std::string("   \"dataType\": \"") + getDataType() + "\"\n";
+    
+    jsonStr += "   \"taxa\": [";
+    for (int i=0; i<taxa.size(); i++)
+        {
+        jsonStr += "\"" + taxa[i].getName() + "\"";
+        if (i+1 < taxa.size())
+            jsonStr += ",";
+        }
+    jsonStr += "],\n";
+
+    jsonStr += "   \"deletedTaxa\": [";
+    for (std::set<size_t>::iterator it = deletedTaxa.begin(); it != deletedTaxa.end(); it++)
+        {
+        jsonStr += *it;
+        if (it != deletedTaxa.end())
+            jsonStr += ",";
+        }
+    jsonStr += "]\n";
+    
+    jsonStr += "   \"data\": [\n";
+    for (std::map<std::string,AbstractTaxonData* >::const_iterator it = taxonMap.begin(); it != taxonMap.end(); it++)
+        {
+        if (it != taxonMap.begin())
+            jsonStr += ",\n";
+        jsonStr += "   " + it->second->getJsonRepresentation();
+        }
+    jsonStr += "   ]";
+
+    return jsonStr;
 }
 
 
@@ -553,7 +604,7 @@ const std::string& AbstractCharacterData::getTaxonNameWithIndex( size_t idx ) co
  * Since we didn't actually deleted the taxon but marked it for exclusion
  * we can now simply remove the flag.
  *
- * \param[in]    i    The name of the taxon that will be included.
+ * \param[in]    n    The name of the taxon that will be included.
  */
 void AbstractCharacterData::includeTaxon(const std::string &n) {
     
@@ -605,7 +656,7 @@ bool AbstractCharacterData::isSequenceMissing( const std::string &n ) const {
 /**
  * Is the taxon excluded.
  *
- * \param[in]    idx    The position of the taxon in question.
+ * \param[in]    i    The position of the taxon in question.
  */
 bool AbstractCharacterData::isTaxonExcluded(size_t i) const {
     
