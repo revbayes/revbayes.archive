@@ -1664,88 +1664,91 @@ Tree* TreeSummary::mrTree(AnnotationReport report, double cutoff, bool verbose)
 
 void TreeSummary::printCladeSummary(std::ostream &o, double minCladeProbability, bool verbose)
 {
-    summarize( verbose );
-    
-    std::stringstream ss;
-    ss << std::fixed;
-    ss << std::setprecision(4);
-    
-    o << std::endl;
-    o << "=========================================" << std::endl;
-    o << "Printing Posterior Distribution of Clades" << std::endl;
-    o << "=========================================" << std::endl;
-    o << std::endl;
-    
-    // now the printing
-    std::string s = "Samples";
-    StringUtilities::fillWithSpaces(s, 16, true);
-    o << "\n" << s;
-    s = "Posterior";
-    StringUtilities::fillWithSpaces(s, 16, true);
-    o << s;
-    /*s = "ESS";
-     StringUtilities::fillWithSpaces(s, 16, true);
-     o << s;*/
-    s = "Clade";
-    StringUtilities::fillWithSpaces(s, 16, true);
-    o << s;
-    o << std::endl;
-    o << "--------------------------------------------------------------" << std::endl;
-    
-    double totalSamples = sampleSize(true);
-    
-    std::vector<Taxon> ordered_taxa = traces.front()->objectAt(0).getTaxa();
-    VectorUtilities::sort( ordered_taxa );
-
-    for (std::set<Sample<Split> >::reverse_iterator it = clade_samples.rbegin(); it != clade_samples.rend(); ++it)
+    if ( process_active == true )
     {
-        Clade c(it->first.first, ordered_taxa);
-        c.setMrca(it->first.second);
-
-        if ( c.size() == 1 ) continue;
+        summarize( verbose );
         
-        double freq = it->second;
-        double p = freq/totalSamples;
+        std::stringstream ss;
+        ss << std::fixed;
+        ss << std::setprecision(4);
         
-        
-        if ( p < minCladeProbability )
-        {
-            break;
-        }
-        
-        ss.str(std::string());
-        ss << freq;
-        s = ss.str();
-        StringUtilities::fillWithSpaces(s, 16, true);
-        o << s;
-        
-        ss.str(std::string());
-        ss << p;
-        s = ss.str();
-        StringUtilities::fillWithSpaces(s, 16, true);
-        o << s;
-        
-        /*ss.str(std::string());
-         if ( it->getFrequency() <  totalSamples - burnin && it->getFrequency() > 0 )
-         {
-         ss << it->getEss();
-         }
-         else
-         {
-         ss << " - ";
-         
-         }
-         s = ss.str();
-         StringUtilities::fillWithSpaces(s, 16, true);
-         o << s;*/
-
-        o << c;
+        o << std::endl;
+        o << "=========================================" << std::endl;
+        o << "Printing Posterior Distribution of Clades" << std::endl;
+        o << "=========================================" << std::endl;
         o << std::endl;
         
+        // now the printing
+        std::string s = "Samples";
+        StringUtilities::fillWithSpaces(s, 16, true);
+        o << "\n" << s;
+        s = "Posterior";
+        StringUtilities::fillWithSpaces(s, 16, true);
+        o << s;
+        /*s = "ESS";
+         StringUtilities::fillWithSpaces(s, 16, true);
+         o << s;*/
+        s = "Clade";
+        StringUtilities::fillWithSpaces(s, 16, true);
+        o << s;
+        o << std::endl;
+        o << "--------------------------------------------------------------" << std::endl;
+        
+        double totalSamples = sampleSize(true);
+        
+        std::vector<Taxon> ordered_taxa = traces.front()->objectAt(0).getTaxa();
+        VectorUtilities::sort( ordered_taxa );
+        
+        for (std::set<Sample<Split> >::reverse_iterator it = clade_samples.rbegin(); it != clade_samples.rend(); ++it)
+        {
+            Clade c(it->first.first, ordered_taxa);
+            c.setMrca(it->first.second);
+            
+            if ( c.size() == 1 ) continue;
+            
+            double freq = it->second;
+            double p = freq/totalSamples;
+            
+            
+            if ( p < minCladeProbability )
+            {
+                break;
+            }
+            
+            ss.str(std::string());
+            ss << freq;
+            s = ss.str();
+            StringUtilities::fillWithSpaces(s, 16, true);
+            o << s;
+            
+            ss.str(std::string());
+            ss << p;
+            s = ss.str();
+            StringUtilities::fillWithSpaces(s, 16, true);
+            o << s;
+            
+            /*ss.str(std::string());
+             if ( it->getFrequency() <  totalSamples - burnin && it->getFrequency() > 0 )
+             {
+             ss << it->getEss();
+             }
+             else
+             {
+             ss << " - ";
+             
+             }
+             s = ss.str();
+             StringUtilities::fillWithSpaces(s, 16, true);
+             o << s;*/
+            
+            o << c;
+            o << std::endl;
+            
+        }
+        
+        o << std::endl;
+        o << std::endl;
     }
-    
-    o << std::endl;
-    o << std::endl;
     
 }
 
@@ -1753,80 +1756,83 @@ void TreeSummary::printCladeSummary(std::ostream &o, double minCladeProbability,
 
 void TreeSummary::printTreeSummary(std::ostream &o, double credibleIntervalSize, bool verbose)
 {
-    summarize( verbose );
-    
-    std::stringstream ss;
-    ss << std::fixed;
-    ss << std::setprecision(4);
-    
-    o << std::endl;
-    o << "========================================" << std::endl;
-    o << "Printing Posterior Distribution of Trees" << std::endl;
-    o << "========================================" << std::endl;
-    o << std::endl;
-    
-    // now the printing
-    std::string s = "Cum. Prob.";
-    StringUtilities::fillWithSpaces(s, 16, true);
-    o << s;
-    s = "Samples";
-    StringUtilities::fillWithSpaces(s, 16, true);
-    o << s;
-    s = "Posterior";
-    StringUtilities::fillWithSpaces(s, 16, true);
-    o << s;
-    /*s = "ESS";
-     StringUtilities::fillWithSpaces(s, 16, true);
-     o << s;*/
-    s = "Tree";
-    StringUtilities::fillWithSpaces(s, 16, true);
-    o << s;
-    o << std::endl;
-    o << "----------------------------------------------------------------" << std::endl;
-    double totalSamples = sampleSize(true);
-    double totalProb = 0.0;
-    for (std::set<Sample<std::string> >::reverse_iterator it = tree_samples.rbegin(); it != tree_samples.rend(); ++it)
+    if ( process_active == true )
     {
-        double freq =it->second;
-        double p = freq/totalSamples;
-        totalProb += p;
+        summarize( verbose );
         
-        ss.str(std::string());
-        ss << totalProb;
-        s = ss.str();
-        StringUtilities::fillWithSpaces(s, 16, true);
-        o << s;
+        std::stringstream ss;
+        ss << std::fixed;
+        ss << std::setprecision(4);
         
-        ss.str(std::string());
-        ss << freq;
-        s = ss.str();
-        StringUtilities::fillWithSpaces(s, 16, true);
-        o << s;
-        
-        ss.str(std::string());
-        ss << p;
-        s = ss.str();
-        StringUtilities::fillWithSpaces(s, 16, true);
-        o << s;
-        
-        /*ss.str(std::string());
-         ss << it->getEss();
-         s = ss.str();
-         StringUtilities::fillWithSpaces(s, 16, true);
-         o << s;*/
-        
-        o << it->first;
+        o << std::endl;
+        o << "========================================" << std::endl;
+        o << "Printing Posterior Distribution of Trees" << std::endl;
+        o << "========================================" << std::endl;
         o << std::endl;
         
-        if ( totalProb >= credibleIntervalSize )
+        // now the printing
+        std::string s = "Cum. Prob.";
+        StringUtilities::fillWithSpaces(s, 16, true);
+        o << s;
+        s = "Samples";
+        StringUtilities::fillWithSpaces(s, 16, true);
+        o << s;
+        s = "Posterior";
+        StringUtilities::fillWithSpaces(s, 16, true);
+        o << s;
+        /*s = "ESS";
+         StringUtilities::fillWithSpaces(s, 16, true);
+         o << s;*/
+        s = "Tree";
+        StringUtilities::fillWithSpaces(s, 16, true);
+        o << s;
+        o << std::endl;
+        o << "----------------------------------------------------------------" << std::endl;
+        double totalSamples = sampleSize(true);
+        double totalProb = 0.0;
+        for (std::set<Sample<std::string> >::reverse_iterator it = tree_samples.rbegin(); it != tree_samples.rend(); ++it)
         {
-            break;
+            double freq =it->second;
+            double p = freq/totalSamples;
+            totalProb += p;
+            
+            ss.str(std::string());
+            ss << totalProb;
+            s = ss.str();
+            StringUtilities::fillWithSpaces(s, 16, true);
+            o << s;
+            
+            ss.str(std::string());
+            ss << freq;
+            s = ss.str();
+            StringUtilities::fillWithSpaces(s, 16, true);
+            o << s;
+            
+            ss.str(std::string());
+            ss << p;
+            s = ss.str();
+            StringUtilities::fillWithSpaces(s, 16, true);
+            o << s;
+            
+            /*ss.str(std::string());
+             ss << it->getEss();
+             s = ss.str();
+             StringUtilities::fillWithSpaces(s, 16, true);
+             o << s;*/
+            
+            o << it->first;
+            o << std::endl;
+            
+            if ( totalProb >= credibleIntervalSize )
+            {
+                break;
+            }
+            
         }
         
+        o << std::endl;
+        o << std::endl;
     }
-    
-    o << std::endl;
-    o << std::endl;
     
 }
 
