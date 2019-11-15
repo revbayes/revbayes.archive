@@ -102,8 +102,11 @@ matrix:
       osx_image: xcode10.2
       env: PYTHON=3.5.1
         - USE_MPI="false"
+      addons:
+        homebrew:
+          packages:
+            - ccache
       install:
-        - brew install ccache
         - export PATH="/usr/local/opt/ccache/libexec:$PATH"
       cache: ccache
 
