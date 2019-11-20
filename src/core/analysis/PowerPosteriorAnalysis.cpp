@@ -237,16 +237,15 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen, double burnin_frac
     
     // reset the sampler
     sampler->reset();
+
     
     size_t burnin = size_t( ceil( burnin_fraction*gen ) );
     
-    gen += bg;
-    
-    size_t printInterval = size_t( round( fmax(1,(gen)/40.0) ) );
+    size_t printInterval = size_t( round( fmax(1,gen/40.0) ) );
     size_t digits = size_t( ceil( log10( powers.size() ) ) );
     
     // print output for users
-    if ( process_active == true )
+    if ( process_active ==true )
     {
         std::cout << "Step ";
         for (size_t d = size_t( ceil( log10( idx+1.1 ) ) ); d < digits; d++ )
@@ -278,36 +277,13 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen, double burnin_frac
         
     }
     
-    // run a burnin
-    size_t k = 1;
-    for (; k<=bg; k++)
-    {
-        if ( process_active == true )
-        {
-            if ( k % printInterval == 0 )
-            {
-                std::cout << "-";
-                std::cout.flush();
-            }
-        }
-        
-        sampler->nextCycle(false);
-        
-        // check for autotuning
-        if ( ti > 0 && k % ti == 0)
-        {
-            sampler->tune();
-        }
-        
-    }
-
     // Monitor
     sampler->startMonitors(gen, false);
     sampler->writeMonitorHeaders( false );
     sampler->monitor(0);
     
     double p = powers[idx];
-    for (; k<=gen; ++k)
+    for (size_t k=1; k<=gen; ++k)
     {
         
         if ( process_active == true )
@@ -325,7 +301,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen, double burnin_frac
         sampler->monitor(k);
         
         // sample the likelihood
-        if ( k % sampleFreq == 0 )
+        if ( k > burnin && k % sampleFreq == 0 )
         {
             // compute the joint likelihood
             double likelihood = sampler->getModelLnProbability(true);

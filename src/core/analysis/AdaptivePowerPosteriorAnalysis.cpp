@@ -1,19 +1,23 @@
-#include "DagNode.h"
-#include "FileMonitor.h"
+#include <stddef.h>
+#include <cmath>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <typeinfo>
+#include <map>
+
 #include "MonteCarloSampler.h"
 #include "MoveSchedule.h"
+#include "MpiUtilities.h"
 #include "AdaptivePowerPosteriorAnalysis.h"
-#include "RandomMoveSchedule.h"
-#include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
+#include "ProgressBar.h"
 #include "RbConstants.h"
 #include "RbException.h"
 #include "RbFileManager.h"
-#include "RbOptions.h"
-#include <cmath>
-#include <typeinfo>
-#include "SequentialMoveSchedule.h"
-
+#include "Cloneable.h"
+#include "MonteCarloAnalysisOptions.h"
+#include "Parallelizable.h"
+#include "StringUtilities.h"
 
 #ifdef RB_MPI
 #include <mpi.h>
@@ -120,38 +124,29 @@ void AdaptivePowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInt
     // reset the counters for the move schedules
     sampler->reset();
     
+	// start the progress bar
+	ProgressBar progress = ProgressBar(generations, 0);
+
     if ( process_active == true )
     {
-        // Let user know what we are doing
+		// Let user know what we are doing
         std::stringstream ss;
         ss << "\n";
-        ss << "Running burn-in phase of Power Posterior sampler for " << generations << " iterations.\n";
+        ss << "Running burn-in phase of Adaptive Power Posterior sampler for " << generations << " iterations.\n";
         ss << sampler->getStrategyDescription();
         std::cout << ss.str() << std::endl;
     
         // Print progress bar (68 characters wide)
-        std::cout << std::endl;
-        std::cout << "Progress:" << std::endl;
-        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
-        std::cout.flush();
+        progress.start();
     }
     
     // Run the chain
     size_t numStars = 0;
     for (size_t k=1; k<=generations; k++)
     {
-        if ( process_active == true )
+		if ( process_active == true )
         {
-            size_t progress = 68 * (double) k / (double) generations;
-            if ( progress > numStars )
-            {
-                for ( ;  numStars < progress; ++numStars )
-                {
-                    std::cout << "*";
-                }
-                
-                std::cout.flush();
-            }
+            progress.update( k );
         }
         
         sampler->nextCycle(false);
@@ -169,7 +164,7 @@ void AdaptivePowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInt
     
     if ( process_active == true )
     {
-        std::cout << std::endl;
+		progress.finish();
     }
     
 }
@@ -381,7 +376,7 @@ void AdaptivePowerPosteriorAnalysis::runStone(size_t idx, size_t gen, size_t bg,
     
     // Monitor
     sampler->startMonitors(gen, false);
-    sampler->writeMonitorHeaders();
+    sampler->writeMonitorHeaders( false );
     sampler->monitor(0);
     
     int num_sampled_likelihoods = 0;
@@ -622,4 +617,3 @@ void AdaptivePowerPosteriorAnalysis::setTolerance(double tol)
 {
     tolerance = tol;
 }
-
