@@ -533,12 +533,6 @@ void Function::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
     // return value
     help_entry.setReturnType( getReturnType().getType() );
     
-    // details
-    help_entry.setDetails( getHelpDetails() );
-    
-    // example
-    help_entry.setExample( getHelpExample() );
-    
 }
 
 
