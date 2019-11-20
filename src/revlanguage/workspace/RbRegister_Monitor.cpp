@@ -64,23 +64,23 @@ void RevLanguage::Workspace::initializeMonitorGlobalWorkspace(void)
         /* Add monitors (in folder "datatypes/inference/monitors") (alphabetic order) */
         ////////////////////////////////////////////////////////////////////////////////
 
-		addTypeWithConstructor( new Mntr_AncestralState()                       );
-		addTypeWithConstructor( new Mntr_HomeologPhase()                        );
-        addTypeWithConstructor( new Mntr_JointConditionalAncestralState()       );
-        addTypeWithConstructor( new Mntr_StochasticCharacterMapping()           );
-        addTypeWithConstructor( new Mntr_ExtendedNewickFile()                   );
-        addTypeWithConstructor( new Mntr_File()                                 );
-        addTypeWithConstructor( new Mntr_NexusFile()                            );
-        addTypeWithConstructor( new Mntr_Model()                                );
-        addTypeWithConstructor( new Mntr_Probability()                          );
-        addTypeWithConstructor( new Mntr_Screen()                               );
-        addTypeWithConstructor( new Mntr_SiteMixtureAllocation()                );
-        addTypeWithConstructor( new Mntr_StochasticBranchRate()                 );
-        addTypeWithConstructor( new Mntr_StochasticVariable()                   );
-        addTypeWithConstructor( new Mntr_StochasticBranchStateTimes()           );
-        addTypeWithConstructor( new Mntr_CharacterHistoryNewickFile()           );
-        addTypeWithConstructor( new Mntr_CharacterHistoryNhxFile()              );
-        addTypeWithConstructor( new Mntr_CharacterHistorySummary()              );
+		addType( new Mntr_AncestralState()                       );
+		addType( new Mntr_HomeologPhase()                        );
+        addType( new Mntr_JointConditionalAncestralState()       );
+        addType( new Mntr_StochasticCharacterMapping()           );
+        addType( new Mntr_ExtendedNewickFile()                   );
+        addType( new Mntr_File()                                 );
+        addType( new Mntr_NexusFile()                            );
+        addType( new Mntr_Model()                                );
+        addType( new Mntr_Probability()                          );
+        addType( new Mntr_Screen()                               );
+        addType( new Mntr_SiteMixtureAllocation()                );
+        addType( new Mntr_StochasticBranchRate()                 );
+        addType( new Mntr_StochasticVariable()                   );
+        addType( new Mntr_StochasticBranchStateTimes()           );
+        addType( new Mntr_CharacterHistoryNewickFile()           );
+        addType( new Mntr_CharacterHistoryNhxFile()              );
+        addType( new Mntr_CharacterHistorySummary()              );
 
     }
     catch(RbException& rbException)

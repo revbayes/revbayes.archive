@@ -186,25 +186,6 @@ const TypeSpec& Move_RateAgeSubtreeProposal::getClassTypeSpec(void)
 }
 
 /**
- * Get the more detailed description of the function
- */
-std::string Move_RateAgeSubtreeProposal::getHelpDescription(void) const
-{
-    // create a variable for the description of the function
-    std::string details = "The adaptive variance multivariate-normal proposal of Baele et al. 2017, uses MCMC samples to fit covariance matrix to parameters.\n\n";
-    
-    details += "After user-defined waiting time, proposes using covariance matrix epsilon * I + (1 - epsilon) * sigmaSquared * empirical_matrix.\n\n";
-    
-    details += "Internally transforms variables based on whether variables are (finitely) bounded, strictly positive, or simplexed.\n\n";
-    
-    details += "Non-simplex-valued vector random variables are untransformed.\n\n";
-    
-    details += "Add random variables to the move directly (e.g. branch_rates[1], not branch_rates).";
-    
-    return details;
-}
-
-/**
  * Get the Rev name for the constructor function.
  *
  * \return Rev name of constructor function.
