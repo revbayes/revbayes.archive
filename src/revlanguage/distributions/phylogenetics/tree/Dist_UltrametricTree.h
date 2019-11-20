@@ -46,6 +46,8 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                           rate_prior;
         RevPtr<const RevVariable>                           trees;
         RevPtr<const RevVariable>                           root_age;
+        RevPtr<const RevVariable>                           root_branch_fraction;
+        RevPtr<const RevVariable>                           density;
     };
 }
 

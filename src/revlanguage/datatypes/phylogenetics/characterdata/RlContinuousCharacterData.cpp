@@ -1,18 +1,30 @@
 #include "RlContinuousCharacterData.h"
 
+#include <stddef.h>
+
 #include "ConstantNode.h"
 #include "RlMemberFunction.h"
-#include "ModelVector.h"
 #include "Natural.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlContinuousTaxonData.h"
 #include "RlDistanceMatrix.h"
 #include "RlString.h"
-#include "RbUtil.h"
 #include "TypeSpec.h"
-
-#include <sstream>
+#include "Argument.h"
+#include "ArgumentRule.h"
+#include "ArgumentRules.h"
+#include "ContinuousTaxonData.h"
+#include "DistanceMatrix.h"
+#include "MemberFunction.h"
+#include "MemberProcedure.h"
+#include "MethodTable.h"
+#include "RbException.h"
+#include "RevMemberObject.h"
+#include "RevVariable.h"
+#include "RlDeterministicNode.h"
+#include "RlTypedFunction.h"
+#include "StringUtilities.h"
 
 using namespace RevLanguage;
 
@@ -59,12 +71,12 @@ ContinuousCharacterData::~ContinuousCharacterData()
 }
 
 
-ContinuousCharacterData* ContinuousCharacterData::concatenate(const RevObject &d, std::string type) const
+void ContinuousCharacterData::concatenate(const RevObject &d, std::string type) const
 {
     const ContinuousCharacterData* tmp = dynamic_cast<const ContinuousCharacterData*>( &d );
     if ( tmp != NULL )
     {
-        return concatenate( *tmp, type );
+        concatenate( *tmp, type );
     }
     else
     {
@@ -74,13 +86,15 @@ ContinuousCharacterData* ContinuousCharacterData::concatenate(const RevObject &d
 
 
 
-ContinuousCharacterData* ContinuousCharacterData::concatenate(const ContinuousCharacterData &d, std::string type) const
+void ContinuousCharacterData::concatenate(const ContinuousCharacterData &d, std::string type) const
 {
-    ContinuousCharacterData* cloneObj = clone();
     
-    cloneObj->getDagNode()->getValue().concatenate( d.getValue(), type );
-    // return the copy
-    return cloneObj;
+    // we need to make this a constant DAG node so that we can actually modify the value
+    // otherwise the value might be overwritten again, e.g., if this is a deterministic node.
+    //    clone_obj->makeConstantValue();
+    
+    // now concatenate
+    getDagNode()->getValue().concatenate( d.getValue(), type );
 }
 
 

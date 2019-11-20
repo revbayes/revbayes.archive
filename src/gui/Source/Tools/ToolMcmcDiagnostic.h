@@ -18,7 +18,7 @@
 #define FIXED_BURNIN 0
 #define OPTIMAL_BURNIN 1
 
-#if 1
+#if 0
 
 @interface ToolMcmcDiagnostic : Tool <NSCoding> {
     

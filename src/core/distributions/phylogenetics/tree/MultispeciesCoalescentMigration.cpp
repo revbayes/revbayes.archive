@@ -1,16 +1,30 @@
-#include "Clade.h"
-#include "ConstantNode.h"
+#include <stdlib.h>
+#include <cmath>
+#include <cstddef>
+#include <iostream>
+#include <map>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "MultispeciesCoalescentMigration.h"
-#include "MultispeciesCoalescentMigrationODE.h"
 #include "DistributionExponential.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "TopologyNode.h"
+#include "RateGenerator.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "Taxon.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
 
-#include <algorithm>
-#include <cmath>
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 
@@ -534,9 +548,9 @@ void MultispeciesCoalescentMigration::simulateTree( void )
         TopologyNode *sp_node = it->second;
         double species_age = it->first;
         
-        enum EVENT_TYPE { COALESCENT, MIGRATION };
+        enum EVENT_TYPE { COALESCENT, MIGRATION, NO_EVENT };
         
-        EVENT_TYPE next_event_type;
+        EVENT_TYPE next_event_type = NO_EVENT;
         size_t next_event_node;
         double next_event_time = RbConstants::Double::inf;
         for (size_t this_population=0; this_population<individuals_per_branch.size(); ++this_population)

@@ -1,21 +1,23 @@
+#include <stdlib.h>
+#include <cmath>
+#include <cassert>
+#include <iomanip>
+#include <iostream>
+#include <vector>
+
 #include "DagNode.h"
 #include "DistributionNormal.h"
-#include "DistributionLognormal.h"
 #include "LognormalDistribution.h"
-#include "NormalDistribution.h"
 #include "EllipticalSliceSamplingLognormalIIDMove.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
-#include "RbMathLogic.h"
 #include "TypedDagNode.h"
-
-#include <cmath>
-#include <cassert>
-#include <iomanip>
-#include <sstream>
-#include <iostream>
-#include <utility>
+#include "AbstractMove.h"
+#include "RbException.h"
+#include "RbOrderedSet.h"
+#include "StochasticNode.h"
+#include "TypedDistribution.h"
 
 using namespace RevBayesCore;
 
@@ -122,8 +124,6 @@ class slice_function
 {
   std::vector<StochasticNode<double> *> variables;
   double lHeat;
-  double pHeat;
-  double prHeat;
   RbOrderedSet<DagNode*> affectedNodes;
   int num_evals;
 
@@ -149,7 +149,7 @@ public:
     }
     
       // 3. exponentiate with the chain heat
-    double lnPosterior = pHeat * (lHeat * lnLikelihood + prHeat * lnPrior);
+    double lnPosterior = lHeat * lnLikelihood + lnPrior;
 
     return lnPosterior;
   }
@@ -192,16 +192,14 @@ public:
       return vals;
   }
 
-    slice_function(std::vector<StochasticNode<double> *> n, double pr, double l, double p)
+    slice_function(std::vector<StochasticNode<double> *> n, double l)
     :variables(n),
      lHeat(l),
-     pHeat(p),
-     prHeat(pr),
      num_evals(0)
   {
       for (std::vector< StochasticNode<double> *>::const_iterator it = variables.begin(); it != variables.end(); it++)
       {
-          (*it)->getAffectedNodes( affectedNodes );
+          (*it)->initiateGetAffectedNodes( affectedNodes );
       }
   }
 };
@@ -210,7 +208,12 @@ public:
 void EllipticalSliceSamplingLognormalIIDMove::performMcmcMove( double prHeat, double lHeat, double pHeat )
 {
 
-    slice_function lnL(variables, prHeat, lHeat, pHeat);
+    if ( prHeat != 1 || pHeat != 1)
+    {
+        throw(RbException("Elliptical slice sampling moves are invalid with heated priors or posteriors."));
+    }
+
+    slice_function lnL(variables, lHeat);
 
     double mean = mu->getValue();
     double sd = sigma->getValue();

@@ -1,15 +1,24 @@
+#include <stddef.h>
+#include <sstream>
+#include <algorithm>
+#include <functional>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "ArgumentRule.h"
-#include "ConstantNode.h"
 #include "FunctionTable.h"
 #include "RbException.h"
-#include "RbUtil.h"
-#include "RevNullObject.h"
 #include "RlFunction.h"
-#include "StochasticNode.h"
-
-#include <iomanip>
-#include <ostream>
-#include <sstream>
+#include "Argument.h"
+#include "ArgumentRules.h"
+#include "DagNode.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "StringUtilities.h"
+#include "TypeSpec.h"
 
 using namespace RevLanguage;
 
@@ -157,6 +166,15 @@ void FunctionTable::eraseFunction(const std::string& name)
               std::multimap<std::string, Function *>::iterator> ret_val;
 
     ret_val = equal_range(name);
+    
+    std::multimap<std::string, Function *>::iterator start = ret_val.first;
+    std::multimap<std::string, Function *>::iterator end   = ret_val.second;
+    for ( ; start != end; ++start )
+    {
+        Function *the_function = start->second;
+        delete the_function;
+    }
+    
     erase(ret_val.first, ret_val.second);
     
 }

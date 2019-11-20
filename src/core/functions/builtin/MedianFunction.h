@@ -1,13 +1,12 @@
 #ifndef MedianFunction_H
 #define MedianFunction_H
 
-#include "RbVector.h"
 #include "TypedFunction.h"
-#include "TypedDagNode.h"
-
-#include <vector>
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class RbVector;
+template <class valueType> class TypedDagNode;
     
     
     /**
@@ -16,11 +15,6 @@ namespace RevBayesCore {
      * This function computes the arithmetic median of a vector of real number:
      *   y = x[ (x.size()-1)/2 ]                             if x.size() is even
      *   y = (x[ (x.size()-1)/2 ]+x[ x.size()/2 ]) / 2       otherwise
-     *
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since Version 1.0, 2014-07-04
      *
      */
     class MedianFunction : public TypedFunction<double> {

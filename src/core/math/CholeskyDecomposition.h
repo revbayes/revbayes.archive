@@ -1,10 +1,9 @@
 #ifndef CholeskyDecomposition_H
 #define CholeskyDecomposition_H
 
-#include "MatrixComplex.h"
-#include "MatrixReal.h"
+#include <stddef.h>
 
-#include <complex>
+#include "MatrixReal.h"
 
 
 namespace RevBayesCore {
@@ -18,6 +17,7 @@ namespace RevBayesCore {
         const MatrixReal                        getInverse(void) const { return inverseMatrix; }
         double                                  computeLogDet(void);
         const MatrixReal                        getLowerCholeskyFactor(void) const { return L; }
+        const bool                              checkPositiveDefinite(void) const { return is_positive_definite; }
         const bool                              checkPositiveSemidefinite(void) const { return is_positive_semidefinite; }
 
     private:
@@ -29,6 +29,7 @@ namespace RevBayesCore {
         const MatrixReal*                       qPtr;                                           //!< A pointer to the matrix for this cholesky decomposition
         MatrixReal                              L;
         MatrixReal                              inverseMatrix;
+        bool                                    is_positive_definite;
         bool                                    is_positive_semidefinite;
 
     };

@@ -8,8 +8,6 @@
 
 #include "MatrixComplex.h"
 
-#include <cstring>
-
 using namespace RevBayesCore;
 
 MatrixComplex::MatrixComplex( size_t n, size_t k) : elements( std::vector<std::vector<std::complex<double> > >(n, std::vector<std::complex<double> >(k, 0.0) ) ), nRows( n ), nCols( k ){
@@ -275,25 +273,25 @@ MatrixComplex operator/(const MatrixComplex& A, const MatrixComplex& B) {
     
     if ( A.getNumberOfRows() != A.getNumberOfColumns() )
         throw RbException("Cannot divide non-square matrices");
-	if ( A.getNumberOfColumns() != B.getNumberOfColumns() )
+    if ( A.getNumberOfColumns() != B.getNumberOfColumns() )
         throw RbException("Cannot divide matrices of differing dimension");
     
-	size_t N = A.getNumberOfColumns();
-	MatrixComplex invB(N, N, std::complex<double>(0.0));
+    size_t N = A.getNumberOfColumns();
+    MatrixComplex invB(N, N, std::complex<double>(0.0));
     RbMath::matrixInverse(B, invB);
     
-	MatrixComplex C(N, N, std::complex<double>(0.0));
-	for (size_t i=0; i<N; i++) 
+    MatrixComplex C(N, N, std::complex<double>(0.0));
+    for (size_t i=0; i<N; i++)
     {
-		for (size_t j=0; j<N; j++) 
+	for (size_t j=0; j<N; j++)
         {
-			std::complex<double> sum = std::complex<double>(0.0,0.0);
-			for (size_t k=0; k<N; k++)
-				sum += (A[i][k] * B[k][j]);
-			C[i][j] = sum;
+	    std::complex<double> sum = std::complex<double>(0.0,0.0);
+	    for (size_t k=0; k<N; k++)
+		sum += (A[i][k] * B[k][j]);
+	    C[i][j] = sum;
         }
     }
-	return C;    
+    return C;
 }
 
 /**
@@ -380,11 +378,11 @@ MatrixComplex &operator/=(MatrixComplex& A, double b) {
  */
 MatrixComplex operator+(const MatrixComplex& A, const MatrixComplex& B) {
     
-	size_t m = A.getNumberOfRows();
-	size_t n = A.getNumberOfColumns();
-	if (B.getNumberOfRows() != m || B.getNumberOfColumns() != n)
+    size_t m = A.getNumberOfRows();
+    size_t n = A.getNumberOfColumns();
+    if (B.getNumberOfRows() != m || B.getNumberOfColumns() != n)
         throw RbException("Cannot add matrices A and B: the matrices are not of the same dimension");
-	else 
+    else
     {
 		MatrixComplex C(m, n, std::complex<double>( 0.0 ) );
 		for (size_t i=0; i<m; i++) 
@@ -408,14 +406,14 @@ MatrixComplex operator+(const MatrixComplex& A, const MatrixComplex& B) {
  */
 MatrixComplex operator-(const MatrixComplex& A, const MatrixComplex& B) {
     
-	size_t m = A.getNumberOfRows();
-	size_t n = A.getNumberOfColumns();
-	if (B.getNumberOfRows() != m || B.getNumberOfColumns() != n)
+    size_t m = A.getNumberOfRows();
+    size_t n = A.getNumberOfColumns();
+    if (B.getNumberOfRows() != m || B.getNumberOfColumns() != n)
         throw RbException("Cannot subtract matrices A and B: the matrices are not of the same dimension");
-	else 
+    else
     {
 		MatrixComplex C(m, n, std::complex<double> ( 0.0 ) );
-		for (size_t i=0; i<m; i++) 
+		for (size_t i=0; i<m; i++)
         {
 			for (size_t j=0; j<n; j++)
 				C[i][j] = A[i][j] - B[i][j];
@@ -440,23 +438,23 @@ MatrixComplex operator-(const MatrixComplex& A, const MatrixComplex& B) {
  */
 MatrixComplex operator*(const MatrixComplex& A, const MatrixComplex& B) {
     
-	if ( A.getNumberOfColumns() != B.getNumberOfRows() )
+    if ( A.getNumberOfColumns() != B.getNumberOfRows() )
         throw RbException("Cannot multiply matrices A and B: the number of columns of A does not equal the number of rows in B");
-	size_t M = A.getNumberOfRows();
-	size_t N = A.getNumberOfColumns();
-	size_t K = B.getNumberOfColumns();
-	MatrixComplex C(M, K, std::complex<double>( 0.0 ) );
-	for (size_t i=0; i<M; i++) 
+    size_t M = A.getNumberOfRows();
+    size_t N = A.getNumberOfColumns();
+    size_t K = B.getNumberOfColumns();
+    MatrixComplex C(M, K, std::complex<double>( 0.0 ) );
+    for (size_t i=0; i<M; i++)
     {
-		for (size_t j=0; j<K; j++) 
+	for (size_t j=0; j<K; j++)
         {
-			std::complex<double> sum = std::complex<double>(0.0,0.0);
-			for (size_t k=0; k<N; k++)
-				sum += (A[i][k] * B[k][j]);
-			C[i][j] = sum;
+	    std::complex<double> sum = std::complex<double>(0.0,0.0);
+	    for (size_t k=0; k<N; k++)
+		sum += (A[i][k] * B[k][j]);
+	    C[i][j] = sum;
         }
     }
-	return C;
+    return C;
 }
 
 /**
@@ -472,17 +470,17 @@ MatrixComplex operator*(const MatrixComplex& A, const MatrixComplex& B) {
  */
 MatrixComplex&  operator+=(MatrixComplex& A, const MatrixComplex& B) {
     
-	size_t m = A.getNumberOfRows();
-	size_t n = A.getNumberOfColumns();
-	if (B.getNumberOfRows() == m && B.getNumberOfColumns() == n) 
+    size_t m = A.getNumberOfRows();
+    size_t n = A.getNumberOfColumns();
+    if (B.getNumberOfRows() == m && B.getNumberOfColumns() == n)
     {
-		for (size_t i=0; i<m; i++) 
+	for (size_t i=0; i<m; i++)
         {
-			for (size_t j=0; j<n; j++)
-				A[i][j] += B[i][j];
+	    for (size_t j=0; j<n; j++)
+		A[i][j] += B[i][j];
         }
     }
-	return A;
+    return A;
 }
 
 /**
@@ -498,17 +496,17 @@ MatrixComplex&  operator+=(MatrixComplex& A, const MatrixComplex& B) {
  */
 MatrixComplex&  operator-=(MatrixComplex& A, const MatrixComplex& B) {
     
-	size_t m = A.getNumberOfRows();
-	size_t n = A.getNumberOfColumns();
-	if (B.getNumberOfRows() == m && B.getNumberOfColumns() == n) 
+    size_t m = A.getNumberOfRows();
+    size_t n = A.getNumberOfColumns();
+    if (B.getNumberOfRows() == m && B.getNumberOfColumns() == n)
     {
-		for (size_t i=0; i<m; i++) 
+	for (size_t i=0; i<m; i++)
         {
-			for (size_t j=0; j<n; j++)
-				A[i][j] -= B[i][j];
+	    for (size_t j=0; j<n; j++)
+		A[i][j] -= B[i][j];
         }
     }
-	return A;
+    return A;
 }
 
 /**
@@ -526,22 +524,22 @@ MatrixComplex&  operator-=(MatrixComplex& A, const MatrixComplex& B) {
  */
 MatrixComplex &operator*=(MatrixComplex& A, const MatrixComplex& B) {
     
-	if ( A.getNumberOfRows() == A.getNumberOfColumns() && B.getNumberOfRows() == B.getNumberOfColumns() && A.getNumberOfRows() == B.getNumberOfRows() ) 
+    if ( A.getNumberOfRows() == A.getNumberOfColumns() && B.getNumberOfRows() == B.getNumberOfColumns() && A.getNumberOfRows() == B.getNumberOfRows() ) 
     {
-		size_t N = A.getNumberOfRows();
-		MatrixComplex C(N, N, std::complex<double> (0.0) );
-		for (size_t i=0; i<N; i++) 
+	size_t N = A.getNumberOfRows();
+	MatrixComplex C(N, N, std::complex<double> (0.0) );
+	for (size_t i=0; i<N; i++)
         {
-			for (size_t j=0; j<N; j++) 
+	    for (size_t j=0; j<N; j++)
             {
                 std::complex<double> sum = std::complex<double>(0.0,0.0);
-				for (size_t k=0; k<N; k++)
-					sum += (A[i][k] * B[k][j]);
-				C[i][j] = sum;
+		for (size_t k=0; k<N; k++)
+		    sum += (A[i][k] * B[k][j]);
+		C[i][j] = sum;
             }
         }
-		A = C;
+	A = C;
     }
-	return A;
+    return A;
 }
 

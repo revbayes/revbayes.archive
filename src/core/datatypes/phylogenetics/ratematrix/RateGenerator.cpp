@@ -1,16 +1,22 @@
+#include <fstream>
+#include <string>
+#include <iomanip>
+#include <cstddef>
+#include <vector>
+
 #include "CharacterEventDiscrete.h"
 #include "RateGenerator.h"
 #include "RateMatrix.h"
 #include "RbException.h"
-#include "RbMathMatrix.h"
 #include "TransitionProbabilityMatrix.h"
 #include "TypedDagNode.h"
+#include "Assignable.h"
+#include "Cloneable.h"
+#include "RbVector.h"
+#include "Simplex.h"
 
-
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <iomanip>
+namespace RevBayesCore { class CharacterEvent; }
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 
@@ -241,7 +247,6 @@ void RateGenerator::printForUser(std::ostream &o, const std::string &sep, int l,
     std::streamsize previous_precision = o.precision();
     std::ios_base::fmtflags previous_flags = o.flags();
     
-    o << "[ ";
     o << std::fixed;
     o << std::setprecision(4);
 
@@ -257,6 +262,7 @@ void RateGenerator::printForUser(std::ostream &o, const std::string &sep, int l,
             o << "  ";
         }
         
+        o << "[ ";
         for (size_t j = 0; j < size(); ++j)
         {
             if (j != 0)

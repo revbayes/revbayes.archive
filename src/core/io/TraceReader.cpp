@@ -1,9 +1,13 @@
+#include <stddef.h>
+#include <ios>
+#include <string>
+#include <vector>
+
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "StringUtilities.h"
 #include "TraceReader.h"
-
-#include <map>
+#include "Trace.h"
 
 using namespace RevBayesCore;
 
@@ -13,11 +17,11 @@ std::vector<ModelTrace> TraceReader::readStochasticVariableTrace( const std::str
 {
     
     // check that the file/path name has been correctly specified
-    RevBayesCore::RbFileManager myFileManager( fn );
-    if ( !myFileManager.testFile() || !myFileManager.testDirectory() )
+    RevBayesCore::RbFileManager fm( fn );
+    if ( fm.testFile() == false || fm.testDirectory() == false )
     {        
         std::string errorStr = "";
-        myFileManager.formatError( errorStr );
+        fm.formatError( errorStr );
         throw( RbException(errorStr) );
     }
     
@@ -26,7 +30,7 @@ std::vector<ModelTrace> TraceReader::readStochasticVariableTrace( const std::str
     bool hasHeaderBeenRead = false;
     
     // Open file
-    std::ifstream inFile( fn.c_str() );
+    std::ifstream inFile( fm.getFullFileName().c_str() );
         
     if ( !inFile )
     {
@@ -43,7 +47,7 @@ std::vector<ModelTrace> TraceReader::readStochasticVariableTrace( const std::str
             
         // Read a line
         std::string line;
-        myFileManager.safeGetline( inFile, line );
+        fm.safeGetline( inFile, line );
         
         // skip empty lines
         //line = stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];

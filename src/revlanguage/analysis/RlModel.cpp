@@ -1,20 +1,32 @@
 
+#include <stddef.h>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <set>
+#include <sstream>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "ConstantNode.h"
 #include "Ellipsis.h"
 #include "Model.h"
-#include "ModelVector.h"
 #include "RevObject.h"
-#include "RbException.h"
 #include "RlModel.h"
 #include "RlString.h"
 #include "TypeSpec.h"
-
-#include <vector>
-#include <fstream>
-#include <algorithm>
-#include <string>
+#include "Argument.h"
+#include "DagNode.h"
+#include "MemberProcedure.h"
+#include "MethodTable.h"
+#include "RbBoolean.h"
+#include "RbFileManager.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlBoolean.h"
+#include "RlUtils.h"
+#include "StringUtilities.h"
+#include "Workspace.h"
+#include "WorkspaceToCoreWrapperObject.h"
 
 using namespace RevLanguage;
 
@@ -220,13 +232,17 @@ void Model::setConstParameter(const std::string& name, const RevPtr<const RevVar
 /* Write a file in DOT format for viewing the model DAG in graphviz */
 //   This requires the user to have graphviz installed, or they can paste the file contents
 //   into http://graphviz-dev.appspot.com/
-void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string &bgc){
+void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string &bgc)
+{
     
     const std::vector<RevBayesCore::DagNode*>& theNodes = value->getDagNodes();
     std::vector<RevBayesCore::DagNode*>::const_iterator it;
     
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(fn);
+    fm.createDirectoryForFile();
+    
     std::ofstream o;
-    o.open(fn.c_str());
+    o.open(fm.getFullFileName().c_str());
     o << "/* Graphical model description in DOT language                                    */\n";
     o << "/*    To view graph:                                                              */\n";
     o << "/*       open this file in the program Graphviz: http://www.graphviz.org          */\n";
@@ -254,7 +270,8 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
 				rl << nname.str() ;
            
             // only print values of constant nodes (only simple numeric values)
-            if ((*it)->getDagNodeType() == RevBayesCore::DagNode::CONSTANT){
+            if ( (*it)->getDagNodeType() == RevBayesCore::DagNode::CONSTANT )
+            {
                 std::stringstream trl;
                 if ((*it)->isSimpleNumeric())  
                     (*it)->printValue(trl," ", true);

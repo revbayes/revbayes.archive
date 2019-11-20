@@ -1,3 +1,12 @@
+#include <stddef.h>
+#include <algorithm>
+#include <cmath>
+#include <iterator>
+#include <ostream>
+#include <set>
+#include <string>
+#include <vector>
+
 #include "DistributionExponential.h"
 #include "PiecewiseConstantSerialSampledBirthDeathProcess.h"
 #include "RandomNumberFactory.h"
@@ -5,15 +14,21 @@
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "RbMathLogic.h"
-#include "StochasticNode.h"
+#include "AbstractBirthDeathProcess.h"
+#include "DagNode.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "TopologyNode.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
 
-#include <algorithm>
-#include <cmath>
+namespace RevBayesCore { class Taxon; }
 
 using namespace RevBayesCore;
 
 /**
- * Constructor. 
+ * Constructor.
  * We delegate most parameters to the base class and initialize the members.
  *
  * \param[in]    s              Speciation rates.
@@ -37,7 +52,8 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
                                                                                            const TypedDagNode< RbVector<double> > *rt,
                                                                                            const std::string &cdt,
                                                                                            const std::vector<Taxon> &tn,
-                                                                                           bool uo ) : AbstractBirthDeathProcess( ra, cdt, tn, uo ),
+                                                                                           bool uo,
+                                                                                           TypedDagNode<Tree> *t) : AbstractBirthDeathProcess( ra, cdt, tn, uo ),
     homogeneous_timeline(ht),
     lambda_timeline(lt),
     mu_timeline(mt),
@@ -129,8 +145,8 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
     }
 
 
-    heterogeneous_mu = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inspeciation);
-    homogeneous_mu = dynamic_cast<const TypedDagNode<double >*>(inspeciation);
+    heterogeneous_mu = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inextinction);
+    homogeneous_mu = dynamic_cast<const TypedDagNode<double >*>(inextinction);
 
     addParameter( homogeneous_mu );
     addParameter( heterogeneous_mu );
@@ -178,8 +194,8 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
     }
 
 
-    heterogeneous_psi = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inspeciation);
-    homogeneous_psi = dynamic_cast<const TypedDagNode<double >*>(inspeciation);
+    heterogeneous_psi = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inpsi);
+    homogeneous_psi = dynamic_cast<const TypedDagNode<double >*>(inpsi);
 
     addParameter( homogeneous_psi );
     addParameter( heterogeneous_psi );
@@ -227,8 +243,8 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
     }
 
 
-    heterogeneous_rho = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inspeciation);
-    homogeneous_rho = dynamic_cast<const TypedDagNode<double >*>(inspeciation);
+    heterogeneous_rho = dynamic_cast<const TypedDagNode<RbVector<double> >*>(inrho);
+    homogeneous_rho = dynamic_cast<const TypedDagNode<double >*>(inrho);
 
     addParameter( homogeneous_rho );
     addParameter( heterogeneous_rho );
@@ -277,7 +293,15 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
 
     prepareProbComputation();
 
-    simulateTree();
+    if (t != NULL)
+    {
+      delete value;
+      value = &(t->getValue());
+    }
+    else
+    {
+      simulateTree();
+    }
 }
 
 
@@ -285,7 +309,7 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
  *
- * \return A new copy of myself 
+ * \return A new copy of myself
  */
 PiecewiseConstantSerialSampledBirthDeathProcess* PiecewiseConstantSerialSampledBirthDeathProcess::clone( void ) const
 {
@@ -335,10 +359,10 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         {
             return RbConstants::Double::neginf;
         }
-        
+
         num_initial_lineages = 2;
     }
-    
+
     // get node/time variables
     size_t num_nodes = value->getNumberOfNodes();
 
@@ -378,7 +402,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
             }
         }
     }
-    
+
     // add the serial tip age terms
     for (size_t i = 0; i < serial_tip_ages.size(); ++i)
     {
@@ -386,7 +410,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         {
             return RbConstants::Double::nan;
         }
-        
+
         double t = serial_tip_ages[i];
         size_t index = l(t);
 
@@ -458,7 +482,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         {
             return RbConstants::Double::nan;
         }
-        
+
         double t = sampled_ancestor_ages[i];
         size_t index = l(t);
         lnProbTimes += log( psi[index - 1] );
@@ -471,7 +495,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         {
             return RbConstants::Double::nan;
         }
-        
+
         double t = timeline[i-1];
         int div = survivors(t);
         lnProbTimes += div * log( q(i+1, t) );
@@ -484,7 +508,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         {
             return RbConstants::Double::nan;
         }
-        
+
         double t = internal_node_ages[i];
         size_t index = l(t);
         lnProbTimes += log( q(index, t) * lambda[index - 1] );
@@ -552,13 +576,13 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::lnProbTreeShape(void) co
 double PiecewiseConstantSerialSampledBirthDeathProcess::pSurvival(double start, double end) const
 {
     double t = start;
-    
+
     std::vector<double> serial_bak = psi;
 
     std::fill(psi.begin(), psi.end(), 0.0);
 
     double p0 = p(l(t), t);
-    
+
     psi = serial_bak;
 
     return 1.0 - p0;
@@ -579,17 +603,17 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::p( size_t i, double t ) 
     double f = psi[i-1];
     double r = rho[i-1];
     double ti = timeline[i-1];
-    
+
     double diff = b - d - f;
     double bp   = b*f;
     double dt   = t - ti;
-    
+
     double A = sqrt( diff*diff + 4.0*bp);
     double B = ( (1.0 - 2.0*(1.0-r)*p(i+1,ti) )*b + d + f ) / A;
-    
+
     double e = exp(-A*dt);
     double tmp = b + d + f - A * ((1.0+B)-e*(1.0-B))/((1.0+B)+e*(1.0-B));
-    
+
     return tmp / (2.0*b);
 }
 
@@ -605,7 +629,7 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
     mu.clear();
     psi.clear();
     rho.clear();
-    
+
     if (homogeneous_timeline != NULL)
     {
         timeline = homogeneous_timeline->getValue();
@@ -759,12 +783,12 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
  */
 double PiecewiseConstantSerialSampledBirthDeathProcess::q( size_t i, double t ) const
 {
-    
-    if ( t == 0.0 ) 
+
+    if ( t == 0.0 )
     {
         return 1.0;
     }
-    
+
     // get the parameters
     double b = lambda[i-1];
     double d = mu[i-1];
@@ -775,13 +799,13 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::q( size_t i, double t ) 
     double diff = b - d - f;
     double bp   = b*f;
     double dt   = t - ti;
-    
+
     double A = sqrt( diff*diff + 4.0*bp);
     double B = ( (1.0 - 2.0*(1.0-r)*p(i+1,ti) )*b + d + f ) / A;
-    
+
     double e = exp(-A*dt);
     double tmp = (1.0+B) + e*(1.0-B);
-    
+
     return 4.0*e / (tmp*tmp);
 }
 
@@ -884,7 +908,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::simulateDivergenceTime(d
 {
     // incorrect placeholder for constant SSBDP
 
-    
+
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
@@ -896,10 +920,10 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::simulateDivergenceTime(d
     double d = mu[i];
     double r = rho[i];
 
-    
+
     // get a random draw
     double u = rng->uniform01();
-    
+
     // compute the time for this draw
     // see Hartmann et al. 2010 and Stadler 2011
     double t = 0.0;
@@ -941,27 +965,27 @@ int PiecewiseConstantSerialSampledBirthDeathProcess::survivors(double t) const
 {
 
     const std::vector<TopologyNode*>& nodes = value->getNodes();
-    
+
     int survivors = 0;
-    for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); ++it) 
+    for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         TopologyNode* n = *it;
-        if ( n->getAge() < t ) 
+        if ( n->getAge() < t )
         {
-            if ( n->isRoot() || n->getParent().getAge() > t ) 
+            if ( n->isRoot() || n->getParent().getAge() > t )
             {
                 survivors++;
-            } 
-        } 
+            }
+        }
     }
-    
+
     return survivors;
 }
 
 
 /**
  * Swap the parameters held by this distribution.
- * 
+ *
  * \param[in]    oldP      Pointer to the old parameter.
  * \param[in]    newP      Pointer to the new parameter.
  */

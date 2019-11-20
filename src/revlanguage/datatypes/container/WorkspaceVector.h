@@ -262,6 +262,15 @@ RevPtr<RevVariable> WorkspaceVector<rlType>::executeMethod( std::string const &n
         long index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
         return RevPtr<RevVariable>( new RevVariable( getElement( index ) ) );
     }
+    else if ( name == "append" )
+    {
+        found = true;
+        
+        const rlType& x = static_cast<const rlType&>( args[0].getVariable()->getRevObject() );
+        this->push_back(x);
+        
+        return NULL;
+    }
 //    else if ( name == "sort" )
 //    {
 //        found = true;
@@ -370,20 +379,24 @@ template <typename rlType>
 void WorkspaceVector<rlType>::initMethods( void )
 {
     
-    ArgumentRules* sizeArgRules = new ArgumentRules();
-    this->methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules) );
+    ArgumentRules* size_arg_rules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), size_arg_rules) );
     
-    ArgumentRules* elementArgRules = new ArgumentRules();
-    elementArgRules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), "The index of the element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    this->methods.addFunction( new MemberProcedure( "[]", rlType::getClassTypeSpec(), elementArgRules ) );
+    ArgumentRules* element_arg_rules = new ArgumentRules();
+    element_arg_rules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), "The index of the element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "[]", rlType::getClassTypeSpec(), element_arg_rules ) );
 
     
-    ArgumentRules* sortArgRules = new ArgumentRules();
-    this->methods.addFunction( new MemberProcedure( "sort", RlUtils::Void, sortArgRules) );
+    ArgumentRules* sort_arg_rules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "sort", RlUtils::Void, sort_arg_rules) );
     
-    ArgumentRules* uniqueArgRules = new ArgumentRules();
-    this->methods.addFunction( new MemberProcedure( "unique", RlUtils::Void, uniqueArgRules) );
-    
+    ArgumentRules* unique_arg_rules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "unique", RlUtils::Void, unique_arg_rules) );
+
+    ArgumentRules* append_arg_rules = new ArgumentRules();
+    append_arg_rules->push_back( new ArgumentRule( "x", rlType::getClassTypeSpec(), "The element that you want to add.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "append", RlUtils::Void, append_arg_rules) );
+
 }
 
 

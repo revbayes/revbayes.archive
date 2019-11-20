@@ -3,6 +3,7 @@
 
 #include "StringUtilities.h"
 #include "TypedDagNode.h"
+#include "DagNodeMap.h"
 
 namespace RevBayesCore {
     
@@ -144,7 +145,7 @@ RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( DagNodeM
  * This call is started by the parent and since we don't have one this is a dummy implementation!
  */
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::getAffected(RbOrderedSet<DagNode *> &affected, DagNode* affecter)
+void RevBayesCore::ConstantNode<valueType>::getAffected(RbOrderedSet<DagNode *> & /*affected*/, DagNode* /*affecter*/)
 {
     
     // do nothing
@@ -194,7 +195,7 @@ bool RevBayesCore::ConstantNode<valueType>::isConstant( void ) const
 
 
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::keepMe( DagNode* affecter )
+void RevBayesCore::ConstantNode<valueType>::keepMe( DagNode* /*affecter*/ )
 {
     // nothing to do
 }
@@ -205,21 +206,16 @@ template<class valueType>
 void RevBayesCore::ConstantNode<valueType>::printStructureInfo(std::ostream &o, bool verbose) const
 {
     
-    if ( verbose == true )
-    {
-        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
-    }
-    
-    o << "_dagType      = Constant DAG node" << std::endl;
-    
-    if ( verbose == true )
-    {
-        o << "_refCount     = " << this->getReferenceCount() << std::endl;
-    }
-    
+    o << "_dagType      = Constant node" << std::endl;
     o << "_children     = ";
     this->printChildren(o, 16, 70, verbose);
     o << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+        o << "_refCount     = " << this->getReferenceCount() << std::endl;
+    }
 }
 
 
@@ -231,7 +227,7 @@ void RevBayesCore::ConstantNode<valueType>::redraw( void )
 
 
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::restoreMe( DagNode *restorer )
+void RevBayesCore::ConstantNode<valueType>::restoreMe( DagNode * /*restorer*/ )
 {
     // nothing to do
 }
@@ -276,7 +272,7 @@ void RevBayesCore::ConstantNode<valueType>::setValueFromString(const std::string
 
 
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::touchMe( DagNode *toucher, bool touchAll )
+void RevBayesCore::ConstantNode<valueType>::touchMe( DagNode * /*toucher*/, bool /*touchAll*/ )
 {
     // nothing to do
 }

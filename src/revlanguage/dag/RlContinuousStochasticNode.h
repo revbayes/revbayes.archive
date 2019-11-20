@@ -1,13 +1,24 @@
 #ifndef RlContinuousStochasticNode_H
 #define RlContinuousStochasticNode_H
 
+#include <iosfwd>
+#include <vector>
+
 #include "ContinuousStochasticNode.h"
 #include "RevMemberObject.h"
-#include "RlContinuousDistribution.h"
-#include "RlPositiveContinuousDistribution.h"
-#include "Probability.h"
+#include "MethodTable.h"
+#include "RevPtr.h"
+
+namespace RevBayesCore { class ContinuousDistribution; }
 
 namespace RevLanguage {
+class Argument;
+class ContinuousDistribution;
+class Distribution;
+class PositiveContinuousDistribution;
+class Probability;
+class RevVariable;
+template <typename rlType> class TypedDistribution;
     
     class ContinuousStochasticNode : public RevBayesCore::ContinuousStochasticNode, public RevMemberObject {
         
@@ -27,6 +38,7 @@ namespace RevLanguage {
         const MethodTable&                          getMethods( void ) const;                                                                       //!< Get the member methods
         Distribution&                               getRlDistribution(void);                                                                        //!< Get the Rev distribution
         const Distribution&                         getRlDistribution(void) const;                                                                  //!< Get the Rev distribution (const)
+        void                                        printStructureInfo(std::ostream &o, bool verbose=false) const;                                  //!< Print information on structure
         
     private:
         

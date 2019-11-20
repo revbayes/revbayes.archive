@@ -22,6 +22,7 @@
 #include "DirichletProcessPriorDistribution.h"
 #include "AbstractGibbsMove.h"
 #include "RbVector.h"
+#include "SimpleProposal.h"
 
 namespace RevBayesCore {
     
@@ -198,7 +199,7 @@ double RevBayesCore::DPPTableValueUpdate<valueType>::getLnProbabilityForMove(voi
 {
     
     RbOrderedSet<DagNode*> affected;
-    variable->getAffectedNodes( affected );
+    variable->initiateGetAffectedNodes( affected );
     double lnProb = 0.0;
     for (RbOrderedSet<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
     {

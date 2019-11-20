@@ -6,14 +6,39 @@
 //  Copyright (c) 2015 Michael Landis. All rights reserved.
 //
 
+#include <iosfwd>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ModelVector.h"
-#include "Natural.h"
-#include "Real.h"
 #include "RealPos.h"
-#include "RlBoolean.h"
+#include "RlMemberFunction.h"
 #include "RlRateGenerator.h"
-#include "RlRateMatrix.h"
+#include "ArgumentRules.h"
+#include "ConstantNode.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "IndirectReferenceFunction.h"
+#include "MemberFunction.h"
+#include "MethodTable.h"
+#include "ModelObject.h"
+#include "RateGenerator.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlConstantNode.h"
+#include "RlDeterministicNode.h"
+#include "RlTypedFunction.h"
+#include "TypeSpec.h"
+#include "TypedDagNode.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
+
+namespace RevLanguage { class Argument; }
 
 using namespace RevLanguage;
 
@@ -80,7 +105,15 @@ const TypeSpec& RateGenerator::getTypeSpec(void) const {
 }
 
 void RateGenerator::initMethods(void) {
-    ; // do nothing
+    
+    
+    // member functions
+    ArgumentRules* transitionProbabilityArgRules = new ArgumentRules();
+    transitionProbabilityArgRules->push_back( new ArgumentRule( "rate", RealPos::getClassTypeSpec(), "The rate of the process (or duration of the process assuming rate=1).", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    transitionProbabilityArgRules->push_back( new ArgumentRule( "startAge", RealPos::getClassTypeSpec(), "The start age of the process.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(1.0) ) );
+    transitionProbabilityArgRules->push_back( new ArgumentRule( "endAge", RealPos::getClassTypeSpec(), "The end age of the process.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.0) ) );
+    methods.addFunction( new MemberFunction<RateGenerator, ModelVector<ModelVector<RealPos> > >( "getTransitionProbabilities", this, transitionProbabilityArgRules   ) );
+    
 }
 
 /**

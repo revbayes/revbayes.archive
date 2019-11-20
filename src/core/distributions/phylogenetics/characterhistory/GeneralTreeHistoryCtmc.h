@@ -29,7 +29,7 @@ namespace RevBayesCore {
     class GeneralTreeHistoryCtmc : public TreeHistoryCtmc<charType> {
         
     public:
-        GeneralTreeHistoryCtmc(const TypedDagNode< Tree > *t, size_t nChars, size_t nSites, bool useAmbigChar=false);
+        GeneralTreeHistoryCtmc(const TypedDagNode< Tree > *t, size_t nChars, size_t nSites, bool useAmbigChar=false, bool internal=false);
         GeneralTreeHistoryCtmc(const GeneralTreeHistoryCtmc &n);                                                                         //!< Copy constructor
         virtual                                            ~GeneralTreeHistoryCtmc(void);                                                //!< Virtual destructor
         
@@ -41,6 +41,7 @@ namespace RevBayesCore {
         virtual std::vector<double>                         getRootFrequencies(void) const;
         virtual std::vector<std::string>                    getCladogeneticEvents(void) const;
         virtual std::string                                 getCladogeneticEvent( size_t index ) const;
+        const CladogeneticProbabilityMatrix&                getCladogeneticProbabilityMatrix( void ) const;
         virtual void                                        redrawValue(void);
         virtual void                                        reInitialized(void);
         virtual void                                        simulate(void);
@@ -90,7 +91,6 @@ namespace RevBayesCore {
         
         // cladogenetic histories
         std::vector<std::string>                            cladogeneticEvents;
-
         
     };
     
@@ -101,10 +101,10 @@ namespace RevBayesCore {
 #include "CharacterEventDiscrete.h"
 #include "PathRejectionSampleProposal.h"
 #include "RateMatrix_JC.h"
-#include "RbConstants.h"
+
 
 template<class charType>
-RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const TypedDagNode<Tree> *tau, size_t nChars, size_t nSites, bool useAmbigChar) : TreeHistoryCtmc<charType>( tau, nChars, nSites, useAmbigChar )
+RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const TypedDagNode<Tree> *tau, size_t nChars, size_t nSites, bool useAmbigChar, bool internal) : TreeHistoryCtmc<charType>( tau, nChars, nSites, useAmbigChar, internal )
 {
     
     // initialize with default parameters
@@ -216,7 +216,10 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeRootLikelihood(con
     std::vector<double> rf = getRootFrequencies();
     for (size_t i = 0; i < counts.size(); i++)
     {
-        lnP += counts[i] * log( rf[i] );
+        // skip unused states
+        if (counts[i] != 0) {
+            lnP += counts[i] * log( rf[i] );
+        }
     }
 
     return lnP;
@@ -320,7 +323,8 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
         const AbstractCladogenicStateFunction* cf = dynamic_cast<const AbstractCladogenicStateFunction* >( &homogeneousCladogeneticProbabilityMatrix->getFunction() );
         size_t left_index = node.getChild(0).getIndex();
         size_t right_index = node.getChild(1).getIndex();
-        lnL += cf->computeDataAugmentedCladogeneticLnProbability( this->histories, node_index, left_index, right_index );
+        double lnL_clado = cf->computeDataAugmentedCladogeneticLnProbability( this->histories, node_index, left_index, right_index );
+        lnL += lnL_clado;
         
     }
     
@@ -495,6 +499,12 @@ template<class charType>
 std::string RevBayesCore::GeneralTreeHistoryCtmc<charType>::getCladogeneticEvent( size_t index ) const
 {
     return cladogeneticEvents[ index ];
+}
+
+template<class charType>
+const RevBayesCore::CladogeneticProbabilityMatrix& RevBayesCore::GeneralTreeHistoryCtmc<charType>::getCladogeneticProbabilityMatrix( void ) const
+{
+    return homogeneousCladogeneticProbabilityMatrix->getValue();
 }
 
 template<class charType>
@@ -673,11 +683,11 @@ template<class charType>
 bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::samplePathHistory(const TopologyNode& node)
 {
     
-    if ( node.isRoot() == true )
-    {
-        return true;
-    }
-    
+//    if ( node.isRoot() == true )
+//    {
+//        return true;
+//    }
+//    
     PathRejectionSampleProposal<charType> p( this->getStochasticNode() );
     p.setRateGenerator( homogeneousRateGenerator );
     
@@ -1028,9 +1038,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
         dt = RbStatistics::Exponential::rv(sr, *GLOBAL_RNG);
         if (curr_age - dt > end_age)
         {
-            // NOTE: cannot call sum of rates using counts because it may be non-iid evolution
-            double sr = rm.getSumOfRates(currState, curr_age, branch_rate);
-            
+    
             // next event type
             CharacterEventDiscrete* evt = new CharacterEventDiscrete(0, 0, curr_age - dt);
             double u = GLOBAL_RNG->uniform01() * sr;
@@ -1063,9 +1071,6 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
                 if (found) break;
             }
             
-            // update sum of rates
-            //            sr += rm.getSumOfRatesDifferential(currState, evt, t-dt, branch_rate);
-            
             // update counts
             counts[ static_cast<CharacterEventDiscrete*>(currState[i])->getState() ] -= 1;
             counts[s] += 1;
@@ -1073,6 +1078,9 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
             // update history
             curr_age -= dt;
             currState[i] = evt;
+            
+            // update sum of rates
+            sr = rm.getSumOfRates(currState, curr_age, branch_rate);
         }
     }
     

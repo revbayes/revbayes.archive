@@ -1,14 +1,21 @@
+#include <stddef.h>
+#include <iosfwd>
+#include <vector>
+
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "Ellipsis.h"
 #include "Func_concatenate.h"
 #include "OptionRule.h"
-#include "RbException.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlString.h"
-#include "RlUtils.h"
 #include "TypeSpec.h"
-#include "Workspace.h"
+#include "ArgumentRules.h"
+#include "Procedure.h"
+#include "RbHelpReference.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
 
 using namespace RevLanguage;
 
@@ -108,6 +115,7 @@ std::string Func_concatenate::getFunctionName( void ) const
     return f_name;
 }
 
+
 /** Get type spec */
 const TypeSpec& Func_concatenate::getTypeSpec( void ) const
 {
@@ -122,7 +130,7 @@ const TypeSpec& Func_concatenate::getTypeSpec( void ) const
 const TypeSpec& Func_concatenate::getReturnType( void ) const
 {
     
-    static TypeSpec return_typeSpec = RlBoolean::getClassTypeSpec();
+    static TypeSpec return_typeSpec = AbstractHomologousDiscreteCharacterData::getClassTypeSpec();
     
     return return_typeSpec;
 }

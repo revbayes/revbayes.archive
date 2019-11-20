@@ -6,17 +6,19 @@
 //  Copyright (c) 2014 revbayes team. All rights reserved.
 //
 
+#include <stddef.h>
 #include <cmath>
+
 #include "CholeskyDecomposition.h"
 #include "DistributionBeta.h"
 #include "DistributionLKJ.h"
-#include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
-#include "RbException.h"
 #include "RbConstants.h"
 #include "RbMathFunctions.h"
-#include "RbStatisticsHelper.h"
-#include "DistributionNormal.h"
+#include "MatrixReal.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+
+namespace RevBayesCore { class RandomNumberGenerator; }
 
 
 using namespace RevBayesCore;
@@ -65,7 +67,7 @@ double RbStatistics::LKJ::lnPdf(double eta, const MatrixReal &z)
         {
             if (c > r)
             {
-                if ( z[r][c] > 1.0 | z[r][c] < -1.0 )
+                if ( z[r][c] > 1.0 or z[r][c] < -1.0 )
                 {
                     return RbConstants::Double::neginf;
                 }

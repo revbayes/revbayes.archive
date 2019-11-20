@@ -1,14 +1,26 @@
+#include <stddef.h>
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "ContinuousStochasticNode.h"
 #include "Dist_unif.h"
 #include "Real.h"
-#include "RealPos.h"
 #include "UniformDistribution.h"
+#include "RbHelpReference.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlContinuousDistribution.h"
+#include "TypeSpec.h"
+
+namespace RevBayesCore { template <class valueType> class TypedDagNode; }
 
 using namespace RevLanguage;
 
-Dist_unif::Dist_unif() : ContinuousDistribution() {
+Dist_unif::Dist_unif() : ContinuousDistribution()
+{
     
 }
 
@@ -107,7 +119,8 @@ const MemberRules& Dist_unif::getParameterRules(void) const
 }
 
 
-const TypeSpec& Dist_unif::getTypeSpec( void ) const {
+const TypeSpec& Dist_unif::getTypeSpec( void ) const
+{
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -116,7 +129,8 @@ const TypeSpec& Dist_unif::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void Dist_unif::printValue(std::ostream& o) const {
+void Dist_unif::printValue(std::ostream& o) const
+{
     
     o << " unif (lower=";
     if ( lower != NULL ) {
@@ -135,7 +149,8 @@ void Dist_unif::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_unif::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Dist_unif::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
     
     if ( name == "lower" ) 
     {

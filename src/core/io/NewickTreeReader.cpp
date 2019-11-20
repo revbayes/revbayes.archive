@@ -1,10 +1,13 @@
-#include "Tree.h"
+#include <fstream>
+#include <string>
+#include <vector>
+
 #include "NewickConverter.h"
 #include "NewickTreeReader.h"
 #include "RbException.h"
 #include "RbFileManager.h"
 
-#include <fstream>
+namespace RevBayesCore { class Tree; }
 
 using namespace RevBayesCore;
 
@@ -26,8 +29,11 @@ NewickTreeReader::NewickTreeReader()
  */
 std::vector<Tree*>* NewickTreeReader::readBranchLengthTrees(std::string const &fn)
 {
+    
+    RbFileManager fm = RbFileManager(fn);
+    
     /* Open file */
-    std::ifstream inFile( fn.c_str() );
+    std::ifstream inFile( fm.getFullFileName().c_str() );
     
     if ( !inFile )
         throw RbException( "Could not open file \"" + fn + "\"" );

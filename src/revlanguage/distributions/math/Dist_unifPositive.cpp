@@ -1,10 +1,20 @@
+#include <stddef.h>
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "ContinuousStochasticNode.h"
 #include "Dist_unifPositive.h"
-#include "Real.h"
 #include "RealPos.h"
 #include "UniformDistribution.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlPositiveContinuousDistribution.h"
+#include "TypeSpec.h"
+
+namespace RevBayesCore { template <class valueType> class TypedDagNode; }
 
 using namespace RevLanguage;
 
@@ -14,18 +24,21 @@ Dist_unifPositive::Dist_unifPositive() : PositiveContinuousDistribution()
 }
 
 
-Dist_unifPositive::~Dist_unifPositive() {
+Dist_unifPositive::~Dist_unifPositive()
+{
     
 }
 
 
 
-Dist_unifPositive* Dist_unifPositive::clone( void ) const {
+Dist_unifPositive* Dist_unifPositive::clone( void ) const
+{
     return new Dist_unifPositive(*this);
 }
 
 
-RevBayesCore::UniformDistribution* Dist_unifPositive::createDistribution( void ) const {
+RevBayesCore::UniformDistribution* Dist_unifPositive::createDistribution( void ) const
+{
     // get the parameters
     RevBayesCore::TypedDagNode<double>* l   = static_cast<const RealPos &>( lower->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* u   = static_cast<const RealPos &>( upper->getRevObject() ).getDagNode();
@@ -37,7 +50,8 @@ RevBayesCore::UniformDistribution* Dist_unifPositive::createDistribution( void )
 
 
 /* Get Rev type of object */
-const std::string& Dist_unifPositive::getClassType(void) { 
+const std::string& Dist_unifPositive::getClassType(void)
+{
     
     static std::string rev_type = "Dist_unif";
     
@@ -45,7 +59,8 @@ const std::string& Dist_unifPositive::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_unifPositive::getClassTypeSpec(void) { 
+const TypeSpec& Dist_unifPositive::getClassTypeSpec(void)
+{ 
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
     
@@ -103,7 +118,8 @@ const MemberRules& Dist_unifPositive::getParameterRules(void) const
 }
 
 
-const TypeSpec& Dist_unifPositive::getTypeSpec( void ) const {
+const TypeSpec& Dist_unifPositive::getTypeSpec( void ) const
+{
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -112,18 +128,25 @@ const TypeSpec& Dist_unifPositive::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void Dist_unifPositive::printValue(std::ostream& o) const {
+void Dist_unifPositive::printValue(std::ostream& o) const
+{
     
     o << " unif (lower=";
-    if ( lower != NULL ) {
+    if ( lower != NULL )
+    {
         o << lower->getName();
-    } else {
+    }
+    else
+    {
         o << "?";
     }
     o << ", upper=";
-    if ( lower != NULL ) {
+    if ( lower != NULL )
+    {
         o << lower->getName();
-    } else {
+    }
+    else
+    {
         o << "?";
     }
     o << ")";
@@ -131,7 +154,8 @@ void Dist_unifPositive::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_unifPositive::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Dist_unifPositive::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
     
     if ( name == "lower" ) 
     {
@@ -143,6 +167,6 @@ void Dist_unifPositive::setConstParameter(const std::string& name, const RevPtr<
     }
     else 
     {
-        Distribution::setConstParameter(name, var);
+        PositiveContinuousDistribution::setConstParameter(name, var);
     }
 }

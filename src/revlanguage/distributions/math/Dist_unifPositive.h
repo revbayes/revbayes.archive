@@ -25,7 +25,7 @@ namespace RevLanguage {
      * @since 2012-08-08, version 1.0
      *
      */
-    class Dist_unifPositive :  public PositiveContinuousDistribution {
+    class Dist_unifPositive : public PositiveContinuousDistribution {
         
     public:
         Dist_unifPositive( void );

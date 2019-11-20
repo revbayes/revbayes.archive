@@ -1,9 +1,14 @@
 #include "LogUniformDistribution.h"
+
+#include <cmath>
+
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
+#include "Cloneable.h"
+#include "TypedDagNode.h"
 
-#include <cmath>
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 
@@ -49,13 +54,13 @@ double LogUniformDistribution::computeLnProbability( void )
     double ma = max->getValue();
     if ( v >= mi && v <= ma ) 
     {
-       return 1.0 / ( (log(max->getValue()) - log( min->getValue() )) * (*value) ); 
-    } 
+        double p = 1.0 / ( (log10(max->getValue()) - log10( min->getValue() )) * (*value) );
+        return log(p);
+    }
     else 
     {
         return RbConstants::Double::neginf;
     }
-    
     
 }
 

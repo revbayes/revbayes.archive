@@ -1,28 +1,33 @@
-
+#include <stddef.h>
+#include <algorithm>
+#include <map>
+#include <ostream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "DagNode.h"
 #include "Monitor.h"
 #include "RbException.h"
+#include "MonteCarloAnalysisOptions.h"
 #include "StringUtilities.h"
 
-#include <algorithm>
+namespace RevBayesCore { class Mcmc; }
+namespace RevBayesCore { class Model; }
 
 using namespace RevBayesCore;
-
 
 
 Monitor::Monitor(unsigned long g) :
     enabled( true ),
     printgen( g ),
-    model( NULL )
-{
-    
-}
+    model( nullptr )
+{}
 
 Monitor::Monitor(unsigned long g, DagNode *n) :
     enabled( true ),
     printgen( g ),
-    model( NULL )
+    model( nullptr )
 {
     
     nodes.push_back( n );
@@ -39,7 +44,7 @@ Monitor::Monitor(unsigned long g, const std::vector<DagNode *> &n) :
     enabled( true ),
     printgen( g ),
     nodes( n ),
-    model( NULL )
+    model( nullptr )
 {
     
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
@@ -87,11 +92,11 @@ Monitor::~Monitor( void )
     {
         DagNode *the_node = *it;
         
-        // remove myself to the set of monitors
+        // remove myself from the set of monitors
         the_node->removeMonitor( this );
         
         
-        // tell the node that we have a reference to it (avoids deletion)
+        // delete attached nodes if they're not referenced elsewehere
         if ( the_node->decrementReferenceCount() == 0 )
         {
             delete *it;
@@ -112,10 +117,10 @@ Monitor& Monitor::operator=(const Monitor &m)
         {
             DagNode *the_node = *it;
             
-            // remove myself to the set of monitors
+            // remove myself from the set of monitors
             the_node->removeMonitor( this );
 
-            // tell the node that we have a reference to it (avoids deletion)
+            // delete attached nodes if they're not referenced elsewehere
             if ( the_node->decrementReferenceCount() == 0 )
             {
                 delete *it;
@@ -148,17 +153,22 @@ Monitor& Monitor::operator=(const Monitor &m)
     return *this;
 }
 
-
 /**
- * This is the dummy method for the setting of a filename extension.
+ * Add a filename extension to the output file (used to differentiate replicates)
  * Overwrite this method if necessary.
+ *
+ * @param s extension to add
+ * @param dir whether the extension should be used as a subdirectory or added to the file name
  */
 void Monitor::addFileExtension(const std::string &s, bool dir)
-{
-    // nothing to do here
-}
+{}
 
 
+/** Add node to the set of monitored variables
+ * @param n new monitored node
+ *
+ * @note does not check whether n is already monitored
+ * */
 void Monitor::addVariable(DagNode *n)
 {
         
@@ -181,18 +191,19 @@ void Monitor::addVariable(DagNode *n)
  * Overwrite this method for specialized behavior.
  */
 void Monitor::closeStream( void )
-{
-    ; // dummy fn
-}
+{}
 
 
 /**
- * Combine output for the monitor.
+ * Combine output from different runs of the analysis.
  * Overwrite this method for specialized behavior.
+ *
+ * @param n_reps number of replicate runs
+ * @param ct combining mode (sequential or mixed)
  */
 void Monitor::combineReplicates( size_t n_reps, MonteCarloAnalysisOptions::TraceCombinationTypes ct )
 {
-    // dummy implementation
+    
 }
 
 
@@ -215,9 +226,6 @@ void Monitor::enable( void )
 }
 
 
-/**
- * Is this monitor currently enabled?
- */
 bool Monitor::isEnabled( void ) const
 {
     return enabled;
@@ -247,11 +255,11 @@ bool Monitor::isScreenMonitor( void ) const
 /**
  * Open the stream for the monitor.
  * Overwrite this method for specialized behavior.
+ *
+ * @param reopen whether monitors were previously opened
  */
 void Monitor::openStream( bool reopen )
-{
-    ; // dummy fn
-}
+{}
 
 
 /**
@@ -259,19 +267,21 @@ void Monitor::openStream( bool reopen )
  * Overwrite this method for specialized behavior.
  */
 void Monitor::printHeader( void )
-{
-    ; // dummy fn
-}
+{}
 
 
 
 const std::vector<DagNode*>& Monitor::getDagNodes( void ) const
-{
-    
+{   
     return nodes;
 }
 
 
+/** Remove node from the set of monitored variables
+ * @param n previously monitored node
+ *
+ * @note does nothing if n was not monitored by this monitor
+ * */
 void Monitor::removeVariable(DagNode *n)
 {
     
@@ -279,10 +289,10 @@ void Monitor::removeVariable(DagNode *n)
     {
         if ( *it == n )
         {
-            // move myself to the set of monitors
+            // remove myself from the set of monitors
             n->removeMonitor( this );
             
-            // tell the node that we have a reference to it (avoids deletion)
+            // delete attached nodes if they're not referenced elsewehere
             if ( n->decrementReferenceCount() == 0 )
             {
                 delete *it;
@@ -340,8 +350,7 @@ void Monitor::setDagNodes( const std::vector<DagNode *> &args)
 
 void Monitor::setModel(Model *m)
 {
-    model = m;
-    
+    model = m;    
 }
 
 
@@ -379,7 +388,13 @@ void Monitor::sortNodesByName( void )
     
 }
 
-
+/** Switch monitored node with new node
+ *
+ * @param oldN node to be replaced
+ * @param newN replacement node
+ *
+ * @throws RbException if oldN is not part of the monitored nodes
+ * */
 void Monitor::swapNode(DagNode *oldN, DagNode *newN) 
 {
     // error catching
@@ -409,11 +424,11 @@ void Monitor::swapNode(DagNode *oldN, DagNode *newN)
 /**
  * Reset the variables for the monitor.
  * Overwrite this method for specialized behavior.
+ *
+ * @param numCycles target number of iterations
  */
 void Monitor::reset(size_t numCycles)
-{
-    // dummy implementation
-}
+{}
 
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const Monitor& x)

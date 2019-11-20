@@ -1,16 +1,31 @@
+#include <cmath>
+#include <algorithm>
+#include <cstddef>
+#include <iostream>
+#include <map>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "NewickConverter.h"
-#include "RlBoolean.h"
-#include "RbConstants.h"
 #include "RbException.h"
-#include "RbMathLogic.h"
-#include "RbOptions.h"
 #include "Tree.h"
 #include "Taxon.h"
 #include "TopologyNode.h"
 #include "TypedDagNode.h"
 #include "TreeUtilities.h"
+#include "Clade.h"
+#include "DagNode.h"
+#include "RbBitSet.h"
+#include "RbBoolean.h"
+#include "RbFileManager.h"
+#include "StringUtilities.h"
+#include "TaxonMap.h"
+#include "TreeChangeEventHandler.h"
 
-#include <cmath>
+namespace RevBayesCore { class AbstractHomologousDiscreteCharacterData; }
+namespace RevBayesCore { class TreeChangeEventListener; }
 
 using namespace RevBayesCore;
 
@@ -144,7 +159,7 @@ void Tree::addNodeParameter(std::string const &name, const std::vector<double> &
 
 }
 
-void Tree::addNodeParameter(std::string const &name, const std::vector<std::string*> &parameters, bool internalOnly)
+void Tree::addNodeParameter(std::string const &name, const std::vector<std::string> &parameters, bool internalOnly)
 {
 
     getRoot().addNodeParameters(name,parameters,internalOnly);
@@ -1634,6 +1649,46 @@ void Tree::setTaxonObject(const std::string& current_name, const Taxon& new_taxo
     
     taxon_bitset_map.erase( current_name );
     taxon_bitset_map.insert( std::pair<std::string, size_t>( new_name, node.getIndex() ) );
+    
+}
+
+
+void Tree::unroot( void )
+{
+    
+    if ( isRooted() == true )
+    {
+        
+        // get the root node because we need to make this tree unrooted (for topology comparison)
+        TopologyNode *old_root = &getRoot();
+        
+        // make the tree use branch lengths instead of ages
+        old_root->setUseAges(false, true);
+        
+        size_t child_index = 0;
+        if ( old_root->getChild(child_index).isTip() == true )
+        {
+            child_index = 1;
+        }
+        TopologyNode *new_root = &old_root->getChild( child_index );
+        TopologyNode *second_child = &old_root->getChild( (child_index == 0 ? 1 : 0) );
+        
+        double bl_first = new_root->getBranchLength();
+        double bl_second = second_child->getBranchLength();
+        
+        old_root->removeChild( new_root );
+        old_root->removeChild( second_child );
+        new_root->setParent( NULL );
+        new_root->addChild( second_child );
+        second_child->setParent( new_root );
+        
+        second_child->setBranchLength( bl_first + bl_second );
+        
+        // finally we need to set the new root to our tree copy
+        setRooted( false );
+        setRoot( new_root, true);
+        
+    }
     
 }
 

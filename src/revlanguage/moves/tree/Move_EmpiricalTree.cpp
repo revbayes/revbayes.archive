@@ -1,14 +1,25 @@
 #include "Move_EmpiricalTree.h"
+
+#include <stddef.h>
+#include <string>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "IndependentPriorProposal.h"
-#include "ModelVector.h"
 #include "MetropolisHastingsMove.h"
-#include "RbException.h"
 #include "RealPos.h"
 #include "RlTree.h"
-#include "TypedDagNode.h"
 #include "TypeSpec.h"
+#include "Move.h"
+#include "RbBoolean.h"
+#include "RlBoolean.h"
+#include "StochasticNode.h"
+#include "StringUtilities.h"
+#include "Tree.h"
+#include "TypedDistribution.h"
+
+namespace RevBayesCore { class Proposal; }
+namespace RevBayesCore { template <class valueType> class TypedDagNode; }
 
 
 using namespace RevLanguage;
@@ -94,7 +105,7 @@ const MemberRules& Move_EmpiricalTree::getParameterRules(void) const
     if ( !rules_set )
     {
         move_member_rules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(), "The stochastic tree variable on which this moves operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        move_member_rules.push_back( new ArgumentRule( "metropolisHastings"   , RlBoolean::getClassTypeSpec(), "When propose a new tree from the empirical tree distribution, should we accept or reject this move based on the acceptance ratio (as a regular Metropolis-Hastings move so that we are approximating the joint posterior correctly through a valid MCMC) or should we simply always accept this move (so that we are effectively sampling every tree uniformly and combining the the estimates on each tree without weighting them according to the marginal likelihood of each tree)?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
+        move_member_rules.push_back( new ArgumentRule( "metropolisHastings"   , RlBoolean::getClassTypeSpec(), "If TRUE, use the regular Metropolis-Hastings acceptance ratio. If FALSE, always accept this move and sample every tree uniformly.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
 
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

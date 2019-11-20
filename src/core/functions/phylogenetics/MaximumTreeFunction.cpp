@@ -1,10 +1,18 @@
 #include "MaximumTreeFunction.h"
+
+#include <limits>
+#include <set>
+
 #include "RbException.h"
 #include "TopologyNode.h"
 #include "Tree.h"
 #include "TreeUtilities.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "TypedDagNode.h"
+#include "boost/dynamic_bitset.hpp" // IWYU pragma: keep
 
-#include <boost/dynamic_bitset.hpp>
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 
@@ -183,7 +191,7 @@ void MaximumTreeFunction::getMinDepthMatrix (  )
 
     }   // Next gene tree
 
-        return ;
+    return ;
 }
 
 
@@ -324,8 +332,7 @@ Tree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  )
         speciesDone.push_back( speciesNamesV[spToAddId] );
         depthToPairs.erase( currentBestPair );
     }
-
-
+    
     //In principle we have just built a proper ultrametric tree.
     //Now we make a tree of it.
     Tree* tree = new Tree();
@@ -340,6 +347,10 @@ Tree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  )
         tree->getNode( jt->first->getIndex() ).setBranchLength( jt->second );
     }
 
+    // set the root age and branch length before calling convertTree
+    TopologyNode& root = tree->getRoot();
+    root.setAge(totalDepth);
+    root.setBranchLength(0.0);
 
     Tree* ttree = TreeUtilities::convertTree ( *tree ) ;
 

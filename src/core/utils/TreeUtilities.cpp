@@ -1,3 +1,18 @@
+#include <math.h>
+#include <stdlib.h>
+#include <boost/functional/hash/extensions.hpp>
+#include <algorithm>
+#include <iostream>
+#include <limits>
+#include <set>
+#include <cstddef>
+#include <functional>
+#include <iterator>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "MatrixReal.h"
 #include "RandomNumberFactory.h"
@@ -7,11 +22,15 @@
 #include "StringUtilities.h"
 #include "Tree.h"
 #include "TreeUtilities.h"
-
-#include <algorithm>
-#include <iostream>
-#include <limits>
-#include <set>
+#include "AbstractDiscreteTaxonData.h"
+#include "Cloneable.h"
+#include "DiscreteCharacterState.h"
+#include "DistanceMatrix.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "Taxon.h"
+#include "TopologyNode.h"
+#include "boost/unordered_set.hpp"
 
 using namespace RevBayesCore;
 
@@ -568,7 +587,7 @@ void RevBayesCore::TreeUtilities::climbUpTheTree(const TopologyNode& node, boost
             climbUpTheTree(node.getParent(), pathFromNodeToRoot);
         }
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         throw e;
     }
@@ -587,7 +606,7 @@ double RevBayesCore::TreeUtilities::getAgeOfMRCARecursive(const TopologyNode& no
             return getAgeOfMRCARecursive( node.getParent(), pathFromOtherNodeToRoot );
         }
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         throw e;
     }
@@ -827,6 +846,43 @@ double RevBayesCore::TreeUtilities::getMeanInverseES(const Tree &t, const Abstra
         }
     }
     return mean_inverse_es;
+}
+
+
+std::vector<double> RevBayesCore::TreeUtilities::getInverseES(const Tree &t)
+{
+    if (t.isRooted() == false)
+    {
+        throw RbException("Mean inverse ES can only be calculated on rooted trees.");
+    }
+
+    std::vector<double> inverse_es;
+
+    // calculate equal splits (ES) measure for each tip
+    for (size_t i = 0; i < t.getNumberOfTips(); i++)
+    {
+        double tip_es = 0;
+        size_t node_index = t.getTipNode(i).getIndex();
+
+        // traverse from tip to root
+        double depth = 1;
+        while (true)
+        {
+            if (t.getNode(node_index).isRoot() == true)
+            {
+                break;
+            }
+            tip_es += t.getNode(node_index).getBranchLength() * (1 / pow(2, depth - 1));
+            node_index = t.getNode(node_index).getParent().getIndex();
+            depth++;
+        }
+        if (tip_es != 0)
+        {
+            inverse_es.push_back(1/tip_es);
+        }
+    }
+
+    return inverse_es;
 }
 
 
@@ -1163,3 +1219,27 @@ double RevBayesCore::TreeUtilities::calculateMNTD(const Tree &t, const AbstractH
     }
     return 0.0;
 }
+
+
+std::vector<double> RevBayesCore::TreeUtilities::calculateEDR(Tree &t)
+{
+    TopologyNode node = t.getRoot();
+    std::vector<double> ages = std::vector<double>(t.getNumberOfNodes(), 0.0);
+    TreeUtilities::getAges(&t, &node, ages);
+    std::sort(ages.begin(), ages.end());
+
+    std::vector<double> edr;
+    double time = 0.0;
+    size_t n = t.getNumberOfTips();
+    for (size_t i = 0; i < ages.size(); ++i)
+    {
+        if (ages[i] > 0)
+        {
+            edr.push_back(n * (ages[i] - time));
+            time = ages[i];
+            --n;
+        }
+    }
+    return edr;
+}
+      

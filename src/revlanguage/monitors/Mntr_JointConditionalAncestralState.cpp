@@ -1,29 +1,35 @@
 #include "Mntr_JointConditionalAncestralState.h"
 
+#include <stddef.h>
+#include <string>
+
 #include "BinaryState.h"
-#include "AbstractCharacterData.h"
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "OptionRule.h"
-#include "Model.h"
 #include "RlMonitor.h"
-#include "ModelVector.h"
-#include "Ellipsis.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RevObject.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
-#include "RlModel.h"
 #include "RlTimeTree.h"
-#include "RlBranchLengthTree.h"
 #include "RlString.h"
 #include "TypeSpec.h"
 #include "NaturalNumbersState.h"
 #include "DnaState.h"
 #include "StandardState.h"
-#include "RnaState.h"
 #include "AminoAcidState.h"
-#include "PomoState.h"
+#include "PoMoState.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
+#include "DiscreteTaxonData.h"
+#include "JointConditionalAncestralStateMonitor.h"
+#include "Monitor.h"
+#include "RbBoolean.h"
+#include "RlBoolean.h"
+#include "RlTree.h"
+#include "StochasticNode.h"
+
+namespace RevBayesCore { class Tree; }
+namespace RevBayesCore { template <class valueType> class TypedDagNode; }
 
 using namespace RevLanguage;
 
@@ -53,6 +59,14 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
     int                                 g       = (int)static_cast<const Natural  &>( printgen->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* t = static_cast<const Tree &>( tree->getRevObject() ).getDagNode();
     
+    bool                                ap      = static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
+    bool                                wt      = static_cast<const RlBoolean &>( withTips->getRevObject() ).getValue();
+    bool                                wss     = static_cast<const RlBoolean &>( withStartStates->getRevObject() ).getValue();
+    bool                                wv      = static_cast<const RlBoolean &>( version->getRevObject() ).getValue();
+    std::string                            character = static_cast<const RlString &>( monitorType->getRevObject() ).getValue();
+    
+
+    
     RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_tdn = NULL;
     RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_sn = NULL;
     
@@ -63,6 +77,11 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
     {
         ctmc_tdn = static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
         ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* >(ctmc_tdn);
+        
+        if ( ctmc_sn->getValue().getDataType() != character )
+        {
+            throw RbException("mnJointConditionalAncestralStateMonitor requires the CTMC to be of same type as the specified character.");
+        }
     }
     else if ( static_cast<const RevLanguage::Tree&>( cdbdp->getRevObject() ).isModelObject() )
     {
@@ -74,11 +93,6 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
         throw RbException("mnJointConditionalAncestralStateMonitor requires either a CTMC or a character-dependent birth death process (CDBDP).");
     }
     
-    bool                                ap      = static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
-    bool                                wt      = static_cast<const RlBoolean &>( withTips->getRevObject() ).getValue();
-    bool                                wss     = static_cast<const RlBoolean &>( withStartStates->getRevObject() ).getValue();
-    bool                                wv      = static_cast<const RlBoolean &>( version->getRevObject() ).getValue();
-    std::string							character = static_cast<const RlString &>( monitorType->getRevObject() ).getValue();
     
     delete value;
     if (character == "AA" || character == "Protein")
@@ -112,10 +126,10 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
         m->setPrintVersion(wv);
         value = m;
     }
-    else if (character == "Pomo")
+    else if (character == "PoMo")
     {
-        RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::PomoState> *m;
-        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::PomoState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
+        RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::PoMoState> *m;
+        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::PoMoState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
         m->setAppend( ap );
         m->setPrintVersion(wv);
         value = m;
@@ -153,7 +167,7 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
     }
     else
     {
-        throw RbException( "Incorrect character type specified. Valid options are: AA, DNA, NaturalNumbers, Pomo, Protein, RNA, Standard, Binary/Restriction" );
+        throw RbException( "Incorrect character type specified. Valid options are: AA, DNA, NaturalNumbers, PoMo, Protein, RNA, Standard, Binary/Restriction" );
     }
     
 }

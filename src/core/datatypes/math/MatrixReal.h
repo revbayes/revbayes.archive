@@ -20,7 +20,6 @@
 
 #include "Cloneable.h"
 #include "MemberObject.h"
-#include "MatrixReal.h"
 #include "RbVector.h"
 
 #include <cstddef>
@@ -47,10 +46,11 @@ namespace RevBayesCore {
         MatrixReal&                             operator=(const MatrixReal& m);
         RbVector<double>&                       operator[](size_t index);
         const RbVector<double>&                 operator[](size_t index) const;
-        virtual bool                            operator==(const MatrixReal &m) const { return this == &m; }
-        virtual bool                            operator!=(const MatrixReal &m) const { return !operator==(m); }
-        virtual bool                            operator<(const MatrixReal &m) const { return this < & m; }
-        virtual bool                            operator<=(const MatrixReal &m) const { return operator<(m) || operator==(m); }
+
+        bool                                    operator==(const MatrixReal &m) const { return this == &m; }
+        bool                                    operator!=(const MatrixReal &m) const { return !operator==(m); }
+        bool                                    operator<(const MatrixReal &m) const { return this < & m; }
+        bool                                    operator<=(const MatrixReal &m) const { return operator<(m) || operator==(m); }
 
         // global operators
         MatrixReal&                             operator+=(double b);                                               //!< operator += for scalar 
@@ -95,7 +95,7 @@ namespace RevBayesCore {
         MatrixReal                              getTranspose(void);
         RbVector<double>                        getUpperTriangle(void) const;
         bool                                    isDiagonal(void) const;
-        bool                                    isPositive() const;
+        bool                                    isPositiveDefinite(bool semi = false) const;
         bool                                    isSquareMatrix(void) const;
         bool                                    isSymmetric(void) const;
         bool                                    isUsingCholesky(void) const { return use_cholesky_decomp; }

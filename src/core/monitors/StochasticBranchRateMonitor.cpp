@@ -1,16 +1,22 @@
 #include "StochasticBranchRateMonitor.h"
-#include "DagNode.h"
-#include "Model.h"
-#include "Monitor.h"
-#include "RbFileManager.h"
+
+#include <stddef.h>
+#include <ostream>
+#include <vector>
+
 #include "StochasticNode.h"
 #include "StateDependentSpeciationExtinctionProcess.h"
+#include "Cloneable.h"
+#include "Tree.h"
+#include "TypedDistribution.h"
+
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 
 
 /* Constructor for state dependent birth death process */
-StochasticBranchRateMonitor::StochasticBranchRateMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, const std::string &del) : AbstractFileMonitor(ch, g, fname, del, false, false, false),
+StochasticBranchRateMonitor::StochasticBranchRateMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, const std::string &del) : VariableMonitor(ch, g, fname, del, false, false, false),
     cdbdp( ch )
 {
     // the cdbdp is both the tree and character evolution model
@@ -22,7 +28,7 @@ StochasticBranchRateMonitor::StochasticBranchRateMonitor(StochasticNode<Tree>* c
 /**
  * Copy constructor.
  */
-StochasticBranchRateMonitor::StochasticBranchRateMonitor( const StochasticBranchRateMonitor &m) : AbstractFileMonitor( m ),
+StochasticBranchRateMonitor::StochasticBranchRateMonitor( const StochasticBranchRateMonitor &m) : VariableMonitor( m ),
     cdbdp( m.cdbdp )
 {
     
@@ -61,13 +67,14 @@ void StochasticBranchRateMonitor::monitorVariables(unsigned long gen)
     
     StateDependentSpeciationExtinctionProcess *sse = dynamic_cast<StateDependentSpeciationExtinctionProcess*>( &cdbdp->getDistribution() );
     size_t num_nodes = cdbdp->getValue().getNumberOfNodes();
-    std::vector<std::string*> character_histories( num_nodes );
+    std::vector<std::string> character_histories( num_nodes );
     
     // draw stochastic character map
     sse->drawStochasticCharacterMap( character_histories );
 //    std::vector<double> time_in_states = sse->getTimeInStates();
     std::vector<double> speciation = sse->getAverageSpeciationRatePerBranch();
     std::vector<double> extinction = sse->getAverageExtinctionRatePerBranch();
+    std::vector<long>   n_shifts   = sse->getNumberOfShiftEventsPerBranch();
 
     // print to monitor file
 //    for (int i = 0; i < time_in_states.size(); i++)
@@ -97,6 +104,15 @@ void StochasticBranchRateMonitor::monitorVariables(unsigned long gen)
         
     }
     
+    for (int i = 0; i < n_shifts.size(); i++)
+    {
+        // add a separator before every new element
+        out_stream << separator;
+        
+        out_stream << n_shifts[i];
+        
+    }
+    
 }
 
 
@@ -110,6 +126,7 @@ void StochasticBranchRateMonitor::printFileHeader()
     std::vector<double> time_in_states = sse->getTimeInStates();
     std::vector<double> speciation = sse->getAverageSpeciationRatePerBranch();
     std::vector<double> extinction = sse->getAverageExtinctionRatePerBranch();
+    std::vector<long>   n_shifts   = sse->getNumberOfShiftEventsPerBranch();
     
 //    for (int i = 0; i < time_in_states.size(); i++)
 //    {
@@ -133,6 +150,14 @@ void StochasticBranchRateMonitor::printFileHeader()
         out_stream << "]";
     }
     
+    for (int i = 0; i < n_shifts.size(); i++)
+    {
+        out_stream << separator;
+        out_stream << "num_shifts[";
+        out_stream << i + 1;
+        out_stream << "]";
+    }
+    
 }
 
 
@@ -144,7 +169,7 @@ void StochasticBranchRateMonitor::swapNode(DagNode *oldN, DagNode* newN)
         cdbdp = static_cast< StochasticNode<Tree> *>( newN );
     }
     
-    AbstractFileMonitor::swapNode( oldN, newN );
+    VariableMonitor::swapNode( oldN, newN );
     
 }
 

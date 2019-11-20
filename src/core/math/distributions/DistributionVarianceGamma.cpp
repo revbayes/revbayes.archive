@@ -7,8 +7,7 @@
 //
 
 #include <cmath>
-#include <iostream>
-#include <sstream>
+#include <stdexcept>
 
 #include "RbMathCombinatorialFunctions.h"
 #include "DistributionVarianceGamma.h"
@@ -17,9 +16,13 @@
 #include "RbConstants.h"
 #include "RbMathFunctions.h"
 #include "RbException.h"
-#include "RbStatisticsHelper.h"
+#include "boost/exception/exception.hpp" // IWYU pragma: keep
+#include "boost/format.hpp" // IWYU pragma: keep
+#include "boost/math/special_functions.hpp" // IWYU pragma: keep
+#include "boost/optional.hpp"
 
-#include <boost/math/special_functions/bessel.hpp>
+namespace RevBayesCore { class RandomNumberGenerator; }
+namespace boost { namespace math { class rounding_error; } }
 
 using namespace RevBayesCore;
 
@@ -69,13 +72,13 @@ double RbStatistics::VarianceGamma::lnPdf(double mu, double kappa, double tau, d
     try {
         h_bessel = log( boost::math::cyl_bessel_k(h_bessel_arg1, h_bessel_arg2) );
     }
-    catch(boost::exception_detail::clone_impl<boost::exception_detail::error_info_injector<std::overflow_error> > e)
+    catch(boost::exception_detail::clone_impl<boost::exception_detail::error_info_injector<std::overflow_error> >& e)
     {
         // TODO: Bessel function is very unstable w/r/t nu (=time/kappa-0.5)
         // K_nu(x) converges to very large values when nu is large
         h_bessel = RbConstants::Double::inf;
     }
-    catch(boost::exception_detail::clone_impl<boost::exception_detail::error_info_injector<boost::math::rounding_error> > e)
+    catch(boost::exception_detail::clone_impl<boost::exception_detail::error_info_injector<boost::math::rounding_error> >& e)
     {
         // TODO: Figure this one out...
         // related error looks like:

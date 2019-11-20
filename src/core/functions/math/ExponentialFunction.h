@@ -2,19 +2,17 @@
 #define ExponentialFunction_H
 
 #include "ContinuousFunction.h"
-#include "TypedDagNode.h"
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class TypedDagNode;
     
     
     /**
-     * \brief Exponential function e^x.
+     * @brief Exponential function e^x.
      *
-     * We compute the exponential value of x by e^x, or exp(x).
-     *
-     * \copyright (c) Copyright 2009-2015 (GPL version 3)
-     * \author The RevBayes Development Core Team (Sebastian Hoehna)
-     * \since Version 1.0, 2012-08-13
+     * We compute the exponential value of x by e^x, or exp(x) for values
+     * in a TypedDagNode class. 
      *
      */
     class ExponentialFunction : public ContinuousFunction {

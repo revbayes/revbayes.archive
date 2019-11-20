@@ -1,12 +1,15 @@
+#include <cmath>
+#include <iostream>
+
 #include "DistributionBeta.h"
 #include "RandomDiveProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "RbException.h"
-#include "TypedDagNode.h"
+#include "ContinuousStochasticNode.h"
+#include "Proposal.h"
+#include "StochasticNode.h"
 
-#include <cmath>
-#include <iostream>
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 
@@ -90,11 +93,23 @@ double RandomDiveProposal::doProposal( void )
     // copy value
     storedValue = val;
     
-    // Draw from a stretched and translated Beta(lambda,lambda) - {0} distribution that does not include -1 or 1
-    double epsilon  = ( 2 * RbStatistics::Beta::rv(lambda, lambda, *rng) ) - 1.0 ;
-    while ( epsilon == 0.0 || epsilon == 1.0 || epsilon == -1.0 )
+//    // Draw from a stretched and translated Beta(lambda,lambda) - {0} distribution that does not include -1 or 1
+//    double epsilon  = ( 2 * RbStatistics::Beta::rv(lambda, lambda, *rng) ) - 1.0 ;
+    
+    // Draw from a mirrored Beta(lambda,1) - {0} distribution that does not include -1 or 1
+    
+    // Draw
+    double epsilon  = RbStatistics::Beta::rv(lambda, 1.0, *rng);
+
+    while ( epsilon == 0.0 || epsilon == 1.0 )
     {
-        epsilon  = ( 2 * RbStatistics::Beta::rv(lambda, lambda, *rng) ) - 1.0 ;
+        epsilon  = RbStatistics::Beta::rv(lambda, 1.0, *rng);
+    }
+    
+    // Mirror
+    if ( rng->uniform01() < 0.5 )
+    {
+        epsilon *= -1.0;
     }
     
     double u = rng->uniform01();
@@ -189,14 +204,15 @@ void RandomDiveProposal::tune( double rate )
     double p = this->targetAcceptanceRate;
     if ( rate > p )
     {
-        lambda *= (1.0 + ((rate-p)/(1.0 - p)) );
+        lambda *= 0.95;
     }
     else
     {
-        lambda /= (2.0 - rate/p);
+        lambda *= 1.05;
     }
     
     lambda = fmin(10000, lambda);
+    lambda = fmax(0.0001, lambda);
     
 }
 

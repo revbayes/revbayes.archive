@@ -1,21 +1,49 @@
 #include "Dist_phyloCTMCDASiteIID.h"
+
+#include <stddef.h>
+#include <ostream>
+
 #include "GeneralTreeHistoryCtmcSiteIID.h"
 #include "OptionRule.h"
 #include "Probability.h"
 #include "Simplex.h"
 #include "RevNullObject.h"
-#include "RlAminoAcidState.h"
 #include "RlBoolean.h"
-#include "RlDnaState.h"
 #include "RlDistributionMemberFunction.h"
 #include "RlRateGenerator.h"
-#include "RlRnaState.h"
 #include "RlString.h"
 #include "RlTree.h"
 #include "StandardState.h"
 #include "RlSimplex.h"
-#include "PomoState.h"
+#include "PoMoState.h"
 #include "NaturalNumbersState.h"
+#include "AminoAcidState.h"
+#include "ArgumentRule.h"
+#include "ArgumentRules.h"
+#include "ConstantNode.h"
+#include "DagNode.h"
+#include "DiscreteTaxonData.h"
+#include "DistributionMemberFunction.h"
+#include "DnaState.h"
+#include "HomologousDiscreteCharacterData.h"
+#include "IndirectReferenceFunction.h"
+#include "ModelObject.h"
+#include "ModelVector.h"
+#include "Natural.h"
+#include "PathRejectionSampleProposal.h"
+#include "RateGenerator.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "RealPos.h"
+#include "RlConstantNode.h"
+#include "RlDistribution.h"
+#include "RnaState.h"
+#include "StringUtilities.h"
+#include "Tree.h"
+#include "TreeHistoryCtmc.h"
+#include "TypeSpec.h"
+#include "UserFunctionNode.h"
 
 using namespace RevLanguage;
 
@@ -249,10 +277,10 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
 
         d = dist;
     }
-    else if ( dt == "Pomo" )
+    else if ( dt == "PoMo" )
     {
 
-        // we get the number of states from the rate matrix (we don't know, because Pomo is flexible about its rates)
+        // we get the number of states from the rate matrix (we don't know, because PoMo is flexible about its rates)
         // set the rate matrix
         size_t nChars = 1;
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
@@ -266,7 +294,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             nChars = rm->getValue().getNumberOfStates();
         }
 
-        RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::PomoState> *dist = new RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::PomoState>(tau, nChars, n, ambig);
+        RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::PoMoState> *dist = new RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::PoMoState>(tau, nChars, n, ambig);
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -576,7 +604,7 @@ const MemberRules& Dist_phyloCTMCDASiteIID::getParameterRules(void) const
         options.push_back( "DNA" );
         options.push_back( "RNA" );
         options.push_back( "AA" );
-        options.push_back( "Pomo" );
+        options.push_back( "PoMo" );
         options.push_back( "Protein" );
         options.push_back( "Standard" );
         options.push_back( "NaturalNumbers" );

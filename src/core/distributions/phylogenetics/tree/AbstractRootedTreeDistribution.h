@@ -9,14 +9,7 @@
 namespace RevBayesCore {
     
     /**
-     * @file
-     * This file contains the declaration of the random variable class for constant rate birth-death process.
-     *
-     * @brief Declaration of the constant rate Birth-Death process class.
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2016-01-26, version 1.0
+     * Constant rate Birth-Death process.
      *
      */
     class AbstractRootedTreeDistribution : public TypedDistribution<Tree> {
@@ -39,7 +32,8 @@ namespace RevBayesCore {
         virtual double                                      getRootAge(void) const;
         const std::vector<Taxon>&                           getTaxa(void) const;
         virtual void                                        simulateClade(std::vector<TopologyNode *> &n, double age, double present);
-        
+        virtual double                                      simulateCladeAge(size_t n, double origin, double present, double min) const;
+
     protected:
         // pure virtual helper functions
         virtual double                                      computeLnProbabilityDivergenceTimes(void) const = 0;                                                //!< Compute the log-transformed probability of the current value.

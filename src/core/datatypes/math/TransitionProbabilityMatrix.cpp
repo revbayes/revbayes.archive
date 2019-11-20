@@ -16,11 +16,12 @@
  * $Id$
  */
 
-#include "RbException.h"
-#include "TransitionProbabilityMatrix.h"
-
-#include <cmath>
+#include <stddef.h>
 #include <iomanip>
+#include <ostream>
+
+#include "TransitionProbabilityMatrix.h"
+#include "Cloneable.h"
 
 
 using namespace RevBayesCore;
@@ -112,7 +113,7 @@ TransitionProbabilityMatrix& TransitionProbabilityMatrix::operator*=(const Trans
     for (size_t i=0; i<num_states*num_states; i++)
         theMatrix[i] = C.theMatrix[i];
     
-	return *this;
+    return *this;
 }
 
 double TransitionProbabilityMatrix::getElement(size_t i, size_t j) const {

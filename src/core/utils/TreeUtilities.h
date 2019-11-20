@@ -19,7 +19,6 @@
 #include "DistanceMatrix.h"
 #include "MatrixReal.h"
 #include "Tree.h"
-#include "Tree.h"
 #include "TopologyNode.h"
 #include <string>
 #include <vector>
@@ -63,10 +62,12 @@ namespace RevBayesCore {
         int                     getFitchScore(const Tree &t, const AbstractHomologousDiscreteCharacterData &c);
         std::set<size_t>        recursivelyComputeFitch(const TopologyNode &node, const AbstractHomologousDiscreteCharacterData &c, size_t site, int &score);
         double                  getMeanInverseES(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t state_index);
+        std::vector<double>     getInverseES(const Tree &t);
         std::vector<double>     getPSSP(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t state_index);
         std::set<size_t>        recursivelyGetPSSP(const TopologyNode &node, const AbstractHomologousDiscreteCharacterData &c, std::vector<double> &branch_lengths, size_t state_index);
         double                  calculateMPD(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t site_index, size_t state_index, bool zscore, bool branch_lengths, size_t num_randomizations);
         double                  calculateMNTD(const Tree &t, const AbstractHomologousDiscreteCharacterData &c, size_t site_index, size_t state_index, bool zscore, bool branch_lengths, size_t num_randomizations);
+        std::vector<double>     calculateEDR(Tree &t);
 
 
     }

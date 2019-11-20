@@ -8,18 +8,24 @@
 
 
 #include "StochasticBranchStateTimesMonitor.h"
-#include "DagNode.h"
-#include "Model.h"
-#include "Monitor.h"
-#include "RbFileManager.h"
+
+#include <stddef.h>
+#include <vector>
+
 #include "StochasticNode.h"
 #include "StateDependentSpeciationExtinctionProcess.h"
+#include "Cloneable.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
+
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 
 
 /* Constructor for state dependent birth death process */
-StochasticBranchStateTimesMonitor::StochasticBranchStateTimesMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, const std::string &del) : AbstractFileMonitor(ch, g, fname, del, false, false, false),
+StochasticBranchStateTimesMonitor::StochasticBranchStateTimesMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, const std::string &del) : VariableMonitor(ch, g, fname, del, false, false, false),
     cdbdp( ch )
 {
     // the cdbdp is both the tree and character evolution model
@@ -32,7 +38,7 @@ StochasticBranchStateTimesMonitor::StochasticBranchStateTimesMonitor(StochasticN
 /**
  * Copy constructor.
  */
-StochasticBranchStateTimesMonitor::StochasticBranchStateTimesMonitor( const StochasticBranchStateTimesMonitor &m) : AbstractFileMonitor( m ),
+StochasticBranchStateTimesMonitor::StochasticBranchStateTimesMonitor( const StochasticBranchStateTimesMonitor &m) : VariableMonitor( m ),
     tree( m.tree ),
     cdbdp( m.cdbdp )
 {
@@ -72,7 +78,7 @@ void StochasticBranchStateTimesMonitor::monitorVariables(unsigned long gen)
 
     StateDependentSpeciationExtinctionProcess *sse = dynamic_cast<StateDependentSpeciationExtinctionProcess*>( &cdbdp->getDistribution() );
     size_t num_nodes = tree->getValue().getNumberOfNodes();
-    std::vector<std::string*> character_histories( num_nodes );
+    std::vector<std::string> character_histories( num_nodes );
     
     // draw stochastic character map
     sse->drawStochasticCharacterMap( character_histories );
@@ -122,7 +128,7 @@ void StochasticBranchStateTimesMonitor::swapNode(DagNode *oldN, DagNode* newN)
         tree = static_cast< StochasticNode<Tree> *>( newN );
     }
     
-    AbstractFileMonitor::swapNode( oldN, newN );
+    VariableMonitor::swapNode( oldN, newN );
     
 }
 

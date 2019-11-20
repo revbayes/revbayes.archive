@@ -1,33 +1,18 @@
-/**
- * @file
- * This file contains the declaration of the minimum function for Vectors.
- *
- * @brief Declaration of the deterministic variable for minimum.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-07-06, version 1.0
- * @interface TypedDagNode
- *
- * $Id$
- */
-
-
-
 #ifndef MinFunction_H
 #define MinFunction_H
 
-#include "MatrixReal.h"
 #include "TypedFunction.h"
-#include "TypedDagNode.h"
-
-#include <vector>
 
 namespace RevBayesCore {
+class DagNode;
+class MatrixReal;
+template <class valueType> class RbVector;
+template <class valueType> class TypedDagNode;
     
+    /**
+     * @brief Declaration of the deterministic variable for minimum.
+     * The function returns the minimum value within a vector or matrix of doubles
+     */
     class MinFunction : public TypedFunction<double> {
         
     public:

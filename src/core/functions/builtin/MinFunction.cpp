@@ -1,8 +1,20 @@
 #include "MinFunction.h"
+
+#include <stddef.h>
+
 #include "RbConstants.h"
+#include "Cloneable.h"
+#include "DagNode.h"
+#include "MatrixReal.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "TypedDagNode.h"
 
 using namespace RevBayesCore;
 
+/** MinFunction of a RbVector Constructor
+ * @param v the vector of values
+ */
 MinFunction::MinFunction(const TypedDagNode< RbVector<double> > *v) : TypedFunction<double>( new double(0.0) ),
     matrix(false),
     vals( v )
@@ -13,6 +25,9 @@ MinFunction::MinFunction(const TypedDagNode< RbVector<double> > *v) : TypedFunct
     update();
 }
 
+/** MinFunction of a MatrixReal Constructor
+ * @param v the matrix of values
+ */
 MinFunction::MinFunction(const TypedDagNode< MatrixReal > *v) : TypedFunction<double>( new double(0.0) ),
     matrix(true),
     vals( v )

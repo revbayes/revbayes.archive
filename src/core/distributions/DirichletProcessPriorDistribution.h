@@ -1,19 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the DPP class. 
- * A mixture object holds the mapping between parameter values and the indix of this parameters.
- *
- *
- * @brief Declaration of the Mixture class
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @since Version 1.0, 2012-07-18
- *
- * $Id$
- */
 
 #ifndef DirichletProcessPriorDistribution_H
 #define DirichletProcessPriorDistribution_H
@@ -23,7 +7,25 @@
 #include "TypedDistribution.h"
 
 namespace RevBayesCore {
-    
+    /**
+     * @brief The Dirichlet Process Prior Distribution (Mixture) Class *templated class
+     *
+     * A mixture object holds the mapping between parameter values
+     * and the index of the parameters.
+     * The distribution requires three parameters as input:
+     *  @param  concentration the concentration parameter
+     *  @param baseDistribution the base distribution (G_0)
+     *  @param numElements the number of elements
+     *
+     * The class also has the following member variables:
+     *  @param numTables the number of DPP mixture classes (i.e., called numTables because this is the Chinese Rest. construction)
+     *  @param numCustomerPerTable the number of elements per mixture class
+     *  @param allocationVector the assignments of elements to mixture class (using indexes)
+     *  @param valuePerTable the value of the parameter for each mixture class (drawn from baseDistribution)
+     *  @param denominator the denominator of the probability is sum^N_{i=1} ln( alpha + i - 1 )
+     *  @param concentrationHasChanged a boolean flag indicating if the hyperparameter has been updated
+     */
+
     template <class valueType>
     class DirichletProcessPriorDistribution : public TypedDistribution< RbVector<valueType> > {
         
@@ -72,13 +74,16 @@ namespace RevBayesCore {
     
 }
 
-#include "Cloner.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbMathCombinatorialFunctions.h"
 
-#include <cmath>
 
+/** DirichletProcessPriorDistribution Constructor
+ * @param g the base distribution
+ * @param cp concentration parameter
+ * @param n number of elements
+ */
 template <class valueType>
 RevBayesCore::DirichletProcessPriorDistribution<valueType>::DirichletProcessPriorDistribution(TypedDistribution<valueType> *g, const TypedDagNode< double > *cp,int n) :
                                                                                               TypedDistribution< RbVector<valueType> >( new RbVector<valueType>() ),
@@ -380,6 +385,11 @@ std::vector<int> RevBayesCore::DirichletProcessPriorDistribution<valueType>::get
 }
 
 
+/** DirichletProcessPriorDistribution findValueinValuePerTable function
+ * Looks up the mixture class with a given value
+ * @param v the value of a mixture class
+ * @return tID the index of the table
+ */
 template <class valueType>
 size_t RevBayesCore::DirichletProcessPriorDistribution<valueType>::findValueinValuePerTable(valueType v)
 {

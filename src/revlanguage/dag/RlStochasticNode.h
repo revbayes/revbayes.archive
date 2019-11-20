@@ -3,6 +3,7 @@
 
 #include "StochasticNode.h"
 #include "RevMemberObject.h"
+#include "RlDistribution.h"
 
 namespace RevLanguage {
     
@@ -23,6 +24,7 @@ namespace RevLanguage {
         const MethodTable&                  getMethods( void ) const;                                                                       //!< Get the member methods
         Distribution&                       getRlDistribution(void);                                                                        //!< Get the Rev distribution
         const Distribution&                 getRlDistribution(void) const;                                                                  //!< Get the Rev distribution (const)
+        void                                printStructureInfo(std::ostream &o, bool verbose=false) const;                                  //!< Print information on structure
 
     private:
         
@@ -264,6 +266,38 @@ const RevLanguage::Distribution& RevLanguage::StochasticNode<valueType>::getRlDi
 {
     
     return *rlDistribution;
+}
+
+
+/** Print struct for user */
+template<class valueType>
+void RevLanguage::StochasticNode<valueType>::printStructureInfo( std::ostream& o, bool verbose ) const
+{
+    o << "_dagType      = Stochastic node (distribution)" << std::endl;
+    o << "_distribution = " << rlDistribution->getRevDeclaration() << std::endl;
+    o << "_clamped      = " << ( this->clamped ? "TRUE" : "FALSE" ) << std::endl;
+    o << "_lnProb       = " << const_cast< StochasticNode<valueType>* >( this )->getLnProbability() << std::endl;    
+    if ( this->touched == true && verbose == true)
+    {
+        o << "_stored_ln_prob = " << this->stored_ln_prob << std::endl; // const_cast< StochasticNode<valueType>* >( this )->getLnProbability() << std::endl;
+    }
+
+    
+    o << "_parents      = ";
+    this->printParents( o, 16, 70, verbose );
+    o << std::endl;
+    
+    o << "_children     = ";
+    this->printChildren( o, 16, 70, verbose );
+    o << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+        o << "_refCount     = " << this->getReferenceCount() << std::endl;
+    }
+    
+    o << std::endl;
 }
 
 

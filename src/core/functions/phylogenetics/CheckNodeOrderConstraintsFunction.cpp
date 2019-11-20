@@ -1,6 +1,17 @@
 #include "CheckNodeOrderConstraintsFunction.h"
+
+#include <stddef.h>
+#include <iostream>
+#include <vector>
+
 #include "RbException.h"
 #include "TreeUtilities.h"
+#include "Cloneable.h"
+#include "RelativeNodeAgeConstraints.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { class Tree; }
 
 using namespace RevBayesCore;
 
@@ -18,7 +29,7 @@ constrainedNodes()
     
     update();
 }
-catch (RbException e)
+catch (RbException &e)
 {
     std::cerr << e.getMessage() << std::endl;
     }
@@ -87,7 +98,7 @@ void CheckNodeOrderConstraintsFunction::update( void )
     try {
         updateMapOfNodeAges();
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         std::cerr << e.getMessage() << std::endl;
     }

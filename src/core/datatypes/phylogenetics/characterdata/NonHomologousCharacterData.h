@@ -1,15 +1,14 @@
 #ifndef NonHomologousCharacterData_H
 #define NonHomologousCharacterData_H
 
-#include "CharacterState.h"
-#include "Cloneable.h"
-#include "AbstractCharacterData.h"
-#include "AbstractTaxonData.h"
-
-#include <string>
+#include <stddef.h>
 #include <vector>
+#include <iosfwd>
+
+#include "AbstractCharacterData.h"
 
 namespace RevBayesCore {
+class AbstractTaxonData;
     
     /**
      * Abstract class for all character data objects.
@@ -30,11 +29,7 @@ namespace RevBayesCore {
         
         // Overloaded operators
         virtual const AbstractTaxonData&        operator[](size_t i) const = 0;                                                                     //!< Subscript operator (const)
-        virtual bool                            operator==(const NonHomologousCharacterData &rm) const { return this == &rm; }
-        virtual bool                            operator!=(const NonHomologousCharacterData &rm) const { return !operator==(rm); }
-        virtual bool                            operator<(const NonHomologousCharacterData &rm) const { return this < &rm; }
-        virtual bool                            operator<=(const NonHomologousCharacterData &rm) const { return operator<(rm) || operator==(rm); }
-        
+
         // methods of the Cloneable interface
         virtual NonHomologousCharacterData*     clone(void) const = 0;
         

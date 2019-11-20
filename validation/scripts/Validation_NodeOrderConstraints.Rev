@@ -1,9 +1,9 @@
 ################################################################################
 #
 # RevBayes Validation Test: sampling ultrametric trees with node order constraints.
-# 
-# Model: A constant-rate birth-death process with uniform taxon sampling. 
-#            
+#
+# Model: A constant-rate birth-death process with uniform taxon sampling.
+#
 #
 # authors: Bastien Boussau
 #
@@ -13,9 +13,9 @@
 # Reading in the Data #
 #######################
 
-tree <- readTrees("data/abcdefgh.tree")[1]
+tree <- readTrees("../data/abcdefgh.tree")[1]
 
-constraints <- readRelativeNodeAgeConstraints(file="data/NodeOrderConstraints.txt")
+constraints <- readRelativeNodeAgeConstraints(file="../data/NodeOrderConstraints.txt")
 
 # Get some useful variables from the data. We need these later on.
 taxa <- tree.taxa()
@@ -80,6 +80,3 @@ validation.summarize()
 
 # you may want to quit RevBayes now
 q()
-
-
-

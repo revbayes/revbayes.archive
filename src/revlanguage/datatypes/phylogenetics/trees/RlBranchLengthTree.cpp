@@ -1,13 +1,23 @@
-#include "ModelVector.h"
-#include "Natural.h"
-#include "RbUtil.h"
-#include "RlBranchLengthTree.h"
-#include "RlMemberFunction.h"
-#include "RlString.h"
-#include "RealPos.h"
-#include "TypeSpec.h"
-
+#include <stddef.h>
 #include <sstream>
+#include <string>
+#include <vector>
+
+#include "RlBranchLengthTree.h"
+#include "RlString.h"
+#include "TypeSpec.h"
+#include "Argument.h"
+#include "ArgumentRule.h"
+#include "ArgumentRules.h"
+#include "MemberProcedure.h"
+#include "MethodTable.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlTree.h"
+#include "RlUtils.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
 
 using namespace RevLanguage;
 

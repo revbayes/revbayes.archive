@@ -1,7 +1,17 @@
 #include "SumFunction.h"
 
-using namespace RevBayesCore;
+#include "RbConstIterator.h"
+#include "RbConstIteratorImpl.h"
+#include "RbVector.h"
+#include "TypedDagNode.h"
 
+namespace RevBayesCore { class DagNode; }
+
+using namespace RevBayesCore;
+/**
+ * SumFunction of a RbVector Constructor.
+ * @param v the vector of values of type double
+ */
 SumFunction::SumFunction(const TypedDagNode<RbVector<double> > *v) : TypedFunction<double>( new double(0.0) ), vals( v )
 {
     // add the parameters as parents

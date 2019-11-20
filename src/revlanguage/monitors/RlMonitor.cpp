@@ -1,15 +1,24 @@
+#include <stddef.h>
+#include <ostream>
+#include <string>
+#include <vector>
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "ConstantNode.h"
-#include "ModelVector.h"
-#include "Monitor.h"
-#include "OptionRule.h"
-#include "RevObject.h"
-#include "RbException.h"
 #include "RlMonitor.h"
+#include "Argument.h"
+#include "MemberProcedure.h"
+#include "MethodTable.h"
+#include "Monitor.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlUtils.h"
+#include "StringUtilities.h"
 #include "TypeSpec.h"
+#include "WorkspaceToCoreWrapperObject.h"
 
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevLanguage;
 
@@ -66,7 +75,6 @@ RevPtr<RevVariable> Monitor::executeMethod(const std::string& name, const std::v
 }
 
 
-/** Get Rev type of object */
 const std::string& Monitor::getClassType(void)
 {
     
@@ -75,7 +83,7 @@ const std::string& Monitor::getClassType(void)
 	return rev_type; 
 }
 
-/** Get class type spec describing type of object */
+
 const TypeSpec& Monitor::getClassTypeSpec(void)
 {
     
@@ -109,7 +117,7 @@ std::vector<std::string> Monitor::getConstructorFunctionAliases( void ) const
 
 
 /**
- * Get the Rev name for the constructor function.
+ * Get the Rev name for the constructor function (with appropriate prefix).
  *
  * \return Rev name of constructor function.
  */
@@ -123,143 +131,14 @@ std::string Monitor::getConstructorFunctionName( void ) const
 }
 
 
-/** Get the help entry for this class */
-RevBayesCore::RbHelpMonitor* Monitor::getHelpEntry( void ) const
-{
-    // create the help function entry that we will fill with some values
-    RevBayesCore::RbHelpMonitor *help = new RevBayesCore::RbHelpMonitor();
-    RevBayesCore::RbHelpMonitor &help_entry = *help;
-    
-    // name
-    help_entry.setName( getConstructorFunctionName() );
-    
-    // aliases
-    std::vector<std::string> aliases = getConstructorFunctionAliases();
-    help_entry.setAliases( aliases );
-    
-    // title
-    help_entry.setTitle( getHelpTitle() );
-    
-    // description
-    help_entry.setDescription( getHelpDescription() );
-    
-    
-    
-    // create the constructor
-    RevBayesCore::RbHelpFunction help_constructor = RevBayesCore::RbHelpFunction();
-    
-    // usage
-    help_constructor.setUsage( getConstructorUsage() );
-    
-    // arguments
-    const MemberRules& rules = getParameterRules();
-    std::vector<RevBayesCore::RbHelpArgument> arguments = std::vector<RevBayesCore::RbHelpArgument>();
-    
-    for ( size_t i=0; i<rules.size(); ++i )
-    {
-        const ArgumentRule &the_rule = rules[i];
-        
-        RevBayesCore::RbHelpArgument argument = RevBayesCore::RbHelpArgument();
-        
-        argument.setLabel( the_rule.getArgumentLabel() );
-        argument.setDescription( the_rule.getArgumentDescription() );
-        
-        std::string type = "<any>";
-        if ( the_rule.getArgumentDagNodeType() == ArgumentRule::CONSTANT )
-        {
-            type = "<constant>";
-        }
-        else if ( the_rule.getArgumentDagNodeType() == ArgumentRule::STOCHASTIC )
-        {
-            type = "<stochastic>";
-        }
-        else if ( the_rule.getArgumentDagNodeType() == ArgumentRule::DETERMINISTIC )
-        {
-            type = "<deterministic>";
-        }
-        argument.setArgumentDagNodeType( type );
-        
-        std::string passing_method = "value";
-        if ( the_rule.getEvaluationType() == ArgumentRule::BY_CONSTANT_REFERENCE )
-        {
-            passing_method = "const reference";
-        }
-        else if ( the_rule.getEvaluationType() == ArgumentRule::BY_REFERENCE )
-        {
-            passing_method = "reference";
-        }
-        argument.setArgumentPassingMethod(  passing_method );
-        
-        argument.setValueType( the_rule.getArgumentTypeSpec()[0].getType() );
-        
-        if ( the_rule.hasDefault() )
-        {
-            std::stringstream ss;
-            the_rule.getDefaultVariable().getRevObject().printValue( ss, true);
-            argument.setDefaultValue( ss.str() );
-        }
-        else
-        {
-            argument.setDefaultValue( "" );
-        }
-        
-        // loop options
-        std::vector<std::string> options = std::vector<std::string>();
-        const OptionRule *opt_rule = dynamic_cast<const OptionRule*>( &the_rule );
-        if ( opt_rule != NULL )
-        {
-            options = opt_rule->getOptions();
-        }
-        argument.setOptions( options );
-        
-        // add the argument to the argument list
-        arguments.push_back( argument );
-    }
-    
-    help_constructor.setArguments( arguments );
-    
-    // return value
-    help_constructor.setReturnType( getClassType() );
-    
-    // details
-    help_constructor.setDetails( getConstructorDetails() );
-    
-    // example
-    help_constructor.setExample( getConstructorExample() );
-    
-    //
-    std::vector<RevBayesCore::RbHelpFunction> constructors;
-    constructors.push_back( help_constructor );
-    help_entry.setConstructors( constructors );
-    
-    
-    help_entry.setMethods( getHelpMethods() );
-    
-    
-    help_entry.setReferences( getHelpReferences() );
-    
-    // author
-    help_entry.setAuthor( getHelpAuthor() );
-    
-    // see also
-    help_entry.setSeeAlso( getHelpSeeAlso() );
-    
-    
-    return help;
-}
-
-
-/** Get type spec */
 void Monitor::printValue(std::ostream &o, bool user) const
-{
-    
+{    
     printValue(o);
 }
 
-/** Get type spec */
+
 void Monitor::printValue(std::ostream &o) const
 {
-    
     o << getMonitorName();
 }
 

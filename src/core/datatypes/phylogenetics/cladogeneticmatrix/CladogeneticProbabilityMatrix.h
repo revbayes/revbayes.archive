@@ -9,12 +9,15 @@
 #ifndef CladogeneticProbabilityMatrix_h
 #define CladogeneticProbabilityMatrix_h
 
-#include "Assignable.h"
-#include "Cloneable.h"
-#include "MatrixReal.h"
-#include "Printable.h"
+#include <stddef.h>
 #include <map>
 #include <vector>
+#include <iosfwd>
+
+#include "Assignable.h"
+#include "Cloneable.h"
+#include "Printable.h"
+#include "Serializable.h"
 
 namespace RevBayesCore {
     
@@ -27,10 +30,10 @@ namespace RevBayesCore {
         CladogeneticProbabilityMatrix(size_t n);                                               //!< Construct rate matrix with n states
         virtual                             ~CladogeneticProbabilityMatrix(void);
         
-        virtual bool                        operator==(const CladogeneticProbabilityMatrix &rm) const { return this == &rm; }
-        virtual bool                        operator!=(const CladogeneticProbabilityMatrix &rm) const { return !operator==(rm); }
-        virtual bool                        operator<(const CladogeneticProbabilityMatrix &rm) const { return this < &rm; }
-        virtual bool                        operator<=(const CladogeneticProbabilityMatrix &rm) const { return operator<(rm) || operator==(rm); }
+        bool                                operator==(const CladogeneticProbabilityMatrix &rm) const { return this == &rm; }
+        bool                                operator!=(const CladogeneticProbabilityMatrix &rm) const { return !operator==(rm); }
+        bool                                operator< (const CladogeneticProbabilityMatrix &rm) const { return this < &rm; }
+        bool                                operator<=(const CladogeneticProbabilityMatrix &rm) const { return operator<(rm) || operator==(rm); }
         
         // virtual methods
         virtual CladogeneticProbabilityMatrix&              assign(const Assignable &m);
@@ -41,7 +44,9 @@ namespace RevBayesCore {
         virtual void                                            update(void) {};
         virtual std::map<std::vector<unsigned>, double>         getEventMap(double t=0.0);
         virtual const std::map<std::vector<unsigned>, double>&  getEventMap(double t=0.0) const;
+        std::vector<std::string>                                getEventTypes(void) const;
         void                                                    setEventMap(std::map<std::vector<unsigned>, double> m);
+        void                                                    setEventTypes(std::vector<std::string> et);
 //        void                                                    setEventMap(std::map<std::vector<unsigned>, double> m, size_t k);
         
         // public methods
@@ -63,6 +68,7 @@ namespace RevBayesCore {
         // protected members available for derived classes
         size_t                                  num_states;                                                                                  //!< The number of character states
         std::map<std::vector<unsigned>, double> eventMapProbs;
+        std::vector<std::string>                eventTypes;
         
     };
     

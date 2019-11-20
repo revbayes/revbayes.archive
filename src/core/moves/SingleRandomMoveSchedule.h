@@ -1,22 +1,14 @@
-//
-//  SingleRandomMoveSchedule.h
-//  revbayes_mlandis
-//
-//  Created by Michael Landis on 2/6/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
+#ifndef SingleRandomMoveSchedule_H
+#define SingleRandomMoveSchedule_H
 
-#ifndef __revbayes_mlandis__SingleRandomMoveSchedule__
-#define __revbayes_mlandis__SingleRandomMoveSchedule__
-
-
-#include "Move.h"
-#include "MoveSchedule.h"
-#include "RbVector.h"
 
 #include <vector>
 
+#include "MoveSchedule.h"
+
 namespace RevBayesCore {
+class Move;
+template <class valueType> class RbVector;
     
     class SingleRandomMoveSchedule : public MoveSchedule  {
         
@@ -39,4 +31,4 @@ namespace RevBayesCore {
     
 }
 
-#endif /* defined(__revbayes_mlandis__SingleRandomMoveSchedule__) */
+#endif 

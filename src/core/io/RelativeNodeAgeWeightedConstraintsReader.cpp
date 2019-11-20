@@ -1,8 +1,9 @@
 #include "RelativeNodeAgeWeightedConstraintsReader.h"
-#include "RbException.h"
-#include "RbFileManager.h"
 
-#include "RbConstants.h"
+#include <stdlib.h>
+#include <string>
+
+#include "RbException.h"
 
 
 using namespace RevBayesCore;
@@ -32,7 +33,8 @@ RelativeNodeAgeWeightedConstraintsReader::RelativeNodeAgeWeightedConstraintsRead
         std::string name3 = chars[i][2];
         std::string name4 = chars[i][3];
         double weight = atof( chars[i][4].c_str() );
-        if (weight >= thresh) {
+        if (weight >= thresh)
+        {
             OlderYoungerConstraints.push_back(std::make_pair( std::make_pair( std::make_pair( name1, name2 ), std::make_pair( name3, name4 ) ), weight ) );
         }
     }

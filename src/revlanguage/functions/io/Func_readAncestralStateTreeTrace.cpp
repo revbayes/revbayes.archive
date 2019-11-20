@@ -1,25 +1,33 @@
+#include <math.h>
+#include <stddef.h>
+#include <map>
+#include <iostream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
-#include "ConstantNode.h"
-#include "Ellipsis.h"
 #include "Func_readAncestralStateTreeTrace.h"
-#include "ModelVector.h"
-#include "NclReader.h"
 #include "NewickConverter.h"
 #include "OptionRule.h"
 #include "Probability.h"
 #include "RbException.h"
 #include "RbFileManager.h"
-#include "RlBranchLengthTree.h"
 #include "RlString.h"
-#include "RlTimeTree.h"
 #include "RlTraceTree.h"
-#include "RlUtils.h"
 #include "StringUtilities.h"
 #include "TreeUtilities.h"
+#include "Argument.h"
+#include "ArgumentRules.h"
+#include "Integer.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
+#include "Trace.h"
+#include "TraceTree.h"
+#include "TypeSpec.h"
 
-#include <map>
-#include <set>
-#include <sstream>
+namespace RevBayesCore { class Tree; }
 
 
 using namespace RevLanguage;
@@ -197,8 +205,10 @@ TraceTree* Func_readAncestralStateTreeTrace::readBranchLengthTrees(const std::ve
         bool hasHeaderBeenRead = false;
         const std::string &fn = *p;
         
+        RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(fn);
+        
         /* Open file */
-        std::ifstream inFile( fn.c_str() );
+        std::ifstream inFile( fm.getFullFileName().c_str() );
         
         if ( !inFile )
             throw RbException( "Could not open file \"" + fn + "\"" );
@@ -292,8 +302,10 @@ TraceTree* Func_readAncestralStateTreeTrace::readTimeTrees(const std::vector<std
         bool hasHeaderBeenRead = false;
         const std::string &fn = *p;
         
+        RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(fn);
+        
         /* Open file */
-        std::ifstream inFile( fn.c_str() );
+        std::ifstream inFile( fm.getFullFileName().c_str() );
         
         if ( !inFile )
             throw RbException( "Could not open file \"" + fn + "\"" );

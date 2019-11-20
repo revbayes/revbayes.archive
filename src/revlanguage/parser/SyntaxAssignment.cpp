@@ -1,13 +1,14 @@
-#include "RbException.h"
-#include "RbUtil.h"
-#include "RbOptions.h"
-#include "SyntaxAssignment.h"
-#include "SyntaxIndexOperation.h"
-#include "Workspace.h"
-
+#include <stddef.h>
 #include <iostream>
-#include <list>
-#include <sstream>
+#include <set>
+
+#include "RbException.h"
+#include "SyntaxAssignment.h"
+#include "Environment.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "SyntaxElement.h"
 
 using namespace RevLanguage;
 
@@ -92,7 +93,7 @@ RevPtr<RevVariable> SyntaxAssignment::evaluateContent( Environment& env, bool dy
 //            static_cast< SyntaxIndexOperation *>( lhsExpression )->updateVariable( env, the_slot->getName() );
 //        }
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         // we need to remove the variable
         env.eraseVariable( the_slot->getName() );

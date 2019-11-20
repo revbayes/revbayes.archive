@@ -1,9 +1,14 @@
-#include "RbException.h"
-#include "RbUtil.h"
-#include "SyntaxClassDef.h"
-#include "Workspace.h"
-
+#include <stddef.h>
 #include <sstream>
+#include <list>
+
+#include "RbException.h"
+#include "SyntaxClassDef.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "SyntaxElement.h"
+
+namespace RevLanguage { class Environment; }
 
 using namespace RevLanguage;
 
@@ -22,8 +27,8 @@ SyntaxClassDef::SyntaxClassDef( const std::string &name, const std::string &base
 SyntaxClassDef::SyntaxClassDef(const SyntaxClassDef& x) :
     SyntaxElement( x )
 {
-    className = className;
-    baseClass = baseClass;
+    className = x.className;
+    baseClass = x.baseClass;
 
     definitions = new std::list<SyntaxElement*>();
     for ( std::list<SyntaxElement*>::const_iterator it = x.definitions->begin(); it != x.definitions->end(); ++it )

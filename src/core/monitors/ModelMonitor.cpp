@@ -1,14 +1,19 @@
 #include "ModelMonitor.h"
+
+#include <stddef.h>
+#include <set>
+#include <string>
+#include <vector>
+
 #include "DagNode.h"
 #include "Model.h"
 #include "Monitor.h"
-#include "RbFileManager.h"
-#include "StochasticNode.h"
+#include "Cloneable.h"
 
 using namespace RevBayesCore;
 
 /* Constructor */
-ModelMonitor::ModelMonitor(unsigned long g, const std::string &fname, const std::string &del) : AbstractFileMonitor(std::vector<DagNode *>(),g,fname,del),
+ModelMonitor::ModelMonitor(unsigned long g, const std::string &fname, const std::string &del) : VariableMonitor(std::vector<DagNode *>(),g,fname,del),
     stochastic_nodes_only( false )
 {
     

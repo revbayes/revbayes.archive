@@ -1,20 +1,32 @@
+#include <stddef.h>
+#include <cmath>
+#include <algorithm>
+#include <iostream>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "DagNode.h"
 #include "DistributionBinomial.h"
-#include "DistributionUniform.h"
 #include "MaxIterationStoppingRule.h"
 #include "MonteCarloAnalysis.h"
-#include "MonteCarloSampler.h"
+#include "ProgressBar.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "RbException.h"
 #include "RlUserInterface.h"
 #include "StochasticVariableMonitor.h"
 #include "Trace.h"
 #include "TraceReader.h"
 #include "ValidationAnalysis.h"
-
-#include <cmath>
-#include <typeinfo>
+#include "Cloneable.h"
+#include "Model.h"
+#include "Parallelizable.h"
+#include "RbFileManager.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "StoppingRule.h"
+#include "StringUtilities.h"
 
 
 using namespace RevBayesCore;
@@ -44,6 +56,13 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
     {
         GLOBAL_RNG->setSeed( int(floor( GLOBAL_RNG->uniform01()*1E5 )) );
     }
+    
+#ifdef RB_MPI
+//    size_t active_proc = floor( pid / double(processors_per_likelihood) ) * processors_per_likelihood;
+    size_t active_proc = 0;
+    MPI_Comm analysis_comm;
+    MPI_Comm_split(MPI_COMM_WORLD, active_proc, pid, &analysis_comm);
+#endif
     
     runs = std::vector<MonteCarloAnalysis*>(num_runs,NULL);
     simulation_values = std::vector<Model*>(num_runs,NULL);
@@ -83,7 +102,11 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
             }
         
             // now set the model of the current analysis
+#ifdef RB_MPI
+            current_analysis->setModel( current_model, false, analysis_comm );
+#else
             current_analysis->setModel( current_model, false );
+#endif
             
             std::stringstream ss;
             ss << "Validation_Sim_" << i;
@@ -195,6 +218,9 @@ ValidationAnalysis& ValidationAnalysis::operator=(const ValidationAnalysis &a)
 void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
 {
     
+    // start the progress bar
+    ProgressBar progress = ProgressBar(generations, 0);
+    
     if ( process_active == true )
     {
         // Let user know what we are doing
@@ -204,18 +230,12 @@ void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
         RBOUT( ss.str() );
         
         // Print progress bar (68 characters wide)
-        std::cout << std::endl;
-        std::cout << "Progress:" << std::endl;
-        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
-        std::cout.flush();
+        progress.start();
     }
     
     // compute which block of the data this process needs to compute
     size_t run_block_start = size_t(floor( (double(pid)   / num_processes ) * num_runs) );
     size_t run_block_end   = std::max( int(run_block_start), int(floor( (double(pid+1) / num_processes ) * num_runs) ) - 1);
-    //    size_t stone_block_size  = stone_block_end - stone_block_start;
-    
-//    std::cerr << pid << ":\t From " << run_block_start << " to " << run_block_end << "." << std::endl;
     
     // Run the chain
     size_t numStars = 0;
@@ -223,31 +243,24 @@ void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
     {
         if ( runs[i] == NULL ) std::cerr << "Runing bad burnin (pid=" << pid <<", run="<< i << ") of runs.size()=" << runs.size() << "." << std::endl;
         // run the i-th analyses
-//        std::cerr << pid << ":\t Started burnin of run " << i << "." << std::endl;
+#ifdef RB_MPI
+        runs[i]->burnin(generations, MPI_COMM_WORLD, tuningInterval, false, false);
+#else
         runs[i]->burnin(generations, tuningInterval, false, false);
-        
+#endif
         if ( process_active == true )
         {
-            size_t progress = 68 * (double) (i+1.0) / (double) (1 + run_block_end - run_block_start);
-            if ( progress > numStars )
-            {
-                for ( ;  numStars < progress; ++numStars )
-                    std::cout << "*";
-                std::cout.flush();
-            }
+            progress.update( i );
             
         }
         
-//        std::cerr << pid << ":\t Finished burnin of run " << i << "." << std::endl;
-
         
     }
     
     if ( process_active == true )
     {
-        std::cout << std::endl;
+        progress.finish();
     }
-//    std::cerr << pid << ":\t Finished burnin." << std::endl;
     
 }
 
@@ -273,8 +286,6 @@ void ValidationAnalysis::runAll(size_t gen)
     // compute which block of the runs this process needs to compute
     size_t run_block_start = size_t(floor( (double(pid)   / num_processes ) * num_runs) );
     size_t run_block_end   = std::max( int(run_block_start), int(floor( (double(pid+1) / num_processes ) * num_runs) ) - 1);
-    //    size_t stone_block_size  = stone_block_end - stone_block_start;
-//    std::cerr << pid << ":\t Started actual runs." << std::endl;
     
     // Run the chain
     for (size_t i = run_block_start; i <= run_block_end; ++i)
@@ -283,9 +294,7 @@ void ValidationAnalysis::runAll(size_t gen)
         // run the i-th stone
         runSim(i, gen);
         
-    }
-//    std::cerr << pid << ":\t Started Finished runs." << std::endl;
-    
+    }    
     
 }
 
@@ -319,9 +328,9 @@ void ValidationAnalysis::runSim(size_t idx, size_t gen)
     
     
 #ifdef RB_MPI
-    analysis->run(gen, rules, MPI_COMM_WORLD, 100, false);
+    analysis->run(gen, rules, MPI_COMM_WORLD, 100, "", 0, false);
 #else
-    analysis->run(gen, rules, 100, false);
+    analysis->run(gen, rules, 100, "", 0, false);
 #endif
 
 }

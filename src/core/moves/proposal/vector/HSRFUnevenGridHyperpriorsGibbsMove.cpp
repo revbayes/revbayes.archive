@@ -1,22 +1,23 @@
-#include "DagNode.h"
-#include "DistributionHalfCauchy.h"
-#include "DistributionNormal.h"
+#include <stddef.h>
+#include <cmath>
+#include <cassert>
+#include <iostream>
+#include <vector>
+
 #include "HalfCauchyDistribution.h"
 #include "HSRFUnevenGridHyperpriorsGibbsMove.h"
 #include "NormalDistribution.h"
 #include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
-#include "RbConstants.h"
-#include "RbMathLogic.h"
 #include "RbStatisticsHelper.h"
 #include "TypedDagNode.h"
+#include "AbstractGibbsMove.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "StochasticNode.h"
+#include "TypedDistribution.h"
 
-#include <cmath>
-#include <cassert>
-#include <iomanip>
-#include <sstream>
-#include <iostream>
-#include <utility>
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 
@@ -153,9 +154,6 @@ const std::string& HSRFUnevenGridHyperpriorsGibbsMove::getMoveName( void ) const
 void HSRFUnevenGridHyperpriorsGibbsMove::performGibbsMove( void )
 {
 //    std::cout << "Hello from HSRFUnevenGridHyperpriorsGibbsMove::performGibbsMove( void )" << std::endl;
-
-    // Get random number generator
-    RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get global scale
     double eta_squared = std::pow(global_scale->getValue(),2.0);

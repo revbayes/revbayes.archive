@@ -7,14 +7,15 @@
 
 
 #include "DistributionInverseWishart.h"
-#include "DistributionMultivariateNormal.h"
-#include "RbException.h"
-#include "RbConstants.h"
-#include "RbMathFunctions.h"
-#include "RbStatisticsHelper.h"
-#include "DistributionNormal.h"
 
 #include <cmath>
+
+#include "DistributionMultivariateNormal.h"
+#include "RbConstants.h"
+#include "DistributionNormal.h"
+#include "Cloneable.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
 
 using namespace RevBayesCore;
 
@@ -50,7 +51,7 @@ double RbStatistics::InverseWishart::pdf(const MatrixReal &sigma0, size_t df, co
 double RbStatistics::InverseWishart::lnPdf(const MatrixReal &sigma0, size_t df, const MatrixReal &z)
 {
     
-    if ( !z.isPositive() )
+    if ( !z.isPositiveDefinite() )
     {
         return RbConstants::Double::neginf;
     }
@@ -190,7 +191,7 @@ double RbStatistics::InverseWishart::lnPdf(const std::vector<double>& kappa, siz
     
     size_t dim = z.getDim();
     
-    if ( z.isPositive() == false )
+    if ( z.isPositiveDefinite() == false )
     {
         return RbConstants::Double::neginf;
     }
@@ -295,7 +296,7 @@ double RbStatistics::InverseWishart::lnPdf(double kappa, size_t df, const Matrix
     
     size_t dim = z.getDim();
     
-    if ( !z.isPositive() )
+    if ( !z.isPositiveDefinite() )
     {
         return RbConstants::Double::neginf;
     }

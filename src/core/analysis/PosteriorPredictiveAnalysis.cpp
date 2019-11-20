@@ -1,13 +1,23 @@
+#include <stddef.h>
+#include <cmath>
+#include <iostream>
+#include <string>
+#include <vector>
+
 #include "DagNode.h"
 #include "MaxIterationStoppingRule.h"
 #include "MonteCarloAnalysis.h"
 #include "MonteCarloSampler.h"
+#include "MpiUtilities.h"
 #include "PosteriorPredictiveAnalysis.h"
 #include "RbException.h"
-#include "RlUserInterface.h"
-
-#include <cmath>
-#include <typeinfo>
+#include "Cloneable.h"
+#include "Model.h"
+#include "Parallelizable.h"
+#include "RbFileManager.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "StoppingRule.h"
 
 #ifdef RB_MPI
 #include <mpi.h>
@@ -46,58 +56,6 @@ PosteriorPredictiveAnalysis::~PosteriorPredictiveAnalysis(void)
 }
 
 
-///** Run burnin and autotune */
-//void PosteriorPredictiveAnalysis::burnin(size_t generations, size_t tuningInterval)
-//{
-//    
-//    if ( process_active == true )
-//    {
-//        // Let user know what we are doing
-//        std::stringstream ss;
-//        ss << "\n";
-//        ss << "Running burn-in phase of Monte Carlo sampler " << num_runs <<  " each for " << generations << " iterations.\n";
-//        RBOUT( ss.str() );
-//    
-//        // Print progress bar (68 characters wide)
-//        std::cout << std::endl;
-//        std::cout << "Progress:" << std::endl;
-//        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
-//        std::cout.flush();
-//    }
-//    
-//    // compute which block of the data this process needs to compute
-//    size_t run_block_start = size_t(floor( (double(pid)   / num_processes ) * num_runs) );
-//    size_t run_block_end   = size_t(floor( (double(pid+1) / num_processes ) * num_runs) );
-//    //    size_t stone_block_size  = stone_block_end - stone_block_start;
-//    
-//    // Run the chain
-//    size_t numStars = 0;
-//    for (size_t i = run_block_start; i < run_block_end; ++i)
-//    {
-//        if ( process_active == true )
-//        {
-//            size_t progress = 68 * (double) i / (double) (run_block_end - run_block_start);
-//            if ( progress > numStars )
-//            {
-//                for ( ;  numStars < progress; ++numStars )
-//                    std::cout << "*";
-//                std::cout.flush();
-//            }
-//        }
-//        
-//        // run the i-th analyses
-//        runs[i]->burnin(generations, tuningInterval, false);
-//        
-//    }
-//    
-//    if ( process_active == true )
-//    {
-//        std::cout << std::endl;
-//    }
-//    
-//}
-
-
 
 PosteriorPredictiveAnalysis* PosteriorPredictiveAnalysis::clone( void ) const
 {
@@ -108,7 +66,7 @@ PosteriorPredictiveAnalysis* PosteriorPredictiveAnalysis::clone( void ) const
 
 void PosteriorPredictiveAnalysis::runAll(size_t gen)
 {
-
+    
     // print some information to the screen but only if we are the active process
     if ( process_active == true )
     {
@@ -151,7 +109,7 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
 
     // set the processors for this analysis
     size_t active_proc = floor( pid / double(processors_per_likelihood) ) * processors_per_likelihood;
-    template_sampler.setActivePID( active_proc, processors_per_likelihood );
+    template_sampler.setActivePID( active_proc, processors_per_likelihood );    
     
 #ifdef RB_MPI
     MPI_Comm analysis_comm;
@@ -167,8 +125,6 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
         // create an independent copy of the analysis
         MonteCarloAnalysis *current_analysis = template_sampler.clone();
 
-        current_analysis->disableScreenMonitors( true );
-        
         // get the model of the analysis
         Model* current_model = current_analysis->getModel().clone();
         
@@ -189,7 +145,14 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
         RbFileManager tmp = RbFileManager( dir_names[i] );
         
         // now set the model of the current analysis
+#ifdef RB_MPI
+        current_analysis->setModel( current_model, false, analysis_comm );
+#else
         current_analysis->setModel( current_model, false );
+#endif
+        
+        // disable the screen monitor
+        current_analysis->disableScreenMonitors( true );
 
         // set the monitor index
         current_analysis->addFileMonitorExtension(tmp.getLastPathComponent(), true);
@@ -222,9 +185,14 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
     
 #ifdef RB_MPI
     MPI_Comm_free(&analysis_comm);
-
-    // wait until all chains complete
+    
+    // to be safe, we should synchronize the random number generators
+    MpiUtilities::synchronizeRNG( MPI_COMM_WORLD );
+    
+    // wait until all analysies are completed
     MPI_Barrier(MPI_COMM_WORLD);
+#else
+    MpiUtilities::synchronizeRNG(  );
 #endif
     
 }
@@ -244,9 +212,9 @@ void PosteriorPredictiveAnalysis::runSim(MonteCarloAnalysis *sampler, size_t gen
     rules.push_back( MaxIterationStoppingRule(gen + currentGen) );
     
 #ifdef RB_MPI
-    sampler->run(gen, rules, c, 100, false);
+    sampler->run(gen, rules, c, 100, "", 0, false);
 #else
-    sampler->run(gen, rules, 100, false);
+    sampler->run(gen, rules, 100, "", 0, false);
 #endif
     
 }

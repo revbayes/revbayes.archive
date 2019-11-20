@@ -6,15 +6,20 @@
  */
 
 #include "PhyloOrnsteinUhlenbeckProcess.h"
-#include "ConstantNode.h"
+
+#include <stddef.h>
+#include <cmath>
+
 #include "DistributionNormal.h"
 #include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
 #include "RbConstants.h"
-#include "StochasticNode.h"
+#include "Cloner.h"
+#include "RbVectorImpl.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
 
-#include <cmath>
-#include <iostream>
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { class RandomNumberGenerator; }
 
 
 
@@ -57,13 +62,14 @@ double PhyloOrnsteinUhlenbeckProcess::computeLnProbability(void)
 }
 
 
-double PhyloOrnsteinUhlenbeckProcess::recursiveLnProb( const TopologyNode& from ) {
+double PhyloOrnsteinUhlenbeckProcess::recursiveLnProb( const TopologyNode& from )
+{
     
     double lnProb = 0.0;
     size_t index = from.getIndex();
     double val = (*value)[index];
     
-    if (from.isRoot())
+    if ( from.isRoot() == true )
     {
 
         // we only need to check that the root has the same value as set by the root parameter
@@ -126,7 +132,8 @@ void PhyloOrnsteinUhlenbeckProcess::simulate()
 }
 
 
-void PhyloOrnsteinUhlenbeckProcess::recursiveSimulate(const TopologyNode& from)  {
+void PhyloOrnsteinUhlenbeckProcess::recursiveSimulate(const TopologyNode& from)
+{
     
     size_t index = from.getIndex();
     
@@ -147,7 +154,7 @@ void PhyloOrnsteinUhlenbeckProcess::recursiveSimulate(const TopologyNode& from) 
         double standDev = 1.0;
         if ( homogeneousPhi != NULL ) // homogeneous
         {
-            double e = exp(-homogeneousPhi->getValue() * t);
+            double e  = exp(-homogeneousPhi->getValue() * t);
             double e2 = exp(-2 * homogeneousPhi->getValue() * t);
             m = e * upval + (1 - e) * homogeneousMean->getValue();
             standDev = homogeneousSigma->getValue() * sqrt((1 - e2) / 2 / homogeneousPhi->getValue());
@@ -155,7 +162,7 @@ void PhyloOrnsteinUhlenbeckProcess::recursiveSimulate(const TopologyNode& from) 
         else // heterogeneous
         {
             size_t node_index = from.getIndex();
-            double e = exp(-heterogeneousPhi->getValue()[node_index] * t);
+            double e  = exp(-heterogeneousPhi->getValue()[node_index] * t);
             double e2 = exp(-2 * heterogeneousPhi->getValue()[node_index] * t);
             m = e * upval + (1 - e) * heterogeneousMean->getValue()[node_index];
             standDev = heterogeneousSigma->getValue()[node_index] * sqrt((1 - e2) / 2 / heterogeneousPhi->getValue()[node_index]);

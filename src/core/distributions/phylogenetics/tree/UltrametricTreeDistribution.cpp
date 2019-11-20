@@ -1,15 +1,34 @@
-#include "Clade.h"
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <iostream>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
-#include "RbMathCombinatorialFunctions.h"
 #include "StochasticNode.h"
 #include "TopologyNode.h"
 #include "TreeUtilities.h"
 #include "UltrametricTreeDistribution.h"
+#include "RbBitSet.h"
+#include "RbBoolean.h"
+#include "RbException.h"
+#include "RbMathLogic.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "StringUtilities.h"
+#include "Trace.h"
+#include "TraceTree.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
 
-#include <algorithm>
-#include <cmath>
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { template <class valueType> class RbOrderedSet; }
 
 
 #ifdef RB_MPI
@@ -18,15 +37,19 @@
 
 using namespace RevBayesCore;
 
-UltrametricTreeDistribution::UltrametricTreeDistribution( TypedDistribution<Tree>* tp, TypedDistribution<double>* rp, TypedDagNode<double> *ra, const TraceTree &tree_trace) : TypedDistribution<Tree>( new Tree() ),
+UltrametricTreeDistribution::UltrametricTreeDistribution( TypedDistribution<Tree>* tp, TypedDistribution<double>* rp, TypedDagNode<double> *ra, TypedDagNode<double> *rbf, const TraceTree &tree_trace, Trace<double>* dens, MEAN m) : TypedDistribution<Tree>( new Tree() ),
     tree_prior( tp ),
     rate_prior( rp ),
     root_age( ra ),
+    root_branch_fraction( rbf ),
+    sample_prior_density( dens ),
     num_samples( 0 ),
     sample_block_start( 0 ),
     sample_block_end( num_samples ),
     sample_block_size( num_samples ),
-    ln_probs(num_samples, 0.0)
+    ln_probs(num_samples, 0.0),
+    num_taxa( 0 ),
+    mean_method( m )
 {
     
     int burnin = tree_trace.getBurnin();
@@ -36,11 +59,17 @@ UltrametricTreeDistribution::UltrametricTreeDistribution( TypedDistribution<Tree
         trees.push_back( tree_trace.objectAt( i ) );
     }
     
+    if ( trees.size() > 0 )
+    {
+        num_taxa = trees[0].getNumberOfTips();
+    }
+    
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
     this->addParameter( root_age );
-    
+    this->addParameter( root_branch_fraction );
+
     
     // add the parameters of the distribution
     const std::vector<const DagNode*>& pars_tp = tree_prior->getParameters();
@@ -56,8 +85,12 @@ UltrametricTreeDistribution::UltrametricTreeDistribution( TypedDistribution<Tree
     }
     
     
-    
     num_samples = trees.size();
+    
+    if ( sample_prior_density != NULL && tree_trace.size() != sample_prior_density->size() && tree_trace.getBurnin() != sample_prior_density->getBurnin() )
+    {
+        throw RbException("The size of the tree trace (" + StringUtilities::to_string(tree_trace.size()) + ") and the prior density trace (" + StringUtilities::to_string(sample_prior_density->size()) + ") does not match!");
+    }
     
     
     sample_block_start = 0;
@@ -90,7 +123,9 @@ UltrametricTreeDistribution::UltrametricTreeDistribution( const UltrametricTreeD
     tree_prior( d.tree_prior->clone() ),
     rate_prior( d.rate_prior->clone() ),
     root_age( d.root_age ),
+    root_branch_fraction( d.root_branch_fraction ),
     trees( d.trees ),
+    sample_prior_density( NULL ),
     trees_newick( d.trees_newick ),
     topology_indices( d.topology_indices ),
     tree_branch_lengths( d.tree_branch_lengths ),
@@ -99,9 +134,14 @@ UltrametricTreeDistribution::UltrametricTreeDistribution( const UltrametricTreeD
     sample_block_start( d.sample_block_start ),
     sample_block_end( d.sample_block_end ),
     sample_block_size( d.sample_block_size ),
-    ln_probs( d.ln_probs )
+    ln_probs( d.ln_probs ),
+    num_taxa( d.num_taxa ),
+    mean_method( d.mean_method )
 {
-    
+    if ( d.sample_prior_density != NULL )
+    {
+        sample_prior_density = d.sample_prior_density->clone();
+    }
 }
 
 
@@ -110,6 +150,8 @@ UltrametricTreeDistribution::~UltrametricTreeDistribution()
     
     delete tree_prior;
     delete rate_prior;
+    delete sample_prior_density;
+    
 }
 
 
@@ -126,104 +168,35 @@ UltrametricTreeDistribution& UltrametricTreeDistribution::operator=( const Ultra
         // free memory
         delete tree_prior;
         delete rate_prior;
+        delete sample_prior_density;
         
-        tree_prior          = d.tree_prior->clone();
-        rate_prior          = d.rate_prior->clone();
-        root_age            = d.root_age;
-        trees               = d.trees;
-        trees_newick        = d.trees_newick;
-        topology_indices    = d.topology_indices;
-        tree_branch_lengths = d.tree_branch_lengths;
-        outgroup            = d.outgroup;
-        num_samples         = d.num_samples;
-        sample_block_start  = d.sample_block_start;
-        sample_block_end    = d.sample_block_end;
-        sample_block_size   = d.sample_block_size;
-        ln_probs            = d.ln_probs;
+        tree_prior              = d.tree_prior->clone();
+        rate_prior              = d.rate_prior->clone();
+        root_age                = d.root_age;
+        root_branch_fraction    = d.root_branch_fraction;
+        trees                   = d.trees;
+        sample_prior_density    = NULL;
+        trees_newick            = d.trees_newick;
+        topology_indices        = d.topology_indices;
+        tree_branch_lengths     = d.tree_branch_lengths;
+        outgroup                = d.outgroup;
+        num_samples             = d.num_samples;
+        sample_block_start      = d.sample_block_start;
+        sample_block_end        = d.sample_block_end;
+        sample_block_size       = d.sample_block_size;
+        ln_probs                = d.ln_probs;
+        num_taxa                = d.num_taxa;
+        mean_method             = d.mean_method;
+        
+        if ( d.sample_prior_density != NULL )
+        {
+            sample_prior_density = d.sample_prior_density->clone();
+        }
         
     }
     
     return *this;
 }
-
-
-///**
-// * Recursive call to attach ordered interior node times to the time tree psi. Call it initially with the
-// * root of the tree.
-// */
-//void UltrametricTreeDistribution::attachTimes(Tree* psi, std::vector<TopologyNode *> &nodes, size_t index, const std::vector<double> &interiorNodeTimes, double originTime )
-//{
-//
-//    if (index < num_taxa-1)
-//    {
-//        // Get the rng
-//        RandomNumberGenerator* rng = GLOBAL_RNG;
-//
-//        // Randomly draw one node from the list of nodes
-//        size_t node_index = static_cast<size_t>( floor(rng->uniform01()*nodes.size()) );
-//
-//        // Get the node from the list
-//        TopologyNode* parent = nodes.at(node_index);
-//        psi->getNode( parent->getIndex() ).setAge( originTime - interiorNodeTimes[index] );
-//
-//        // Remove the randomly drawn node from the list
-//        nodes.erase(nodes.begin()+long(node_index));
-//
-//        // Add the left child if an interior node
-//        TopologyNode* leftChild = &parent->getChild(0);
-//        if ( !leftChild->isTip() )
-//        {
-//            nodes.push_back(leftChild);
-//        }
-//
-//        // Add the right child if an interior node
-//        TopologyNode* rightChild = &parent->getChild(1);
-//        if ( !rightChild->isTip() )
-//        {
-//            nodes.push_back(rightChild);
-//        }
-//
-//        // Recursive call to this function
-//        attachTimes(psi, nodes, index+1, interiorNodeTimes, originTime);
-//    }
-//
-//}
-
-
-///** Build random binary tree to size num_taxa. The result is a draw from the uniform distribution on histories. */
-//void UltrametricTreeDistribution::buildRandomBinaryHistory(std::vector<TopologyNode*> &tips)
-//{
-//
-//    if (tips.size() < num_taxa)
-//    {
-//        // Get the rng
-//        RandomNumberGenerator* rng = GLOBAL_RNG;
-//
-//        // Randomly draw one node from the list of tips
-//        size_t index = static_cast<size_t>( floor(rng->uniform01()*tips.size()) );
-//
-//        // Get the node from the list
-//        TopologyNode* parent = tips.at(index);
-//
-//        // Remove the randomly drawn node from the list
-//        tips.erase(tips.begin()+long(index));
-//
-//        // Add a left child
-//        TopologyNode* leftChild = new TopologyNode(0);
-//        parent->addChild(leftChild);
-//        leftChild->setParent(parent);
-//        tips.push_back(leftChild);
-//
-//        // Add a right child
-//        TopologyNode* rightChild = new TopologyNode(0);
-//        parent->addChild(rightChild);
-//        rightChild->setParent(parent);
-//        tips.push_back(rightChild);
-//
-//        // Recursive call to this function
-//        buildRandomBinaryHistory(tips);
-//    }
-//}
 
 
 /* Clone function */
@@ -234,13 +207,12 @@ UltrametricTreeDistribution* UltrametricTreeDistribution::clone( void ) const
 }
 
 
-Split UltrametricTreeDistribution::collectSplits(const TopologyNode& node, RbBitSet& intaxa, std::vector<Split>& splits)
+Split UltrametricTreeDistribution::collectSplits(const TopologyNode& node, RbBitSet& intaxa, std::vector<Split>& splits) const
 {
     
     std::vector<Split> child_splits;
     
-    RbBitSet taxa(intaxa.size());
-    std::set<Taxon> mrca;
+    RbBitSet taxa( num_taxa );
     
     if ( node.isTip() )
     {
@@ -258,8 +230,13 @@ Split UltrametricTreeDistribution::collectSplits(const TopologyNode& node, RbBit
     
     intaxa |= taxa;
     
-    Split parent_split(taxa, mrca);
+    Split parent_split(taxa);
     splits[node.getIndex()] = parent_split;
+    
+    RbBitSet taxa_rev = taxa;
+    taxa_rev.flip();
+    Split parent_split_rev(taxa_rev);
+    splits[node.getIndex()] = parent_split_rev;
     
     return parent_split;
 }
@@ -271,8 +248,7 @@ Split UltrametricTreeDistribution::collectTreeSample(const TopologyNode& n, RbBi
     
     std::vector<Split> child_splits;
     
-    RbBitSet taxa(intaxa.size());
-    std::set<Taxon> mrca;
+    RbBitSet taxa( num_taxa );
     
     if ( n.isTip() )
     {
@@ -290,15 +266,72 @@ Split UltrametricTreeDistribution::collectTreeSample(const TopologyNode& n, RbBi
     
     intaxa |= taxa;
     
-    Split parent_split(taxa, mrca);
-    split_branch_lengths[parent_split] =  bl;
+    Split parent_split(taxa);
+    split_branch_lengths[parent_split] = bl;
+    
+    RbBitSet taxa_rev = taxa;
+    taxa_rev.flip();
+    Split parent_split_rev(taxa_rev);
+    split_branch_lengths[parent_split_rev] = bl;
+
     
     return parent_split;
 }
 
+void UltrametricTreeDistribution::computeBranchRates(const Tree &my_tree, const std::string &newick, const std::vector<Split> &splits, size_t index, std::vector<double> &rates) const
+{
+    
+    if ( newick != trees_newick[index] )
+    {
+        return;
+    }
+    
+    const std::vector<TopologyNode*> &nodes = my_tree.getNodes();
+    for (size_t i=0; i<nodes.size(); ++i)
+    {
+        TopologyNode* the_node = nodes[i];
+        if ( the_node->isRoot() == false )
+        {
+            
+            double branch_time = the_node->getBranchLength();
+            
+            const std::map<Split, double> &s = tree_branch_lengths[index];
+            if ( s.find(splits[i]) == s.end() )
+            {
+                rates[i] = RbConstants::Double::nan;
+            }
+            
+            const std::map<Split, double> &branch_lengths = tree_branch_lengths[index];
+            const Split &this_split = splits[i];
+            std::map<Split, double>::const_iterator it_branch_length = branch_lengths.find( this_split );
+            if ( it_branch_length == branch_lengths.end() )
+            {
+                throw RbException("Problem in ultrametric tree distribution. Couldn't find branch length ...");
+            }
+            double branch_exp_num_events = it_branch_length->second;
+            if ( the_node->getParent().isRoot() == true )
+            {
+                double frac = 1.0;
+                if ( the_node == &(the_node->getParent().getChild(0)) )
+                {
+                    frac = root_branch_fraction->getValue();
+                }
+                else
+                {
+                    frac = 1.0 - root_branch_fraction->getValue();
+                }
+                branch_exp_num_events *= frac;
+            }
+            double branch_rate = branch_exp_num_events / branch_time;
+            
+            rates[i] = branch_rate;
+        }
+        
+    }
+    
+}
 
-
-double UltrametricTreeDistribution::computeBranchRateLnProbability(const Tree &my_tree, const std::string &newick, const std::vector<Split> &splits, size_t index)
+double UltrametricTreeDistribution::computeBranchRateLnProbability(const Tree &my_tree, const std::string &newick, const std::vector<Split> &splits, size_t index) const
 {
     
     // we need to check if the "outgroup" is present first
@@ -318,32 +351,30 @@ double UltrametricTreeDistribution::computeBranchRateLnProbability(const Tree &m
     double ln_prob =  0.0;
         
     const std::vector<TopologyNode*> &nodes = my_tree.getNodes();
+    std::vector<double> rates(nodes.size()-1,0.0);
+    computeBranchRates(my_tree, newick, splits, index, rates);
+    
     for (size_t i=0; i<nodes.size(); ++i)
     {
         TopologyNode* the_node = nodes[i];
-        if (the_node->isRoot() == false && the_node->getParent().isRoot() == false)
+        if ( the_node->isRoot() == false )
         {
             
-            double branch_time = the_node->getBranchLength();
+            double branch_rate = rates[i];
             
-            const std::map<Split, double> &s = tree_branch_lengths[index];
-            if ( s.find(splits[i]) == s.end() )
-            {
-                return RbConstants::Double::neginf;
-            }
-            
-            double branch_exp_num_events = tree_branch_lengths[index][splits[i]];
-            double branch_rate = branch_exp_num_events / branch_time;
-            
-            if ( RbMath::isFinite( branch_rate ) == false )
-                std::cerr << "Rate = " << branch_rate << ",\t\ttime" << branch_time << std::endl;
+//            if ( RbMath::isFinite( branch_rate ) == false )
+//            {
+//                std::cerr << "Rate = " << branch_rate << ",\t\ttime = " << branch_time << ",\t\tevents = " << branch_exp_num_events << std::endl;
+//            }
             
             rate_prior->setValue( new double(branch_rate) );
             ln_prob += rate_prior->computeLnProbability();
-//                std::cerr << "P(Rate = " << branch_rate << ") = " << rate_prior->computeLnProbability() << std::endl;
+//            std::cerr << the_node->computePlainNewick() << "\t\tP("<< branch_exp_num_events << "/" << branch_time << "=" << branch_rate << ") = " << rate_prior->computeLnProbability() << "\t\tSum = " << ln_prob << std::endl;
             
-            if ( RbMath::isFinite( ln_prob ) == false )
-                std::cerr << "Rate = " << branch_rate << ",\t\ttime" << branch_time << std::endl;
+//            if ( RbMath::isFinite( ln_prob ) == false )
+//            {
+//                std::cerr << "Rate = " << branch_rate << ",\t\ttime = " << branch_time << ",\t\tevents = " << branch_exp_num_events << ",\t\tprob = " << ln_prob << std::endl;
+//            }
         }
         
         if ( RbMath::isFinite( ln_prob ) == false )
@@ -351,31 +382,6 @@ double UltrametricTreeDistribution::computeBranchRateLnProbability(const Tree &m
             break;
         }
     }
-    
-    const TopologyNode &root = my_tree.getRoot();
-    double root_branch_time = 0.0;
-    double root_events = 0.0;
-    for (size_t i=0; i<root.getNumberOfChildren(); ++i)
-    {
-        const TopologyNode &child = root.getChild(i);
-        double bl = child.getBranchLength();
-        root_branch_time += bl;
-
-        size_t node_index = child.getIndex();
-        const std::map<Split, double> &s = tree_branch_lengths[index];
-        if ( s.find(splits[node_index]) == s.end() )
-        {
-            return RbConstants::Double::neginf;
-        }
-        double branch_exp_num_events = tree_branch_lengths[index][splits[node_index]];
-        root_events += branch_exp_num_events;
-        
-    }
-    
-    double root_branch_rate = root_events / root_branch_time;
-
-    rate_prior->setValue( new double(root_branch_rate) );
-    ln_prob += rate_prior->computeLnProbability();
     
     return ln_prob;
 }
@@ -387,43 +393,32 @@ double UltrametricTreeDistribution::computeLnProbability( void )
 {
 
     // create a temporary copy of the this tree
-    Tree *my_tree = value->clone();
+    const Tree &my_tree = *value;
     
-    // get the root node because we need to make this tree unrooted (for topology comparison)
-    TopologyNode *old_root = &my_tree->getRoot();
-    size_t child_index = 0;
-    if ( old_root->getChild(child_index).isTip() == true )
-    {
-        child_index = 1;
-    }
-    TopologyNode *new_root = &old_root->getChild( child_index );
-    TopologyNode *second_child = &old_root->getChild( (child_index == 0 ? 1 : 0) );
-    
-    double bl_first = new_root->getBranchLength();
-    double bl_second = second_child->getBranchLength();
-    
-    old_root->removeChild( new_root );
-    old_root->removeChild( second_child );
-    new_root->setParent( NULL );
-    new_root->addChild( second_child );
-    second_child->setParent( new_root );
-    
-    second_child->setBranchLength( bl_first + bl_second );
-    
-    // finally we need to set the new root to our tree copy
-    my_tree->setRoot( new_root, true);
-    my_tree->setRooted( false );
-    my_tree->reroot( outgroup, true);
-    
-    std::string my_tree_newick = my_tree->getPlainNewickRepresentation();
-    
-    RbBitSet b( value->getNumberOfTips(), false );
-    std::vector<Split> my_splits = std::vector<Split>(value->getNumberOfNodes(), Split(b,std::set<Taxon>() ) );
-    collectSplits(value->getRoot(), b, my_splits);
+    // make the tree non-rooted
+    Tree *my_tree_unrooted = my_tree.clone();
+    my_tree_unrooted->unroot();
 
-    const std::map<std::string, size_t> &my_taxon_bitmap = value->getTaxonBitSetMap();
+    my_tree_unrooted->reroot( outgroup, true);
+    
+    std::string my_tree_newick = my_tree_unrooted->getPlainNewickRepresentation();
+    
+    RbBitSet b( my_tree.getNumberOfTips(), false );
+    std::vector<Split> my_splits = std::vector<Split>(my_tree.getNumberOfNodes(), Split(b) );
+    collectSplits(my_tree.getRoot(), b, my_splits);
+
+    const std::map<std::string, size_t> &my_taxon_bitmap = my_tree.getTaxonBitSetMap();
     std::vector<double> probs    = std::vector<double>(num_samples, 0.0);
     std::vector<double> ln_probs = std::vector<double>(num_samples, 0.0);
+    
+//    size_t num_observed = 0;
+    
+    size_t BURNIN = 0;
+    if ( sample_prior_density != NULL )
+    {
+        BURNIN = sample_prior_density->getBurnin();
+    }
+    
     // add the ln-probs for each sample
     for (size_t i = 0; i < num_samples; ++i)
     {
@@ -435,12 +430,19 @@ double UltrametricTreeDistribution::computeLnProbability( void )
                 std::cerr << "Ooohhh" << std::endl;
             }
 
-            ln_probs[i] = computeBranchRateLnProbability( *value, my_tree_newick, my_splits, i );
+            ln_probs[i] = computeBranchRateLnProbability( my_tree, my_tree_newick, my_splits, i );
+            
+            if ( sample_prior_density != NULL && RbMath::isFinite( ln_probs[i] ) )
+            {
+//                ++num_observed;
+                ln_probs[i] -= sample_prior_density->getValues()[i+BURNIN];
+            }
+            
         }
         
     }
     
-    delete my_tree;
+    delete my_tree_unrooted;
     
 #ifdef RB_MPI
     for (size_t i = 0; i < num_samples; ++i)
@@ -501,11 +503,25 @@ double UltrametricTreeDistribution::computeLnProbability( void )
         // now normalize
         for (size_t i = 0; i < num_samples; ++i)
         {
-            probs[i] = exp( ln_probs[i] - max);
-            prob += probs[i];
+            probs[i] = exp( ln_probs[i] - max );
+            if ( mean_method == ARITHMETIC )
+            {
+                prob += probs[i];
+            }
+            else if ( mean_method == HARMONIC )
+            {
+                prob += 1/probs[i];
+            }
         }
         
-        ln_prob = std::log( prob ) + max - std::log( num_samples );
+        if ( mean_method == ARITHMETIC )
+        {
+            ln_prob = std::log( prob ) + max - std::log( num_samples );
+        }
+        else if ( mean_method == HARMONIC )
+        {
+            ln_prob = std::log( num_samples ) + max - std::log( prob );
+        }
         
 #ifdef RB_MPI
         
@@ -548,9 +564,35 @@ void UltrametricTreeDistribution::executeMethod(const std::string &n, const std:
             rv[i] = (log_transorm ? ln_probs[i] : exp(ln_probs[i]));
         }
     }
+    else if ( n == "getBranchRates" )
+    {
+            
+        int index = static_cast<const TypedDagNode<int>* >( args[0] )->getValue();
+        
+        Tree &this_tree = *value;
+        size_t num_branches = this_tree.getNumberOfNodes() - 1;
+        
+        rv.clear();
+        rv.resize( num_branches );
+        
+        // make the tree non-rooted
+        Tree *my_tree_unrooted = this_tree.clone();
+        my_tree_unrooted->unroot();
+        
+        my_tree_unrooted->reroot( outgroup, true);
+        
+        std::string my_tree_newick = my_tree_unrooted->getPlainNewickRepresentation();
+        
+        RbBitSet b( this_tree.getNumberOfTips(), false );
+        std::vector<Split> my_splits = std::vector<Split>(this_tree.getNumberOfNodes(), Split(b) );
+        collectSplits(this_tree.getRoot(), b, my_splits);
+        
+        computeBranchRates(this_tree, my_tree_newick, my_splits, index, rv);
+        
+    }
     else
     {
-        throw RbException("An empirical-sample distribution does not have a member method called '" + n + "'.");
+        throw RbException("An ultrametric tree distribution does not have a member method called '" + n + "'.");
     }
     
 }
@@ -601,7 +643,7 @@ void UltrametricTreeDistribution::getAffected(RbOrderedSet<DagNode *> &affected,
     
     if ( affecter == root_age)
     {
-        dag_node->getAffectedNodes( affected );
+        dag_node->initiateGetAffectedNodes( affected );
     }
     
 }
@@ -680,16 +722,21 @@ void UltrametricTreeDistribution::restoreSpecialization(DagNode *affecter)
 /** Swap a parameter of the distribution */
 void UltrametricTreeDistribution::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
-    if (oldP == root_age)
+    if (oldP == root_age )
     {
         root_age = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    
+    if (oldP == root_branch_fraction )
+    {
+        root_branch_fraction = static_cast<const TypedDagNode<double>* >( newP );
     }
     
     try
     {
         rate_prior->swapParameter(oldP, newP);
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         
     }
@@ -698,7 +745,7 @@ void UltrametricTreeDistribution::swapParameterInternal( const DagNode *oldP, co
     {
         tree_prior->swapParameter(oldP, newP);
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         
     }

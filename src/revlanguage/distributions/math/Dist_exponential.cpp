@@ -1,10 +1,21 @@
+#include <iosfwd>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "ContinuousStochasticNode.h"
 #include "Dist_exponential.h"
 #include "ExponentialDistribution.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RbHelpReference.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlPositiveContinuousDistribution.h"
+#include "TypeSpec.h"
+
+namespace RevBayesCore { template <class valueType> class TypedDagNode; }
 
 using namespace RevLanguage;
 
@@ -111,7 +122,6 @@ std::string Dist_exponential::getDistributionFunctionName( void ) const
     
     return d_name;
 }
-
 
 /** 
  * Get the member rules used to create the constructor of this object.

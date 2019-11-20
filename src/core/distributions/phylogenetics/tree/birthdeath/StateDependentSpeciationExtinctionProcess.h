@@ -48,7 +48,9 @@ namespace RevBayesCore {
                                                   double max_t,
                                                   bool prune,
                                                   bool condition_on_tip_states,
-                                                  bool condition_on_num_tips);
+                                                  bool condition_on_num_tips,
+                                                  bool condition_on_tree,
+                                                  bool allow_shifts_extinct);
         
         // pure virtual member functions
         virtual StateDependentSpeciationExtinctionProcess*              clone(void) const;
@@ -60,6 +62,7 @@ namespace RevBayesCore {
         double                                                          getOriginAge(void) const;
         std::vector<double>                                             getAverageExtinctionRatePerBranch(void) const;
         std::vector<double>                                             getAverageSpeciationRatePerBranch(void) const;
+        std::vector<long>                                               getNumberOfShiftEventsPerBranch(void) const;
         std::vector<double>                                             getTimeInStates(void) const;
         double                                                          getRootAge(void) const;
         virtual void                                                    redrawValue(void);
@@ -72,9 +75,9 @@ namespace RevBayesCore {
         
         void                                                            drawJointConditionalAncestralStates(std::vector<size_t>& startStates, std::vector<size_t>& endStates);
         void                                                            recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<size_t>& startStates, std::vector<size_t>& endStates);
-        void                                                            drawStochasticCharacterMap(std::vector<std::string*>& character_histories);
-        void                                                            recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string*>& character_histories);
-        void                                                            numericallyIntegrateProcess(state_type &likelihoods, double begin_age, double end_age, bool use_backward, bool extinction_only) const; //!< Wrapper function for the ODE time stepper function.
+        void                                                            drawStochasticCharacterMap(std::vector<std::string>& character_histories, bool set_amb_char_data = false);
+        bool                                                            recursivelyDrawStochasticCharacterMap(const TopologyNode &node, size_t start_state, std::vector<std::string>& character_histories, bool set_amb_char_data);
+        void                                                            numericallyIntegrateProcess(std::vector< double > &likelihoods, double begin_age, double end_age, bool use_backward, bool extinction_only) const; //!< Wrapper function for the ODE time stepper function.
         void                                                            resizeVectors(size_t num_nodes);
         
     protected:
@@ -124,6 +127,7 @@ namespace RevBayesCore {
         bool                                                            sample_character_history;                                                                           //!< are we sampling the character history along branches?
         std::vector<double>                                             average_speciation;
         std::vector<double>                                             average_extinction;
+        std::vector<long>                                               num_shift_events;
         std::vector<double>                                             time_in_states;
         std::string                                                     simmap;
         
@@ -143,9 +147,11 @@ namespace RevBayesCore {
         size_t                                                          max_num_lineages;
         size_t                                                          exact_num_lineages;
         double                                                          max_time;
+        bool                                                            allow_rate_shifts_on_extinct_lineages;
         bool                                                            prune_extinct_lineages;
         bool                                                            condition_on_tip_states;
         bool                                                            condition_on_num_tips;
+        bool                                                            condition_on_tree;
         double                                                          NUM_TIME_SLICES;
     };
     

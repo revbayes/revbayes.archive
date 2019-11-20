@@ -75,7 +75,7 @@ namespace RevBayesCore {
         void                                        addNodeParameter(const std::string &n, double p);
         void                                        addNodeParameter(const std::string &n, const std::string &p);
         void                                        addNodeParameters(const std::string &n, const std::vector<double> &p, bool io);
-		void                                        addNodeParameters(const std::string &n, const std::vector<std::string*> &p, bool io);
+		void                                        addNodeParameters(const std::string &n, const std::vector<std::string> &p, bool io);
         void                                        clearParameters(void);                                                              //!< Clear the node and branch parameters
         void                                        clearBranchParameters(void);
 		void                                        clearNodeParameters(void);
@@ -142,14 +142,15 @@ namespace RevBayesCore {
         void                                        setIndex(size_t idx);                                                               //!< Set the index of the node
 
         void                                        setName(const std::string& n);                                                      //!< Set the name of this node
-  		void										   setNodeType(bool tip, bool root, bool interior); //SK
+  		void										setNodeType(bool tip, bool root, bool interior); //SK
+        void                                        setParent(TopologyNode* p);                                                         //!< Sets the node's parent
         void                                        setSampledAncestor(bool tf);                                                        //!< Set if the node is a sampled ancestor
         void                                        setSpeciesName(std::string const &n);                                               //!< Set the species name of this node
         void                                        setTaxon(Taxon const &t);                                                           //!< Set the taxon of this node
         void                                        setTaxonIndices(const TaxonMap &tm);                                                //!< Set the indices of the taxa from the taxon map
         void                                        setTimeInStates(std::vector<double> t);
         void                                        setTree(Tree *t);                                                                   //!< Sets the tree pointer
-        void                                        setParent(TopologyNode* p);                                                         //!< Sets the node's parent
+        void                                        setUseAges(bool tf, bool recursive);
         
         // internal helper functions
         void                                        recomputeBranchLength(void);                                                        //!< Recompute the length of this branch based on the ages.
@@ -160,6 +161,7 @@ namespace RevBayesCore {
         virtual std::string                         buildNewickString(bool simmap);                                                     //!< compute the newick string for a tree rooting at this node
         
         // protected members
+        bool                                        use_ages;
         double                                      age;
         double                                      branch_length;
         std::vector<TopologyNode*>                  children;                                                                           //!< Vector holding the node's children. Note that the parent owns the children but not the other way around.

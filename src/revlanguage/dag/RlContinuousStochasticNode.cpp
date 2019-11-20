@@ -1,5 +1,26 @@
 #include "RlContinuousStochasticNode.h"
+
+#include <math.h>
+#include <stddef.h>
+#include <ostream>
+#include <string>
+
 #include "RealPos.h"
+#include "Argument.h"
+#include "ArgumentRule.h"
+#include "ArgumentRules.h"
+#include "MemberProcedure.h"
+#include "Real.h"
+#include "RevVariable.h"
+#include "RlContinuousDistribution.h"
+#include "RlDistribution.h"
+#include "RlPositiveContinuousDistribution.h"
+#include "RlTypedDistribution.h"
+#include "RlUtils.h"
+#include "StringUtilities.h"
+#include "Probability.h" // IWYU pragma: keep
+
+namespace RevBayesCore { class ContinuousDistribution; }
 
 using namespace RevLanguage;
 
@@ -234,4 +255,37 @@ const RevLanguage::Distribution& RevLanguage::ContinuousStochasticNode::getRlDis
 {
     
     return *rlDistribution;
+}
+
+
+/** Print struct for user */
+void RevLanguage::ContinuousStochasticNode::printStructureInfo( std::ostream& o, bool verbose ) const
+{
+    
+    o << "_dagType      = Stochastic node (distribution)" << std::endl;
+    o << "_distribution = " << rlDistribution->getRevDeclaration() << std::endl;
+    o << "_clamped      = " << ( this->clamped ? "TRUE" : "FALSE" ) << std::endl;
+    o << "_lnProb       = " << const_cast< ContinuousStochasticNode* >( this )->getLnProbability() << std::endl;
+    
+    if ( this->touched == true && verbose == true)
+    {
+        o << "_stored_ln_prob = " << this->stored_ln_prob << std::endl; // const_cast< ContinuousStochasticNode* >( this )->getLnProbability() << std::endl;
+    }
+
+    
+    o << "_parents      = ";
+    this->printParents( o, 16, 70, verbose );
+    o << std::endl;
+    
+    o << "_children     = ";
+    this->printChildren( o, 16, 70, verbose );
+    o << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+        o << "_refCount     = " << this->getReferenceCount() << std::endl;
+    }
+    
+    o << std::endl;
 }

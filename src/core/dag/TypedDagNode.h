@@ -87,7 +87,7 @@ namespace RevBayesCore {
     // printValue //
     ////////////////
     template<>
-    inline void TypedDagNode<double>::printValue(std::ostream &o, const std::string &sep, int l, bool left, bool user, bool simple) const
+    inline void TypedDagNode<double>::printValue(std::ostream &o, const std::string & /*sep*/, int l, bool left, bool /*user*/, bool /*simple*/) const
     {
         
         std::stringstream ss;
@@ -103,7 +103,7 @@ namespace RevBayesCore {
 
     
     template<>
-    inline void TypedDagNode<long>::printValue(std::ostream &o, const std::string &sep, int l, bool left, bool user, bool simple) const
+    inline void TypedDagNode<long>::printValue(std::ostream &o, const std::string & /*sep*/, int l, bool left, bool /*user*/, bool /*simple*/) const
     {
         
         std::stringstream ss;
@@ -118,7 +118,7 @@ namespace RevBayesCore {
     
     
     template<>
-    inline void TypedDagNode<unsigned int>::printValue(std::ostream &o, const std::string &sep, int l, bool left, bool user, bool simple) const
+    inline void TypedDagNode<unsigned int>::printValue(std::ostream &o, const std::string & /*sep*/, int l, bool left, bool /*user*/, bool /*simple*/) const
     {
         
         std::stringstream ss;
@@ -133,7 +133,7 @@ namespace RevBayesCore {
     
     
     template<>
-    inline void TypedDagNode<std::string>::printValue(std::ostream &o, const std::string &sep, int l, bool left, bool user, bool simple) const
+    inline void TypedDagNode<std::string>::printValue(std::ostream &o, const std::string & /*sep*/, int l, bool left, bool /*user*/, bool /*simple*/) const
     {
         
         std::stringstream ss;
@@ -152,9 +152,6 @@ namespace RevBayesCore {
 #include "Printable.h"
 #include "Printer.h"
 #include "RbContainer.h"
-#include "RbFileManager.h"
-#include "RbUtil.h"
-#include "StringUtilities.h"
 
 #include <vector>
 

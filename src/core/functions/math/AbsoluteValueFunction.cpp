@@ -1,8 +1,17 @@
 #include "AbsoluteValueFunction.h"
+
 #include <cmath>
 
-using namespace RevBayesCore;
+#include "Cloneable.h"
+#include "TypedDagNode.h"
 
+namespace RevBayesCore { class DagNode; }
+
+using namespace RevBayesCore;
+/**
+ * AbsoluteValueFunction of a double.
+ * @param x a value of type double
+ */
 AbsoluteValueFunction::AbsoluteValueFunction(const TypedDagNode<double> *x) : ContinuousFunction( new double(0.0) ),
     a( x )
 {

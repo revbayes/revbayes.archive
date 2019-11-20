@@ -3,7 +3,7 @@
 
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "StateDependentSpeciationExtinctionProcess.h"
-#include "AbstractFileMonitor.h"
+#include "VariableMonitor.h"
 #include "Tree.h"
 #include "TypedDagNode.h"
 #include "StochasticNode.h"
@@ -30,7 +30,7 @@ namespace RevBayesCore {
      *
      */
     template<class characterType>
-	class JointConditionalAncestralStateMonitor : public AbstractFileMonitor {
+    class JointConditionalAncestralStateMonitor : public VariableMonitor {
         
     public:
         // Constructors and Destructors
@@ -62,17 +62,16 @@ namespace RevBayesCore {
 #include "Model.h"
 #include "Monitor.h"
 #include "RbFileManager.h"
-#include "StochasticNode.h"
 #include "PhyloCTMCSiteHomogeneous.h"
 #include "AbstractPhyloCTMCSiteHomogeneous.h"
-#include "StateDependentSpeciationExtinctionProcess.h"
 
 using namespace RevBayesCore;
 
 
 /* Constructor for state dependent birth death process */
 template<class characterType>
-JointConditionalAncestralStateMonitor<characterType>::JointConditionalAncestralStateMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss) : AbstractFileMonitor(ch, g, fname, del, false, false, false),
+JointConditionalAncestralStateMonitor<characterType>::JointConditionalAncestralStateMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss) :
+    VariableMonitor(ch, g, fname, del, false, false, false),
     cdbdp( ch ),
     withTips( wt ),
     withStartStates( wss )
@@ -87,7 +86,8 @@ JointConditionalAncestralStateMonitor<characterType>::JointConditionalAncestralS
 
 /* Constructor for CTMC */
 template<class characterType>
-JointConditionalAncestralStateMonitor<characterType>::JointConditionalAncestralStateMonitor(TypedDagNode<Tree> *t, StochasticNode<AbstractHomologousDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss) : AbstractFileMonitor(ch, g, fname, del, false, false, false),
+JointConditionalAncestralStateMonitor<characterType>::JointConditionalAncestralStateMonitor(TypedDagNode<Tree> *t, StochasticNode<AbstractHomologousDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss) :
+    VariableMonitor(ch, g, fname, del, false, false, false),
     tree( t ),
     ctmc( ch ),
     withTips( wt ),

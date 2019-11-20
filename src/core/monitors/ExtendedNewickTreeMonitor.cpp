@@ -1,14 +1,26 @@
 #include "ExtendedNewickTreeMonitor.h"
+
+#include <stddef.h>
+#include <algorithm>
+#include <string>
+
 #include "DagNode.h"
-#include "Model.h"
-#include "Monitor.h"
 #include "RbException.h"
+#include "Cloneable.h"
+#include "StringUtilities.h"
+#include "TopologyNode.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { template <class valueType> class RbVector; }
 
 using namespace RevBayesCore;
 
 
 /* Constructor */
-ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<Tree> *t, const std::vector<DagNode*> &n, bool np, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : AbstractFileMonitor(t,g,fname,del,pp,l,pr,ap),
+ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<Tree> *t, const std::vector<DagNode*> &n, bool np, unsigned long g, const std::string &fname,
+                                                     const std::string &del, bool pp, bool l, bool pr, bool ap) :
+    VariableMonitor(t,g,fname,del,pp,l,pr,ap),
     isNodeParameter( np ),
     tree( t ),
     nodeVariables( n )
@@ -107,7 +119,7 @@ void ExtendedNewickTreeMonitor::swapNode(DagNode *oldN, DagNode *newN)
     }
     
     // delegate to base class
-    AbstractFileMonitor::swapNode(oldN, newN);
+    VariableMonitor::swapNode(oldN, newN);
 }
 
 

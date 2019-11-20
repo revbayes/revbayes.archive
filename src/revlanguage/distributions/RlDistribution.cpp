@@ -1,12 +1,23 @@
-#include "Argument.h"
+#include <stddef.h>
+#include <sstream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "OptionRule.h"
 #include "RlDistribution.h"
 #include "StringUtilities.h"
 #include "TypeSpec.h"
+#include "MethodTable.h"
+#include "RbHelpArgument.h"
+#include "RbHelpDistribution.h"
+#include "RbHelpFunction.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
 
-#include <sstream>
+namespace RevBayesCore { class RbHelpEntry; }
 
 using namespace RevLanguage;
 
@@ -99,6 +110,44 @@ std::string Distribution::getConstructorFunctionName( void ) const
 }
 
 
+/**
+ * Get Rev declaration of the function, formatted for output
+ */
+std::string Distribution::getRevDeclaration(void) const
+{
+    
+    std::ostringstream o;
+    
+    // Sebastian: We don't want to print the return type in the usage.
+    // It only confuses.
+    //    o << getReturnType().getType();
+    
+    if ( getDistributionFunctionName() == "" )
+    {
+        o << "<unnamed>(";
+    }
+    else
+    {
+        std::string tmp = getDistributionFunctionName();
+        std::string dn_name = "dn" + StringUtilities::firstCharToUpper( tmp );
+        o << "" << dn_name << "(";
+    }
+    
+    const ArgumentRules& argRules = getParameterRules();
+    for (size_t i=0; i<argRules.size(); ++i)
+    {
+        if (i != 0)
+        {
+            o << ", ";
+        }
+        argRules[i].printValue(o);
+    }
+    o << ")";
+    
+    return o.str();
+}
+
+
 RevBayesCore::RbHelpDistribution* Distribution::constructTypeSpecificHelp( void ) const
 {
     
@@ -149,14 +198,14 @@ void Distribution::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
         }
         argument.setArgumentDagNodeType( type );
         
-        std::string passing_method = "pass by value";
+        std::string passing_method = "value";
         if ( the_rule.getEvaluationType() == ArgumentRule::BY_CONSTANT_REFERENCE )
         {
-            passing_method = "pass by const reference";
+            passing_method = "const reference";
         }
         else if ( the_rule.getEvaluationType() == ArgumentRule::BY_REFERENCE )
         {
-            passing_method = "pass by reference";
+            passing_method = "reference";
         }
         argument.setArgumentPassingMethod(  passing_method );
         
@@ -190,12 +239,6 @@ void Distribution::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
     
     // return value
     help_constructor.setReturnType( getVariableTypeSpec().getType() );
-    
-    // details
-    help_constructor.setDetails( getConstructorDetails() );
-    
-    // example
-    help_constructor.setExample( getConstructorExample() );
     
     //
     std::vector<RevBayesCore::RbHelpFunction> constructors;

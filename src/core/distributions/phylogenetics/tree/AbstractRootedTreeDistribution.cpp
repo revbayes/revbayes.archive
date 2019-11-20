@@ -1,4 +1,11 @@
-#include "Clade.h"
+#include <stddef.h>
+#include <algorithm>
+#include <cmath>
+#include <ostream>
+#include <set>
+#include <string>
+#include <vector>
+
 #include "AbstractRootedTreeDistribution.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -8,10 +15,14 @@
 #include "StochasticNode.h"
 #include "Taxon.h"
 #include "TopologyNode.h"
-#include "TreeUtilities.h"
+#include "RbSettings.h"
+#include "StringUtilities.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
 
-#include <algorithm>
-#include <cmath>
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { template <class valueType> class RbOrderedSet; }
 
 using namespace RevBayesCore;
 
@@ -22,10 +33,9 @@ using namespace RevBayesCore;
  * The constructor connects the parameters of the birth-death process (DAG structure)
  * and initializes the probability density by computing the combinatorial constant of the tree structure.
  *
- * \param[in]    cdt       The condition of the process (time/survival/nTaxa)
- * \param[in]    nTaxa     Number of taxa (used for initialization during simulation).
- * \param[in]    tn        Taxon names used during initialization.
- * \param[in]    c         Clade constraints.
+ * \param    ra       The start time of the process.
+ * \param    tn       Taxon names used during initialization.
+ * \param    uo       True = condition on the origin time, False = condition on the root age.
  */
 AbstractRootedTreeDistribution::AbstractRootedTreeDistribution(const TypedDagNode<double> *ra, const std::vector<Taxon> &tn, bool uo ) : TypedDistribution<Tree>( new Tree() ),
     process_age( ra ),
@@ -96,10 +106,7 @@ void AbstractRootedTreeDistribution::buildRandomBinaryTree(std::vector<TopologyN
 }
 
 
-/**
- * Compute the log-transformed probability of the current value under the current parameter values.
- *
- */
+
 double AbstractRootedTreeDistribution::computeLnProbability( void )
 {
     
@@ -178,16 +185,11 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
 
     // multiply the probability of a descendant of the initial species
     lnProbTimes += computeLnProbabilityDivergenceTimes();
-    
+        
     return lnProbTimes + lnProbTreeShape();
 }
 
 
-/**
- * A non-const virtual function to let derived classes to abort computing the likelihood.
- *
- * \return     A vector of times. The caller needs to deallocate this vector.
- */
 bool AbstractRootedTreeDistribution::isLnProbabilityNonZero(void)
 {
     return true;
@@ -219,16 +221,12 @@ int AbstractRootedTreeDistribution::diversity(double t) const
 }
 
 
-/**
- * Get the affected nodes by a change of this node.
- * If the root age has changed than we need to call get affected again.
- */
 void AbstractRootedTreeDistribution::getAffected(RbOrderedSet<DagNode *> &affected, RevBayesCore::DagNode *affecter)
 {
     
     if ( affecter == process_age && dag_node != NULL )
     {
-        dag_node->getAffectedNodes( affected );
+        dag_node->initiateGetAffectedNodes( affected );
     }
     
 }
@@ -338,10 +336,7 @@ size_t AbstractRootedTreeDistribution::getNumberOfTaxa( void ) const
     return taxa.size();
 }
 
-/**
- * By default, the root age is assumed to be equal to the origin time.
- * This should be overridden if a distinct root age is needed
- */
+
 double AbstractRootedTreeDistribution::getRootAge( void ) const
 {
     
@@ -363,6 +358,7 @@ double AbstractRootedTreeDistribution::getRootAge( void ) const
     
 }
 
+
 double AbstractRootedTreeDistribution::getOriginAge( void ) const
 {
 
@@ -377,10 +373,6 @@ const std::vector<Taxon>& AbstractRootedTreeDistribution::getTaxa( void ) const
 }
 
 
-
-/**
- * Keep the current value and reset some internal flags. Nothing to do here.
- */
 void AbstractRootedTreeDistribution::keepSpecialization(DagNode *affecter)
 {
     
@@ -429,9 +421,6 @@ void AbstractRootedTreeDistribution::recomputeDivergenceTimesSinceOrigin( void )
 }
 
 
-/**
- * Redraw the current value. We delegate this to the simulate method.
- */
 void AbstractRootedTreeDistribution::redrawValue( void )
 {
     
@@ -440,10 +429,6 @@ void AbstractRootedTreeDistribution::redrawValue( void )
 }
 
 
-/**
- * Restore the current value and reset some internal flags.
- * If the root age variable has been restored, then we need to change the root age of the tree too.
- */
 void AbstractRootedTreeDistribution::restoreSpecialization(DagNode *affecter)
 {
     if ( affecter == process_age )
@@ -462,9 +447,6 @@ void AbstractRootedTreeDistribution::restoreSpecialization(DagNode *affecter)
 }
 
 
-/**
- *
- */
 void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &n, double age, double present)
 {
 
@@ -598,6 +580,14 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
 }
 
 
+double AbstractRootedTreeDistribution::simulateCladeAge(size_t n, double origin, double present, double min) const
+{
+    
+    std::vector<double> times = simulateDivergenceTimes(n, origin, present, min);
+    
+    return times.back();
+}
+
 
 double AbstractRootedTreeDistribution::simulateNextAge(size_t n, double origin, double present, double min) const
 {
@@ -608,9 +598,6 @@ double AbstractRootedTreeDistribution::simulateNextAge(size_t n, double origin, 
 }
 
 
-/**
- *
- */
 void AbstractRootedTreeDistribution::simulateTree( void )
 {
 
@@ -684,9 +671,6 @@ void AbstractRootedTreeDistribution::simulateTree( void )
 }
 
 
-/**
- * Set the current value.
- */
 void AbstractRootedTreeDistribution::setValue(Tree *v, bool f )
 {
     
@@ -704,9 +688,26 @@ void AbstractRootedTreeDistribution::setValue(Tree *v, bool f )
         {
             //            double factor = process_age->getValue() / value->getRoot().getAge();
             //            TreeUtilities::rescaleTree( value, &value->getRoot(), factor);
-            if (process_age->getValue() != value->getRoot().getAge())
+            
+            size_t output_precision = RbSettings::userSettings().getOutputPrecision();
+            output_precision = output_precision <= 2 ? 0 : output_precision - 2;
+            double rounding_tolerance = 1/std::pow(10, output_precision);
+            
+            double age_diff = std::abs(process_age->getValue() - value->getRoot().getAge());
+            if (age_diff > rounding_tolerance)
             {
                 throw RbException("Tree height and root age values must match when root age is not a stochastic node.");
+            }
+            else
+            {
+                for (size_t i = 0; i < value->getRoot().getNumberOfChildren(); ++i)
+                {
+                    const TopologyNode& child = value->getRoot().getChild(i);
+                    if (process_age->getValue() <= child.getAge())
+                    {
+                        throw RbException("Tree height and root age values must match when root age is not a stochastic node.");
+                    }
+                }
             }
             value->getRoot().setAge( process_age->getValue() );
         }
@@ -716,13 +717,6 @@ void AbstractRootedTreeDistribution::setValue(Tree *v, bool f )
 }
 
 
-/**
- * Swap the parameters held by this distribution.
- *
- *
- * \param[in]    oldP      Pointer to the old parameter.
- * \param[in]    newP      Pointer to the new parameter.
- */
 void AbstractRootedTreeDistribution::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     
@@ -734,11 +728,6 @@ void AbstractRootedTreeDistribution::swapParameterInternal( const DagNode *oldP,
 }
 
 
-
-/**
- * Touch the current value and reset some internal flags.
- * If the root age variable has been restored, then we need to change the root age of the tree too.
- */
 void AbstractRootedTreeDistribution::touchSpecialization(DagNode *affecter, bool touchAll)
 {
     

@@ -38,6 +38,8 @@ namespace RevLanguage {
         RevBayesCore::TypedFunction<double>*            createFunction(void) const;                                 //!< Create internal function object
         const ArgumentRules&                            getArgumentRules(void) const;                               //!< Get argument rules
         
+    protected:
+        
     };
     
 }

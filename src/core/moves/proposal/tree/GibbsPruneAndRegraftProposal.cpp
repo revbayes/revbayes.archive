@@ -1,12 +1,17 @@
 #include "GibbsPruneAndRegraftProposal.h"
+
+#include <stddef.h>
+#include <cmath>
+
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
-#include "RbException.h"
-#include "TypedDagNode.h"
-
-#include <cmath>
-#include <iostream>
+#include "Cloneable.h"
+#include "DagNode.h"
+#include "RbOrderedSet.h"
+#include "StochasticNode.h"
+#include "TopologyNode.h"
+#include "Tree.h"
 
 using namespace RevBayesCore;
 
@@ -131,7 +136,7 @@ double GibbsPruneAndRegraftProposal::doProposal( void )
     
     // potential affected nodes for likelihood computation
     RbOrderedSet<DagNode *> affected;
-    variable->getAffectedNodes( affected );
+    variable->initiateGetAffectedNodes( affected );
     
     double backwardLikelihood = variable->getLnProbability();
     for (RbOrderedSet<DagNode*>::const_iterator it = affected.begin(); it != affected.end(); ++it)

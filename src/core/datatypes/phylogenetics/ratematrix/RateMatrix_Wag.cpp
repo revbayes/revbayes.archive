@@ -11,26 +11,319 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-27, version 1.0
- * @interface Mcmc
+ * @interface RateMatrixFunctionWag
  * @package distributions
  *
  * $Id: RateMatrix_Wag.cpp 1921 2012-12-11 13:46:24Z hoehna $
  */
 
+#include <stdlib.h>
+#include <cmath>
+#include <string>
+#include <complex>
+#include <iosfwd>
+#include <vector>
+
+#include "EigenSystem.h"
+#include "MatrixComplex.h"
+#include "MatrixReal.h"
 #include "RateMatrix_Wag.h"
 #include "RbException.h"
-#include "RbMathMatrix.h"
 #include "TransitionProbabilityMatrix.h"
-
+#include "Assignable.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "StringUtilities.h"
+#include "TimeReversibleRateMatrix.h"
 
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_Wag::RateMatrix_Wag( void ) : RateMatrix_Empirical( 20 ){
+RateMatrix_Wag::RateMatrix_Wag(void) : TimeReversibleRateMatrix( 20 )
+{
     
-    MatrixReal &m = *the_rate_matrix;
+    theEigenSystem       = new EigenSystem(the_rate_matrix);
+    c_ijk.resize(num_states * num_states * num_states);
+    cc_ijk.resize(num_states * num_states * num_states);
     
-    /* Wag */
+    // always initialize exchangeability rates to empirical values
+    setEmpiricalExchangeabilityRates();
+    setEmpiricalStationaryFrequencies();
+    
+    update();
+}
+
+
+/** Copy constructor */
+RateMatrix_Wag::RateMatrix_Wag(const RateMatrix_Wag& m) : TimeReversibleRateMatrix( m )
+{
+    
+    theEigenSystem       = new EigenSystem( *m.theEigenSystem );
+    c_ijk                = m.c_ijk;
+    cc_ijk               = m.cc_ijk;
+    
+    theEigenSystem->setRateMatrixPtr(the_rate_matrix);
+}
+
+
+/** Destructor */
+RateMatrix_Wag::~RateMatrix_Wag(void)
+{
+    
+    delete theEigenSystem;
+}
+
+
+RateMatrix_Wag& RateMatrix_Wag::operator=(const RateMatrix_Wag &r)
+{
+    
+    if (this != &r)
+    {
+        TimeReversibleRateMatrix::operator=( r );
+        
+        delete theEigenSystem;
+        
+        theEigenSystem       = new EigenSystem( *r.theEigenSystem );
+        c_ijk                = r.c_ijk;
+        cc_ijk               = r.cc_ijk;
+        
+        theEigenSystem->setRateMatrixPtr(the_rate_matrix);
+    }
+    
+    return *this;
+}
+
+
+RateMatrix_Wag& RateMatrix_Wag::assign(const Assignable &m)
+{
+    
+    const RateMatrix_Wag *rm = dynamic_cast<const RateMatrix_Wag*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
+    
+}
+
+
+
+/** Do precalculations on eigenvectors */
+void RateMatrix_Wag::calculateCijk(void)
+{
+    
+    if ( theEigenSystem->isComplex() == false )
+    {
+        // real case
+        const MatrixReal& ev  = theEigenSystem->getEigenvectors();
+        const MatrixReal& iev = theEigenSystem->getInverseEigenvectors();
+        double* pc = &c_ijk[0];
+        for (size_t i=0; i<num_states; i++)
+        {
+            for (size_t j=0; j<num_states; j++)
+            {
+                for (size_t k=0; k<num_states; k++)
+                {
+                    *(pc++) = ev[i][k] * iev[k][j];
+                }
+            }
+        }
+    }
+    else
+    {
+        // complex case
+        const MatrixComplex& cev  = theEigenSystem->getComplexEigenvectors();
+        const MatrixComplex& ciev = theEigenSystem->getComplexInverseEigenvectors();
+        std::complex<double>* pc = &cc_ijk[0];
+        for (size_t i=0; i<num_states; i++)
+        {
+            for (size_t j=0; j<num_states; j++)
+            {
+                for (size_t k=0; k<num_states; k++)
+                {
+                    *(pc++) = cev[i][k] * ciev[k][j];
+                }
+            }
+        }
+    }
+}
+
+
+/** Calculate the transition probabilities */
+void RateMatrix_Wag::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+{
+    double t = rate * (startAge - endAge);
+    if ( theEigenSystem->isComplex() == false )
+    {
+        tiProbsEigens(t, P);
+    }
+    else
+    {
+        tiProbsComplexEigens(t, P);
+    }
+}
+
+
+RateMatrix_Wag* RateMatrix_Wag::clone( void ) const
+{
+    return new RateMatrix_Wag( *this );
+}
+
+
+
+/** Calculate the transition probabilities for the real case */
+void RateMatrix_Wag::tiProbsEigens(double t, TransitionProbabilityMatrix& P) const
+{
+    
+    // get a reference to the eigenvalues
+    const std::vector<double>& eigenValue = theEigenSystem->getRealEigenvalues();
+    
+    // precalculate the product of the eigenvalue and the branch length
+    std::vector<double> eigValExp(num_states);
+    for (size_t s=0; s<num_states; s++)
+    {
+        eigValExp[s] = exp(eigenValue[s] * t);
+    }
+    
+    // calculate the transition probabilities
+    const double* ptr = &c_ijk[0];
+    double*         p = P.theMatrix;
+    for (size_t i=0; i<num_states; i++)
+    {
+        for (size_t j=0; j<num_states; j++, ++p)
+        {
+            double sum = 0.0;
+            for (size_t s=0; s<num_states; s++)
+            {
+                sum += (*ptr++) * eigValExp[s];
+            }
+            
+            //			P[i][j] = (sum < 0.0) ? 0.0 : sum;
+            (*p) = (sum < 0.0) ? 0.0 : sum;
+            
+        }
+    }
+}
+
+
+void RateMatrix_Wag::initFromString(const std::string &s)
+{
+    
+    std::string tmp = s;
+    StringUtilities::replaceSubstring(tmp, "[", "");
+    StringUtilities::replaceSubstring(tmp, " ", "");
+    
+    std::vector<std::string> elements;
+    StringUtilities::stringSplit(tmp, ",", elements);
+    
+    size_t n = size_t( sqrt(elements.size()) );
+    
+    delete the_rate_matrix;
+    the_rate_matrix = new MatrixReal(n);
+    for (size_t i=0; i<n; ++i)
+    {
+        for (size_t j=0; j<n; ++j)
+        {
+            (*the_rate_matrix)[i][j] = atof( elements[i*n+j].c_str() );
+        }
+    }
+    
+    stationary_freqs = calculateStationaryFrequencies();
+    
+    
+    MatrixReal& m = *the_rate_matrix;
+    // set the off-diagonal portions of the rate matrix
+    for (size_t i=0, k=0; i<num_states; ++i)
+    {
+        for (size_t j=i+1; j<num_states; ++j)
+        {
+            double a = m[i][j] / stationary_freqs[j];
+            //            double b = m[j][i] / stationary_freqs[i];
+            //
+            //            if ( a != b )
+            //            {
+            //                throw RbException("Unequal rates.");
+            //            }
+            exchangeability_rates[k] = a;
+            k++;
+        }
+    }
+    
+    needs_update = true;
+    
+}
+
+
+/** Calculate the transition probabilities for the complex case */
+void RateMatrix_Wag::tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const
+{
+    
+    // get a reference to the eigenvalues
+    const std::vector<double>& eigenValueReal = theEigenSystem->getRealEigenvalues();
+    const std::vector<double>& eigenValueComp = theEigenSystem->getImagEigenvalues();
+    
+    // precalculate the product of the eigenvalue and the branch length
+    std::vector<std::complex<double> > ceigValExp(num_states);
+    for (size_t s=0; s<num_states; s++)
+    {
+        std::complex<double> ev = std::complex<double>(eigenValueReal[s], eigenValueComp[s]);
+        ceigValExp[s] = exp(ev * t);
+    }
+    
+    // calculate the transition probabilities
+    const std::complex<double>* ptr = &cc_ijk[0];
+    for (size_t i=0; i<num_states; i++)
+    {
+        for (size_t j=0; j<num_states; j++)
+        {
+            std::complex<double> sum = std::complex<double>(0.0, 0.0);
+            for (size_t s=0; s<num_states; s++)
+                sum += (*ptr++) * ceigValExp[s];
+            P[i][j] = (sum.real() < 0.0) ? 0.0 : sum.real();
+        }
+    }
+}
+
+
+/** Update the eigen system */
+void RateMatrix_Wag::updateEigenSystem(void)
+{
+    
+    theEigenSystem->update();
+    calculateCijk();
+    
+}
+
+
+void RateMatrix_Wag::update( void )
+{
+    
+    if ( needs_update )
+    {
+        // compute the off-diagonal values
+        computeOffDiagonal();
+        
+        // set the diagonal values
+        setDiagonal();
+        
+        // rescale 
+        rescaleToAverageRate( 1.0 );
+        
+        // now update the eigensystem
+        updateEigenSystem();
+        
+        // clean flags
+        needs_update = false;
+    }
+    
+}
+
+void RateMatrix_Wag::setEmpiricalExchangeabilityRates(void) {
+
+    MatrixReal m(20);
     m[ 0][ 0] = 0.0000000; m[ 1][ 0] = 0.5515710; m[ 2][ 0] = 0.5098480; m[ 3][ 0] = 0.7389980; m[ 4][ 0] = 1.0270400;
     m[ 5][ 0] = 0.9085980; m[ 6][ 0] = 1.5828500; m[ 7][ 0] = 1.4167200; m[ 8][ 0] = 0.3169540; m[ 9][ 0] = 0.1933350;
     m[10][ 0] = 0.3979150; m[11][ 0] = 0.9062650; m[12][ 0] = 0.8934960; m[13][ 0] = 0.2104940; m[14][ 0] = 1.4385500;
@@ -112,58 +405,38 @@ RateMatrix_Wag::RateMatrix_Wag( void ) : RateMatrix_Empirical( 20 ){
     m[10][19] = 1.8003400; m[11][19] = 0.3054340; m[12][19] = 2.0584500; m[13][19] = 0.6498920; m[14][19] = 0.3148870;
     m[15][19] = 0.2327390; m[16][19] = 1.3882300; m[17][19] = 0.3653690; m[18][19] = 0.3147300; m[19][19] = 0.0000000;
     
-    stationary_freqs[ 0] = 0.08662790;
-    stationary_freqs[ 1] = 0.04397200;
-    stationary_freqs[ 2] = 0.03908940;
-    stationary_freqs[ 3] = 0.05704510;
-    stationary_freqs[ 4] = 0.01930780;
-    stationary_freqs[ 5] = 0.03672810;
-    stationary_freqs[ 6] = 0.05805890;
-    stationary_freqs[ 7] = 0.08325180;
-    stationary_freqs[ 8] = 0.02443130;
-    stationary_freqs[ 9] = 0.04846600;
-    stationary_freqs[10] = 0.08620970;
-    stationary_freqs[11] = 0.06202860;
-    stationary_freqs[12] = 0.01950273;
-    stationary_freqs[13] = 0.03843190;
-    stationary_freqs[14] = 0.04576310;
-    stationary_freqs[15] = 0.06951790;
-    stationary_freqs[16] = 0.06101270;
-    stationary_freqs[17] = 0.01438590;
-    stationary_freqs[18] = 0.03527420;
-    stationary_freqs[19] = 0.07089560;    
-    
-    // multiply stationary frequencies into exchangeability matrix
-    for (size_t i = 0; i < 20; i++)
-    {
-        for (size_t j = 0; j < 20; j++)
-        {
-            m[i][j] *= stationary_freqs[j];
+    size_t k = 0;
+    for (size_t i = 0; i < num_states; i++) {
+        for (size_t j = (i+1); j < num_states; j++) {
+            exchangeability_rates[k++] = m[i][j];
         }
     }
     
-    // set the diagonal values
-    setDiagonal();
-    
-    // rescale 
-    rescaleToAverageRate( 1.0 );
-    
-    // update the eigensystem
-    updateEigenSystem();
-    
 }
 
-
-/** Destructor */
-RateMatrix_Wag::~RateMatrix_Wag(void) {
-    
+void RateMatrix_Wag::setEmpiricalStationaryFrequencies(void) {
+   
+    stationary_freqs[ 0] = 0.0866279;
+    stationary_freqs[ 1] = 0.0439720;
+    stationary_freqs[ 2] = 0.0390894;
+    stationary_freqs[ 3] = 0.0570451;
+    stationary_freqs[ 4] = 0.0193078;
+    stationary_freqs[ 5] = 0.0367281;
+    stationary_freqs[ 6] = 0.0580589;
+    stationary_freqs[ 7] = 0.0832518;
+    stationary_freqs[ 8] = 0.0244313;
+    stationary_freqs[ 9] = 0.048466;
+    stationary_freqs[10] = 0.086209;
+    stationary_freqs[11] = 0.0620286;
+    stationary_freqs[12] = 0.0195027;
+    stationary_freqs[13] = 0.0384319;
+    stationary_freqs[14] = 0.0457631;
+    stationary_freqs[15] = 0.0695179;
+    stationary_freqs[16] = 0.0610127;
+    stationary_freqs[17] = 0.0143859;
+    stationary_freqs[18] = 0.0352742;
+    stationary_freqs[19] = 0.0708956;
 }
 
-
-
-
-RateMatrix_Wag* RateMatrix_Wag::clone( void ) const {
-    return new RateMatrix_Wag( *this );
-}
 
 

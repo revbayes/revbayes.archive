@@ -7,12 +7,15 @@
 #ifndef CladogeneticSpeciationRateMatrix_h
 #define CladogeneticSpeciationRateMatrix_h
 
-#include "Assignable.h"
-#include "Cloneable.h"
-#include "MatrixReal.h"
-#include "Printable.h"
+#include <stddef.h>
 #include <map>
 #include <vector>
+#include <iosfwd>
+
+#include "Assignable.h"
+#include "Cloneable.h"
+#include "Printable.h"
+#include "Serializable.h"
 
 namespace RevBayesCore {
     
@@ -24,10 +27,10 @@ namespace RevBayesCore {
         CladogeneticSpeciationRateMatrix(size_t n);
         virtual                                                 ~CladogeneticSpeciationRateMatrix(void);
         
-        virtual bool                                            operator==(const CladogeneticSpeciationRateMatrix &rm) const { return this == &rm; }
-        virtual bool                                            operator!=(const CladogeneticSpeciationRateMatrix &rm) const { return !operator==(rm); }
-        virtual bool                                            operator<(const CladogeneticSpeciationRateMatrix &rm) const { return this < &rm; }
-        virtual bool                                            operator<=(const CladogeneticSpeciationRateMatrix &rm) const { return operator<(rm) || operator==(rm); }
+        bool                                                    operator==(const CladogeneticSpeciationRateMatrix &rm) const { return this == &rm; }
+        bool                                                    operator!=(const CladogeneticSpeciationRateMatrix &rm) const { return !operator==(rm); }
+        bool                                                    operator<(const CladogeneticSpeciationRateMatrix &rm) const { return this < &rm; }
+        bool                                                    operator<=(const CladogeneticSpeciationRateMatrix &rm) const { return operator<(rm) || operator==(rm); }
         
         // pure virtual methods
         virtual CladogeneticSpeciationRateMatrix&               assign(const Assignable &m);

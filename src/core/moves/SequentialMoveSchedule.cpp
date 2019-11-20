@@ -1,19 +1,19 @@
-//
-//  SequenctialMoveSchedule.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/17/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbIterator.h"
 #include "SequentialMoveSchedule.h"
+#include "Move.h"
+#include "MoveSchedule.h"
+#include "RbIteratorImpl.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
 
 using namespace RevBayesCore;
 
-SequentialMoveSchedule::SequentialMoveSchedule(RbVector<Move> *s) : MoveSchedule( s ), currentMove( 0 ), usedPropOfCurrentMove( 0 ) {
+SequentialMoveSchedule::SequentialMoveSchedule(RbVector<Move> *s) : MoveSchedule( s ),
+    currentMove( 0 ),
+    usedPropOfCurrentMove( 0 )
+{
     
     movesPerIteration = 0.0;
     for (RbIterator<Move> it = moves->begin(); it != moves->end(); ++it)
@@ -23,16 +23,19 @@ SequentialMoveSchedule::SequentialMoveSchedule(RbVector<Move> *s) : MoveSchedule
 }
 
 
-SequentialMoveSchedule::~SequentialMoveSchedule() {
+SequentialMoveSchedule::~SequentialMoveSchedule()
+{
     // we own nothing
 }
 
 
-SequentialMoveSchedule* SequentialMoveSchedule::clone( void ) const {
+SequentialMoveSchedule* SequentialMoveSchedule::clone( void ) const
+{
     return new SequentialMoveSchedule(*this);
 }
 
-double SequentialMoveSchedule::getNumberMovesPerIteration( void ) const {
+double SequentialMoveSchedule::getNumberMovesPerIteration( void ) const
+{
     return movesPerIteration;
 }
 

@@ -1,19 +1,24 @@
-#include "Clade.h"
+#include <stddef.h>
+#include <algorithm>
+#include <cmath>
+#include <vector>
+
 #include "ConstantPopulationCoalescent.h"
 #include "DistributionExponential.h"
 #include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
-#include "RbConstants.h"
-#include "RbMathCombinatorialFunctions.h"
 #include "TopologyNode.h"
+#include "AbstractCoalescent.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
 
-#include <algorithm>
-#include <cmath>
+namespace RevBayesCore { class Clade; }
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { class RandomNumberGenerator; }
+namespace RevBayesCore { class Taxon; }
 
 using namespace RevBayesCore;
 
-ConstantPopulationCoalescent::ConstantPopulationCoalescent(const TypedDagNode<double> *N, const std::vector<Taxon> &tn, const std::vector<Clade> &c) :
-    AbstractCoalescent( tn, c ),
+ConstantPopulationCoalescent::ConstantPopulationCoalescent(const TypedDagNode<double> *N, const std::vector<Taxon> &tn, const std::vector<Clade> &c) : AbstractCoalescent( tn, c ),
     Ne( N )
 {
     // add the parameters to our set (in the base class)
@@ -54,7 +59,7 @@ double ConstantPopulationCoalescent::computeLnProbabilityTimes( void ) const
 {
     
     // variable declarations and initialization
-    double lnProbTimes = 0;
+    double ln_prob_times = 0;
     
     
     // retrieved the speciation times
@@ -96,10 +101,10 @@ double ConstantPopulationCoalescent::computeLnProbabilityTimes( void ) const
 //        lnProbTimes += log( nPairs / theta ) - nPairs * deltaAge / theta;
         
         
-        lnProbTimes += log( 1.0 / theta ) - nPairs * deltaAge / theta;
+        ln_prob_times += log( 1.0 / theta ) - nPairs * deltaAge / theta;
     }
     
-    return lnProbTimes;
+    return ln_prob_times;
     
 }
 
@@ -114,30 +119,29 @@ std::vector<double> ConstantPopulationCoalescent::simulateCoalescentAges( size_t
 {
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
-
-    // now simulate the ages
     
     // allocate the vector for the times
-    std::vector<double> coalescentTimes = std::vector<double>(n,0.0);
+    std::vector<double> coalescent_times = std::vector<double>(n,0.0);
     
-    double theta = 1.0 / (2.0*Ne->getValue());
+//    double theta = 1.0 / (2.0*Ne->getValue());
+    double theta = 1.0 / (Ne->getValue());
     // draw a time for each speciation event condition on the time of the process
 	for (size_t i = 0; i < n; ++i)
     {
-        double prevCoalescentTime = 0.0;
+        double prev_coalescent_time = 0.0;
         if ( i > 0 ) 
         {
-            prevCoalescentTime = coalescentTimes[i-1];
+            prev_coalescent_time = coalescent_times[i-1];
         }
         
         size_t j = num_taxa - i;
         double nPairs = j * (j-1) / 2.0;
-        double lambda = nPairs * theta / 2.0;
+        double lambda = nPairs * theta;
         double u = RbStatistics::Exponential::rv( lambda, *rng);
-		coalescentTimes[i] = prevCoalescentTime + u;
+		coalescent_times[i] = prev_coalescent_time + u;
 	}
 
-    return coalescentTimes;
+    return coalescent_times;
 }
 
 

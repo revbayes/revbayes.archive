@@ -7,10 +7,24 @@
 //
 
 #include "GeographicalDistanceFunction.h"
-#include "RbConstants.h"
+
 #include <cmath>
 
+#include "RbConstants.h"
+#include "Cloneable.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class DagNode; }
+
 using namespace RevBayesCore;
+/**
+ * Geographical distance function of TypedDagNode of type double
+ *
+ * @param lat1 a TypedDagNode of type double
+ * @param lon1 a TypedDagNode of type double
+ * @param lat2 a TypedDagNode of type double
+ * @param lon2 a TypedDagNode of type double
+*/
 
 GeographicalDistanceFunction::GeographicalDistanceFunction(const TypedDagNode<double> *lat1,
                                                            const TypedDagNode<double> *lon1,

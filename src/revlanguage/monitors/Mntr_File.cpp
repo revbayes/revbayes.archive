@@ -1,18 +1,26 @@
 
+#include <algorithm>
+#include <string>
+#include <ostream>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Ellipsis.h"
-#include "FileMonitor.h"
-#include "ModelVector.h"
+#include "VariableMonitor.h"
 #include "Mntr_File.h"
 #include "Natural.h"
-#include "RbException.h"
 #include "RevObject.h"
 #include "RlString.h"
 #include "TypeSpec.h"
+#include "Monitor.h"
+#include "RbBoolean.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlBoolean.h"
+#include "RlMonitor.h"
 
-#include <algorithm>
-#include <string>
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevLanguage;
 
@@ -59,7 +67,7 @@ void Mntr_File::constructInternalObject( void )
     bool app = static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
     bool wv = static_cast<const RlBoolean &>( version->getRevObject() ).getValue();
     
-    value = new RevBayesCore::FileMonitor(n, (unsigned long)g, fn, sep, pp, l, pr, app, wv);
+    value = new RevBayesCore::VariableMonitor(n, (unsigned long)g, fn, sep, pp, l, pr, app, wv);
 }
 
 /** Get Rev type of object */

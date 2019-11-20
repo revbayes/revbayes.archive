@@ -1,7 +1,9 @@
 #ifndef RbSettings_H
 #define RbSettings_H
 
-#include <string>
+#include <stddef.h>
+#include <iosfwd>
+#include <string> // IWYU pragma: keep
 
 class RbSettings {
 
@@ -42,7 +44,7 @@ class RbSettings {
     
     private:
                                     RbSettings(void);                                   //!< Default constructor
-                                    RbSettings(const RbSettings& s) {}                  //!< Prevent copy
+                                    RbSettings(const RbSettings&) {}                    //!< Prevent copy
                                    ~RbSettings(void) {}                                 //!< Delete function table
         RbSettings&                 operator=(const RbSettings& s);                     //!< Prevent assignment
 

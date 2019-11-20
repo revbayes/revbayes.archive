@@ -1,12 +1,20 @@
+#include <stddef.h>
+#include <cmath>
+#include <iomanip>
+#include <ostream>
+#include <vector>
+
 #include "DistributionBeta.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RateAgeBetaShift.h"
 #include "TopologyNode.h"
-#include "TreeUtilities.h"
-
-#include <cmath>
-#include <iomanip>
+#include "AbstractMove.h"
+#include "DagNode.h"
+#include "RbException.h"
+#include "RbOrderedSet.h"
+#include "StochasticNode.h"
+#include "Tree.h"
 
 using namespace RevBayesCore;
 
@@ -92,7 +100,7 @@ void RateAgeBetaShift::performMcmcMove( double prHeat, double lHeat, double pHea
     
     Tree& tau = tree->getValue();
     RbOrderedSet<DagNode*> affected;
-    tree->getAffectedNodes( affected );
+    tree->initiateGetAffectedNodes( affected );
     
     double oldLnLike = 0.0;
     bool checkLikelihoodShortcuts = rng->uniform01() < 0.001;

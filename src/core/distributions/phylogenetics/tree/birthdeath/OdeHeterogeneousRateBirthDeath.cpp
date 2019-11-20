@@ -1,5 +1,7 @@
 #include "OdeHeterogeneousRateBirthDeath.h"
 
+#include "RbVectorImpl.h"
+
 using namespace RevBayesCore;
 
 
@@ -15,7 +17,7 @@ OdeHeterogeneousRateBirthDeath::OdeHeterogeneousRateBirthDeath( const RbVector<d
 }
 
 
-void OdeHeterogeneousRateBirthDeath::operator()(const state_type &x, state_type &dxdt, const double t)
+void OdeHeterogeneousRateBirthDeath::operator()(const std::vector< double > &x, std::vector< double > &dxdt, const double t)
 {
     
     double rate_cat_prob = ( allow_same_category == true ? (1.0/ num_categories) : 1.0 / (num_categories-1.0) );
@@ -29,8 +31,8 @@ void OdeHeterogeneousRateBirthDeath::operator()(const state_type &x, state_type 
         dxdt[i] = mu[i];
         
         // no event
-        double noEventRate = mu[i] + lambda[i] + switch_rate;
-        dxdt[i] -= noEventRate*x[i];
+        double no_event_rate = mu[i] + lambda[i] + switch_rate;
+        dxdt[i] -= no_event_rate*x[i];
         
         // speciation event
         dxdt[i] += lambda[i]*x[i]*x[i];
@@ -40,7 +42,7 @@ void OdeHeterogeneousRateBirthDeath::operator()(const state_type &x, state_type 
         {
             if ( i != j || allow_same_category == true )
             {
-                dxdt[i] += switch_rate*x[j] * rate_cat_prob;
+                dxdt[i] += switch_rate * x[j] * rate_cat_prob;
             }
         }
         
@@ -49,8 +51,8 @@ void OdeHeterogeneousRateBirthDeath::operator()(const state_type &x, state_type 
     /**** Observation ****/
     
     // no event
-    double noEventRate = mu[current_rate_category] + lambda[current_rate_category] + switch_rate;
-    dxdt[num_categories] = -noEventRate*x[num_categories];
+    double no_event_rate = mu[current_rate_category] + lambda[current_rate_category] + switch_rate;
+    dxdt[num_categories] = -no_event_rate * x[num_categories];
     
     // speciation event
     dxdt[num_categories] += 2*lambda[current_rate_category]*x[current_rate_category]*x[num_categories];

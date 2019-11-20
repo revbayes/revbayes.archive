@@ -7,12 +7,21 @@
 //
 
 #include "CharacterHistoryPosteriorPredictiveMonitor.h"
+
+#include <stddef.h>
+#include <string>
+
 #include "DagNode.h"
 #include "Model.h"
 #include "Monitor.h"
-#include "RbException.h"
-
-#include <sstream>
+#include "BranchHistory.h"
+#include "CharacterEvent.h"
+#include "Cloneable.h"
+#include "RbFileManager.h"
+#include "StochasticNode.h"
+#include "TopologyNode.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
 
 using namespace RevBayesCore;
 
@@ -212,13 +221,17 @@ void CharacterHistoryPosteriorPredictiveMonitor::monitor(unsigned long gen) {
 
 
 /** open the file stream for printing */
-void CharacterHistoryPosteriorPredictiveMonitor::openStream(bool reopen) {
+void CharacterHistoryPosteriorPredictiveMonitor::openStream(bool reopen)
+{
+    
+    RbFileManager fm = RbFileManager(filename);
+    fm.createDirectoryForFile();
     
     // open the stream to the file
     if (append)
-        outStream.open( filename.c_str(), std::fstream::out | std::fstream::app);
+        outStream.open( fm.getFullFileName().c_str(), std::fstream::out | std::fstream::app);
     else
-        outStream.open( filename.c_str(), std::fstream::out);
+        outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
 }
 
 /** Print header for monitored values */

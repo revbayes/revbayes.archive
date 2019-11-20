@@ -2,7 +2,7 @@
 #define RlAbstractConvergenceStoppingRule_H
 
 #include "BurninEstimatorContinuous.h"
-#include "FileMonitor.h"
+#include "VariableMonitor.h"
 #include "RlStoppingRule.h"
 #include "TypedDagNode.h"
 

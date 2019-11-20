@@ -1,13 +1,23 @@
+#include <stddef.h>
+#include <string>
+#include <iostream>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "Ellipsis.h"
 #include "Func_write.h"
-#include "RbException.h"
 #include "RbFileManager.h"
 #include "RevNullObject.h"
 #include "RlBoolean.h"
 #include "RlString.h"
-
-#include <string>
+#include "Argument.h"
+#include "ArgumentRules.h"
+#include "RbBoolean.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
+#include "TypeSpec.h"
 
 #if defined (RB_MPI)
 #include <mpi.h>
@@ -63,13 +73,13 @@ RevPtr<RevVariable> Func_write::execute( void )
             {
                 
                 // open the stream to the file
-                out_stream.open(fn.c_str(), std::fstream::out | std::fstream::app);
+                out_stream.open(fm.getFullFileName().c_str(), std::fstream::out | std::fstream::app);
             }
             else
             {
                 
                 // open the stream to the file
-                out_stream.open(fn.c_str(), std::fstream::out);
+                out_stream.open(fm.getFullFileName().c_str(), std::fstream::out);
             }
             
             // print the arguments
@@ -98,6 +108,10 @@ RevPtr<RevVariable> Func_write::execute( void )
             o << std::endl;
         }
     }
+    
+#ifdef RB_MPI
+    MPI_Barrier(MPI_COMM_WORLD);
+#endif
     
     return NULL;
 }

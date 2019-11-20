@@ -1,13 +1,24 @@
+#include <stdlib.h>
+#include <sstream>
+#include <cstddef>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
-#include "Ellipsis.h"
-#include "Function.h"
-#include "ModelVector.h"
 #include "OptionRule.h"
 #include "RbException.h"
 #include "RevObject.h"
-#include "RbUtil.h"
+#include "Argument.h"
+#include "ArgumentRules.h"
+#include "RbHelpArgument.h"
+#include "RbHelpFunction.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
+#include "TypeSpec.h"
 
-#include <sstream>
+namespace RevBayesCore { class RbHelpEntry; }
+namespace RevLanguage { class Environment; }
 
 using namespace RevLanguage;
 
@@ -480,14 +491,14 @@ void Function::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
         }
         argument.setArgumentDagNodeType( type );
         
-        std::string passing_method = "pass by value";
+        std::string passing_method = "value";
         if ( the_rule.getEvaluationType() == ArgumentRule::BY_CONSTANT_REFERENCE )
         {
-            passing_method = "pass by const reference";
+            passing_method = "const reference";
         }
         else if ( the_rule.getEvaluationType() == ArgumentRule::BY_REFERENCE )
         {
-            passing_method = "pass by reference";
+            passing_method = "reference";
         }
         argument.setArgumentPassingMethod(  passing_method );
         
@@ -521,12 +532,6 @@ void Function::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
     
     // return value
     help_entry.setReturnType( getReturnType().getType() );
-    
-    // details
-    help_entry.setDetails( getHelpDetails() );
-    
-    // example
-    help_entry.setExample( getHelpExample() );
     
 }
 

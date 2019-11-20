@@ -1,18 +1,28 @@
+#include <stddef.h>
+#include <ostream>
+#include <string>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
-#include "ContinuousStochasticNode.h"
 #include "MetropolisHastingsMove.h"
 #include "Move_RandomDive.h"
 #include "Probability.h"
-#include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RevObject.h"
 #include "RandomDiveProposal.h"
-#include "LogRandomDiveProposal.h"
+#include "HalfRandomDiveProposal.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
+#include "Move.h"
+#include "RbBoolean.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlMove.h"
+#include "StochasticNode.h"
+
+namespace RevBayesCore { class Proposal; }
 
 
 using namespace RevLanguage;
@@ -70,7 +80,7 @@ void Move_RandomDive::constructInternalObject( void )
     {
         RevBayesCore::TypedDagNode<double>* tmp = static_cast<const RealPos &>( x->getRevObject() ).getDagNode();
         RevBayesCore::StochasticNode<double> *n = dynamic_cast<RevBayesCore::StochasticNode<double> *>( tmp );
-        p = new RevBayesCore::LogRandomDiveProposal(n,d,r);
+        p = new RevBayesCore::HalfRandomDiveProposal(n,d,r);
     }
     else
     {
@@ -111,27 +121,6 @@ const TypeSpec& Move_RandomDive::getClassTypeSpec(void)
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
     return rev_type_spec;
-}
-
-/**
- * Get the more detailed description of the function
- */
-std::vector<std::string> Move_RandomDive::getHelpDescription(void) const
-{
-    // create a variable for the description of the function
-    std::vector<std::string> details;
-    
-    std::string details_1 = "The multiplicative proposal of Dutta 2012, allows for long-distance moves.";
-    
-    details.push_back( details_1 );
-    
-    std::string details_2 = "Useful for fat-tailed distributions, possibly for bimoodal distributions.";
-    
-    details.push_back( details_2 );
-    
-    std::string details_3 = "Variables on [0,infinity) are log-transformed for proposals.";
-    
-    return details;
 }
 
 /**

@@ -1,6 +1,11 @@
 #include "AbstractMove.h"
+
+#include <iterator>
+#include <string>
+
 #include "DagNode.h"
 #include "RbException.h"
+#include "Cloneable.h"
 
 using namespace RevBayesCore;
 
@@ -10,14 +15,14 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the move object.
  *
- * \param[in]    w   The weight how often the proposal will be used (per iteration).
- * \param[in]    t   If auto tuning should be used.
+ * \param[in]    weight   The weight how often the proposal will be used (per iteration).
+ * \param[in]    tuning   If auto tuning should be used.
  */
-AbstractMove::AbstractMove( double w, bool t ) :
+AbstractMove::AbstractMove( double weight, bool tuning ) :
     nodes(  ),
     affected_nodes(  ),
-    weight( w ),
-    auto_tuning( t ),
+    weight( weight ),
+    auto_tuning( tuning ),
     num_tried_current_period( 0 ),
     num_tried_total( 0 )
 {
@@ -30,19 +35,20 @@ AbstractMove::AbstractMove( double w, bool t ) :
  *
  * Here we simply allocate and initialize the move object.
  *
- * \param[in]    w   The weight how often the proposal will be used (per iteration).
- * \param[in]    t   If auto tuning should be used.
+ * \param[in]    nodes    The weight how often the proposal will be used (per iteration).
+ * \param[in]    weight   The weight how often the proposal will be used (per iteration).
+ * \param[in]    tuning   If auto tuning should be used.
  */
-AbstractMove::AbstractMove( const std::vector<DagNode*> &n, double w, bool t ) :
-    nodes( n ),
+AbstractMove::AbstractMove( const std::vector<DagNode*> &nodes, double weight, bool tuning ) :
+    nodes( nodes ),
     affected_nodes( ),
-    weight( w ),
-    auto_tuning( t ),
+    weight( weight ),
+    auto_tuning( tuning ),
     num_tried_current_period( 0 ),
     num_tried_total( 0 )
 {
     
-    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    for (std::vector<DagNode*>::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         // get the pointer to the current node
         DagNode* the_node = *it;
@@ -78,13 +84,13 @@ AbstractMove::AbstractMove( const std::vector<DagNode*> &n, double w, bool t ) :
 }
 
 
-AbstractMove::AbstractMove( const AbstractMove &m ) : Move( m ),
-    nodes( m.nodes ),
-    affected_nodes( m.affected_nodes ),
-    weight( m.weight ),
-    auto_tuning( m.auto_tuning  ),
-    num_tried_current_period( m.num_tried_current_period ),
-    num_tried_total( m.num_tried_total )
+AbstractMove::AbstractMove( const AbstractMove &move ) : Move( move ),
+    nodes( move.nodes ),
+    affected_nodes( move.affected_nodes ),
+    weight( move.weight ),
+    auto_tuning( move.auto_tuning  ),
+    num_tried_current_period( move.num_tried_current_period ),
+    num_tried_total( move.num_tried_total )
 {
     
     
@@ -134,13 +140,13 @@ AbstractMove::~AbstractMove( void )
  * Overloaded assignment operator.
  * We need a deep copy of the operator.
  */
-AbstractMove& AbstractMove::operator=(const RevBayesCore::AbstractMove &m)
+AbstractMove& AbstractMove::operator=(const RevBayesCore::AbstractMove &move)
 {
     
-    if ( this != &m )
+    if ( this != &move )
     {
         // delegate
-        Move::operator=(m);
+        Move::operator=(move);
         
         for (size_t i = 0; i < nodes.size(); ++i)
         {
@@ -158,10 +164,10 @@ AbstractMove& AbstractMove::operator=(const RevBayesCore::AbstractMove &m)
             
         }
         
-        affected_nodes              = m.affected_nodes;
-        nodes                       = m.nodes;
-        num_tried_current_period    = m.num_tried_current_period;
-        num_tried_total             = m.num_tried_total;
+        affected_nodes              = move.affected_nodes;
+        nodes                       = move.nodes;
+        num_tried_current_period    = move.num_tried_current_period;
+        num_tried_total             = move.num_tried_total;
         
         for (size_t i = 0; i < nodes.size(); ++i)
         {
@@ -328,8 +334,10 @@ double AbstractMove::getUpdateWeight( void ) const
  * Is the move active at the given generation?
  * The move itself will determine if it was switched off before or after
  * some given iteration.
+ *
+ * @param   generation    Generation number at which to check active status.
  */
-bool AbstractMove::isActive(unsigned long gen) const
+bool AbstractMove::isActive(unsigned long generation) const
 {
     return true;
 }
@@ -383,13 +391,15 @@ void AbstractMove::performMcmcStep( double prHeat, double lHeat, double pHeat )
 
 /**
  * Remove this node from our list of nodes.
+ *
+ * @param   node    The node to remove.
  */
-void AbstractMove::removeNode( RevBayesCore::DagNode *n )
+void AbstractMove::removeNode( RevBayesCore::DagNode *node )
 {
     
     for (std::vector<DagNode*>::iterator it=nodes.begin(); it!=nodes.end(); ++it)
     {
-        if ( *it == n )
+        if ( *it == node )
         {
             nodes.erase( it );
             break;
@@ -397,11 +407,11 @@ void AbstractMove::removeNode( RevBayesCore::DagNode *n )
     }
     
     // remove myself from this node
-    n->removeMove( this );
+    node->removeMove( this );
     
-    if ( n->decrementReferenceCount() == 0 )
+    if ( node->decrementReferenceCount() == 0 )
     {
-        delete n;
+        delete node;
     }
     
 }
@@ -436,10 +446,10 @@ void AbstractMove::resetMoveCounters( void )
 /**
  * Swap the current variable for a new one.
  *
- * \param[in]     oldN     The old variable that needs to be replaced.
- * \param[in]     newN     The new variable.
+ * \param[in]     old_node     The old variable that needs to be replaced.
+ * \param[in]     new_node     The new variable.
  */
-void AbstractMove::swapNode(DagNode *oldN, DagNode *newN)
+void AbstractMove::swapNode(DagNode *old_node, DagNode *new_node)
 {
     
     // find the old node
@@ -448,20 +458,20 @@ void AbstractMove::swapNode(DagNode *oldN, DagNode *newN)
     {
         // get the pointer to the current node
         DagNode* the_node = nodes[i];
-        if ( the_node == oldN )
+        if ( the_node == old_node )
         {
-            nodes[i] = newN;
+            nodes[i] = new_node;
         }
         
     }
     
     // remove myself from the old node and add myself to the new node
-    oldN->removeMove( this );
-    newN->addMove( this );
+    old_node->removeMove( this );
+    new_node->addMove( this );
     
     // increment and decrement the reference counts
-    newN->incrementReferenceCount();
-    if ( oldN->decrementReferenceCount() == 0 )
+    new_node->incrementReferenceCount();
+    if ( old_node->decrementReferenceCount() == 0 )
     {
         throw RbException("Memory leak in Metropolis-Hastings move. Please report this bug to Sebastian.");
     }
@@ -472,10 +482,11 @@ void AbstractMove::swapNode(DagNode *oldN, DagNode *newN)
     {
         // get the pointer to the current node
         DagNode* the_node = *it;
-        
+    
         // get the affected nodes if we would update this node
         // then we don't need to get the affected nodes every time again
-        the_node->getAffectedNodes( affected_nodes );
+        the_node->initiateGetAffectedNodes( affected_nodes );
+        
     }
     
     // remove all "core" nodes from affectedNodes so their probabilities are not double-counted
@@ -497,7 +508,7 @@ void AbstractMove::swapNode(DagNode *oldN, DagNode *newN)
         
     }
     
-    swapNodeInternal(oldN, newN);
+    swapNodeInternal(old_node, new_node);
     
 }
 

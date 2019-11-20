@@ -1,9 +1,18 @@
 #include "RateMatrix_Blosum62.h"
 
+#include <stddef.h>
+#include <vector>
+
+#include "RbVectorUtilities.h"
+#include "Cloneable.h"
+#include "MatrixReal.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+
 
 using namespace RevBayesCore;
 
-/** Construct rate matrix with n states */
+/** Default Constructor for the Blosum62 rate matrix with 20 states */
 RateMatrix_Blosum62::RateMatrix_Blosum62( void ) : RateMatrix_Empirical( 20 )
 {
     
@@ -112,6 +121,7 @@ RateMatrix_Blosum62::RateMatrix_Blosum62( void ) : RateMatrix_Empirical( 20 )
 	stationary_freqs[18] = 0.032; 
 	stationary_freqs[19] = 0.073;
 
+    VectorUtilities::normalize(stationary_freqs);
     
     // multiply stationary frequencies into exchangeability matrix
     for (size_t i = 0; i < 20; i++)

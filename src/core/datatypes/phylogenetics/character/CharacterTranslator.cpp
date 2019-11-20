@@ -1,6 +1,17 @@
 #include "CharacterTranslator.h"
+
+#include <stddef.h>
+#include <string>
+
 #include "RbException.h"
 #include "StringUtilities.h"
+#include "AminoAcidState.h"
+#include "Cloneable.h"
+#include "CodonState.h"
+#include "DiscreteCharacterState.h"
+#include "DnaState.h"
+#include "NaturalNumbersState.h"
+#include "RnaState.h"
 
 
 
@@ -13,7 +24,7 @@ RevBayesCore::AbstractDiscreteTaxonData* CharacterTranslator::translateCharacter
 //    options.push_back( "DNA" );
 //    options.push_back( "RNA" );
 //    options.push_back( "AA" );
-//    options.push_back( "Pomo" );
+//    options.push_back( "PoMo" );
 //    options.push_back( "Protein" );
 //    options.push_back( "Standard" );
 //    options.push_back( "NaturalNumbers" );

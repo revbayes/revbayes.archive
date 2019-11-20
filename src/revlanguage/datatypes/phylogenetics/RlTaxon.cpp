@@ -1,12 +1,35 @@
+#include <stddef.h>
+#include <sstream>
+#include <string>
+#include <vector>
+
 #include "ConstantNode.h"
-#include "ModelVector.h"
 #include "RlTaxon.h"
-#include "RbUtil.h"
 #include "RlString.h"
 #include "RealPos.h"
 #include "TypeSpec.h"
+#include "ArgumentRule.h"
+#include "ArgumentRules.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "IndirectReferenceFunction.h"
+#include "MemberProcedure.h"
+#include "MethodTable.h"
+#include "ModelObject.h"
+#include "RbHelpReference.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlConstantNode.h"
+#include "StringUtilities.h"
+#include "Taxon.h"
+#include "TimeInterval.h"
+#include "TypedDagNode.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
 
-#include <sstream>
+namespace RevLanguage { class Argument; }
 
 using namespace RevLanguage;
 

@@ -1,13 +1,19 @@
 #include "BetaSimplexProposal.h"
+
+#include <stddef.h>
+#include <cmath>
+#include <iostream>
+
 #include "DistributionBeta.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
-#include "RbStatisticsHelper.h"
-#include "TypedDagNode.h"
+#include "Cloneable.h"
+#include "RbConstants.h"
+#include "RbVectorImpl.h"
+#include "StochasticNode.h"
 
-#include <cmath>
-#include <iostream>
+namespace RevBayesCore { class DagNode; }
 
 
 using namespace RevBayesCore;
@@ -146,7 +152,7 @@ double BetaSimplexProposal::propose( Simplex &value )
         // include the Jacobian for the scaling of the other values
         ln_Hastings_ratio += (cats - 2) * log(scaling_factor_other_values) - (cats - 1) * log(sum);
     }
-    catch (RbException e)
+	catch (RbException &e)
     {
         ln_Hastings_ratio = RbConstants::Double::neginf;
     }
@@ -240,5 +246,7 @@ void BetaSimplexProposal::tune( double rate )
         alpha *= (2.0 - rate/p);
     }
     
+    // set a hard maximum of 100
+    alpha = fmin(100, alpha);
 }
 

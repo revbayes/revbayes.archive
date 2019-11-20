@@ -1,13 +1,13 @@
 #ifndef StochasticVariableMonitor_H
 #define StochasticVariableMonitor_H
 
-#include "AbstractFileMonitor.h"
+#include <iosfwd>
 
-#include <string>
-#include <vector>
+#include "VariableMonitor.h"
 
 
 namespace RevBayesCore {
+class Model;
     
     /**
      * @brief A monitor class that monitors all variables of a StochasticVariable and prints their value into a file.
@@ -25,7 +25,7 @@ namespace RevBayesCore {
      * @since 2012-06-21, version 1.0
      *
      */
-    class StochasticVariableMonitor : public AbstractFileMonitor {
+    class StochasticVariableMonitor : public VariableMonitor {
         
     public:
         // Constructors and Destructors

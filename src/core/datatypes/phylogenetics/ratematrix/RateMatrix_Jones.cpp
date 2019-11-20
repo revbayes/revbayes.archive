@@ -18,9 +18,15 @@
  */
 
 #include "RateMatrix_Jones.h"
-#include "RbException.h"
-#include "RbMathMatrix.h"
-#include "TransitionProbabilityMatrix.h"
+
+#include <stddef.h>
+#include <vector>
+
+#include "RbVectorUtilities.h"
+#include "Cloneable.h"
+#include "MatrixReal.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
 
 
 using namespace RevBayesCore;
@@ -111,6 +117,8 @@ RateMatrix_Jones::RateMatrix_Jones( void ) : RateMatrix_Empirical( 20 ){
 	m[19][ 5] =  20; m[19][ 6] =  45; m[19][ 7] =  47; m[19][ 8] =  11; m[19][ 9] = 961; 
 	m[19][10] = 180; m[19][11] =  14; m[19][12] = 323; m[19][13] =  62; m[19][14] =  23; 
 	m[19][15] =  38; m[19][16] = 112; m[19][17] =  25; m[19][18] =  16; m[19][19] =   0; 
+    
+    VectorUtilities::normalize(stationary_freqs);
     
 	stationary_freqs[ 0] = 0.076748;
 	stationary_freqs[ 1] = 0.051691;

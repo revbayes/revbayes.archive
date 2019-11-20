@@ -1,3 +1,9 @@
+#include <math.h>
+#include <stddef.h>
+#include <iostream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRules.h"
 #include "MemberProcedure.h"
 #include "MethodTable.h"
@@ -11,7 +17,41 @@
 #include "RlTraceTree.h"
 #include "RlTree.h"
 #include "RlUtils.h"
+#include "Argument.h"
+#include "ArgumentRule.h"
+#include "Clade.h"
+#include "ConstantNode.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "IndirectReferenceFunction.h"
+#include "Integer.h"
+#include "ModelObject.h"
+#include "RbBoolean.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "RealPos.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlConstantNode.h"
+#include "TraceTree.h"
+#include "Tree.h"
+#include "TypeSpec.h"
+#include "TypedDagNode.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
+#include "WorkspaceToCoreWrapperObject.h"
 
+
+TraceTree::TraceTree(void) : WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>()
+{
+
+    // initialize the methods
+    initMethods();
+
+}
 
 
 TraceTree::TraceTree(const RevBayesCore::TraceTree& x) : WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>( new RevBayesCore::TraceTree(x) )
@@ -70,6 +110,17 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         this->value->setBurnin( burnin );
         
         return NULL;
+    }
+    else if ( name == "setOutgroup" )
+    {
+        found = true;
+
+        const RevBayesCore::Clade &c    = static_cast<const Clade &>( args[0].getVariable()->getRevObject() ).getValue();
+
+        this->value->setOutgroup(c);
+
+        return NULL;
+
     }
     else if ( name == "summarize" )
     {
@@ -250,6 +301,33 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         
         return new RevVariable( new RlBoolean( cov ) );
     }
+    else if ( name == "getTrees" )
+    {
+        found = true;
+        
+        std::vector<RevBayesCore::Tree> trees = this->value->getValues();
+        size_t start_index = this->value->getBurnin();
+        
+        if ( this->value->isClock() == true )
+        {
+            ModelVector<TimeTree> *rl_trees = new ModelVector<TimeTree>;
+            for (size_t i=start_index; i<trees.size(); ++i)
+            {
+                rl_trees->push_back( trees[i] );
+            }
+            return new RevVariable( rl_trees );
+        }
+        else
+        {
+            ModelVector<BranchLengthTree> *rl_trees = new ModelVector<BranchLengthTree>;
+            for (size_t i=start_index; i<trees.size(); ++i)
+            {
+                rl_trees->push_back( trees[i] );
+            }
+            return new RevVariable( rl_trees );
+        }
+        
+    }
     
     return RevObject::executeMethod( name, args, found );
 }
@@ -310,10 +388,6 @@ const TypeSpec& TraceTree::getTypeSpec( void ) const
 void TraceTree::initMethods( void )
 {
     
-    ArgumentRules* burninFracArgRules = new ArgumentRules();
-    burninFracArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), "The fraction of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
-    this->methods.addFunction( new MemberProcedure( "setBurninFrac", RlUtils::Void, burninFracArgRules) );
-    
     ArgumentRules* burninArgRules = new ArgumentRules();
     std::vector<TypeSpec> burninTypes;
     burninTypes.push_back( Probability::getClassTypeSpec() );
@@ -324,6 +398,10 @@ void TraceTree::initMethods( void )
     ArgumentRules* getBurninArgRules = new ArgumentRules();
     this->methods.addFunction( new MemberProcedure( "getBurnin", Natural::getClassTypeSpec(), getBurninArgRules) );
     
+    ArgumentRules* outgroupArgRules = new ArgumentRules();
+    outgroupArgRules->push_back( new ArgumentRule("clade", Clade::getClassTypeSpec(), "The (monophyletic) outgroup.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    this->methods.addFunction( new MemberProcedure( "setOutgroup", RlUtils::Void, outgroupArgRules) );
+
     ArgumentRules* summarizeArgRules = new ArgumentRules();
     summarizeArgRules->push_back( new ArgumentRule("credibleTreeSetSize", Probability::getClassTypeSpec(), "The size of the credible set to print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );
     summarizeArgRules->push_back( new ArgumentRule("minCladeProbability", Probability::getClassTypeSpec(), "The minimum clade probability used when printing.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.05)) );
@@ -352,6 +430,9 @@ void TraceTree::initMethods( void )
     getUniqueTreesArgRules->push_back( new ArgumentRule("credibleTreeSetSize", Probability::getClassTypeSpec(), "The size of the credible set.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );
     getUniqueTreesArgRules->push_back( new ArgumentRule("verbose", RlBoolean::getClassTypeSpec(), "Printing verbose output.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true)) );
     this->methods.addFunction( new MemberProcedure( "getUniqueTrees", ModelVector<Tree>::getClassTypeSpec(), getUniqueTreesArgRules) );
+    
+    ArgumentRules* get_trees_arg_rules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "getTrees", ModelVector<Tree>::getClassTypeSpec(), get_trees_arg_rules) );
     
     ArgumentRules* get_unique_clades_arg_rules = new ArgumentRules();
     get_unique_clades_arg_rules->push_back( new ArgumentRule("credibleTreeSetSize", Probability::getClassTypeSpec(), "The size of the credible set.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );

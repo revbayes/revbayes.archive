@@ -1,11 +1,12 @@
 #ifndef RbHelpFunction_H
 #define RbHelpFunction_H
 
-#include "RbHelpArgument.h"
-#include "RbHelpEntry.h"
-
 #include <string>
 #include <vector>
+#include <iosfwd>
+
+#include "RbHelpArgument.h"
+#include "RbHelpEntry.h"
 
 namespace RevBayesCore {
     
@@ -40,11 +41,7 @@ namespace RevBayesCore {
     private:
         
         std::vector<RbHelpArgument>                 arguments;
-        std::string                                 author;
-        std::vector<std::string>                    details;
-        std::vector<RbHelpReference>                references;
         std::string                                 return_type;
-        std::vector<std::string>                    seeAlso;
         std::string                                 usage;
         
         

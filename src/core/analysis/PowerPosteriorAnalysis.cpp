@@ -1,18 +1,20 @@
-#include "DagNode.h"
-#include "FileMonitor.h"
+#include <stddef.h>
+#include <cmath>
+#include <iostream>
+#include <string>
+#include <vector>
+
 #include "MonteCarloSampler.h"
 #include "MoveSchedule.h"
+#include "MpiUtilities.h"
 #include "PowerPosteriorAnalysis.h"
-#include "RandomMoveSchedule.h"
-#include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
-#include "RbConstants.h"
+#include "ProgressBar.h"
 #include "RbException.h"
 #include "RbFileManager.h"
-#include "RbOptions.h"
-#include <cmath>
-#include <typeinfo>
-#include "SequentialMoveSchedule.h"
+#include "Cloneable.h"
+#include "MonteCarloAnalysisOptions.h"
+#include "Parallelizable.h"
+#include "StringUtilities.h"
 
 
 #ifdef RB_MPI
@@ -89,6 +91,9 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
     // reset the counters for the move schedules
     sampler->reset();
     
+    // start the progress bar
+    ProgressBar progress = ProgressBar(generations, 0);
+    
     if ( process_active == true )
     {
         // Let user know what we are doing
@@ -99,29 +104,16 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
         std::cout << ss.str() << std::endl;
     
         // Print progress bar (68 characters wide)
-        std::cout << std::endl;
-        std::cout << "Progress:" << std::endl;
-        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
-        std::cout.flush();
+        progress.start();
     }
     
     
     // Run the chain
-    size_t numStars = 0;
     for (size_t k=1; k<=generations; k++)
     {
         if ( process_active == true )
         {
-            size_t progress = 68 * (double) k / (double) generations;
-            if ( progress > numStars )
-            {
-                for ( ;  numStars < progress; ++numStars )
-                {
-                    std::cout << "*";
-                }
-                
-                std::cout.flush();
-            }
+            progress.update( k );
         }
         
         sampler->nextCycle(false);
@@ -139,7 +131,7 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
     
     if ( process_active == true )
     {
-        std::cout << std::endl;
+        progress.finish();
     }
     
 }
@@ -169,7 +161,7 @@ void PowerPosteriorAnalysis::initMPI( void )
 }
 
 
-void PowerPosteriorAnalysis::runAll(size_t gen, size_t bg, size_t ti)
+void PowerPosteriorAnalysis::runAll(size_t gen, double burnin_fraction, size_t pre_burnin_generations, size_t tuning_interval)
 {
 
 //    initMPI();
@@ -202,14 +194,20 @@ void PowerPosteriorAnalysis::runAll(size_t gen, size_t bg, size_t ti)
     {
     
         // run the i-th stone
-        runStone(i, gen, bg, ti);
+        runStone(i, gen, burnin_fraction, pre_burnin_generations, tuning_interval);
         
     }
     
 #ifdef RB_MPI
     // wait until all chains complete
     MPI_Barrier(MPI_COMM_WORLD);
+    
+    // to be safe, we should synchronize the random number generators
+    MpiUtilities::synchronizeRNG( MPI_COMM_WORLD);
+#else
+    MpiUtilities::synchronizeRNG(  );
 #endif
+    
     if ( process_active == true )
     {
         summarizeStones();
@@ -219,7 +217,7 @@ void PowerPosteriorAnalysis::runAll(size_t gen, size_t bg, size_t ti)
 
 
 
-void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen, size_t bg, size_t ti)
+void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen, double burnin_fraction, size_t pre_burnin_generations, size_t tuning_interval)
 {
     
     // create the directory if necessary
@@ -240,11 +238,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen, size_t bg, size_t 
     // reset the sampler
     sampler->reset();
     
-    if (bg == 0) {
-        bg = size_t( ceil( 0.25*gen ) );
-        gen -= bg;
-    }
-//    size_t burnin = size_t( ceil( 0.25*gen ) );
+    size_t burnin = size_t( ceil( burnin_fraction*gen ) );
     
     gen += bg;
     
@@ -270,6 +264,19 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen, size_t bg, size_t 
     ss << "_stone_" << idx;
     sampler->addFileMonitorExtension( ss.str(), false);
     
+    // let's do a pre-burnin
+    for (size_t k=1; k<=pre_burnin_generations; k++)
+    {
+        
+        sampler->nextCycle(false);
+        
+        // check for autotuning
+        if ( k % tuning_interval == 0 && k != pre_burnin_generations )
+        {
+            sampler->tune();
+        }
+        
+    }
     
     // run a burnin
     size_t k = 1;
@@ -296,8 +303,8 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen, size_t bg, size_t 
 
     // Monitor
     sampler->startMonitors(gen, false);
-    sampler->writeMonitorHeaders();
-//    sampler->monitor(0);
+    sampler->writeMonitorHeaders( false );
+    sampler->monitor(0);
     
     double p = powers[idx];
     for (; k<=gen; ++k)

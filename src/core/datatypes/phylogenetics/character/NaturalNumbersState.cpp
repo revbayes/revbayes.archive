@@ -1,20 +1,20 @@
 #include "NaturalNumbersState.h"
-#include "RbException.h"
-#include <assert.h>
-#include <sstream>
-#include <iostream>
-#include <boost/lexical_cast.hpp>
 
+#include <boost/lexical_cast.hpp>
+#include <string>
+
+#include "RbException.h"
+#include "Cloneable.h"
 
 using namespace RevBayesCore;
 
 /** Default constructor */
 NaturalNumbersState::NaturalNumbersState(size_t n) : DiscreteCharacterState( n ),
-is_gap( false ),
-is_missing( false ),
-index_single_state( 0 ),
-num_observed_states( 0 ),
-state(n)
+    is_gap( false ),
+    is_missing( false ),
+    index_single_state( 0 ),
+    num_observed_states( 0 ),
+    state(n)
 {
     
 }
@@ -23,11 +23,11 @@ state(n)
 
 /** Constructor that sets the observation */
 NaturalNumbersState::NaturalNumbersState(const std::string &s, int m) : DiscreteCharacterState( m ),
-is_gap( false ),
-is_missing( false ),
-index_single_state( 0 ),
-num_observed_states( 0 ),
-state(m)
+    is_gap( false ),
+    is_missing( false ),
+    index_single_state( 0 ),
+    num_observed_states( 0 ),
+    state(m)
 {
     setState(s);
 }
@@ -35,11 +35,11 @@ state(m)
 
 /** Constructor that sets the observation */
 NaturalNumbersState::NaturalNumbersState(int s, int m) : DiscreteCharacterState( m ),
-is_gap( false ),
-is_missing( false ),
-index_single_state( 0 ),
-num_observed_states( 0 ),
-state(m)
+    is_gap( false ),
+    is_missing( false ),
+    index_single_state( 0 ),
+    num_observed_states( 0 ),
+    state(m)
 {
     setStateByIndex( s );
 }
@@ -115,6 +115,30 @@ std::string NaturalNumbersState::getStringValue(void) const
         return "-";
     }
     
+    if ( isAmbiguous() == true )
+    {
+        std::string tmp = "(";
+        bool is_first = true;
+        for (size_t i=0; i<getNumberOfStates(); ++i)
+        {
+            if ( state.isSet(i) == true )
+            {
+                if ( is_first == false )
+                {
+                    tmp += " ";
+                }
+                else
+                {
+                    is_first = false;
+                }
+                tmp += boost::lexical_cast<std::string>(i);
+            }
+        }
+        tmp += ")";
+        
+        return tmp;
+    }
+    
     return boost::lexical_cast<std::string>(index_single_state);
     
 }
@@ -141,6 +165,15 @@ void NaturalNumbersState::setGapState( bool tf )
 void NaturalNumbersState::setMissingState( bool tf )
 {
     is_missing = tf;
+    
+    if ( is_missing == true )
+    {
+        for (size_t i=0; i<getNumberOfStates(); ++i)
+        {
+            state.set(i);
+        }
+        num_observed_states = getNumberOfStates();
+    }
 }
 
 

@@ -16,14 +16,14 @@
  */
 
 #include "StringUtilities.h"
-#include "RbVector.h"
 
-#include <sstream>
-#include <fstream>
-#include <iostream>
+#include <stdio.h>
 #include <iomanip>
 #include <string>
 #include <cstdlib>
+
+#include "RbFileManager.h"
+#include "RbVector.h"
 
 
 
@@ -77,6 +77,18 @@ size_t StringUtilities::findFirstOf(const std::string &s, char c)
             break;
         }
     }
+    
+    return pos;
+}
+
+
+/**
+ * Find the first occurence of the given character.
+ * We return string::npos if it wasn't found.
+ */
+size_t StringUtilities::findFirstOf(const std::string &a, const std::string &b)
+{
+    size_t pos = a.find(b);
     
     return pos;
 }
@@ -169,27 +181,29 @@ std::string StringUtilities::formatTabWrap(std::string s, size_t tabs, size_t wi
             cc++;
         }
         
-        if (lastChar == '\n')
+        if( i < s.size() - 1 )
         {
-            cc = 0;
-            result.append(tabbing);
-        }
-        
-        if (lastChar == ' ')
-        {
-            // we now have a possible point where to wrap the line.
-            // peek ahead and see where next possible wrap point is:
-            std::string sub_str = s.substr(i);
-            size_t next = StringUtilities::findFirstOf(sub_str, ' ');
-            
-            // if next wrap point is beyond the width, then wrap line now
-            if (cc + next >= w)
+            if (lastChar == '\n')
             {
-                result.append("\n").append(tabbing);
-                // reset char count for next line
                 cc = 0;
+                result.append(tabbing);
             }
-            
+            else if (lastChar == ' ')
+            {
+                // we now have a possible point where to wrap the line.
+                // peek ahead and see where next possible wrap point is:
+                std::string sub_str = s.substr(i+1);
+                size_t next = StringUtilities::findFirstOf(sub_str, ' ');
+
+                // if next wrap point is beyond the width, then wrap line now
+                if (cc + next >= w)
+                {
+                    result.append("\n").append(tabbing);
+                    // reset char count for next line
+                    cc = 0;
+                }
+
+            }
         }
         
     }
@@ -284,9 +298,11 @@ std::string StringUtilities::getStringWithDeletedLastPathComponent(const std::st
 std::string StringUtilities::getFileContentsAsString(const std::string& s)
 {
 
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(s);
+    
     // open file
 	std::ifstream fStrm;
-    fStrm.open(s.c_str(), std::ios::in);
+    fStrm.open(fm.getFullFileName().c_str(), std::ios::in);
     if ( !fStrm.is_open() )
         return "";
         
@@ -528,6 +544,20 @@ void StringUtilities::replaceSubstring(std::string& str, const std::string& oldS
 }
 
 
+void StringUtilities::replaceAllOccurrences(std::string& str, char old_ch, char new_ch)
+{
+    
+    for (size_t i=0; i<str.size(); ++i)
+    {
+        if ( str[i] == old_ch )
+        {
+            str[i] = new_ch;
+        }
+    }
+    
+}
+
+
 /** Utility function for dividing string into pieces */
 void StringUtilities::stringSplit(const std::string &s, const std::string &delim, std::vector<std::string>& results)
 {
@@ -536,7 +566,7 @@ void StringUtilities::stringSplit(const std::string &s, const std::string &delim
     std::string str = s;
 
     size_t cutAt;
-    while ( (cutAt = StringUtilities::findFirstOf(str, delim[0])) != str.npos )
+    while ( (cutAt = StringUtilities::findFirstOf(str, delim)) != str.npos )
     {
         if (cutAt > 0)
         {
@@ -546,7 +576,7 @@ void StringUtilities::stringSplit(const std::string &s, const std::string &delim
         {
             results.push_back( "" );
         }
-        str = str.substr(cutAt+1);
+        str = str.substr(cutAt+delim.size());
     }
     
     if (str.length() > 0)

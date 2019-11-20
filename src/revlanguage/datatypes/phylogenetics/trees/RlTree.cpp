@@ -1,6 +1,10 @@
+#include <sstream>
+#include <cstddef>
+#include <string>
+#include <vector>
+
 #include "ModelVector.h"
 #include "Natural.h"
-#include "RbUtil.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlBoolean.h"
 #include "RlClade.h"
@@ -12,8 +16,35 @@
 #include "TopologyNode.h"
 #include "TreeUtilities.h"
 #include "TypeSpec.h"
-
-#include <sstream>
+#include "Argument.h"
+#include "ArgumentRule.h"
+#include "ArgumentRules.h"
+#include "Clade.h"
+#include "ConstantNode.h"
+#include "DagNode.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "IndirectReferenceFunction.h"
+#include "MemberFunction.h"
+#include "MemberProcedure.h"
+#include "MethodTable.h"
+#include "ModelObject.h"
+#include "RbBoolean.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "Real.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlConstantNode.h"
+#include "RlDeterministicNode.h"
+#include "RlTypedFunction.h"
+#include "RlUtils.h"
+#include "Taxon.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
 
 using namespace RevLanguage;
 
@@ -221,6 +252,20 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
         ModelVector<RealPos> *n = new ModelVector<RealPos>( bl );
         return new RevVariable( n );
     }
+    else if ( name == "calculateEDR" )
+    {
+        found = true;
+        std::vector<double> edr = RevBayesCore::TreeUtilities::calculateEDR( dag_node->getValue() );
+        ModelVector<RealPos> *n = new ModelVector<RealPos>( edr );
+        return new RevVariable( n );
+    }
+    else if ( name == "getInverseES" )
+    {
+        found = true;
+        std::vector<double> es = RevBayesCore::TreeUtilities::getInverseES( dag_node->getValue() );
+        ModelVector<RealPos> *n = new ModelVector<RealPos>( es );
+        return new RevVariable( n );
+    }
 
     return ModelObject<RevBayesCore::Tree>::executeMethod( name, args, found );
 }
@@ -235,6 +280,7 @@ const std::string& Tree::getClassType(void)
     return rev_type;
 }
 
+
 /** Get class type spec describing type of object */
 const TypeSpec& Tree::getClassTypeSpec(void)
 {
@@ -243,6 +289,7 @@ const TypeSpec& Tree::getClassTypeSpec(void)
 
     return rev_type_spec;
 }
+
 
 
 /** Get type spec */
@@ -285,6 +332,12 @@ void Tree::initMethods( void )
     psArgRules->push_back( new ArgumentRule( "characters", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The character alignment to use when computing the Parsimoniously Same State Paths (PSSP).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     psArgRules->push_back( new ArgumentRule( "stateIndex", Natural::getClassTypeSpec(), "The state index.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "getPSSP", ModelVector<RealPos>::getClassTypeSpec(), psArgRules ) );
+    
+    ArgumentRules* edrArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "calculateEDR", ModelVector<RealPos>::getClassTypeSpec(), edrArgRules ) );
+    
+    ArgumentRules* esArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "getInverseES", ModelVector<RealPos>::getClassTypeSpec(), esArgRules ) );
     
     ArgumentRules* meanInverseESArgRules = new ArgumentRules();
     meanInverseESArgRules->push_back( new ArgumentRule( "characters", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The character alignment from which to compute the mean inverse ES metric.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );

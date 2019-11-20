@@ -1,7 +1,13 @@
-#include "AbstractDiscreteTaxonData.h"
-#include "CharacterState.h"
+#include <stddef.h>
+#include <ostream>
+#include <vector>
+
 #include "DelimitedCharacterDataWriter.h"
 #include "RbFileManager.h"
+#include "AbstractTaxonData.h"
+#include "Cloneable.h"
+#include "HomologousCharacterData.h"
+#include "Taxon.h"
 
 using namespace RevBayesCore;
 
@@ -30,11 +36,11 @@ void DelimitedCharacterDataWriter::writeData(std::string const &fileName, const 
     // the filestream object
     std::fstream outStream;
     
-    RbFileManager f = RbFileManager(fileName);
-    f.createDirectoryForFile();
+    RbFileManager fm = RbFileManager(fileName);
+    fm.createDirectoryForFile();
     
     // open the stream to the file
-    outStream.open( fileName.c_str(), std::fstream::out );
+    outStream.open( fm.getFullFileName().c_str(), std::fstream::out );
     
     const std::vector<Taxon> &taxa = data.getTaxa();
     for (std::vector<Taxon>::const_iterator it = taxa.begin();  it != taxa.end(); ++it)

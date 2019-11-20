@@ -1,14 +1,19 @@
+#include <cmath>
+#include <iostream>
+#include <cstdlib>
+#include <vector>
+
 #include "DistributionUniform.h"
 #include "AddRemoveTipProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
-#include "RbException.h"
-#include "TreeUtilities.h"
-#include "TypedDagNode.h"
+#include "Proposal.h"
+#include "StochasticNode.h"
+#include "TopologyNode.h"
+#include "Tree.h"
 
-#include <cmath>
-#include <iostream>
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 
@@ -133,7 +138,7 @@ double AddRemoveTipProposal::doProposal( void )
     double hr = 0;
     double jacobian = 0;
 
-    bool both = (extinct == extant == true);
+    bool both = extinct and extant;
 
     // pick a random tip node to remove
     if (u < 0.5)
@@ -210,7 +215,7 @@ double AddRemoveTipProposal::addTip(TopologyNode *n)
     // unless lnProbTreeShape is incorrect for all birth death processes
     double hr = 0;
 
-    if ( extinct == extant == true )
+    if ( extinct and extant )
     {
         u = rng->uniform01();
     }

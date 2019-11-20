@@ -11,22 +11,29 @@
  *
  */
 
+#include <stddef.h>
+#include <iostream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
-#include "ConstantNode.h"
-#include "Ellipsis.h"
 #include "Func_readAncestralStateTrace.h"
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RlString.h"
 #include "RlAncestralStateTrace.h"
-#include "RlUtils.h"
 #include "StringUtilities.h"
-#include "TreeUtilities.h"
 #include "WorkspaceVector.h"
-
-#include <map>
-#include <set>
-#include <sstream>
+#include "Argument.h"
+#include "ArgumentRules.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
+#include "Trace.h"
+#include "TypeSpec.h"
+#include "WorkspaceToCoreWrapperObject.h"
 
 
 using namespace RevLanguage;
@@ -159,6 +166,7 @@ const TypeSpec& Func_readAncestralStateTrace::getReturnType( void ) const
 std::vector<RevBayesCore::AncestralStateTrace> Func_readAncestralStateTrace::readAncestralStates(const std::string &fileName, const std::string &delimitter)
 {
     
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(fileName);
     
     std::vector<RevBayesCore::AncestralStateTrace> data;
 	
@@ -166,7 +174,7 @@ std::vector<RevBayesCore::AncestralStateTrace> Func_readAncestralStateTrace::rea
 
 	
 	/* Open file */
-	std::ifstream inFile( fileName.c_str() );
+	std::ifstream inFile( fm.getFullFileName().c_str() );
 	
 	if ( !inFile )
 		throw RbException( "Could not open file \"" + fileName + "\"" );

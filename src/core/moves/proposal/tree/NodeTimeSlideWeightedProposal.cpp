@@ -1,14 +1,18 @@
+#include <stddef.h>
+#include <cmath>
+#include <iostream>
+#include <vector>
+
 #include "DistributionBeta.h"
 #include "NodeTimeSlideWeightedProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "RbConstants.h"
-#include "RbException.h"
-#include "TreeUtilities.h"
-#include "TypedDagNode.h"
-
-#include <cmath>
-#include <iostream>
+#include "DagNode.h"
+#include "Proposal.h"
+#include "RbOrderedSet.h"
+#include "StochasticNode.h"
+#include "TopologyNode.h"
+#include "Tree.h"
 
 using namespace RevBayesCore;
 
@@ -125,7 +129,7 @@ double NodeTimeSlideWeightedProposal::doProposal( void )
     std::vector<double> lnl(1,0.0);
     // get the affected dag nodes for the posterior computation
     RbOrderedSet<DagNode*> affected;
-    variable->getAffectedNodes( affected );
+    variable->initiateGetAffectedNodes( affected );
     double f = (parent_age - child_Age);
     double marginal = 0.0;
     double prev_x = 0.0;

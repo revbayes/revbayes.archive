@@ -1,22 +1,32 @@
+#include <stdio.h>
+#include <algorithm>
+#include <cstddef>
+#include <iostream>
+#include <iterator>
+#include <map>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "Clade.h"
-#include "RbConstants.h"
 #include "RbException.h"
 #include "RbMathLogic.h"
-#include "RbOptions.h"
 #include "RbSettings.h"
-#include "RbUtil.h"
 #include "Taxon.h"
 #include "TopologyNode.h"
 #include "Tree.h"
 #include "TreeChangeEventMessage.h"
-
-#include <algorithm>
-#include <stdio.h>
+#include "RbBitSet.h"
+#include "TaxonMap.h"
+#include "TreeChangeEventHandler.h"
+#include "RbConstants.h" // IWYU pragma: keep
 
 using namespace RevBayesCore;
 
 /** Default constructor (interior node, no name). Give the node an optional index ID */
 TopologyNode::TopologyNode(size_t indx) :
+    use_ages( true ),
     age( RbConstants::Double::nan ),
     branch_length( RbConstants::Double::nan ),
     children(),
@@ -35,6 +45,7 @@ TopologyNode::TopologyNode(size_t indx) :
 
 /** Constructor of node with name. Give the node an optional index ID */
 TopologyNode::TopologyNode(const Taxon& t, size_t indx) :
+    use_ages( true ),
     age( RbConstants::Double::nan ),
     branch_length( RbConstants::Double::nan ),
     children(),
@@ -53,6 +64,7 @@ TopologyNode::TopologyNode(const Taxon& t, size_t indx) :
 
 /** Constructor of node with name. Give the node an optional index ID */
 TopologyNode::TopologyNode(const std::string& n, size_t indx) :
+    use_ages( true ),
     age( RbConstants::Double::nan ),
     branch_length( RbConstants::Double::nan ),
     children(),
@@ -70,6 +82,7 @@ TopologyNode::TopologyNode(const std::string& n, size_t indx) :
 
 /** Copy constructor. We use a shallow copy. */
 TopologyNode::TopologyNode(const TopologyNode &n) :
+    use_ages( n.use_ages ),
     age( n.age ),
     branch_length( n.branch_length ),
     parent( n.parent ),
@@ -124,6 +137,7 @@ TopologyNode& TopologyNode::operator=(const TopologyNode &n)
         removeAllChildren();
         
         // copy the members
+        use_ages                = n.use_ages;
         age                     = n.age;
         branch_length           = n.branch_length;
         taxon                   = n.taxon;
@@ -134,10 +148,10 @@ TopologyNode& TopologyNode::operator=(const TopologyNode &n)
         root_node               = n.root_node;
         node_comments           = n.node_comments;
         branch_comments         = n.branch_comments;
-        time_in_states           = n.time_in_states;
+        time_in_states          = n.time_in_states;
         
         // copy the members
-        parent          = n.parent;
+        parent                  = n.parent;
         
         // copy the children
         for (std::vector<TopologyNode*>::const_iterator it = n.children.begin(); it != n.children.end(); it++)
@@ -304,19 +318,19 @@ void TopologyNode::addNodeParameters(std::string const &n, const std::vector<dou
     
 }
 
-void TopologyNode::addNodeParameters(std::string const &n, const std::vector<std::string*> &p, bool internalOnly)
+void TopologyNode::addNodeParameters(std::string const &n, const std::vector<std::string> &p, bool internal_only)
 {
     
-    if ( !internalOnly || !isTip()  )
+    if ( !internal_only || !isTip()  )
     {
         std::stringstream o;
-        o << n << "=" << *p[index];
+        o << n << "=" << p[index];
         std::string comment = o.str();
         node_comments.push_back( comment );
         
         for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
         {
-            (*it)->addNodeParameters(n, p, internalOnly);
+            (*it)->addNodeParameters(n, p, internal_only);
         }
     }
 }
@@ -338,7 +352,8 @@ std::string TopologyNode::buildNewickString( bool simmap = false )
     std::vector<std::string> fossil_comments;
 
     // ensure we have an updated copy of branch_length variables
-    if (!isRoot()) {
+    if ( isRoot() == false )
+    {
         recomputeBranchLength();
     }
 
@@ -1083,17 +1098,6 @@ const TopologyNode* TopologyNode::getMrca(const TopologyNode &n) const
     return getNode( n, false );
 }
 
-
-///**
-// * Is the argument clade contained in the clade descending from this node?
-// */
-//const TopologyNode* TopologyNode::getMrca(const std::vector<Taxon> &t) const
-//{
-//
-//    return getNode( t, false );
-//}
-
-
 /**
  * Is the argument clade contained in the clade descending from this node?
  * By strict we mean that the contained clade has to be monophyletic in the containing clade.
@@ -1139,6 +1143,7 @@ TopologyNode* TopologyNode::getNode(const Clade &c, bool strict)
  */
 TopologyNode* TopologyNode::getNode(const RbBitSet &your_taxa, bool strict)
 {
+    
     size_t n = tree->getNumberOfTips();
     RbBitSet my_taxa   = RbBitSet( n );
     getTaxa( my_taxa );
@@ -1772,6 +1777,70 @@ void TopologyNode::setNodeType(bool tip, bool root, bool interior)
     
 }
 
+
+void TopologyNode::setParent(TopologyNode* p)
+{
+    
+    // we only do something if this isn't already our parent
+    if (p != parent)
+    {
+        // we do not own the parent so we do not have to delete it
+        parent = p;
+        
+        // we need to recompute our branch length
+        recomputeBranchLength();
+        
+        // fire tree change event
+        if ( tree != NULL )
+        {
+            tree->getTreeChangeEventHandler().fire( *this, RevBayesCore::TreeChangeEventMessage::DEFAULT );
+        }
+        
+    }
+    
+    root_node = (parent == NULL);
+}
+
+void TopologyNode::setUseAges(bool tf, bool recursive)
+{
+    
+    // if this node did use ages before but not we do not anymore
+    if ( use_ages == true && tf == false )
+    {
+        
+        // check if we need to call the recursion
+        if ( recursive == true )
+        {
+            
+            // call all our children
+            for (size_t i=0; i<children.size(); ++i)
+            {
+                children[i]->setUseAges(tf, recursive);
+            }
+            
+        }
+        
+        // now we need to compute the branch lengths
+        recomputeBranchLength();
+        
+        // make the age not usable to be safe
+        age = RbConstants::Double::nan;
+        
+    }
+    // finally set our internal flag
+    use_ages = tf;
+    
+}
+
+
+void TopologyNode::setSampledAncestor(bool tf)
+{
+    
+    sampled_ancestor = tf;
+    
+}
+
+
 void TopologyNode::setSpeciesName(std::string const &n)
 {
     
@@ -1812,38 +1881,6 @@ void TopologyNode::setTaxonIndices(const TaxonMap &tm)
 void TopologyNode::setTimeInStates(std::vector<double> t)
 {
     time_in_states = t;
-}
-
-
-void TopologyNode::setParent(TopologyNode* p)
-{
-    
-    // we only do something if this isn't already our parent
-    if (p != parent)
-    {
-        // we do not own the parent so we do not have to delete it
-        parent = p;
-        
-        // we need to recompute our branch length
-        recomputeBranchLength();
-        
-        // fire tree change event
-        if ( tree != NULL )
-        {
-            tree->getTreeChangeEventHandler().fire( *this, RevBayesCore::TreeChangeEventMessage::DEFAULT );
-        }
-        
-    }
-    
-    root_node = parent == NULL;
-}
-
-
-void TopologyNode::setSampledAncestor(bool tf)
-{
-    
-    sampled_ancestor = tf;
-    
 }
 
 

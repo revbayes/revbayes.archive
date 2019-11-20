@@ -70,8 +70,6 @@ namespace RevBayesCore {
         size_t                                              cladoNodeOffset;
         size_t                                              cladoMixtureOffset;
         size_t                                              cladoSiteOffset;
-        size_t                                              cladoNodeOffsetMarginal;
-        size_t                                              cladoSiteOffsetMarginal;
 
 
     private:
@@ -95,14 +93,11 @@ namespace RevBayesCore {
 #include "BranchHistory.h"
 #include "ConstantNode.h"
 #include "StochasticNode.h"
-#include "ChromosomesCladogenicStateFunction.h"
 #include "DECCladogeneticStateFunction.h"
+#include "CladogeneticProbabilityMatrixFunction.h"
 #include "DiscreteCharacterState.h"
 #include "RateMatrix_JC.h"
 #include "RandomNumberFactory.h"
-#include "RbVector.h"
-#include "TopologyNode.h"
-#include "TransitionProbabilityMatrix.h"
 
 #include <cmath>
 #include <cstring>
@@ -123,10 +118,38 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> 
     store_internal_nodes(internal),
     gap_match_clamped(gapmatch)
 {
-    unsigned numReducedChar = (unsigned)( log( nChars ) / log( 2 ) );
-    std::vector<std::string> et;
-    et.push_back("s");
-    et.push_back("a");
+//    unsigned numReducedChar = (unsigned)( log( nChars ) / log( 2 ) );
+//    std::vector<std::string> et;
+//    et.push_back("s");
+//    et.push_back("a");
+    
+//    const TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<long> > >* events, const TypedDagNode<RevBayesCore::RbVector<double> >* probs, int n_states 
+    
+    
+    // create a dummy matrix of identical cladogenetic inheritance triplets
+    RevBayesCore::RbVector<RevBayesCore::RbVector<long> >* clado_events_mtx_tmp = new RevBayesCore::RbVector<RevBayesCore::RbVector<long> >();
+    for (size_t i = 0; i < nChars; i++) {
+        clado_events_mtx_tmp->push_back( RevBayesCore::RbVector<long>(3, i) );
+    }
+    
+    // populate a dummy node with those events
+    TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<long> > >* clado_events_tmp;
+    clado_events_tmp = new RevBayesCore::ConstantNode< RevBayesCore::RbVector< RevBayesCore::RbVector<long> > >(".cladogenetic_events", clado_events_mtx_tmp);
+    
+    // populate a dummy event probs vector where each event has prob = 1
+    TypedDagNode< RevBayesCore::RbVector<double> >* clado_probs_tmp;
+    clado_probs_tmp = new RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >(".probabilities", new RevBayesCore::RbVector<double>(clado_events_mtx_tmp->size(), 1.0));
+    
+    // build a dummy cladogenetic probability matrix function
+    CladogeneticProbabilityMatrixFunction* clado_func_tmp = new CladogeneticProbabilityMatrixFunction( clado_events_tmp, clado_probs_tmp, (int)nChars );
+    
+    // place that function into a dummy deterministic node
+    DeterministicNode<CladogeneticProbabilityMatrix>* clado_node_tmp = new DeterministicNode<CladogeneticProbabilityMatrix>( "cladogenesisMatrix", clado_func_tmp );
+    
+    // finally, assign our dummy node to the model's cladogenetic probability matrix variable
+    homogeneousCladogenesisMatrix = clado_node_tmp;
+   
+    /*
     homogeneousCladogenesisMatrix            = new DeterministicNode<CladogeneticProbabilityMatrix>( "cladogenesisMatrix",
                                                new DECCladogeneticStateFunction(
                                                     new ConstantNode<Simplex>( "", new Simplex(2, 0.5)),
@@ -136,6 +159,7 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> 
                                                     2,
                                                     et)
                                                 );
+     */
     heterogeneousCladogenesisMatrices        = NULL;
     cladogenesisTimes                        = NULL;
  
@@ -838,6 +862,9 @@ void RevBayesCore::PhyloCTMCClado<charType>::drawJointConditionalAncestralStates
 
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
+    
+    this->sampled_site_mixtures.resize(this->num_sites);
+    
     const TopologyNode &root = this->tau->getValue().getRoot();
     size_t node_index = root.getIndex();
     size_t right = root.getChild(0).getIndex();
@@ -1241,11 +1268,13 @@ void RevBayesCore::PhyloCTMCClado<charType>::simulate( const TopologyNode &node,
         for (it = eventMapProbs.begin(); it != eventMapProbs.end(); it++)
         {
             const std::vector<unsigned>& states = it->first;
+            
             if ( parentState == states[0] )
             {
                 u -= it->second;
                 if (u < 0.0)
                 {
+//                    std::cout << states[0] << " -> " << states[1] << " | " << states[2] << "\n";
                     cl += states[1];
                     cr += states[2];
                     left->addCharacter( cl );
@@ -1594,7 +1623,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
         
         if (events.size() == 0)
         {
-            RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(nodeIdx, brlen);
+            RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(nodeIdx);
         }
         else
         {
@@ -1650,7 +1679,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
             }
 
             // last interval
-            RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(nodeIdx, dt);
+            RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(nodeIdx);
             rm->calculateTransitionProbabilities( event_age, endAge,  rate, this->transition_prob_matrices[0] );
             tp *= this->transition_prob_matrices[0];
             
@@ -1660,7 +1689,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
     }
     else
     {
-        RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(nodeIdx, brlen);
+        RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(nodeIdx);
     }
 }
 

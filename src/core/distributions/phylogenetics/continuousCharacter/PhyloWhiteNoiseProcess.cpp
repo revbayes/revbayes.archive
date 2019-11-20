@@ -1,12 +1,17 @@
 #include "PhyloWhiteNoiseProcess.h"
+
+#include <stddef.h>
+#include <cmath>
+
 #include "DistributionGamma.h"
 #include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
-#include "RbConstants.h"
-#include "StochasticNode.h"
+#include "Cloner.h"
+#include "RbVectorImpl.h"
+#include "Tree.h"
+#include "TypedDagNode.h"
 
-#include <cmath>
-#include <iostream>
+namespace RevBayesCore { class DagNode; }
+namespace RevBayesCore { class RandomNumberGenerator; }
 
 
 
@@ -130,56 +135,4 @@ void PhyloWhiteNoiseProcess::recursiveSimulate(const TopologyNode& from)
     }
     
 }
-
-
-
-/*
- void PhyloWhiteNoiseProcess::getAffected(RbOrderedSet<DagNode *> &affected, DagNode* affecter) {
- // only delegate when the toucher was the root val
- //    if ( affecter == rootVal )
- //        this->dag_node->getAffectedNodes( affected );
- }
- 
- 
- void PhyloWhiteNoiseProcess::keepSpecialization( DagNode* affecter ) {
- // only do this when the toucher was the root val
- //    if ( affecter == rootVal )
- //        this->dag_node->keepAffected();
- }
- */
-
-/*
-void PhyloWhiteNoiseProcess::restoreSpecialization( DagNode *restorer ) {
-    // only do this when the toucher was our parameters
-//    if ( restorer == rootVal ) {
-        // get the index of the root
-//        size_t rootIndex = tau->getValue().getRoot().getIndex();
-//        (*value)[rootIndex] = rootVal->getValue();
-        
-        // delegate a restore to our children
-//        this->dag_node->restoreAffected();
-//    }
-}
-
-*/
-
-
-//void PhyloWhiteNoiseProcess::touchSpecialization( DagNode *toucher, bool touchAll ) {
-    // if the root val has changed, then we need to change the corresponding value in our vector and downpass the touch
-/*
- if ( rootVal == toucher ) {
-        
-        // get the index of the root
-        size_t rootIndex = tau->getValue().getRoot().getIndex();
-        (*value)[rootIndex] = rootVal->getValue();
-        
-        // we notify our DAG node which element has changed
-        dagNode->addTouchedElementIndex( rootIndex );
-        
-        // delegate a touch to our children
-        this->dag_node->touchAffected();
-    }
-*/
-//}
-
 

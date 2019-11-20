@@ -22,7 +22,6 @@ namespace RevLanguage {
         virtual void                                constructInternalObject(void) = 0;                                                  //!< We construct the a new internal object.
         static const std::string&                   getClassType(void);                                                                 //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                             //!< Get class type spec
-        virtual RevBayesCore::RbHelpMove*           getHelpEntry(void) const;                                                           //!< Get the help entry for this function
         virtual const MemberRules&                  getParameterRules(void) const;                                                      //!< Get member rules (const)
         virtual void                                printValue(std::ostream& o, bool user) const;                                       //!< Print value (for user)
         virtual void                                printValue(std::ostream& o) const;                                       //!< Print value (for user)
@@ -35,17 +34,6 @@ namespace RevLanguage {
     protected:
         
         virtual void                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);   //!< Set member variable
-
-        virtual std::string                                 getConstructorUsage(void) const { return ""; }
-        virtual std::vector<std::string>                    getConstructorDetails(void) const { return std::vector<std::string>(); }
-        virtual std::string                                 getConstructorExample(void) const { return ""; }
-        virtual std::vector<std::string>                    getHelpAuthor(void) const { return std::vector<std::string>(); }
-        virtual std::vector<std::string>                    getHelpDescription(void) const { return std::vector<std::string>(); }
-        virtual std::string                                 getHelpExample(void) const { return ""; }                                                       //!< Get an executable and instructive example
-        virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const { return std::vector<RevBayesCore::RbHelpReference>(); }
-        virtual std::vector<std::string>                    getHelpSeeAlso(void) const { return std::vector<std::string>(); }
-        virtual std::string                                 getHelpTitle(void) const { return ""; }
-
         
         RevPtr<const RevVariable>                   weight;
         RevPtr<const RevVariable>                   tuneTarget;

@@ -44,8 +44,6 @@ namespace RevBayesCore {
 #include "DiscreteCharacterState.h"
 #include "RateMatrix_JC.h"
 #include "RandomNumberFactory.h"
-#include "TopologyNode.h"
-#include "TransitionProbabilityMatrix.h"
 
 #include <cmath>
 #include <cstring>
@@ -214,7 +212,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikeli
 {
 
     // compute the transition probability matrix
-    this->updateTransitionProbabilities( node_index, node.getBranchLength() );
+    this->updateTransitionProbabilities( node_index );
 
     // get the pointers to the partial likelihoods for this node and the two descendant subtrees
     const double*   p_left  = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
@@ -251,10 +249,9 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikeli
 
                 } // end-for over all distination character
 
-                
                 // store the likelihood for this starting state
                 p_site_mixture[c1] = sum;
-
+                
                 // increment the pointers to the next starting state
                 tp_a+=this->num_chars;
 
@@ -275,7 +272,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikeli
 {
 
     // compute the transition probability matrix
-    this->updateTransitionProbabilities( node_index, node.getBranchLength() );
+    this->updateTransitionProbabilities( node_index );
 
     // get the pointers to the partial likelihoods for this node and the two descendant subtrees
     const double*   p_left      = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
@@ -347,20 +344,23 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(cons
     const std::vector<RbBitSet> &amb_char_node = this->ambiguous_char_matrix[data_tip_index];
 
     size_t char_data_node_index = this->value->indexOfTaxonWithName(node.getName());
+    std::vector<size_t> site_indices;
+    if ( this->using_weighted_characters == true )
+        site_indices = this->getIncludedSiteIndices();
     
     // compute the transition probabilities
-    this->updateTransitionProbabilities( node_index, node.getBranchLength() );
+    this->updateTransitionProbabilities( node_index );
 
-    double*   p_mixture      = p_node;
+    double* p_mixture = p_node;
 
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        const double*                       tp_begin    = this->transition_prob_matrices[mixture].theMatrix;
+        const double* tp_begin = this->transition_prob_matrices[mixture].theMatrix;
 
         // get the pointer to the likelihoods for this site and mixture category
-        double*     p_site_mixture      = p_mixture;
+        double* p_site_mixture = p_mixture;
 
         // iterate over all sites
         for (size_t site = 0; site != this->pattern_block_size; ++site)
@@ -413,35 +413,37 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(cons
 
                         // store the likelihood
                         p_site_mixture[c1] = tmp;
-
+                        
                     }
                     else if ( this->using_weighted_characters == true )
                     {
-                      // compute the likelihood that we had a transition from state c1 to the observed state org_val
-                      // note, the observed state could be ambiguous!
-                      const RbBitSet &val = amb_char_node[site];
+                        // compute the likelihood that we had a transition from state c1 to the observed state org_val
+                        // note, the observed state could be ambiguous!
+//                        const RbBitSet &val = amb_char_node[site];
+                        size_t this_site_index = site_indices[site];
+                        const RbBitSet &val = this->value->getCharacter(char_data_node_index, this_site_index).getState();
 
-                      // get the pointer to the transition probabilities for the terminal states
-                      const double* d  = tp_begin+(this->num_chars*c1);
+                        // get the pointer to the transition probabilities for the terminal states
+                        const double* d = tp_begin+(this->num_chars*c1);
 
-                      double tmp = 0.0;
-                      std::vector< double > weights = this->value->getCharacter(char_data_node_index, site).getWeights();
-                      for ( size_t i=0; i<val.size(); ++i )
-                      {
-                          // check whether we observed this state
-                          if ( val.isSet(i) == true )
-                          {
-                              // add the probability
-                              tmp += *d * weights[i] ;
-                          }
+                        double tmp = 0.0;
+                        const std::vector< double >& weights = this->value->getCharacter(char_data_node_index, this_site_index).getWeights();
+                        for ( size_t i=0; i<val.size(); ++i )
+                        {
+                            // check whether we observed this state
+                            if ( val.isSet(i) == true )
+                            {
+                                // add the probability
+                                tmp += *d * weights[i] ;
+                            }
 
-                          // increment the pointer to the next transition probability
-                          ++d;
-                      } // end-while over all observed states for this character
+                            // increment the pointer to the next transition probability
+                            ++d;
+                        } // end-while over all observed states for this character
 
-                      // store the likelihood
-                      p_site_mixture[c1] = tmp;
-
+                        // store the likelihood
+                        p_site_mixture[c1] = tmp;
+                        
                     }
                     else // no ambiguous characters in use
                     {

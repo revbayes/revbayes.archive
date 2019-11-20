@@ -1,27 +1,20 @@
-//
-//  GammaFunction.h
-//  revbayes-proj
-//
-//  Created by Michael Landis on 10/21/16.
-//  Copyright © 2016 Michael Landis. All rights reserved.
-//
-
 #ifndef GammaFunction_h
 #define GammaFunction_h
 
 #include "TypedFunction.h"
-#include "TypedDagNode.h"
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class TypedDagNode;
     
     /**
-     * \brief Round down to the next integer.
+     * @brief Calculates the gamma function for a real number.
      *
-     * The floor function rounds a real number down to the next integer number.
+     * The gamma function is a generalization of the factorial function
+     * to the complex numbers. 
      *
-     * \copyright (c) Copyright 2009-2015 (GPL version 3)
-     * \author The RevBayes Development Core Team (Sebastian Hoehna)
-     * \since Version 1.0, 2012-08-13
+     * @note this should likely link to the gamma function to be clear
+     * how this is calculated.
      *
      */
     class GammaFunction : public TypedFunction<double> {

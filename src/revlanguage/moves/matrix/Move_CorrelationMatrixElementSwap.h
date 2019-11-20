@@ -8,13 +8,18 @@
 #ifndef Move_CorrelationMatrixElementSwap_H
 #define Move_CorrelationMatrixElementSwap_H
 
-#include "RlMove.h"
-#include "TypedDagNode.h"
-
 #include <ostream>
-#include <string>
+#include <vector>
+
+#include "RlMove.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+
+namespace RevBayesCore { class RbHelpReference; }
 
 namespace RevLanguage {
+class TypeSpec;
     
     class Move_CorrelationMatrixElementSwap : public Move {
         
@@ -33,7 +38,7 @@ namespace RevLanguage {
         virtual void                                     printValue(std::ostream& o) const;                                                      //!< Print value (for user)
         
     protected:
-        
+
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
         RevPtr<const RevVariable>                   v;

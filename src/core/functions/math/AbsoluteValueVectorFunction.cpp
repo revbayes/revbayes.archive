@@ -1,8 +1,19 @@
 #include "AbsoluteValueVectorFunction.h"
+
+#include <stddef.h>
 #include <cmath>
 
-using namespace RevBayesCore;
+#include "Cloner.h"
+#include "RbVectorImpl.h"
+#include "TypedDagNode.h"
 
+namespace RevBayesCore { class DagNode; }
+
+using namespace RevBayesCore;
+/**
+ * AbsoluteValueFunction of a RbVector Constructor.
+ * @param x a RbVector with values of type double
+ */
 AbsoluteValueVectorFunction::AbsoluteValueVectorFunction(const TypedDagNode<RbVector<double> > *x) : TypedFunction<RbVector<double> >( new RbVector<double>(x->getValue().size(), 0.0) ),
     a( x )
 {

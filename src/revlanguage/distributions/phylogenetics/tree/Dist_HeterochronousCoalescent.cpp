@@ -1,18 +1,50 @@
+#include <math.h>
+#include <stddef.h>
+#include <iosfwd>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Clade.h"
-#include "ConstantPopulationHeterochronousCoalescent.h"
 #include "Dist_HeterochronousCoalescent.h"
+#include "HeterochronousCoalescent.h"
 #include "ModelVector.h"
-#include "Natural.h"
-#include "Real.h"
 #include "RealPos.h"
 #include "RlClade.h"
-#include "RlString.h"
+#include "RlDemographicFunction.h"
 #include "RlTaxon.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
 #include "Taxon.h"
+#include "ConstantNode.h"
+#include "DagMemberFunction.h"
+#include "DagNode.h"
+#include "DemographicFunction.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "IndirectReferenceFunction.h"
+#include "ModelObject.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RbVectorImpl.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlConstantNode.h"
+#include "RlDagMemberFunction.h"
+#include "RlDeterministicNode.h"
+#include "RlStochasticNode.h"
+#include "RlTypedDistribution.h"
+#include "RlTypedFunction.h"
+#include "Tree.h"
+#include "TypeSpec.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
+#include "TypedFunction.h"
+#include "UserFunctionNode.h"
+#include "WorkspaceToCoreWrapperObject.h"
+#include "WorkspaceVector.h"
 
 using namespace RevLanguage;
 
@@ -49,19 +81,34 @@ Dist_HeterochronousCoalescent* Dist_HeterochronousCoalescent::clone( void ) cons
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::ConstantPopulationHeterochronousCoalescent* Dist_HeterochronousCoalescent::createDistribution( void ) const
+RevBayesCore::HeterochronousCoalescent* Dist_HeterochronousCoalescent::createDistribution( void ) const
 {
     
     // get the parameters
     
-    // theta
-    RevBayesCore::TypedDagNode<double>* t       = static_cast<const RealPos &>( theta->getRevObject() ).getDagNode();
+    // intervals
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* iv      = static_cast<const ModelVector<RealPos> &>( change_points->getRevObject() ).getDagNode();
+    // demographic functions
+    const WorkspaceVector<DemographicFunction> &ws_vec_df   = static_cast<const WorkspaceVector<DemographicFunction> &>( demographies->getRevObject() );
+    RevBayesCore::RbVector<RevBayesCore::DemographicFunction> df;
+    for ( size_t i = 0; i < ws_vec_df.size(); ++i )
+    {
+        df.push_back( ws_vec_df[i].getValue() );
+    }
+    
+    if ( (iv->getValue().size()+1) != df.size() )
+    {
+        throw RbException("You need to provide 1 more demographic function than change points.");
+    }
+    
     // taxon names
-    const std::vector<RevBayesCore::Taxon> tn   = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getDagNode()->getValue();
+    const std::vector<RevBayesCore::Taxon> tn               = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getDagNode()->getValue();
     // clade constraints
-    const std::vector<RevBayesCore::Clade> &c   = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Clade> &c               = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
+    
+    
     // create the internal distribution object
-    RevBayesCore::ConstantPopulationHeterochronousCoalescent*   d = new RevBayesCore::ConstantPopulationHeterochronousCoalescent(t, tn, c);
+    RevBayesCore::HeterochronousCoalescent*   d             = new RevBayesCore::HeterochronousCoalescent(iv, df, tn, c);
     
     return d;
 }
@@ -97,6 +144,22 @@ const TypeSpec& Dist_HeterochronousCoalescent::getClassTypeSpec( void )
 
 
 /**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Dist_HeterochronousCoalescent::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "HeterochronousCoalescentDemography" );
+//    a_names.push_back( "CoalescentDemography" );
+    
+    return a_names;
+}
+
+
+/**
  * Get the Rev name for the distribution.
  * This name is used for the constructor and the distribution functions,
  * such as the density and random value function
@@ -106,7 +169,7 @@ const TypeSpec& Dist_HeterochronousCoalescent::getClassTypeSpec( void )
 std::string Dist_HeterochronousCoalescent::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
-    std::string d_name = "HeterochronousCoalescent";
+    std::string d_name = "CoalescentDemography";
     
     return d_name;
 }
@@ -130,7 +193,8 @@ const MemberRules& Dist_HeterochronousCoalescent::getParameterRules(void) const
     
     if ( !rules_set )
     {
-        dist_member_rules.push_back( new ArgumentRule( "theta"      , RealPos::getClassTypeSpec(), "The constant population size.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "df", WorkspaceVector<DemographicFunction>::getClassTypeSpec(), "The vector of demographic functions.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "changePoints", ModelVector<RealPos>::getClassTypeSpec(), "The times when the demographic function changes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
         dist_member_rules.push_back( new ArgumentRule( "taxa"       , ModelVector<Taxon>::getClassTypeSpec(), "The taxon names used for initialization.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         dist_member_rules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec()   , "The topological constraints strictly enforced.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
         
@@ -172,9 +236,13 @@ const TypeSpec& Dist_HeterochronousCoalescent::getTypeSpec( void ) const
 void Dist_HeterochronousCoalescent::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    if ( name == "theta" )
+    if ( name == "changePoints" )
     {
-        theta = var;
+        change_points = var;
+    }
+    else if ( name == "df" )
+    {
+        demographies = var;
     }
     else if ( name == "taxa" )
     {

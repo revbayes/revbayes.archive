@@ -1,12 +1,17 @@
-#include "ArgumentRule.h"
+#include <stddef.h>
+#include <sstream>
+#include <string>
+
 #include "ArgumentRules.h"
-#include "Ellipsis.h"
 #include "MemberProcedure.h"
 #include "RbException.h"
-#include "RbUtil.h"
 #include "TypeSpec.h"
-
-#include <sstream>
+#include "DagNode.h"
+#include "Procedure.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlFunction.h"
 
 using namespace RevLanguage;
 
@@ -90,7 +95,7 @@ RevPtr<RevVariable> MemberProcedure::execute( void )
             the_node->touch();
         }
     }
-    catch (RbException e)
+    catch (RbException &e)
     {
         // we do nothing ...
     }

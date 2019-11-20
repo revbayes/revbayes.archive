@@ -15,51 +15,55 @@ namespace RevBayesCore {
     class DiscreteTaxonData : public AbstractDiscreteTaxonData {
 
     public:
-                                                DiscreteTaxonData(const Taxon &t);                                  //!< Set type spec of container from type of elements
+                                                        DiscreteTaxonData(const Taxon &t);                                  //!< Set type spec of container from type of elements
 
-        charType&                               operator[](size_t i);                                               //!< Index op allowing change
-        const charType&                         operator[](size_t i) const;                                         //!< Const index op
+        charType&                                       operator[](size_t i);                                               //!< Index op allowing change
+        const charType&                                 operator[](size_t i) const;                                         //!< Const index op
 
         // implemented methods of the Cloneable interface
-        DiscreteTaxonData<charType>*            clone(void) const;
+        DiscreteTaxonData<charType>*                    clone(void) const;
 
         // TaxonData functions
-        void                                    addCharacter(const CharacterState &newChar );                       //!< Push back a new character
-        void                                    addCharacter(const DiscreteCharacterState &newChar );               //!< Push back a new character
-        void                                    addCharacter(const charType &newChar );                             //!< Push back a new character
-        void                                    addCharacter(const CharacterState &newChar, bool tf);               //!< Push back a new character
-        void                                    addCharacter(const DiscreteCharacterState &newChar, bool tf);       //!< Push back a new character
-        void                                    addCharacter(const charType &newChar, bool tf);                     //!< Push back a new character
-        DiscreteTaxonData&                      concatenate(const AbstractTaxonData &d);                            //!< Concatenate sequences
-        DiscreteTaxonData&                      concatenate(const AbstractDiscreteTaxonData &d);                    //!< Concatenate sequences
-        DiscreteTaxonData&                      concatenate(const DiscreteTaxonData &d);                            //!< Concatenate sequences
-        const charType&                         getCharacter(size_t index) const;                                   //!< Get the character at position index
-        charType&                               getCharacter(size_t index);                                         //!< Get the character at position index (non-const to return non-const character)
-        size_t                                  getNumberOfCharacters(void) const;                                  //!< How many characters
-        double                                  getPercentageMissing(void) const;                                   //!< Returns the percentage of missing data for this sequence
-        std::string                             getStringRepresentation(size_t idx) const;
-        std::string                             getStateLabels(void);                                               //!< Get the possible state labels
-        bool                                    isCharacterResolved(size_t idx) const;                              //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
-        bool                                    isSequenceMissing(void) const;                                      //!< Returns whether the contains only missing data or has some actual observations
-        void                                    removeCharacters(const std::set<size_t> &i);                        //!< Remove all the characters with a given index
-        void                                    setAllCharactersMissing(void);                                      //!< Set all characters as missing
+        void                                            addCharacter(const CharacterState &newChar );                       //!< Push back a new character
+        void                                            addCharacter(const DiscreteCharacterState &newChar );               //!< Push back a new character
+        void                                            addCharacter(const charType &newChar );                             //!< Push back a new character
+        void                                            addCharacter(const CharacterState &newChar, bool tf);               //!< Push back a new character
+        void                                            addCharacter(const DiscreteCharacterState &newChar, bool tf);       //!< Push back a new character
+        void                                            addCharacter(const charType &newChar, bool tf);                     //!< Push back a new character
+        DiscreteTaxonData<NaturalNumbersState>*         combineCharacters(const AbstractDiscreteTaxonData &d) const;        //!< Concatenate sequences
+        DiscreteTaxonData<NaturalNumbersState>*         combineCharacters(const DiscreteTaxonData &d) const;                //!< Concatenate sequences
+        void                                            concatenate(const AbstractTaxonData &d);                            //!< Concatenate sequences
+        void                                            concatenate(const AbstractDiscreteTaxonData &d);                    //!< Concatenate sequences
+        void                                            concatenate(const DiscreteTaxonData &d);                            //!< Concatenate sequences
+        const charType&                                 getCharacter(size_t index) const;                                   //!< Get the character at position index
+        charType&                                       getCharacter(size_t index);                                         //!< Get the character at position index (non-const to return non-const character)
+        std::string                                     getJsonRepresentation(void) const;
+        size_t                                          getNumberOfCharacters(void) const;                                  //!< How many characters
+        double                                          getPercentageMissing(void) const;                                   //!< Returns the percentage of missing data for this sequence
+        std::string                                     getStringRepresentation(size_t idx) const;
+        std::string                                     getStateLabels(void);                                               //!< Get the possible state labels
+        bool                                            isCharacterResolved(size_t idx) const;                              //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
+        bool                                            isSequenceMissing(void) const;                                      //!< Returns whether the contains only missing data or has some actual observations
+        void                                            removeCharacters(const std::set<size_t> &i);                        //!< Remove all the characters with a given index
+        void                                            setAllCharactersMissing(void);                                      //!< Set all characters as missing
         
     private:
 
-        std::vector<charType>                   sequence;
-        std::vector<bool>                       isResolved;
+        std::vector<charType>                           sequence;
+        std::vector<bool>                               is_resolved;
 
     };
 
     // Global functions using the class
     template<class charType>
-    std::ostream&                       operator<<(std::ostream& o, const DiscreteTaxonData<charType>& x);          //!< Overloaded output operator
+    std::ostream&                                       operator<<(std::ostream& o, const DiscreteTaxonData<charType>& x);  //!< Overloaded output operator
 
 }
 
 
 #include "CharacterState.h"
 #include "RbException.h"
+#include "NaturalNumbersState.h"
 
 
 /**
@@ -134,17 +138,17 @@ RevBayesCore::DiscreteTaxonData<charType>* RevBayesCore::DiscreteTaxonData<charT
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteTaxonData<charType>::concatenate(const AbstractTaxonData &obsd)
+RevBayesCore::DiscreteTaxonData<RevBayesCore::NaturalNumbersState>* RevBayesCore::DiscreteTaxonData<charType>::combineCharacters(const AbstractDiscreteTaxonData &obsd) const
 {
-
+    
     const DiscreteTaxonData<charType>* rhs = dynamic_cast<const DiscreteTaxonData<charType>* >( &obsd );
     if ( rhs == NULL )
     {
-        throw RbException("Adding wrong character data type into TaxonData!!!");
+        throw RbException("Combining wrong character data type into TaxonData!!!");
     }
-
-
-    return concatenate( *rhs );
+    
+    
+    return combineCharacters( *rhs );
 }
 
 
@@ -154,7 +158,58 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteTaxonData<charT
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteTaxonData<charType>::concatenate(const AbstractDiscreteTaxonData &obsd)
+RevBayesCore::DiscreteTaxonData<RevBayesCore::NaturalNumbersState>* RevBayesCore::DiscreteTaxonData<charType>::combineCharacters(const DiscreteTaxonData<charType> &obsd) const
+{
+    
+    charType first_char             = getCharacter( 0 );
+    charType second_char            = obsd.getCharacter( 0 );
+    
+    size_t num_states_first         = first_char.getNumberOfStates();
+    size_t num_states_second        = second_char.getNumberOfStates();
+    
+    NaturalNumbersState new_state   = NaturalNumbersState(num_states_first * num_states_second);
+    
+    int k=0;
+    bool first_state_set = false;
+    for ( size_t i=0; i<num_states_first; ++i)
+    {
+        k = int(i*num_states_second);
+        if ( first_char.isStateSet( i ) == true || first_char.isMissingState() == true || first_char.isGapState() == true )
+        {
+            for ( size_t j=0; j<num_states_second; ++j)
+            {
+                if ( second_char.isStateSet( j ) == true || second_char.isMissingState() == true || second_char.isGapState() == true )
+                {
+                    if ( first_state_set == false )
+                    {
+                        new_state.setStateByIndex(k);
+                        first_state_set = true;
+                    }
+                    else
+                    {
+                        new_state.addState(k);
+                    }
+                }
+                ++k;
+            }
+        }
+    }
+
+    DiscreteTaxonData<NaturalNumbersState> *new_taxon_data = new DiscreteTaxonData<NaturalNumbersState>( taxon );
+    new_taxon_data->addCharacter( new_state );
+    
+    return new_taxon_data;
+}
+
+
+
+/**
+ * Add another character data object to this character data object.
+ *
+ * \param[in]    obsd    The CharacterData object that should be added.
+ */
+template<class charType>
+void RevBayesCore::DiscreteTaxonData<charType>::concatenate(const AbstractTaxonData &obsd)
 {
 
     const DiscreteTaxonData<charType>* rhs = dynamic_cast<const DiscreteTaxonData<charType>* >( &obsd );
@@ -164,7 +219,7 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteTaxonData<charT
     }
 
 
-    return concatenate( *rhs );
+    concatenate( *rhs );
 }
 
 
@@ -174,13 +229,31 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteTaxonData<charT
  * \param[in]    obsd    The CharacterData object that should be added.
  */
 template<class charType>
-RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteTaxonData<charType>::concatenate(const DiscreteTaxonData<charType> &obsd)
+void RevBayesCore::DiscreteTaxonData<charType>::concatenate(const AbstractDiscreteTaxonData &obsd)
+{
+
+    const DiscreteTaxonData<charType>* rhs = dynamic_cast<const DiscreteTaxonData<charType>* >( &obsd );
+    if ( rhs == NULL )
+    {
+        throw RbException("Adding wrong character data type into TaxonData!!!");
+    }
+
+
+    concatenate( *rhs );
+}
+
+
+/**
+ * Add another character data object to this character data object.
+ *
+ * \param[in]    obsd    The CharacterData object that should be added.
+ */
+template<class charType>
+void RevBayesCore::DiscreteTaxonData<charType>::concatenate(const DiscreteTaxonData<charType> &obsd)
 {
 
     sequence.insert( sequence.end(), obsd.sequence.begin(), obsd.sequence.end() );
 
-    // return a reference to this object
-    return *this;
 }
 
 
@@ -236,7 +309,7 @@ void RevBayesCore::DiscreteTaxonData<charType>::addCharacter( const charType &ne
 {
 
     sequence.push_back( newChar );
-    isResolved.push_back(true);
+    is_resolved.push_back(true);
 }
 
 
@@ -291,7 +364,7 @@ void RevBayesCore::DiscreteTaxonData<charType>::addCharacter( const charType &ne
 {
 
     sequence.push_back( newChar );
-    isResolved.push_back(tf);
+    is_resolved.push_back(tf);
 }
 
 
@@ -347,6 +420,33 @@ size_t RevBayesCore::DiscreteTaxonData<charType>::getNumberOfCharacters(void) co
 
 
 /**
+* Obtain a JSON-formatted string describing the object.
+*
+* \return            JSON-formatted string.
+*/
+template<class charType>
+std::string RevBayesCore::DiscreteTaxonData<charType>::getJsonRepresentation(void) const {
+
+    std::string jsonStr = "";
+    
+    jsonStr += "{\"DiscreteTaxonData\": {";
+    jsonStr += taxon.getJsonRespresentation();
+    jsonStr += ", \"charData\": [";
+    for (int i=0; i<sequence.size(); i++)
+        {
+        jsonStr += sequence[i].getStringValue();
+        if (i + 1 < sequence.size())
+            jsonStr += ",";
+        }
+    jsonStr += "]";
+    
+    jsonStr += "}}";
+    
+    return jsonStr;
+}
+
+
+/**
  * Computes the percentage of the sequences that is missing.
  *
  * \return            Percentage of missing characters.
@@ -398,12 +498,12 @@ template<class charType>
 bool RevBayesCore::DiscreteTaxonData<charType>::isCharacterResolved(size_t idx) const
 {
 
-    if (idx >= isResolved.size())
+    if (idx >= is_resolved.size())
     {
         throw RbException("Index out of bounds");
     }
 
-    return isResolved[idx];
+    return is_resolved[idx];
 }
 
 

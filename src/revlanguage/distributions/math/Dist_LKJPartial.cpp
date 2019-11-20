@@ -1,3 +1,9 @@
+#include <math.h>
+#include <stddef.h>
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "Dist_LKJPartial.h"
 #include "Natural.h"
@@ -5,6 +11,25 @@
 #include "RlMatrixRealSymmetric.h"
 #include "StochasticNode.h"
 #include "LKJPartialDistribution.h"
+#include "ArgumentRules.h"
+#include "DagMemberFunction.h"
+#include "DeterministicNode.h"
+#include "DynamicNode.h"
+#include "MatrixReal.h"
+#include "RbHelpReference.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlDagMemberFunction.h"
+#include "RlDeterministicNode.h"
+#include "RlDistribution.h"
+#include "RlStochasticNode.h"
+#include "RlTypedDistribution.h"
+#include "RlTypedFunction.h"
+#include "TypeSpec.h"
+#include "TypedDagNode.h"
+#include "TypedDistribution.h"
+#include "TypedFunction.h"
 
 using namespace RevLanguage;
 
@@ -60,6 +85,18 @@ const TypeSpec& Dist_LKJPartial::getClassTypeSpec(void)
 	return rev_type_spec;
 }
 
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Dist_LKJPartial::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    
+    return a_names;
+}
 
 /**
  * Get the Rev name for the distribution.

@@ -86,7 +86,27 @@ namespace VectorUtilities {
         // just delegate to our internal quicksort method.
         quicksort<T>(v, 0, int(v.size())-1);
     }
-    
+
+    template <typename T>
+    T sum(const std::vector<T> & v)
+    {
+	T total = 0;
+	for(int i=0; i < v.size(); i++)
+	    total += v[i];
+	return total;
+    }
+
+    template <typename T>
+    void scale(std::vector<T> & v, T factor)
+    {
+	for(int i=0; i < v.size(); i++)
+	    v[i] *= factor;
+    }
+
+    inline void normalize(std::vector<double> & v)
+    {
+	scale(v, 1.0/sum(v));
+    }
 }
 
 

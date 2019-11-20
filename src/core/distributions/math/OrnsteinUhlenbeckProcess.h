@@ -2,19 +2,28 @@
 #define OrnsteinUhlenbeckProcess_H
 
 #include "ContinuousDistribution.h"
-#include "TypedDagNode.h"
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class TypedDagNode;
     
     
     /**
+     * @brief Binomial distribution class.
+     *
      * This class implements the Ornstein-Uhlenbeck process.
-     *
      * The Ornstein-Uhlenbeck process is a random walk process with a drift towards an optimum.
+     * The proccess has 5 input parameters:
      *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2015-02-23, version 1.0
+     * @param x the starting value for the process
+     * @param t the equilibrium value for the process
+     * @param a the strength of rubber banding
+     * @param s the standard deviation
+     * @param ti the time during which the process is applied
+     *
+     *
+     *
+     *
      */
     class OrnsteinUhlenbeckProcess : public ContinuousDistribution {
         

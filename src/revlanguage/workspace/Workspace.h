@@ -62,8 +62,6 @@ namespace RevLanguage {
         // Workspace functions
         bool                                addDistribution(Distribution *dist);               //!< Add distribution
         bool                                addType(RevObject *exampleObj);                                             //!< Add type (auto-generated name = rlType)
-//        bool                    addType(const std::string& name, RevObject *exampleObj);                    //!< Add special abstract type (synonym)
-        bool                                addTypeWithConstructor(RevObject *templ);          //!< Add type with constructor
         bool                                areTypesInitialized(void) const { return typesInitialized; }                //!< Is type table initialized?
         bool                                existsType(const std::string& name) const;                                  //!< Does the type exist in the type table?
         const TypeSpec&                     getClassTypeSpecOfType(const std::string& type) const;                      //!< Get reference to class vector of type
@@ -93,14 +91,16 @@ namespace RevLanguage {
         Workspace&                          operator=(const Workspace& w);                                              //!< Prevent assignment
 
         void                                initializeBasicGlobalWorkspace(void);                                       //!< Initialize global workspace for basic procedures and IO
-        void                                initializeBasicTypeGlobalWorkspace(void);                                        //!< Initialize global workspace for types
+        void                                initializeBasicTypeGlobalWorkspace(void);                                   //!< Initialize global workspace for types
+        void                                initializeDemographicFunctionGlobalWorkspace(void);                         //!< Initialize global workspace for demographic functions
         void                                initializeDistGlobalWorkspace(void);                                        //!< Initialize global workspace for distributions
         void                                initializeExtraHelp(void);                                                  //!< Initialize the extra help entries
         void                                initializeFuncGlobalWorkspace(void);                                        //!< Initialize global workspace for functions (fnXXX)
         void                                initializeMonitorGlobalWorkspace(void);                                     //!< Initialize global workspace for monitors
         void                                initializeMoveGlobalWorkspace(void);                                        //!< Initialize global workspace for moves
         void                                initializeTypeGlobalWorkspace(void);                                        //!< Initialize global workspace for types
-        
+        void                                initializeVectorTypeGlobalWorkspace(void);                                  //!< Initialize global workspace for types
+
         TypeTable                           typeTable;                                                                  //!< Type table
         bool                                typesInitialized;                                                           //!< Are types initialized?
 

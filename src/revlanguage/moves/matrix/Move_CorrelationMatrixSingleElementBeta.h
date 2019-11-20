@@ -8,13 +8,18 @@
 #ifndef Move_CorrelationMatrixSingleElementBeta_H
 #define Move_CorrelationMatrixSingleElementBeta_H
 
-#include "RlMove.h"
-#include "TypedDagNode.h"
-
 #include <ostream>
-#include <string>
+#include <vector>
+
+#include "RlMove.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+
+namespace RevBayesCore { class RbHelpReference; }
 
 namespace RevLanguage {
+class TypeSpec;
     
     class Move_CorrelationMatrixSingleElementBeta : public Move {
         
@@ -34,12 +39,12 @@ namespace RevLanguage {
         
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
-        RevPtr<const RevVariable>                   v;
-        RevPtr<const RevVariable>                   alpha;
-        RevPtr<const RevVariable>                   weight;
-        RevPtr<const RevVariable>                   tune;
+        RevPtr<const RevVariable>                       v;
+        RevPtr<const RevVariable>                       alpha;
+        RevPtr<const RevVariable>                       weight;
+        RevPtr<const RevVariable>                       tune;
         
     };
     

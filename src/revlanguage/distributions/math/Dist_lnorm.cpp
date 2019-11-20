@@ -1,9 +1,22 @@
+#include <stddef.h>
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Dist_lnorm.h"
 #include "LognormalDistribution.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RbHelpReference.h"
+#include "RevObject.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlPositiveContinuousDistribution.h"
+#include "TypeSpec.h"
+
+namespace RevBayesCore { template <class valueType> class TypedDagNode; }
 
 using namespace RevLanguage;
 
@@ -77,7 +90,6 @@ std::string Dist_lnorm::getDistributionFunctionName( void ) const
     
     return d_name;
 }
-
 
 /** Return member rules (no members) */
 const MemberRules& Dist_lnorm::getParameterRules(void) const

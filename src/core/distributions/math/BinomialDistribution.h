@@ -1,10 +1,11 @@
 #ifndef BinomialDistribution_H
 #define BinomialDistribution_H
 
-#include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
 namespace RevBayesCore {
+class DagNode;
+template <class valueType> class TypedDagNode;
     
     /**
      * @brief Binomial distribution class.
@@ -14,11 +15,6 @@ namespace RevBayesCore {
      *   n .. the number of trials
      *   p .. the probability of success
      * Instances of this class can be associated to stochastic variables.
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2013-04-12, version 1.0
-     *
      */
     class BinomialDistribution : public TypedDistribution<long> {
         

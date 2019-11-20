@@ -42,7 +42,7 @@ namespace RevLanguage {
         
         // overridden function from TypedDistribution
 		RevBayesCore::EmpiricalDistribution<RevBayesCore::Tree>* createDistribution(void) const;
-		
+
     protected:
         
         void                                                     setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable

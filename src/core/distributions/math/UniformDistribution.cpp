@@ -1,8 +1,21 @@
 #include "UniformDistribution.h"
+
 #include "DistributionUniform.h"
 #include "RandomNumberFactory.h"
+#include "Cloneable.h"
+#include "TypedDagNode.h"
+
+namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
+
+/*
+ * Uniform distribution Constructor
+ *
+ * @param mi The minimum value for the distribution
+ * @param ma The maximum value for the distribution
+ *
+ */
 
 UniformDistribution::UniformDistribution(const TypedDagNode<double> *mi, const TypedDagNode<double> *ma) : ContinuousDistribution( new double( 0.0 ) ),
     min( mi ),

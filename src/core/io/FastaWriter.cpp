@@ -1,7 +1,16 @@
+#include <stddef.h>
+#include <ostream>
+#include <vector>
+
 #include "AbstractDiscreteTaxonData.h"
 #include "CharacterState.h"
 #include "FastaWriter.h"
 #include "RbFileManager.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
+#include "AbstractNonHomologousDiscreteCharacterData.h"
+#include "Cloneable.h"
+#include "DiscreteCharacterState.h"
+#include "Taxon.h"
 
 using namespace RevBayesCore;
 
@@ -33,7 +42,7 @@ void FastaWriter::writeData(std::string const &fileName, const AbstractHomologou
     f.createDirectoryForFile();
     
     // open the stream to the file
-    outStream.open( fileName.c_str(), std::fstream::out );
+    outStream.open( f.getFullFileName().c_str(), std::fstream::out );
     
     const std::vector<Taxon> &taxa = data.getTaxa();
     for (std::vector<Taxon>::const_iterator it = taxa.begin();  it != taxa.end(); ++it)
@@ -76,11 +85,11 @@ void FastaWriter::writeData(std::string const &fileName, const AbstractNonHomolo
     // the filestream object
     std::fstream outStream;
     
-    RbFileManager f = RbFileManager(fileName);
-    f.createDirectoryForFile();
+    RbFileManager fm = RbFileManager(fileName);
+    fm.createDirectoryForFile();
     
     // open the stream to the file
-    outStream.open( fileName.c_str(), std::fstream::out );
+    outStream.open( fm.getFullFileName().c_str(), std::fstream::out );
     
     const std::vector<Taxon> &taxa = data.getTaxa();
     for (std::vector<Taxon>::const_iterator it = taxa.begin();  it != taxa.end(); ++it)

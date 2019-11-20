@@ -1,10 +1,15 @@
 #ifndef RbHelpRenderer_H
 #define RbHelpRenderer_H
 
-#include "RbHelpFunction.h"
-#include "RbHelpType.h"
+#include <stddef.h>
+#include <iosfwd>
+#include <string> // IWYU pragma: keep
 
 namespace RevBayesCore {
+class RbHelpArgument;
+class RbHelpEntry;
+class RbHelpFunction;
+class RbHelpType;
     
     /**
      * @brief Class rendering the help to the console output.
@@ -28,18 +33,26 @@ namespace RevBayesCore {
         
     private:
         
-        std::string                 renderAliases(const std::vector<std::string> &a, size_t w) const;
-        std::string                 renderArguments(const std::vector<RbHelpArgument> &a, size_t w) const;
+        // HelpEntry
+        std::string                 renderAliases(const RbHelpEntry &helpEntry, size_t w) const;
+        std::string                 renderAuthors(const RbHelpEntry &helpEntry, size_t w) const;
+        std::string                 renderDescription(const RbHelpEntry &typeHelp, size_t w) const;
+        std::string                 renderDetails(const RbHelpEntry &helpEntry, size_t w) const;
+        std::string                 renderExample(const RbHelpEntry &helpEntry, size_t w) const;
+        std::string                 renderReferences(const RbHelpEntry &helpEntry, size_t w) const;
+        std::string                 renderSeeAlso(const RbHelpEntry &helpEntry, size_t w) const;
+        std::string                 renderTitle(const RbHelpEntry &helpEntry, size_t w) const;
+
+        // HelpFunction
+        std::string                 renderArguments(const RbHelpFunction &functionHelp, size_t w) const;
         std::string                 renderArgument(const RbHelpArgument &a, size_t w, int l, const std::string &s) const;
-        std::string                 renderAuthors(const std::vector<std::string> &a, size_t w) const;
-        std::string                 renderConstructors(const std::vector<RbHelpFunction>& c, size_t w) const;
-        std::string                 renderDescription(const std::vector<std::string> &d, size_t w) const;
-        std::string                 renderDetails(const std::vector<std::string> &d, size_t w) const;
-        std::string                 renderMethods(const std::vector<RbHelpFunction> &m, size_t w, const std::string &n) const;
-        std::string                 renderReferences(const std::vector<RbHelpReference> &r, size_t w) const;
-        std::string                 renderSeeAlso(const std::vector<std::string> &s, size_t w) const;
-        std::string                 renderUsage(const std::string &u, size_t w) const;
-        
+        std::string                 renderReturnType(const RbHelpFunction &functionHelp, size_t w, bool dist = false) const;
+        std::string                 renderUsage(const RbHelpFunction &functionHelp, size_t w) const;
+
+        // HelpType
+        std::string                 renderConstructors(const RbHelpType &typeHelp, size_t w) const;
+        std::string                 renderMethods(const RbHelpType &typeHelp, size_t w) const;
+
         std::string                 section_break;
         std::string                 line_break;
         

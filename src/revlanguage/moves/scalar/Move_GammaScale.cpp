@@ -1,18 +1,27 @@
+#include <stddef.h>
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
-#include "ContinuousStochasticNode.h"
 #include "MetropolisHastingsMove.h"
 #include "Move_GammaScale.h"
 #include "Probability.h"
-#include "RbException.h"
-#include "Real.h"
 #include "RealPos.h"
 #include "RevObject.h"
 #include "GammaScaleProposal.h"
-// #include "ScaleProposalContinuous.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
+#include "Move.h"
+#include "RbBoolean.h"
+#include "RevPtr.h"
+#include "RevVariable.h"
+#include "RlMove.h"
+#include "StochasticNode.h"
+
+namespace RevBayesCore { class Proposal; }
 
 
 using namespace RevLanguage;
@@ -62,20 +71,8 @@ void Move_GammaScale::constructInternalObject( void )
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     double r = static_cast<const Probability &>( tuneTarget->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<double>* tmp = static_cast<const RealPos &>( x->getRevObject() ).getDagNode();
-    RevBayesCore::ContinuousStochasticNode *n = dynamic_cast<RevBayesCore::ContinuousStochasticNode *>( tmp );
-    //if ( n != NULL )
-    //{
-    //    std::cout << "n is NOT null";
-    //    p = new RevBayesCore::GammaScaleProposal(n, d, r);
-    //}
-    //else
-    //{
-    //    std::cout << "n is null";
-        RevBayesCore::StochasticNode<double> *n2 = dynamic_cast<RevBayesCore::StochasticNode<double> *>( tmp );
-        p = new RevBayesCore::GammaScaleProposal(n2, d, r);
-    //    p = new RevBayesCore::ScaleProposal(n2, d, r);
-    //
-    //}
+    RevBayesCore::StochasticNode<double> *n = dynamic_cast<RevBayesCore::StochasticNode<double> *>( tmp );
+    p = new RevBayesCore::GammaScaleProposal(n, d, r);
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
     value = new RevBayesCore::MetropolisHastingsMove(p, w, t);
@@ -221,3 +218,5 @@ void Move_GammaScale::setConstParameter(const std::string& name, const RevPtr<co
     }
     
 }
+
+

@@ -20,10 +20,12 @@
 #ifndef WorkspaceObject_H
 #define WorkspaceObject_H
 
+#include <iosfwd>
+
 #include "RevObject.h"
-#include "TypedDagNode.h"
 
 namespace RevLanguage {
+class TypeSpec;
     
     class WorkspaceObject : public RevObject {
         
@@ -41,7 +43,6 @@ namespace RevLanguage {
     protected:
 
         WorkspaceObject(void);
-        
 
     };
 }
