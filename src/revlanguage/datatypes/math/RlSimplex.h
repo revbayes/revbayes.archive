@@ -51,16 +51,21 @@ class TypeSpec;
         // Basic utility functions you have to override
         virtual RevObject*                          convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         virtual Simplex*                            clone(void) const;                                                  //!< Clone object
+        void                                        constructInternalObject(void);                                          //!< We construct the a new internal MCMC object.
         RevPtr<RevVariable>                         executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found );
         static const std::string&                   getClassType(void);                                                 //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                             //!< Get class type spec
+        std::string                                 getConstructorFunctionName(void) const;                             //!< Get the name used for the constructor function in Rev.
+        std::vector<std::string>                    getConstructorFunctionAliases(void) const;                          //!< Get the aliases used for the constructor function in Rev.
+
+        const MemberRules&                          getParameterRules(void) const;                                      //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
         virtual Probability*                        getElement(size_t idx) const;                                       //!< Get element variable (vector of indices)
         double                                      isConvertibleTo( const TypeSpec& type, bool once ) const;
         void                                        initMethods(void);
         void                                        printValue( std::ostream& o, bool user ) const;
-        virtual void                                push_back(const double &x);                                      //!< Append element to end
-        virtual void                                push_back(const Probability &x);                                      //!< Append element to end
+        virtual void                                push_back(const double &x);                                         //!< Append element to end
+        virtual void                                push_back(const Probability &x);                                    //!< Append element to end
         virtual void                                push_back(const RevObject &x);                                      //!< Append element to end
         virtual size_t                              size(void) const;                                                   //!< Get number of elements in container
 
@@ -70,6 +75,10 @@ class TypeSpec;
         
         virtual bool                                allowsModificationToCompositeContainer(void) const { return false;} //!< Does an object of this type allow transformation into a composite container?
         
+    protected:
+        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);   //!< Set member variable
+
+        std::vector<RevPtr<const RevVariable> >     args;
         
     };
     

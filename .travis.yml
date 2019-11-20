@@ -6,6 +6,7 @@ matrix:
   include:
     - os: linux
       dist: xenial
+      cache: ccache
       env:
         - CXX_COMPILER=/usr/bin/g++-7
         - C_COMPILER=/usr/bin/gcc-7
@@ -21,6 +22,7 @@ matrix:
           - boost1.67
     - os: linux
       dist: xenial
+      cache: ccache
       env:
         - CXX_COMPILER=/usr/bin/g++-8
         - C_COMPILER=/usr/bin/gcc-8
@@ -36,6 +38,7 @@ matrix:
           - boost1.67
     - os: linux
       dist: xenial
+      cache: ccache
       env:
         - CXX_COMPILER=/usr/bin/g++-9
         - C_COMPILER=/usr/bin/gcc-9
@@ -51,6 +54,7 @@ matrix:
           - boost1.67
     - os: linux
       dist: xenial
+      cache: ccache
       env:
         - CXX_COMPILER=/usr/bin/g++-7
         - C_COMPILER=/usr/bin/gcc-7
@@ -69,6 +73,7 @@ matrix:
     - os: linux
       dist: xenial
       compiler: clang++
+      cache: ccache
       env:
         - CXX_COMPILER=/usr/local/clang-7.0.0/bin/clang++
         - C_COMPILER=/usr/local/clang-7.0.0/bin/clang
@@ -86,10 +91,25 @@ matrix:
       osx_image: xcode9.4
       env: PYTHON=3.5.1
         - USE_MPI="false"
+      #addons:
+      #  homebrew:
+      #    update: true
+      #    packages:
+      #      - ccache
+      #install:
+      #  - export PATH="/usr/local/opt/ccache/libexec:$PATH"
+      #cache: ccache
     - os: osx
       osx_image: xcode10.2
       env: PYTHON=3.5.1
         - USE_MPI="false"
+      #addons:
+      #  homebrew:
+      #    packages:
+      #      - ccache
+      #install:
+      #  - export PATH="/usr/local/opt/ccache/libexec:$PATH"
+      #cache: ccache
 
 before_install:
   # We need to re-export CC and CXX here, because travis exports CXX=g++ or clang++ AFTER we set CXX.
@@ -100,7 +120,7 @@ script:
 # Build
   - cd projects/cmake
   - mkdir build
-  - ./regenerate.sh -travis true -mpi ${USE_MPI} -exec_name rb
+  - ./regenerate.sh -travis true -mpi ${USE_MPI} -help true -exec_name rb
   - cd build
   - cmake .
   - make -j4
