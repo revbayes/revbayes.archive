@@ -122,7 +122,6 @@ jobs:
       osx_image: xcode10.2
       env: PYTHON=3.5.1
         USE_MPI="false"
-        NOTEST="true"
       addons:
        homebrew:
          packages:
@@ -134,7 +133,6 @@ jobs:
       osx_image: xcode9.4
       env: PYTHON=3.5.1
         USE_MPI="false"
-        NOTEST="true"
       addons:
        homebrew:
          update: true

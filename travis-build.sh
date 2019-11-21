@@ -11,7 +11,7 @@ make -j4
 cd ..
 
 # Run tests
-if [ -z "${NOTEST}" ]
+if [ ${TRAVIS_BUILD_STAGE_NAME} = "Cache" ]
 then
   cd ../..
   echo "\"Hello World\"" | projects/cmake/rb
