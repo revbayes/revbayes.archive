@@ -52,9 +52,9 @@ UltrametricTreeDistribution::UltrametricTreeDistribution( TypedDistribution<Tree
     mean_method( m )
 {
     
-    int burnin = tree_trace.getBurnin();
+    size_t burnin = tree_trace.getBurnin();
     long n_samples = tree_trace.size();
-    for (int i=burnin+1; i<n_samples; ++i)
+    for (int i=burnin; i<n_samples; ++i)
     {
         trees.push_back( tree_trace.objectAt( i ) );
     }
@@ -278,7 +278,7 @@ Split UltrametricTreeDistribution::collectTreeSample(const TopologyNode& n, RbBi
     return parent_split;
 }
 
-void UltrametricTreeDistribution::computeBranchRates(const Tree &my_tree, const std::string &newick, const std::vector<Split> &splits, size_t index, std::vector<double> &rates) const
+void UltrametricTreeDistribution::computeBranchRates(const Tree &my_time_tree, const std::string &newick, const std::vector<Split> &splits, size_t index, std::vector<double> &rates) const
 {
     
     if ( newick != trees_newick[index] )
@@ -286,14 +286,14 @@ void UltrametricTreeDistribution::computeBranchRates(const Tree &my_tree, const 
         return;
     }
     
-    const std::vector<TopologyNode*> &nodes = my_tree.getNodes();
-    for (size_t i=0; i<nodes.size(); ++i)
+    const std::vector<TopologyNode*> &time_nodes = my_time_tree.getNodes();
+    for (size_t i=0; i<time_nodes.size(); ++i)
     {
-        TopologyNode* the_node = nodes[i];
-        if ( the_node->isRoot() == false )
+        TopologyNode* the_time_node = time_nodes[i];
+        if ( the_time_node->isRoot() == false )
         {
             
-            double branch_time = the_node->getBranchLength();
+            double branch_time = the_time_node->getBranchLength();
             
             const std::map<Split, double> &s = tree_branch_lengths[index];
             if ( s.find(splits[i]) == s.end() )
@@ -309,16 +309,24 @@ void UltrametricTreeDistribution::computeBranchRates(const Tree &my_tree, const 
                 throw RbException("Problem in ultrametric tree distribution. Couldn't find branch length ...");
             }
             double branch_exp_num_events = it_branch_length->second;
-            if ( the_node->getParent().isRoot() == true )
+            if ( the_time_node->getParent().isRoot() == true )
             {
                 double frac = 1.0;
-                if ( the_node == &(the_node->getParent().getChild(0)) )
+                if ( root_branch_fraction != NULL )
                 {
-                    frac = root_branch_fraction->getValue();
+                    if ( the_time_node == &(the_time_node->getParent().getChild(0)) )
+                    {
+                        frac = root_branch_fraction->getValue();
+                    }
+                    else
+                    {
+                        frac = 1.0 - root_branch_fraction->getValue();
+                    }
                 }
                 else
                 {
-                    frac = 1.0 - root_branch_fraction->getValue();
+                    double sum = the_time_node->getParent().getChild(0).getBranchLength() + the_time_node->getParent().getChild(1).getBranchLength();
+                    frac = branch_time / sum;
                 }
                 branch_exp_num_events *= frac;
             }
@@ -331,7 +339,7 @@ void UltrametricTreeDistribution::computeBranchRates(const Tree &my_tree, const 
     
 }
 
-double UltrametricTreeDistribution::computeBranchRateLnProbability(const Tree &my_tree, const std::string &newick, const std::vector<Split> &splits, size_t index) const
+double UltrametricTreeDistribution::computeBranchRateLnProbability(const Tree &my_time_tree, const std::string &newick, const std::vector<Split> &splits, size_t index) const
 {
     
     // we need to check if the "outgroup" is present first
@@ -350,9 +358,9 @@ double UltrametricTreeDistribution::computeBranchRateLnProbability(const Tree &m
     // initialize the probability
     double ln_prob =  0.0;
         
-    const std::vector<TopologyNode*> &nodes = my_tree.getNodes();
+    const std::vector<TopologyNode*> &nodes = my_time_tree.getNodes();
     std::vector<double> rates(nodes.size()-1,0.0);
-    computeBranchRates(my_tree, newick, splits, index, rates);
+    computeBranchRates(my_time_tree, newick, splits, index, rates);
     
     for (size_t i=0; i<nodes.size(); ++i)
     {
@@ -393,21 +401,21 @@ double UltrametricTreeDistribution::computeLnProbability( void )
 {
 
     // create a temporary copy of the this tree
-    const Tree &my_tree = *value;
+    const Tree &my_time_tree = *value;
     
     // make the tree non-rooted
-    Tree *my_tree_unrooted = my_tree.clone();
+    Tree *my_tree_unrooted = my_time_tree.clone();
     my_tree_unrooted->unroot();
 
     my_tree_unrooted->reroot( outgroup, true);
     
     std::string my_tree_newick = my_tree_unrooted->getPlainNewickRepresentation();
     
-    RbBitSet b( my_tree.getNumberOfTips(), false );
-    std::vector<Split> my_splits = std::vector<Split>(my_tree.getNumberOfNodes(), Split(b) );
-    collectSplits(my_tree.getRoot(), b, my_splits);
+    RbBitSet b( my_time_tree.getNumberOfTips(), false );
+    std::vector<Split> my_splits = std::vector<Split>(my_time_tree.getNumberOfNodes(), Split(b) );
+    collectSplits(my_time_tree.getRoot(), b, my_splits);
 
-    const std::map<std::string, size_t> &my_taxon_bitmap = my_tree.getTaxonBitSetMap();
+    const std::map<std::string, size_t> &my_taxon_bitmap = my_time_tree.getTaxonBitSetMap();
     std::vector<double> probs    = std::vector<double>(num_samples, 0.0);
     std::vector<double> ln_probs = std::vector<double>(num_samples, 0.0);
     
@@ -430,12 +438,13 @@ double UltrametricTreeDistribution::computeLnProbability( void )
                 std::cerr << "Ooohhh" << std::endl;
             }
 
-            ln_probs[i] = computeBranchRateLnProbability( my_tree, my_tree_newick, my_splits, i );
+            ln_probs[i] = computeBranchRateLnProbability( my_time_tree, my_tree_newick, my_splits, i );
             
             if ( sample_prior_density != NULL && RbMath::isFinite( ln_probs[i] ) )
             {
 //                ++num_observed;
                 ln_probs[i] -= sample_prior_density->getValues()[i+BURNIN];
+                std::cerr << "ln_probs[" << i << "] = " << ln_probs[i] << std::endl;
             }
             
         }
