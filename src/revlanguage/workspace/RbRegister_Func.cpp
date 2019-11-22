@@ -219,11 +219,8 @@
 #include "Func_posteriorPredictiveProbability.h"
 //#include "Func_power.h"
 //#include "Func_powerVector.h"
-#include "Func_probability.h"
 #include "Func_round.h"
 #include "Func_shortestDistance.h"
-#include "Func_simplex.h"
-#include "Func_simplexFromVector.h"
 #include "Func_sort.h"
 #include "Func_sum.h"
 #include "Func_sumPositive.h"
@@ -439,18 +436,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         // normalize vector function
 		addFunction( new Func_normalize()  );
 
-        // conversion function from Real to Probability
-        addFunction( new Func_probability() );
-
-		// round function
+        // round function
         addFunction( new Func_round<Real,Integer>()  );
         addFunction( new Func_round<RealPos,Natural>()  );
-
-        // simplex constructor function (from RealPos ellipsis argument values)
-        addFunction( new Func_simplex()                  );
-
-        // simplex constructor function (from vector of RealPos values)
-        addFunction( new Func_simplexFromVector()        );
 
         // sort vector function
         addFunction( new Func_sort() );
