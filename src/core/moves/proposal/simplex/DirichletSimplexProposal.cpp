@@ -355,6 +355,6 @@ void DirichletSimplexProposal::tune( double rate )
     }
     
     // set a hard maximum of 100
-    alpha = fmin(100, alpha);
+    // alpha = fmin(100, alpha);
 }
 
