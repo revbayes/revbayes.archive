@@ -79,6 +79,7 @@
 
 
 /* Functions related to evolution (in folder "functions/phylogenetics") */
+#include "Func_avgDistanceMatrix.h"
 #include "Func_BirthDeathSimulator.h"
 #include "Func_branchScoreDistance.h"
 #include "Func_checkNodeOrderConstraints.h"
@@ -319,6 +320,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_siteRateModifier() );
 
         /* cladogenic probs used for e.g. DEC models (in folder "functions/phylogenetics") */
+        addFunction( new Func_avgDistanceMatrix() );
         addFunction( new Func_DECCladoProbs() );
         addFunction( new Func_DECRates() );
         addFunction( new Func_DECRoot() );

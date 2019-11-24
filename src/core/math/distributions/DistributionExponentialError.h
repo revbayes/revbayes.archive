@@ -13,6 +13,7 @@
 #include <vector>
 #include <iostream>
 
+#include "AverageDistanceMatrix.h"
 #include "DistanceMatrix.h"
 
 namespace RevBayesCore {
@@ -23,11 +24,17 @@ namespace RevBayesCore {
     namespace RbStatistics {
         
         namespace ExponentialError {
-            
-            double                      pdf(const DistanceMatrix& avgDistMat, double lambda, const DistanceMatrix& z);          /*!< Dirichlet(a[]) probability density */
-            double                      lnPdf(const DistanceMatrix& avgDistMat, double lambda, const DistanceMatrix& z);        /*!< Dirichlet(a[]) log_e probability density */
-            DistanceMatrix              rv(const DistanceMatrix& avgDistMat, double lambda, RandomNumberGenerator& rng);        /*!< Dirichlet(a[]) random variable */
+        
+            // exponential error of parameters avgDistMat and lambda
+            double                      pdf(const AverageDistanceMatrix& avgDistMat, double lambda, const AverageDistanceMatrix& z);   /*!< Exponential error probability density */
+            double                      lnPdf(const AverageDistanceMatrix& avgDistMat, double lambda, const AverageDistanceMatrix& z); /*!< Exponential error log_e probability density */
+            AverageDistanceMatrix       rv(const AverageDistanceMatrix& avgDistMat, double lambda, RandomNumberGenerator& rng);        /*!< Exponential error random variable */
 
+            // exponential error of parameters distMat = avgDistMat.getDistanceMatrix() and lambda
+            double                      pdf(const DistanceMatrix& distMat, double lambda, const AverageDistanceMatrix& z);                    /*!< Exponential error probability density */
+            double                      lnPdf(const DistanceMatrix& distMat, double lambda, const AverageDistanceMatrix& z);                  /*!< Exponential error log_e probability density */
+            AverageDistanceMatrix       rv(const DistanceMatrix& distMat, double lambda, RandomNumberGenerator& rng);                  /*!< Exponential error random variable */
+        
         }
     }
 }
