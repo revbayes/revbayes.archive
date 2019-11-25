@@ -55,7 +55,7 @@ Func_cladogeneticProbabilityMatrix* Func_cladogeneticProbabilityMatrix::clone( v
 RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func_cladogeneticProbabilityMatrix::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<long> > >* events = static_cast<const ModelVector<ModelVector<Natural> > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<long> > >* events = static_cast<const ModelVector<ModelVector<Integer> > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* spec_rates = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     int n_states = (int)static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getValue();
     
@@ -75,7 +75,7 @@ const ArgumentRules& Func_cladogeneticProbabilityMatrix::getArgumentRules( void 
     if ( !rules_set )
     {
         
-        argumentRules.push_back( new ArgumentRule( "cladogenetic_events", ModelVector<ModelVector<Natural> >::getClassTypeSpec(), "A vector of cladogenetic event types. Each type is in the form [ancestral_state, daughter1_state, daughter2_state].", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "cladogenetic_events", ModelVector<ModelVector<Integer> >::getClassTypeSpec(), "A vector of cladogenetic event types. Each type is in the form [ancestral_state, daughter1_state, daughter2_state].", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "probabilities", ModelVector<RealPos>::getClassTypeSpec() , "The probabilities that correspond to the different cladogenetic event types.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "num_states", Natural::getClassTypeSpec(), "The number of states.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
