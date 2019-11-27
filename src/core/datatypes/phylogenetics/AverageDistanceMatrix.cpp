@@ -1,5 +1,6 @@
 #include "AverageDistanceMatrix.h"
 
+#include "math.h"
 #include <sstream>
 #include <string>
 
