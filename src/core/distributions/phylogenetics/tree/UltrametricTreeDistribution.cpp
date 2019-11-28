@@ -370,7 +370,8 @@ double UltrametricTreeDistribution::computeBranchRateLnProbability(const Tree &m
         TopologyNode* the_node = nodes[i];
         if ( the_node->isRoot() == false )
         {
-            // double branch_rate = rates[i];
+            double branch_rate = rates[i];
+
             // double branch_time = the_node->getBranchLength();
             // double events = branch_rate * branch_time;
 
