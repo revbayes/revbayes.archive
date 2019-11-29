@@ -7,7 +7,7 @@ using namespace RevBayesCore;
 FlowT2PopulationsRateMatrixFunction::FlowT2PopulationsRateMatrixFunction(   const TypedDagNode< RbVector<double> > *n,
                                                                             const TypedDagNode< RbVector<double> > *m,
                                                                             const TypedDagNode< RbVector<double> > *l,
-                                                                            const TypedDagNode< RbVector<double> > *s ) : TypedFunction<RateGenerator>( new RateMatrix_FlowT2Populations( computeNumStates(n->getValue()) ) ),
+                                                                            const TypedDagNode< RbVector<double> > *s ) : TypedFunction<RateGenerator>( new RateMatrix_FlowT2Populations( computeNumStates(n->getValue()), n->getValue() ) ),
 nu( n ),
 mu( m ),
 lambda( l ),

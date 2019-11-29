@@ -17,7 +17,7 @@ namespace RevBayesCore {
     class RateMatrix_FlowT2Populations : public TimeReversibleRateMatrix {
         
     public:
-        RateMatrix_FlowT2Populations( size_t ss );                                                                                            //!< Construct rate matrix with n states
+        RateMatrix_FlowT2Populations( size_t ss, const std::vector<double>& in_nu );                                                                                            //!< Construct rate matrix with n states
         RateMatrix_FlowT2Populations(const RateMatrix_FlowT2Populations& m);                                                                  //!< Copy constructor
         virtual                             ~RateMatrix_FlowT2Populations(void);                                                              //!< Destructor
         
@@ -25,7 +25,7 @@ namespace RevBayesCore {
         RateMatrix_FlowT2Populations&             operator=(const RateMatrix_FlowT2Populations& r);
         
         // RateMatrix functions
-        virtual RateMatrix_FlowT2Populations&     assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
+        virtual RateMatrix_FlowT2Populations&                   assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
         void                                                    calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;    //!< Calculate the transition matrix
         RateMatrix_FlowT2Populations*                           clone(void) const;
 
