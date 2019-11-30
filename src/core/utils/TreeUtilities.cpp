@@ -586,6 +586,12 @@ void RevBayesCore::TreeUtilities::setAgesRecursively(RevBayesCore::Tree *t, RevB
     
 }
 
+void RevBayesCore::TreeUtilities::setBranchLength(Tree *t, size_t index, double value)
+{
+    // set the length of the branch leading to the node with index index
+    t->getNode(index).setBranchLength( value, true );
+
+}
 
 void RevBayesCore::TreeUtilities::processDistsInSubtree(const RevBayesCore::TopologyNode& node, RevBayesCore::MatrixReal& matrix, std::vector< std::pair<std::string, double> >& distsToNodeFather, const std::map< std::string, int >& namesToId)
 {
