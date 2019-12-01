@@ -40,6 +40,8 @@ namespace RevBayesCore {
         RateMatrix_FreeK(size_t k);                                                                                               //!< Construct rate matrix with n states
         RateMatrix_FreeK(size_t k, bool r);
         RateMatrix_FreeK(size_t k, bool r, std::string method);
+        RateMatrix_FreeK(size_t k, bool r, METHOD);
+
         RateMatrix_FreeK(const RateMatrix_FreeK& m);                                                                                //!< Copy constructor
         virtual                         ~RateMatrix_FreeK(void);                                                              //!< Destructor
         
