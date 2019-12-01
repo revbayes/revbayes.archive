@@ -52,7 +52,11 @@ namespace RevBayesCore {
         RateMatrix_FreeK*                   clone(void) const;
         void                                fillRateMatrix(void);
         void                                update(void);
+        std::vector<int>                    get_emitted_letters() const;
         
+        // Mutator functions for local state
+        void                                set_emitted_letters(const std::vector<int>& emit);
+
     private:
         void                                calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse
         void                                tiProbsEigens(double t, TransitionProbabilityMatrix& P) const;                      //!< Calculate transition probabilities for real case
@@ -83,6 +87,9 @@ namespace RevBayesCore {
 
         METHOD                              my_method;
         
+        // members for computing an average rate
+        std::vector<int>                    emit_letters;
+
     };
     
 }

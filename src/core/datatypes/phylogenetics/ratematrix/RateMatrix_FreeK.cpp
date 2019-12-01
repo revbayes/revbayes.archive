@@ -34,7 +34,12 @@ RateMatrix_FreeK::RateMatrix_FreeK(size_t n) : GeneralRateMatrix( n ),
     cc_ijk.resize(num_states * num_states * num_states);
     
     matrixProducts = new std::vector<MatrixReal>();
-    
+
+    // Initialize emit_letters to [0...N-1]
+    emit_letters.resize(num_states);
+    for(int i=0;i<num_states;i++)
+        emit_letters[i] = i;
+
     update();
 }
 
@@ -50,6 +55,11 @@ RateMatrix_FreeK::RateMatrix_FreeK(size_t n, bool r) : GeneralRateMatrix( n ),
     
     matrixProducts = new std::vector<MatrixReal>();
     
+    // Initialize emit_letters to [0...N-1]
+    emit_letters.resize(num_states);
+    for(int i=0;i<num_states;i++)
+        emit_letters[i] = i;
+
     update();
 }
 
@@ -88,6 +98,11 @@ RateMatrix_FreeK::RateMatrix_FreeK(size_t n, bool r, std::string method) : Gener
     
     matrixProducts = new std::vector<MatrixReal>();
     
+    // Initialize emit_letters to [0...N-1]
+    emit_letters.resize(num_states);
+    for(int i=0;i<num_states;i++)
+        emit_letters[i] = i;
+
     update();
 }
 
@@ -792,3 +807,14 @@ void RateMatrix_FreeK::update( void )
     
 }
 
+void RateMatrix_FreeK::set_emitted_letters(const std::vector<int>& emit)
+{
+    assert(emit.size() == num_states);
+
+    emit_letters = emit;
+}
+
+std::vector<int> RateMatrix_FreeK::get_emitted_letters() const
+{
+    return emit_letters;
+}
