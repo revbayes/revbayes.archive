@@ -294,7 +294,7 @@ void RateMatrix_FreeK::checkMatrixDiff(MatrixReal x, double tolerance, bool& dif
     }
 }
 
-
+`
 RateMatrix_FreeK* RateMatrix_FreeK::clone( void ) const
 {
     return new RateMatrix_FreeK( *this );
@@ -528,25 +528,25 @@ void RateMatrix_FreeK::tiProbsEigens(double t, TransitionProbabilityMatrix& P) c
     
     // precalculate the product of the eigenvalue and the branch length
     std::vector<double> eigValExp(num_states);
-	for (size_t s=0; s<num_states; s++)
+    for (size_t s=0; s<num_states; s++)
     {
-		eigValExp[s] = exp(eigenValue[s] * t);
+        eigValExp[s] = exp(eigenValue[s] * t);
     }
     
     // calculate the transition probabilities
-	const double* ptr = &c_ijk[0];
+    const double* ptr = &c_ijk[0];
     double*         p = P.theMatrix;
-	for (size_t i=0; i<num_states; i++)
+    for (size_t i=0; i<num_states; i++)
     {
-		for (size_t j=0; j<num_states; j++, ++p)
+        for (size_t j=0; j<num_states; j++, ++p)
         {
-			double sum = 0.0;
-			for (size_t s=0; s<num_states; s++)
+            double sum = 0.0;
+            for (size_t s=0; s<num_states; s++)
             {
-				sum += (*ptr++) * eigValExp[s];
+                sum += (*ptr++) * eigValExp[s];
             }
             
-            //			P[i][j] = (sum < 0.0) ? 0.0 : sum;
+            //                  P[i][j] = (sum < 0.0) ? 0.0 : sum;
             (*p) = (sum < 0.0) ? 0.0 : sum;
         }
         
@@ -568,22 +568,22 @@ void RateMatrix_FreeK::tiProbsComplexEigens(double t, TransitionProbabilityMatri
     
     // precalculate the product of the eigenvalue and the branch length
     std::vector<std::complex<double> > ceigValExp(num_states);
-	for (size_t s=0; s<num_states; s++)
+    for (size_t s=0; s<num_states; s++)
     {
         std::complex<double> ev = std::complex<double>(eigenValueReal[s], eigenValueComp[s]);
-		ceigValExp[s] = exp(ev * t);
+        ceigValExp[s] = exp(ev * t);
     }
     
     // calculate the transition probabilities
-	const std::complex<double>* ptr = &cc_ijk[0];
-	for (size_t i=0; i<num_states; i++)
+    const std::complex<double>* ptr = &cc_ijk[0];
+    for (size_t i=0; i<num_states; i++)
     {
-		for (size_t j=0; j<num_states; j++)
+        for (size_t j=0; j<num_states; j++)
         {
-			std::complex<double> sum = std::complex<double>(0.0, 0.0);
-			for (size_t s=0; s<num_states; s++)
+            std::complex<double> sum = std::complex<double>(0.0, 0.0);
+            for (size_t s=0; s<num_states; s++)
             {
-				sum += (*ptr++) * ceigValExp[s];
+                sum += (*ptr++) * ceigValExp[s];
             }
 
             P[i][j] = (sum.real() < 0.0) ? 0.0 : sum.real();
