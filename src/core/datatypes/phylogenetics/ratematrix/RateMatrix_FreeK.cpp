@@ -235,7 +235,27 @@ void RateMatrix_FreeK::calculateTransitionProbabilities(double startAge, double 
             tiProbsComplexEigens(t, P);
         }
     }
-    
+
+    for(int i=0; i < num_states; i++)
+    {
+        double total = 0;
+        for(int j=0; j < num_states; j++)
+        {
+#ifdef DEBUG_MATRIX_EXPONENTIAL
+            if (P[i][j] < -1.0e-6)
+                std::cerr<<my_method<<" exp(M)["<<i<<","<<j<<"] = "<<P[i][j]<<"\n";
+#endif
+            P[i][j] = std::max(0.0, P[i][j]);
+            total += P[i][j];
+        }
+#ifdef DEBUG_MATRIX_EXPONENTIAL
+        if (std::abs(total - 1.0) > num_states * 1.0e-6)
+            std::cerr<<my_method<<" exp(M)["<<i<<"]: row sum = "<<total<<"\n";
+#endif
+        double scale = 1.0/total;
+        for(int j=0; j < num_states; j++)
+            P[i][j] *= scale;
+    }
 }
 
 
@@ -294,7 +314,7 @@ void RateMatrix_FreeK::checkMatrixDiff(MatrixReal x, double tolerance, bool& dif
     }
 }
 
-`
+
 RateMatrix_FreeK* RateMatrix_FreeK::clone( void ) const
 {
     return new RateMatrix_FreeK( *this );
