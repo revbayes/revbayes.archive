@@ -19,6 +19,7 @@
 
 #include "RbConstants.h"
 #include "RbBitSet.h"
+// #include "Split.h"
 #include "Subsplit.h"
 #include "TopologyNode.h"
 #include "Tree.h"
@@ -32,7 +33,7 @@ namespace RevBayesCore {
 
     public:
                                            SBNParameters();  //!< Constructor
-                                           SBNParameters(std::vector<Taxon> taxa, const std::string &branch_length_approximation);  //!< Constructor
+                                           SBNParameters(std::vector<Taxon> taxa, const std::string &branch_length_approximation, bool allow_unseen = false, double epsilon = 0.0);  //!< Constructor
                                            SBNParameters(const SBNParameters &sbn);
         virtual                            ~SBNParameters();
 
@@ -52,7 +53,7 @@ namespace RevBayesCore {
 
         // Helper functions for SBN distributions
         double                              computeLnProbabilityRootedTopology( const Tree &tree ) const;
-        std::vector<double>                 computeLnProbabilityTopologyAndRooting( const Tree &tree ) const;
+        std::vector<std::pair<Subsplit,double> >  computeLnProbabilityTopologyAndRooting( const Tree &tree ) const;
         double                              computeLnProbabilityUnrootedTopology( const Tree &tree ) const;
         double                              computeRootSplitProbability( const Subsplit &root_split ) const;
         double                              computeSubsplitTransitionProbability( const Subsplit &parent, const Subsplit &child ) const;
@@ -79,15 +80,20 @@ namespace RevBayesCore {
         void                                addTreeToAllRootSplitCounts(std::map<Subsplit,double>& root_split_counts, Tree& tree, double &weight);
         void                                incrementParentChildCount(std::map<std::pair<Subsplit,Subsplit>,double> &parent_child_counts, std::pair<Subsplit,Subsplit> &this_parent_child, double &weight);
         void                                incrementRootSplitCount(std::map<Subsplit,double>& root_split_counts, Subsplit &this_root_split, double &weight);
+
+        // // Misc.
+        // std::vector<std::pair<Split,double> > computeCladeProbabilities(void) const;
+        // std::vector<std::pair<Split,double> > computeSplitProbabilities(void) const;
+
       private:
         // members
-        bool                                           time_calibrated; // Is this a time-calibrated SBN?
+        std::string                                    branch_length_approximation_method;
+        std::map<RbBitSet,std::vector<double> >        edge_length_distribution_parameters; // In an unconstrained SBN, we learn branch lengths as functions of the splits they represent
         size_t                                         num_taxa; // The number of taxa in the tree the SBN describes
-        std::vector<Taxon>                             taxa; // The taxa in the tree the SBN describes
         std::vector<std::pair<Subsplit,double> >       root_splits; // The root splits in the tree and their probabilities
         std::map<Subsplit,std::vector<std::pair<Subsplit,double> > >        subsplit_cpds; // For each subsplit, its children and their probabilities
-        std::map<RbBitSet,std::vector<double> >         edge_length_distribution_parameters; // In an unconstrained SBN, we learn branch lengths as functions of the splits they represent
-        std::string                                     branch_length_approximation_method;
+        std::vector<Taxon>                             taxa; // The taxa in the tree the SBN describes
+        bool                                           time_calibrated; // Is this a time-calibrated SBN?
     };
 
     // Global functions using the class

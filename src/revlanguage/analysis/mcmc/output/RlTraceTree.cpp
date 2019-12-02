@@ -336,7 +336,8 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
 
         const std::string &branch_length_approximation  = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
 
-        RevBayesCore::SBNParameters sbn = this->value->learnTimeCalibratedSBN(branch_length_approximation);
+        // RevBayesCore::SBNParameters sbn = this->value->learnTimeCalibratedSBN(branch_length_approximation);
+        RevBayesCore::SBNParameters sbn;
         return new RevVariable( new SBNParameters( sbn ) );
 
     }
