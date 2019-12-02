@@ -10,13 +10,13 @@ namespace RevBayesCore { class DagNode; }
 
 using namespace RevBayesCore;
 
-AssembleOrder1ContinuousMRFFunction::AssembleOrder1ContinuousMRFFunction(const TypedDagNode< double > *th1, const TypedDagNode< RbVector<double> > *inc, const TypedDagNode< RbVector<double> > *pred, const TypedDagNode< double > *b,  bool log_theta1) : TypedFunction< RbVector<double> >( new RbVector<double>(increments->getValue().size()+1,0.0) ),
+AssembleOrder1ContinuousMRFFunction::AssembleOrder1ContinuousMRFFunction(const TypedDagNode< double > *th1, const TypedDagNode< RbVector<double> > *inc, const TypedDagNode< RbVector<double> > *pred, const TypedDagNode< double > *b,  bool log_theta1) : TypedFunction< RbVector<double> >( new RbVector<double>(inc->getValue().size()+1,0.0) ),
     increments( inc ),
     predictors( pred),
     beta( b ),
     theta1( th1 ),
     theta_1_is_log( log_theta1 ),
-    field_size( increments->getValue().size()+1 )
+    field_size( inc->getValue().size()+1 )
 {
     // add the lambda parameter as a parent
     addParameter( increments );
@@ -49,9 +49,10 @@ void AssembleOrder1ContinuousMRFFunction::update( void )
 
     const RbVector<double>* pred = NULL;
     double this_beta = 0.0;
-    if ( predictors != NULL )
+    if ( predictors != NULL && beta != NULL )
     {
         pred = &(predictors->getValue());
+        this_beta = beta->getValue();
     }
 
     // Handle first value being on log-scale or not
