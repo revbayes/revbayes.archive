@@ -196,23 +196,7 @@ void DagNode::clearVisitFlag( const size_t& flagType )
     return;
 }
 
-void DagNode::clearVisitFlagVector( const size_t& flagType, std::vector<DagNode *>& nodes )
-{
 
-    RbOrderedSet<DagNode*> descendants;
-    findUniqueDescendantsWithFlagVector(descendants, flagType, nodes);
-
-    // Clear the designated flagType from all descedants (including node calling this)
-    // Also clear the flags we just flagged to keep descedant searching fast
-    for (auto d: descendants)
-    {
-        d->visit_flags[FIND_FLAG] = false;
-        d->visit_flags[flagType] = false;
-    }
-
-
-    return;
-}
 void DagNode::clearTouchedElementIndices( void )
 {
 
@@ -294,18 +278,6 @@ void DagNode::findUniqueDescendants(RbOrderedSet<DagNode *>& descendants)
     }
 }
 
-/*
- * finds all descendants of all nodes in vector without redundant node visitation
- */
-void DagNode::findUniqueDescendantsVector(RbOrderedSet<DagNode *>& descendants, std::vector<DagNode *>& nodes)
-{
-    // Delegate the actual finding to the non-vector version
-    // This way we avoid redundant finding of the same nodes, using the un-cleared flags
-    for (auto node: nodes)
-    {
-        node->findUniqueDescendants( descendants );
-    }
-}
 
 /*
  * finds all descendants without redundant node visitation
@@ -329,18 +301,6 @@ void DagNode::findUniqueDescendantsWithFlag(RbOrderedSet<DagNode *>& descendants
     }
 }
 
-/*
- * finds all descendants without redundant node visitation
- */
-void DagNode::findUniqueDescendantsWithFlagVector(RbOrderedSet<DagNode *>& descendants, const size_t flagType, std::vector<DagNode *>& nodes)
-{
-  // Delegate the actual finding to the non-vector version
-  // This way we avoid redundant finding of the same nodes, using the un-cleared flags
-    for (auto node: nodes)
-    {
-        node->findUniqueDescendantsWithFlag( descendants, flagType );
-    }
-}
 
 /**
  * Get all affected nodes this DAGNode.
@@ -572,23 +532,6 @@ void DagNode::initiateGetAffectedNodes(RbOrderedSet<DagNode *> &affected)
     clearVisitFlag(flag_type);
 }
 
-/**
- * Begins a getAffectedNodes() recursion then clears visited flags
- */
-void DagNode::initiateGetAffectedNodesVector(RbOrderedSet<DagNode *> &affected, std::vector<DagNode *>& nodes)
-{
-
-    // begin recursion on each node in the vector
-    // the flags aren't cleared yet so we don't pass through nodes twice
-    for (auto node: nodes)
-    {
-        getAffectedNodes( affected );
-    }
-
-    // clear visit flags
-    const size_t& flag_type = AFFECTED_FLAG;
-    clearVisitFlagVector(flag_type, nodes);
-}
 
 /**
  * This function returns true if the DAG node is
@@ -683,28 +626,6 @@ void DagNode::keep(void)
 
 }
 
-/**
- * Keep the values of the nodes.
- * This function delegates the call to keepMe() and calls keepAffected() too.
- * Unlike keep(), this function handles a set of nodes, leaving flags in place and avoiding redundancy
- */
-void DagNode::keepVector(std::vector<DagNode *>& nodes)
-{
-
-    for (auto node: nodes)
-    {
-        // keep myself first
-        node->keepMe(node);
-
-        // next, keep all my children
-        node->keepAffected();
-    }
-
-    // clear visit flags
-    const size_t &flag_type = KEEP_FLAG;
-    clearVisitFlagVector(flag_type, nodes);
-
-}
 
 /**
  * Tell affected variable nodes to keep the current value.
@@ -883,26 +804,6 @@ void DagNode::reInitialized( void )
 
 }
 
-/**
- * Restore this vector of DAGNodes.
- */
-void DagNode::reInitializeVector(std::vector<DagNode *>& nodes)
-{
-
-    for (auto node: nodes)
-    {
-        // keep myself first
-        node->reInitializeMe();
-
-        // next, keep all my children
-        node->reInitializeAffected();
-    }
-
-  // clear visit flags
-  const size_t &flag_type = REINITIALIZE_FLAG;
-  clearVisitFlagVector(flag_type, nodes);
-
-}
 
 /**
  * By default we do not need to do anything when re-initializiating.
@@ -1070,26 +971,6 @@ void DagNode::restoreAffected(void)
     }
 }
 
-/**
- * Restore this vector of DAGNodes.
- */
-void DagNode::restoreVector(std::vector<DagNode *>& nodes)
-{
-
-    for (auto node: nodes)
-    {
-        // keep myself first
-        node->restoreMe(node);
-
-        // next, keep all my children
-        node->restoreAffected();
-    }
-
-  // clear visit flags
-  const size_t &flag_type = RESTORE_FLAG;
-  clearVisitFlagVector(flag_type, nodes);
-
-}
 
 void DagNode::setElementVariable(bool tf)
 {

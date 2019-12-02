@@ -82,13 +82,16 @@ template <class valueType> class StochasticNode;
         size_t                                              dim;                                                    //!< Dimension of proposal
         double                                              lnHastingsratio;                                        //!< The Hastings ratio, so that helper functions can adjust as needed
 
-        std::vector<double>                                 storedValues;                                           //!< The values before proposing the move, for resetting
+        std::vector<double>                                 storedValues;                                           //!< The values before proposing the move, for Hastings ratio calculations
+        std::vector<double>                                 storedValuesUntransformed;                              //!< The values before proposing the move, for resetting
         std::vector<double>                                 proposedValues;                                         //!< The values proposed by the move
         std::vector<double>                                 x_bar;                                                  //!< The averages in transformed space
 
         // functions
+        void                                                calculateHastingsRatio(std::vector<double> x_prime, std::vector<double> x);
         void                                                getAVMVNMemberVariableValues(std::vector<double> *x);
-        void                                                setAVMVNMemberVariableValues(std::vector<double> x_prime, std::vector<double> x);
+        void                                                getAVMVNMemberVariableValuesUntransformed(std::vector<double> *x);
+        void                                                resetAVMVNMemberVariableValues(std::vector<double> x);
         std::vector<double>                                 rMVNCholesky(std::vector<double> mu, MatrixReal L, RandomNumberGenerator& rng, double scale);
 
 

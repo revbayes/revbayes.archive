@@ -117,24 +117,6 @@ const TypeSpec& Move_MirrorMultiplier::getClassTypeSpec(void)
     return rev_type_spec;
 }
 
-/**
- * Get the more detailed description of the function
- */
-std::string Move_MirrorMultiplier::getHelpDescription(void) const
-{
-    // create a variable for the description of the function
-    std::string details = "The adaptive mirror multiplier (normal) proposal of Thawornwattana et al. 2017, uses MCMC samples to find posterior mean and variance on the log-scale. ";
-
-    details += "After user-defined waiting time, proposes moves (on the log-scale) on opposite side of posterior mean from current location using a normal distribution with the learned posterior standard deviation (scaled by lambda). ";
-
-    details += "Before this time, the move uses mu0 as the mean, and lambda as the standard deviation. ";
-
-    details += "WARNING: Disabling tuning disables both tuning of proposal variance and learning of empirical mean and variance. ";
-
-    details += "To learn the empirical mean and variance without tuning sigma, set adaptOnly=true.";
-
-    return details;
-}
 
 /**
  * Get the Rev name for the constructor function.

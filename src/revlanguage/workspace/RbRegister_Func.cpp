@@ -79,6 +79,7 @@
 
 
 /* Functions related to evolution (in folder "functions/phylogenetics") */
+#include "Func_avgDistanceMatrix.h"
 #include "Func_BirthDeathSimulator.h"
 #include "Func_branchScoreDistance.h"
 #include "Func_checkNodeOrderConstraints.h"
@@ -182,6 +183,7 @@
 #include "Func_chromosomesCladoEventsBD.h"
 #include "Func_chromosomesPloidyCladoEventsBD.h"
 #include "Func_cladogeneticSpeciationRateMatrix.h"
+#include "Func_cladogeneticProbabilityMatrix.h"
 #include "Func_MixtureCladoProbs.h"
 #include "Func_SampledCladogenesisRootFrequencies.h"
 
@@ -218,11 +220,8 @@
 #include "Func_posteriorPredictiveProbability.h"
 //#include "Func_power.h"
 //#include "Func_powerVector.h"
-#include "Func_probability.h"
 #include "Func_round.h"
 #include "Func_shortestDistance.h"
-#include "Func_simplex.h"
-#include "Func_simplexFromVector.h"
 #include "Func_sort.h"
 #include "Func_sum.h"
 #include "Func_sumPositive.h"
@@ -256,6 +255,9 @@
 #include "Func_varianceCovarianceMatrix.h"
 #include "Func_decomposedVarianceCovarianceMatrix.h"
 #include "Func_partialToCorrelationMatrix.h"
+
+/* Type conversions */
+#include "Proc_StringToInt.h"
 
 
 /** Initialize global workspace */
@@ -318,6 +320,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_siteRateModifier() );
 
         /* cladogenic probs used for e.g. DEC models (in folder "functions/phylogenetics") */
+        addFunction( new Func_avgDistanceMatrix() );
         addFunction( new Func_DECCladoProbs() );
         addFunction( new Func_DECRates() );
         addFunction( new Func_DECRoot() );
@@ -328,6 +331,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_chromosomesPloidyCladoEventsBD() );
         addFunction( new Func_CladeSpecificHierarchicalBranchRate() );
         addFunction( new Func_cladogeneticSpeciationRateMatrix() );
+        addFunction( new Func_cladogeneticProbabilityMatrix() );
         addFunction( new Func_MixtureCladoProbs() );
         addFunction( new Func_SampledCladogenesisRootFrequencies() );
 
@@ -434,18 +438,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         // normalize vector function
 		addFunction( new Func_normalize()  );
 
-        // conversion function from Real to Probability
-        addFunction( new Func_probability() );
-
-		// round function
+        // round function
         addFunction( new Func_round<Real,Integer>()  );
         addFunction( new Func_round<RealPos,Natural>()  );
-
-        // simplex constructor function (from RealPos ellipsis argument values)
-        addFunction( new Func_simplex()                  );
-
-        // simplex constructor function (from vector of RealPos values)
-        addFunction( new Func_simplexFromVector()        );
 
         // sort vector function
         addFunction( new Func_sort() );
@@ -532,6 +527,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_partialToCorrelationMatrix( )         );
 
 
+        // Type conversion
+        addFunction( new Proc_StringToInt( )                         );
+        
     }
     catch(RbException& rbException)
     {
