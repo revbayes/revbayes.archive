@@ -74,7 +74,7 @@ project(RevBayes)
 # So, we add the flag directly instead.
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "2.8.0")
+if(NOT (${CMAKE_VERSION} VERSION_LESS "2.8.0"))
   find_program(CCACHE_PROGRAM ccache)
   if(CCACHE_PROGRAM)
     set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
