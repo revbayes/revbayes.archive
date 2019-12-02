@@ -349,17 +349,6 @@ std::string Func_BirthDeathSimulator::getFunctionName( void ) const
     return f_name;
 }
 
-/**
- * Get the (brief) description for this function
- */
-std::string Func_BirthDeathSimulator::getHelpDescription(void) const
-{
-    // create a variable for the description of the function
-    std::string description = "Simulates a tree under a very general birth-death process. Parameters are fed in as a n_cats by n_intervals matrix, such that the ith row is the rate vector for the ith category.";
-
-    return description;
-}
-
 
 /** Get type spec */
 const TypeSpec& Func_BirthDeathSimulator::getTypeSpec( void ) const

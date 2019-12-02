@@ -36,6 +36,7 @@
 /// Miscellaneous types ///
 
 #include "AbstractHomologousDiscreteCharacterData.h"
+#include "AverageDistanceMatrix.h"
 #include "CharacterHistoryRateModifier.h"
 #include "Clade.h"
 #include "CladogeneticProbabilityMatrix.h"
@@ -50,6 +51,7 @@
 #include "Func_modelVector.h"
 #include "Func_workspaceVector.h"
 #include "IndirectReferenceFunction.h"
+#include "MatrixBoolean.h"
 #include "MatrixReal.h"
 #include "ModelObject.h"
 #include "RateGenerator.h"
@@ -77,6 +79,7 @@
 #include "RevObject.h"
 
 /* Container types (in folder "datatypes/container") */
+#include "RlMatrixBoolean.h"
 #include "RlMatrixReal.h"
 #include "RlMatrixRealPos.h"
 #include "RlMatrixRealSymmetric.h"
@@ -95,6 +98,7 @@
 /* Taxon types (in folder "datatypes/phylogenetics") */
 #include "RlCladogeneticProbabilityMatrix.h"
 #include "RlCladogeneticSpeciationRateMatrix.h"
+#include "RlAverageDistanceMatrix.h"
 #include "RlDistanceMatrix.h"
 #include "RlCharacterHistoryRateModifier.h"
 #include "RlTaxon.h"
@@ -119,7 +123,9 @@ void RevLanguage::Workspace::initializeVectorTypeGlobalWorkspace(void)
         AddWorkspaceVectorType<RateGenerator,3>::addTypeToWorkspace( *this, new RateGenerator() );
         AddWorkspaceVectorType<CladogeneticProbabilityMatrix,3>::addTypeToWorkspace( *this, new CladogeneticProbabilityMatrix() );
         AddWorkspaceVectorType<CladogeneticSpeciationRateMatrix,3>::addTypeToWorkspace( *this, new CladogeneticSpeciationRateMatrix() );
+        AddWorkspaceVectorType<AverageDistanceMatrix,3>::addTypeToWorkspace( *this, new AverageDistanceMatrix() );
         AddWorkspaceVectorType<DistanceMatrix,3>::addTypeToWorkspace( *this, new DistanceMatrix() );
+        AddWorkspaceVectorType<MatrixBoolean,3>::addTypeToWorkspace( *this, new MatrixBoolean() );
         AddWorkspaceVectorType<MatrixReal,3>::addTypeToWorkspace( *this, new MatrixReal() );
         AddWorkspaceVectorType<MatrixRealPos,3>::addTypeToWorkspace( *this, new MatrixRealPos() );
         AddWorkspaceVectorType<MatrixRealSymmetric,3>::addTypeToWorkspace( *this, new MatrixRealSymmetric() );

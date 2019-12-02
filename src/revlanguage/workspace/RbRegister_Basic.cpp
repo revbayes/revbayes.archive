@@ -244,7 +244,6 @@
 //#include "Func_normalize.h"
 #include "Func_power.h"
 #include "Func_powerVector.h"
-//#include "Func_probability.h"
 //#include "Func_round.h"
 //#include "Func_simplex.h"
 //#include "Func_simplexFromVector.h"
