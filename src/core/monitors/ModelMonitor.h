@@ -2,6 +2,7 @@
 #define ModelMonitor_H
 
 #include <iosfwd>
+#include <set>
 
 #include "VariableMonitor.h"
 
@@ -11,23 +12,18 @@ class Model;
     /**
      * @brief A monitor class that monitors all variables of a model and prints their value into a file.
      *
-     * @file
+     * @details
      * The model monitor is a convenience monitor that simply monitors all variables of a model
      * instead of a pre-selected set. Thus, one only needs to specify the model and this monitor
      * extracts all variables that can be monitored.
      * The values will be printed into a file.
-     *
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2012-06-21, version 1.0
      *
      */
     class ModelMonitor : public VariableMonitor {
         
     public:
         // Constructors and Destructors
-        ModelMonitor(unsigned long g, const std::string &fname, const std::string &del);                        //!< Constructor
+        ModelMonitor(unsigned long g, const std::string &fname, const std::string &del, std::set<std::string> exclude_list);                        //!< Constructor
         virtual ~ModelMonitor(void);
         
         
@@ -45,7 +41,7 @@ class Model;
         
         // members
         bool                                stochastic_nodes_only;                                              //!< Flag if only stochastic nodes should be printed
-                
+        std::set<std::string> exclude;  //!< List of variables to exclude from monitoring
     };
     
 }

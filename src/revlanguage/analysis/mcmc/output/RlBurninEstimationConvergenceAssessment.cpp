@@ -366,7 +366,7 @@ const std::string& BurninEstimationConvergenceAssessment::getClassType(void)
 const TypeSpec& BurninEstimationConvergenceAssessment::getClassTypeSpec(void)
 {
     
-    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject::getClassTypeSpec() ) );
     
 	return rev_type_spec;
 }

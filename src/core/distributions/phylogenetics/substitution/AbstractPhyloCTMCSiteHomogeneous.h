@@ -1131,10 +1131,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawJointConditio
 {
 
 	// if we already have ancestral states, don't make new ones
-	if ( has_ancestral_states == true )
-    {
-		return;
-    }
+    
+    // MJL 181028: Disabling this flag to allow multiple monitors to work for same dnPhyloCTMC (e.g. ancestral states + stochastic mapping)
+//	if ( has_ancestral_states == true )
+//    {
+//		return;
+//    }
     
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
@@ -1266,8 +1268,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawStochasticCha
 
     while (!success && n_draws != max_draws) {
         // first draw joint ancestral states
-        std::vector<std::vector<charType> > start_states(this->num_nodes, std::vector<charType>(this->num_sites));
-        std::vector<std::vector<charType> > end_states(this->num_nodes, std::vector<charType>(this->num_sites));
+        std::vector<std::vector<charType> > start_states(this->num_nodes, std::vector<charType>(this->num_sites, template_state));
+        std::vector<std::vector<charType> > end_states(this->num_nodes, std::vector<charType>(this->num_sites, template_state));
         this->drawJointConditionalAncestralStates( start_states, end_states );
 
         // save the character history for the root

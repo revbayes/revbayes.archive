@@ -124,21 +124,6 @@ const TypeSpec& Move_RandomDive::getClassTypeSpec(void)
 }
 
 /**
- * Get the more detailed description of the function
- */
-std::string Move_RandomDive::getHelpDescription(void) const
-{
-    // create a variable for the description of the function
-    std::string details = "The multiplicative proposal of Dutta 2012, allows for long-distance moves.\n\n";
-    
-    details += "Useful for fat-tailed distributions, possibly for bimoodal distributions.\n\n";
-    
-    details += "Variables on [0,infinity) are log-transformed for proposals.";
-    
-    return details;
-}
-
-/**
  * Get the Rev name for the constructor function.
  *
  * \return Rev name of constructor function.

@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "AbstractHomologousDiscreteCharacterData.h"
+#include "MatrixBoolean.h"
 #include "MatrixReal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -23,9 +24,11 @@
 #include "Tree.h"
 #include "TreeUtilities.h"
 #include "AbstractDiscreteTaxonData.h"
+#include "AverageDistanceMatrix.h"
 #include "Cloneable.h"
 #include "DiscreteCharacterState.h"
 #include "DistanceMatrix.h"
+#include "RbConstIterator.h"
 #include "RbVector.h"
 #include "RbVectorImpl.h"
 #include "Taxon.h"
@@ -212,6 +215,93 @@ void RevBayesCore::TreeUtilities::getAges(Tree *t, TopologyNode *n, std::vector<
       ages[n->getIndex()] = n->getAge();
     }
 
+}
+
+
+RevBayesCore::AverageDistanceMatrix RevBayesCore::TreeUtilities::getAverageDistanceMatrix(const RbVector<RevBayesCore::DistanceMatrix>& matvect)
+{
+    // gather all taxa across all source matrices into a single vector
+    std::vector<RevBayesCore::Taxon> allTaxa;
+    
+    for(RbConstIterator<DistanceMatrix> it = matvect.begin(); it != matvect.end(); ++it)
+    {
+        allTaxa.insert(allTaxa.end(), it->getTaxa().begin(), it->getTaxa().end());
+    }
+    
+    // convert the vector of taxa into a vector of strings for easier sorting
+    std::vector<std::string> allNames( allTaxa.size() );
+    
+    for(size_t i = 0; i < allTaxa.size(); i++)
+    {
+        allNames[i] = allTaxa[i].getName();
+    }
+    
+    // get rid of duplicates by converting from vector to unordered_set
+    boost::unordered_set<std::string> uniqueNames;
+    
+    for(size_t j = 0; j < allNames.size(); j++)
+    {
+        uniqueNames.insert(allNames[j]);
+    }
+    
+    // repopulate the original vector with unique values only
+    allNames.assign( uniqueNames.begin(), uniqueNames.end() );
+    
+    // initialize the sum and divisor matrices using the size-based constructor:
+    RevBayesCore::MatrixReal sumMatrix = MatrixReal( allNames.size() );
+    RevBayesCore::MatrixReal divisorMatrix = MatrixReal( allNames.size() );
+    
+    // initialize the corresponding Boolean matrix of the right dimensions, filled with 'false'
+    RevBayesCore::MatrixBoolean mask = MatrixBoolean( allNames.size() );
+    
+    for(RbConstIterator<DistanceMatrix> mat = matvect.begin(); mat != matvect.end(); ++mat)
+    {
+        std::vector<Taxon> taxa = mat->getTaxa();
+        for(size_t i = 0; i != taxa.size(); i++)
+        {
+            size_t rowInd = std::distance(allNames.begin(), std::find(allNames.begin(), allNames.end(), taxa[i].getName()));
+            for(size_t j = i + 1; j != taxa.size(); ++j)
+            {
+                size_t colInd = std::distance(allNames.begin(), std::find(allNames.begin(), allNames.end(), taxa[j].getName()));
+                sumMatrix[rowInd][colInd] += mat->getMatrix()[i][j];
+                sumMatrix[colInd][rowInd] += mat->getMatrix()[i][j]; // by symmetry
+                divisorMatrix[rowInd][colInd] += 1.0;
+                divisorMatrix[colInd][rowInd] += 1.0;                // by symmetry
+                mask[rowInd][colInd] = true;
+                mask[colInd][rowInd] = true;                         // by symmetry
+            }
+        }
+    }
+    
+    // divide the sum matrix by the divisor matrix
+    RevBayesCore::MatrixReal averageMatrix = MatrixReal( allNames.size() );
+    
+    for(size_t i = 0; i != averageMatrix.getNumberOfRows(); i++)
+    {
+        for(size_t j = 0; j != averageMatrix.getNumberOfColumns(); j++)
+        {
+            if(divisorMatrix[i][j] > 0.0)
+            {
+                averageMatrix[i][j] = sumMatrix[i][j]/divisorMatrix[i][j];
+            }
+        }
+    }
+    
+    // convert from a vector of strings back to a vector of taxa:
+    std::vector<Taxon> uniqueTaxa( allNames.size() );
+
+    for(size_t k = 0; k != allNames.size(); k++)
+    {
+        uniqueTaxa[k] = Taxon( allNames[k] );
+    }
+        
+    // initialize a distance matrix based on the average matrix and taxon vector obtained above:
+    DistanceMatrix dm = DistanceMatrix( averageMatrix, uniqueTaxa );
+    
+    // combine with the Boolean mask into an average distance matrix:
+    AverageDistanceMatrix adm = AverageDistanceMatrix( dm, mask );
+    
+    return adm;
 }
 
 
@@ -496,6 +586,12 @@ void RevBayesCore::TreeUtilities::setAgesRecursively(RevBayesCore::Tree *t, RevB
     
 }
 
+void RevBayesCore::TreeUtilities::setBranchLength(Tree *t, size_t index, double value)
+{
+    // set the length of the branch leading to the node with index index
+    t->getNode(index).setBranchLength( value, true );
+
+}
 
 void RevBayesCore::TreeUtilities::processDistsInSubtree(const RevBayesCore::TopologyNode& node, RevBayesCore::MatrixReal& matrix, std::vector< std::pair<std::string, double> >& distsToNodeFather, const std::map< std::string, int >& namesToId)
 {
