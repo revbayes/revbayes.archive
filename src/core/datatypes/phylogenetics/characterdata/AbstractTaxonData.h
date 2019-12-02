@@ -32,6 +32,7 @@ namespace RevBayesCore {
         
         // AbstractTaxonData functions
         virtual void                            concatenate(const AbstractTaxonData &d) = 0;                        //!< Concatenate sequences
+        virtual std::string                     getJsonRepresentation(void) const = 0;                              //!< Return a JSON represenation of the taxon data
         virtual size_t                          getNumberOfCharacters(void) const = 0;                              //!< How many characters
         virtual double                          getPercentageMissing(void) const = 0;                               //!< Returns the percentage of missing data for this sequence
         const Taxon&                            getTaxon(void) const;                                               //!< Return the name of the character vector
@@ -45,7 +46,7 @@ namespace RevBayesCore {
         virtual std::string                     getStateLabels(void) = 0;                                           //!< Get the possible state labels
     
     protected:
-        AbstractTaxonData(const Taxon &t);                                                                                      //!< Default constructor
+                                                AbstractTaxonData(const Taxon &t);                                  //!< Default constructor
 
         Taxon                                   taxon;                                                              //!< Name of the taxon for this vector of characters
 

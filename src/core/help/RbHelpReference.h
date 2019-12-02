@@ -21,7 +21,7 @@ namespace RevBayesCore {
     class RbHelpReference {
         
     public:
-        RbHelpReference() {}
+        RbHelpReference(std::string c = "", std::string d = "", std::string u = "") : citation(c), doi(d), url(u) {}
         
         // getter
         const std::string&                  getCitation(void) const;

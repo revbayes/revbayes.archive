@@ -844,7 +844,7 @@ void RevBayesCore::TreeHistoryCtmc<charType>::simulate(void)
     // add the taxon data for internal nodes to character data
     if (store_internal_nodes) {
         std::vector<TopologyNode*> nodes = tau->getValue().getNodes();
-        for (size_t i = tau->getValue().getNumberOfTips()+1; i < tau->getValue().getNumberOfNodes(); ++i)
+        for (size_t i = tau->getValue().getNumberOfTips(); i < tau->getValue().getNumberOfNodes(); ++i)
         {
             std::stringstream ss;
             size_t node_index = nodes[i]->getIndex();
