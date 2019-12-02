@@ -150,6 +150,24 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
         std::vector<RevBayesCore::Taxon> t = this->dag_node->getValue().getTaxa();
         return new RevVariable( new ModelVector<Taxon>( t ) );
     }
+    else if (name == "setBranchLength")
+    {
+        found = true;
+
+        const RevObject& current = args[0].getVariable()->getRevObject();
+        if ( current.isType( Natural::getClassTypeSpec() ) )
+        {
+          size_t index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+          const RevObject& new_value = args[1].getVariable()->getRevObject();
+          if ( new_value.isType( RealPos::getClassTypeSpec() ) )
+          {
+            double value = static_cast<const RealPos&>( new_value ).getValue();
+            RevBayesCore::Tree &tree = dag_node->getValue();
+            RevBayesCore::TreeUtilities::setBranchLength( &tree, index ,value );
+          }
+        }
+        return NULL;
+    }
     else if (name == "setTaxonName")
     {
         found = true;
@@ -291,49 +309,6 @@ const TypeSpec& Tree::getClassTypeSpec(void)
 }
 
 
-/**
- * Get the (brief) description for this function
- */
-std::string Tree::getHelpDescription(void) const
-{
-    std::string description = "";
-    description += "The Tree datatype stores information to describe the shared ancestry";
-    description += "of a taxon set. Information includes taxon labels, topology, node";
-    description += "count, and branch lengths. Tree objects also possess several useful";
-    description += "methods to traverse and manipulate the Tree's value.";
-    
-    return description;
-}
-
-
-
-/**
- * Get the names of similar and suggested other functions
- */
-std::vector<std::string> Tree::getHelpSeeAlso(void) const
-{
-    // create an entry for each suggested function
-    std::vector<std::string> see_also;
-    see_also.push_back( "TimeTree" );
-    see_also.push_back( "BranchLengthTree" );
-    
-    
-    return see_also;
-}
-
-
-/**
- * Get the title of this help entry
- */
-std::string Tree::getHelpTitle(void) const
-{
-    // create a title variable
-    std::string title = "Tree datatype";
-    
-    return title;
-}
-
-
 
 /** Get type spec */
 const TypeSpec& Tree::getTypeSpec( void ) const
@@ -411,6 +386,11 @@ void Tree::initMethods( void )
     ArgumentRules* taxaArgRules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "taxa", ModelVector<Taxon>::getClassTypeSpec(), taxaArgRules ) );
     
+    ArgumentRules* setBranchLengthArgRules         = new ArgumentRules();
+    setBranchLengthArgRules->push_back(        new ArgumentRule("index"    , Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    setBranchLengthArgRules->push_back(        new ArgumentRule("value"        , RealPos::getClassTypeSpec(), "The new branch length value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "setBranchLength", RlUtils::Void, setBranchLengthArgRules ) );
+
     ArgumentRules* setTaxonNameArgRules         = new ArgumentRules();
     setTaxonNameArgRules->push_back(        new ArgumentRule("current"    , RlString::getClassTypeSpec(), "The old name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     setTaxonNameArgRules->push_back(        new ArgumentRule("new"        , RlString::getClassTypeSpec(), "The new name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
