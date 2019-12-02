@@ -2,6 +2,7 @@
 
 all_args=$@
 mpi="false"
+travis="false"
 # parse command line arguments
 while echo $1 | grep ^- > /dev/null; do
     # intercept help while parsing "-key value" pairs
