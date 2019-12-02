@@ -86,6 +86,8 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> BranchLengthTree::executeMethod(st
     if (name == "reroot")
     {
         
+        found = true;
+        
         const RevObject& st = args[0].getVariable()->getRevObject();
         if ( st.isType( RlString::getClassTypeSpec() ) )
         {

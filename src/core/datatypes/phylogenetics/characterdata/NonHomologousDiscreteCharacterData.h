@@ -360,8 +360,9 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::NonHomologousDiscreteCh
 /**
  * Initialize this object from a file
  *
- * \param[in]   idx    The site at which we want to know if it is constant?
- */
+ * \param[in]   dir    The directory
+ * \param[in]   fn    The file name
+*/
 template<class charType>
 void RevBayesCore::NonHomologousDiscreteCharacterData<charType>::initFromFile(const std::string &dir, const std::string &fn)
 {
@@ -392,7 +393,7 @@ void RevBayesCore::NonHomologousDiscreteCharacterData<charType>::initFromFile(co
 /**
  * Initialize this object from a file
  *
- * \param[in]   idx    The site at which we want to know if it is constant?
+ * \param[in]   s    The site at which we want to know if it is constant?
  */
 template<class charType>
 void RevBayesCore::NonHomologousDiscreteCharacterData<charType>::initFromString(const std::string &s)

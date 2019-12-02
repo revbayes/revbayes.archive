@@ -58,9 +58,9 @@ void RevLanguage::Workspace::initializeDemographicFunctionGlobalWorkspace(void)
         /* Add demographic function (in folder "datatypes/phylogenetic/demography") (alphabetic order) */
         ////////////////////////////////////////////////////////////////////////////////
         
-        addTypeWithConstructor( new ConstantDemographicFunction()       );
-        addTypeWithConstructor( new ExponentialDemographicFunction()    );
-        addTypeWithConstructor( new LinearDemographicFunction()         );
+        addType( new ConstantDemographicFunction()       );
+        addType( new ExponentialDemographicFunction()    );
+        addType( new LinearDemographicFunction()         );
 
 
 

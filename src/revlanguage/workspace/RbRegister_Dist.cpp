@@ -40,6 +40,7 @@
 /// Miscellaneous types ///
 
 #include "AbstractHomologousDiscreteCharacterData.h"
+#include "AverageDistanceMatrix.h"
 #include "ConstantNode.h"
 #include "ContinuousCharacterData.h"
 #include "DagMemberFunction.h"
@@ -52,6 +53,7 @@
 #include "EmpiricalSampleDistribution.h"
 #include "EventDistribution.h"
 #include "IndirectReferenceFunction.h"
+#include "MatrixBoolean.h"
 #include "MatrixReal.h"
 #include "MixtureDistribution.h"
 #include "ModelObject.h"
@@ -63,6 +65,7 @@
 #include "RevPtr.h"
 #include "ReversibleJumpMixtureConstantDistribution.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
+#include "RlAverageDistanceMatrix.h"
 #include "RlConstantNode.h"
 #include "RlContinuousCharacterData.h"
 #include "RlDagMemberFunction.h"
@@ -115,6 +118,7 @@
 #include "RlRateGenerator.h"
 
 /* Math types (in folder "datatypes/math") */
+#include "RlMatrixBoolean.h"
 #include "RlMatrixReal.h"
 #include "RlMatrixRealSymmetric.h"
 #include "RlSimplex.h"
@@ -204,6 +208,7 @@
 #include "Dist_decomposedInverseWishart.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exponential.h"
+#include "Dist_exponentialError.h"
 #include "Dist_exponentialOffset.h"
 #include "Dist_exponentialOffsetPositive.h"
 #include "Dist_gamma.h"
@@ -534,6 +539,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         // and the so-called "decomposed" Inverse Wishart
         AddDistribution< MatrixReal                 >( new Dist_decomposedInverseWishart() );
 
+        // Exponential error distribution for matrix distance from average distance matrix
+        AddDistribution< AverageDistanceMatrix      >( new Dist_exponentialError());
+        
         /* Empirical sample distributions (in folder "distributions/mixture") */
         AddDistribution< ModelVector<Natural>       >( new Dist_EmpiricalSample<Natural>());
         AddDistribution< ModelVector<Real>          >( new Dist_EmpiricalSample<Real>());
