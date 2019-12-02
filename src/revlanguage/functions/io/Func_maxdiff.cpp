@@ -89,65 +89,6 @@ const TypeSpec& Func_maxdiff::getClassTypeSpec(void)
 
 
 /**
- * Get the author(s) of this function so they can receive credit (and blame) for it.
- */
-std::vector<std::string> Func_maxdiff::getHelpAuthor(void) const
-{
-    // create a vector of authors for this function
-    std::vector<std::string> authors;
-    authors.push_back( "Will Pett" );
-    
-    return authors;
-}
-
-
-/**
- * Get the (brief) description for this function
- */
-std::string Func_maxdiff::getHelpDescription(void) const
-{
-    std::string description = "";
-    description += "Finds the maximum difference in clade probabilities between two posterior samples.";
-    
-    return description;
-}
-
-
-/**
- * Get an executable and instructive example.
- * These example should help the users to show how this function works but
- * are also used to test if this function still works.
- */
-std::string Func_maxdiff::getHelpExample(void) const
-{
-    // create an example as a single string variable.
-    std::string example = "";
-    
-    example += "# Read in tree trace\n";
-    example += "tree_trace = readTreeTrace(\"output/my.trees\", burnin=0.25, nruns=2)\n";
-    example += "\n";
-    example += "# Compute the maxdiff statistic\n";
-    example += "maxdiff = maxdiff(traces=tree_trace)\n";
-    
-    return example;
-}
-
-
-/**
- * Get the names of similar and suggested other functions
- */
-std::vector<std::string> Func_maxdiff::getHelpSeeAlso(void) const
-{
-    // create an entry for each suggested function
-    std::vector<std::string> see_also;
-    see_also.push_back( "readTreeTrace" );
-    
-    
-    return see_also;
-}
-
-
-/**
  * Get the primary Rev name for this function.
  */
 std::string Func_maxdiff::getFunctionName( void ) const

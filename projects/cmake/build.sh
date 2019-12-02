@@ -2,6 +2,7 @@
 
 all_args=$@
 mpi="false"
+travis="false"
 # parse command line arguments
 while echo $1 | grep ^- > /dev/null; do
     # intercept help while parsing "-key value" pairs
@@ -20,7 +21,7 @@ Command line options are:
     shift
 done
 
-if [ "$mpi" = "true" ]; then
+if [ "$mpi" = "true" ] && [ "$travis" = "false" ]; then
     BUILD_DIR="build-mpi"
 else
     BUILD_DIR="build"

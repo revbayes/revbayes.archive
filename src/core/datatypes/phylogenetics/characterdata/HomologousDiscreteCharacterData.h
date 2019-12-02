@@ -795,6 +795,10 @@ RevBayesCore::AbstractHomologousDiscreteCharacterData* RevBayesCore::HomologousD
             {
                 number_state.setMissingState( true );
             }
+            else if ( org_char.isGapState() == true )
+            {
+                number_state.setGapState( true );
+            }
             else
             {
 
