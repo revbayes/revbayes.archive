@@ -240,12 +240,6 @@ void Distribution::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
     // return value
     help_constructor.setReturnType( getVariableTypeSpec().getType() );
     
-    // details
-    help_constructor.setDetails( getConstructorDetails() );
-    
-    // example
-    help_constructor.setExample( getConstructorExample() );
-    
     //
     std::vector<RevBayesCore::RbHelpFunction> constructors;
     constructors.push_back( help_constructor );

@@ -34,10 +34,10 @@ namespace RevBayesCore {
         // Overloaded operators
         virtual const AbstractTaxonData&            operator[](size_t i) const = 0;                                             //!< Subscript operator (const)
     
-        bool                                operator==(const AbstractCharacterData &rm) const { return this == &rm; }
-        bool                                operator!=(const AbstractCharacterData &rm) const { return !operator==(rm); }
-        bool                                operator<(const AbstractCharacterData &rm) const { return this < &rm; }
-        bool                                operator<=(const AbstractCharacterData &rm) const { return operator<(rm) || operator==(rm); }
+        bool                                        operator==(const AbstractCharacterData &rm) const { return this == &rm; }
+        bool                                        operator!=(const AbstractCharacterData &rm) const { return !operator==(rm); }
+        bool                                        operator<(const AbstractCharacterData &rm) const { return this < &rm; }
+        bool                                        operator<=(const AbstractCharacterData &rm) const { return operator<(rm) || operator==(rm); }
 
         // methods of the Cloneable interface
         virtual AbstractCharacterData*              clone(void) const = 0;
@@ -53,7 +53,7 @@ namespace RevBayesCore {
         void                                        excludeTaxon(size_t i);                                                     //!< Exclude taxon
         void                                        excludeTaxon(const std::string& s);                                         //!< Exclude taxon
         void                                        deleteTaxon(size_t i);                                                      //!< Remove taxon
-        void                                        deleteTaxon(const std::string& s);                                          // < Remove taxon
+        void                                        deleteTaxon(const std::string& s);                                          //!< Remove taxon
         const std::string&                          getFileName(void) const;                                                    //!< Returns the name of the file the data came from
         const std::string&                          getFilePath(void) const;                                                    //!< Returns the name of the file path
         size_t                                      getIndexOfTaxon(const std::string &n) const;                                //!< Get the index of the taxon with name 'n'.
@@ -61,6 +61,7 @@ namespace RevBayesCore {
         size_t                                      getNumberOfTaxa(void) const;                                                //!< Number of taxa
         size_t                                      getNumberOfIncludedTaxa(void) const;                                        //!< Number of included taxa
         double                                      getPercentageMissing(const std::string &n) const;                           //!< Returns the percentage of missing data for this sequence
+        const std::string                           getJsonRepresentation(void) const;                                          //!< Json string for the character data
         const std::string                           getHomeologPhase(const std::string &tipName);                               //!< Get the homeolog character data currently assigned to this tip.
         const std::vector<Taxon>&                   getTaxa(void) const;                                                        //!< Get the names of the taxa
         const Taxon&                                getTaxon(size_t idx) const;                                                 //!< Returns the i-th taxon
@@ -107,7 +108,7 @@ namespace RevBayesCore {
     };
     
     // Global functions using the class
-    std::ostream&                               operator<<(std::ostream& o, const AbstractCharacterData& x);                    //!< Overloaded output operator
+    std::ostream&                                   operator<<(std::ostream& o, const AbstractCharacterData& x);                //!< Overloaded output operator
 }
 
 #endif
